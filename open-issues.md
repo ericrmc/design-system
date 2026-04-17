@@ -11,18 +11,18 @@ The methodology does not yet have a name. A name should emerge when the methodol
 
 ### OI-002: Threshold for substantive revision vs. minor correction
 **Surfaced:** Session 001
-**Status:** Open (data points added Sessions 002, 003)
-Decision D-004 established that substantive revisions trigger file-level version preservation while minor corrections do not. No formal criteria for distinguishing the two have been defined. Session 002 produced a data point: D-014 treated adding `tools/` to the workspace-structure spec as a minor correction, reasoning that changes *anticipated by* the specification's own language are minor updates, while changes that *alter the meaning or structure* of the specification are substantive. Session 003 added a second data point: D-020 treated adding a pointer to `multi-agent-deliberation.md` in methodology-kernel.md as a minor correction because the kernel's Convene/Deliberate language was already mechanism-neutral and explicitly anticipates elaboration via child specifications. The emerging two-point heuristic: if a change only makes explicit something the specification's existing language already admits, it is minor. Future sessions should continue collecting data points.
+**Status:** Open (data points added Sessions 002, 003, 004)
+Decision D-004 established that substantive revisions trigger file-level version preservation while minor corrections do not. No formal criteria for distinguishing the two have been defined. Session 002 (D-014): adding `tools/` to workspace-structure was minor — change *anticipated by* the specification's own language. Session 003 (D-020): adding a pointer to `multi-agent-deliberation.md` in methodology-kernel.md was minor — kernel's Convene/Deliberate language was already mechanism-neutral. Session 004 (D-026): revising `multi-agent-deliberation.md` v1 → v2 was **substantive** — adds new normative content (new trigger rules, new required fields, new mechanism shapes) not anticipated structurally in v1. The three-point heuristic: **minor** if the change makes explicit what the specification's existing language already contains or explicitly anticipates as a category of extension; **substantive** if the change adds new normative content (rules, required fields, triggers, required artefacts) beyond what the existing language contains.
 
 ### OI-004: Incorporating genuinely independent perspectives
 **Surfaced:** Session 001
-**Status:** Open (scope narrowed in Session 003)
-When a single AI agent plays all perspectives, disagreement is simulated, not genuinely independent. Session 003 built `specifications/multi-agent-deliberation.md` and demonstrated parallel context-isolated Claude subagents as the first real mechanism, which closes the single-context simulation gap. What remains open — and is the issue's narrowed scope — is perspective independence beyond a single model family: different models, human participants, or both. The pattern's specification states plainly that the current mechanism is "a meaningful floor, not a ceiling." Future sessions should address cross-model participation (the lightest path) or human-in-the-loop deliberation (higher value, higher infrastructure cost). OI-004 should not be closed on the basis of Claude-only parallelism.
+**Status:** Open (unchanged scope after Session 004)
+When a single AI agent plays all perspectives, disagreement is simulated. Session 003 built parallel context-isolated Claude subagents as the first real mechanism, closing the single-context simulation gap but leaving the Claude-monoculture gap. Session 004 specified a non-Claude participation mechanism (in `multi-agent-deliberation.md` v2, see D-021/D-023/D-024) but explicitly chose **not** to claim any narrowing of OI-004 (D-025), because no non-Claude participant was in Session 004's deliberation. Narrowing requires operational use. Closure criteria are now specified in the v2 specification's Closure Criteria section: (1) participant independence; (2) sustained practice across ≥3 required-trigger deliberations; (3) recorded impact on outcomes; (4) articulated definition of "substantively different training provenance." "Closable" and "closed" remain distinct states; closure requires explicit deliberation by a future session.
 
 ### OI-005: Sub-activities and work-type variants
 **Surfaced:** Session 001
 **Status:** Open
-The nine core activities may need sub-activities, and different types of work (research, design decisions, validation, implementation) may warrant different subsets or emphases. To be explored as the methodology is applied to different kinds of work.
+The nine core activities may need sub-activities, and different types of work (research, design decisions, validation, implementation) may warrant different subsets or emphases. To be explored as the methodology is applied to different kinds of work — premature to address until the methodology has been applied to a non-self problem.
 
 ### OI-006: Cross-references between specifications
 **Surfaced:** Session 001
@@ -32,7 +32,7 @@ The current specification format does not mandate cross-references between relat
 ### OI-007: Scaling the open issues format
 **Surfaced:** Session 001
 **Status:** Open
-Open issues are currently a single file. If the number of issues grows significantly, this format may become unwieldy. Consider migrating to a directory of individual issue files, or developing a categorization system, when the need arises.
+Open issues are currently a single file. With Session 004 the count is 8 open issues and the file remains readable, but this format may become unwieldy. Consider migrating to a directory of individual issue files, or developing a categorization system, when the need arises.
 
 ### OI-008: Persisting validation reports
 **Surfaced:** Session 002
@@ -41,13 +41,18 @@ Should the output of `tools/validate.sh` be saved as part of session provenance?
 
 ### OI-009: Monitor for drift-to-ritual in multi-agent deliberation
 **Surfaced:** Session 003
-**Status:** Open
-The Session 003 Skeptic argued that multi-agent deliberation will drift to ritual within five sessions — applied to routine decisions because the machinery exists and using it feels rigorous, while the presence of multi-agent becomes a quality proxy rather than a tool of actual inquiry. The specification's selective-use triggers (D-016) and the required single-agent annotation for triggered-but-skipped decisions are both countermeasures. Future sessions should track (a) how often each trigger fires vs. how often single-agent annotation is used, (b) whether synthesis disagreements are genuine or formulaic, (c) whether any session applies multi-agent to clearly routine decisions. If drift is observed, D-016 should be tightened or the kernel substantively revised.
+**Status:** Open (Session 004 audit: no drift observed)
+Session 003's Skeptic argued that multi-agent deliberation will drift to ritual within five sessions. Session 004's audit of Session 003's pattern application (in `provenance/004-participation-mechanisms/00-assessment.md`) found the Skeptic's demands materially shaped the specification, dissent was preserved, and the pattern was applied to maximally load-bearing work — no drift signal. Session 004 itself applied multi-agent to OI-010, which meets multiple D-016 triggers and is the most load-bearing candidate for the session — also no drift. Continue monitoring. Drift would appear as: multi-agent applied to typos, renames, reordering, or decisions with no genuinely articulable alternative positions.
 
-### OI-010: Cross-model or human participation for independence beyond Claude
+### OI-010: Cross-model or human participation mechanism
 **Surfaced:** Session 003
+**Status:** Open, narrowed. Mechanism specified; awaiting first operational use.
+Session 004 produced a concrete specification (in `multi-agent-deliberation.md` v2): two participation shapes (perspective and reviewer), a three-layer recording schema, explicit trigger rules, and closure criteria. OI-010 is not closed because the mechanism has not yet been used. Closure: the first session that successfully uses the mechanism on a required-trigger deliberation and records it per the new schema may close this issue (and begin — but not complete — the narrowing of OI-004 per D-025).
+
+### OI-011: Intra-family model mixing as a deliberation-quality lever
+**Surfaced:** Session 004
 **Status:** Open
-Distinct from OI-004's narrowed scope, this tracks the concrete infrastructure question: what is the lightest path to incorporating a non-Claude participant (e.g., via API) or a human reviewer into a multi-agent deliberation? Candidate approaches to consider in a future session: a CLI wrapper that calls a second model with the same brief; a provenance-aware review step where a human reads raw outputs before synthesis; an asynchronous pattern that issues a brief and collects a response across sessions. This issue is about mechanism; OI-004 is about the independence gap it would close.
+Per D-022, mixing Anthropic models (Opus + Sonnet + Haiku) does **not** constitute cross-model participation for OI-004. But all three Session 004 perspectives noted that intra-family mixing has residual utility — capability stratification (Haiku surfaces what a weak reasoner catches; Opus explores longer tails), cost-scaled deliberation, and validation-band variance. This is a separate concern that should not be conflated with OI-004 progress in future sessions. A future session may deliberate whether to specify guidance for *when* intra-family mixing is worth doing and *how* to record it honestly (`participants_family: mixed-anthropic`) without inadvertently claiming OI-004 movement.
 
 ---
 

@@ -1,0 +1,34 @@
+session: "004"
+deliberation: "OI-010: Non-Claude participation mechanism"
+composition:
+  participants_family: claude-only
+  cross_model: false
+  non_claude_participants: 0
+note: |
+  This session's deliberation was Claude-only. Per D-022 and the Claude-Only-Is-Not-Cross-Model
+  rule in multi-agent-deliberation.md v2, this does not narrow OI-004. Full per-participant
+  manifests are not required for Claude-only deliberations, but a minimal participants index is
+  included here to demonstrate the new v2 schema. The session is itself exempt from requiring
+  a non-Claude participant per D-023's bootstrap exemption, because it is the session that
+  establishes the non-Claude-participation rule.
+participants:
+  - perspective: archivist
+    raw_response_file: 01a-perspective-archivist.md
+    participant_kind: claude-subagent
+    model: claude-opus-4-7
+    invocation_method: agent-tool
+  - perspective: integrator
+    raw_response_file: 01b-perspective-integrator.md
+    participant_kind: claude-subagent
+    model: claude-opus-4-7
+    invocation_method: agent-tool
+  - perspective: skeptic
+    raw_response_file: 01c-perspective-skeptic.md
+    participant_kind: claude-subagent
+    model: claude-opus-4-7
+    invocation_method: agent-tool
+brief_commit: ab86605aaeea7b2bca88f89ecc2ab3b88dd2b378
+synthesizer:
+  identity: session-004 orchestrating agent
+  model: claude-opus-4-7
+  was_deliberator: false
