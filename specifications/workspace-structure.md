@@ -4,6 +4,7 @@ version: 1
 status: active
 created: 2026-04-17
 last-updated: 2026-04-17
+updated-by-session: 002
 supersedes: none
 ---
 
@@ -23,6 +24,7 @@ The workspace has the following top-level structure:
 /open-issues.md
 /specifications/
 /provenance/
+/tools/
 ```
 
 ### PROMPT.md
@@ -93,9 +95,16 @@ status: complete | in-progress
 
 Provenance records are **immutable** once the session closes. Errors or retractions are recorded in subsequent sessions, not by editing past records.
 
+### tools/
+
+Contains tooling that supports the methodology's operations. Tools are executable scripts or programs that automate aspects of the methodology (e.g., validation, reporting). Each tool should have a corresponding specification in `specifications/`.
+
+Current contents:
+- `validate.sh` — Two-tier validation tool (see `specifications/validation-approach.md`)
+
 ### Additional directories
 
-New top-level directories may be created by future sessions when the work demands them (e.g., `implementations/`, `examples/`, `tools/`). Any new directory should be documented by updating this specification.
+New top-level directories may be created by future sessions when the work demands them (e.g., `implementations/`, `examples/`). Any new directory should be documented by updating this specification.
 
 ## Validation
 
