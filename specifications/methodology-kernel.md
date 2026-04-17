@@ -4,6 +4,7 @@ version: 1
 status: active
 created: 2026-04-17
 last-updated: 2026-04-17
+updated-by-session: 003
 supersedes: none
 ---
 
@@ -51,6 +52,8 @@ Assemble perspectives suited to the work at hand. Name each perspective, describ
 For deliberative work (where decisions will be made), at least one perspective must be **adversarial** — its role is to challenge the emerging consensus, identify unstated assumptions, and argue for alternatives.
 
 The choice of perspectives shapes outcomes and should be treated as a design decision, not an afterthought.
+
+When a decision meets the triggers defined in `specifications/multi-agent-deliberation.md`, perspectives must be instantiated as independent agents whose outputs are synthesised rather than as multiple voices produced within a single context. Decisions that meet those triggers but are made single-perspective anyway must record the reason.
 
 #### 4. Deliberate
 
