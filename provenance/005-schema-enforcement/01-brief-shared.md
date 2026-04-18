@@ -3,7 +3,7 @@ session: 005
 title: Shared Brief — Schema Enforcement Scope and Cross-Model Honesty Check
 date: 2026-04-18
 status: finalised-before-launch
-deliberation-anchor-commit: <to-be-recorded-after-commit>
+deliberation-anchor-commit: 3c8590291d98585e2704589185051286dad534e8
 perspectives:
   - implementer (Claude Opus 4.7, subagent)
   - skeptic (Claude Opus 4.7, subagent, adversarial)
