@@ -3,7 +3,7 @@ session: 006
 title: Shared Brief — Triggers-Met Schema Extension
 date: 2026-04-19
 status: finalised-before-launch
-deliberation-anchor-commit: to-be-set-at-brief-commit
+deliberation-anchor-commit: 164d768c27019e2ca6c3dc11497c6b38efae7614
 perspectives:
   - archivist (Claude Opus 4.7, subagent)
   - implementer (Claude Opus 4.7, subagent)
