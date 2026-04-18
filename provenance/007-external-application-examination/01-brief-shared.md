@@ -3,6 +3,7 @@ session: 007
 title: Shared Brief — External Application Re-examination
 date: 2026-04-19
 status: finalised-before-launch
+deliberation-anchor-commit: d1d6908897600ff9a137e66e5715786b4a746cc8
 perspectives:
   - generalist (Claude Opus 4.7, subagent)
   - steward (Claude Opus 4.7, subagent)
