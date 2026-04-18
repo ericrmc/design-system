@@ -1,0 +1,52 @@
+session: "007"
+deliberation: "External Application Re-examination"
+composition:
+  participants_family: cross-model
+  cross_model: true
+  non_claude_participants: 1
+deliberation_anchor_commit: cfb761751c0f8681012c9eebd5ffcfdcc54a358a
+note: |
+  Session 007 is the methodology's third heterogeneous-participant deliberation.
+  Three Claude Opus 4.7 subagents (generalist, steward, skeptic) plus one
+  non-Claude participant (outsider = OpenAI GPT-5 via Codex CLI). Shape A
+  (participant as perspective) per D-021.
+
+  Per D-049, none of Session 007's decisions (D-044 through D-049) trigger
+  any D-023 clause — no kernel modification, no spec revision, no OI-004
+  state change. The sustained-practice tally for OI-004 therefore does NOT
+  advance; remains at 2 of 3. Non-Claude participation was included
+  conservatively because the deliberation's outcome space included
+  potential kernel-revision outcomes (Q4), but those outcomes were not
+  taken. This is the methodology's first non-Claude session that does not
+  advance the required-trigger tally, and is recorded explicitly as a
+  novel pattern.
+
+  cross_model: true is consistent with outsider.manifest.yaml's
+  training_lineage_overlap_with_claude: independent-claim. Per D-029 the
+  check verifies consistency-of-self-report, not truthfulness-of-self-report.
+
+  Three concrete cross-model influences on outcomes are recorded in D-049
+  and in 01-deliberation.md Cross-Model Observations: (1) Skeptic+Outsider
+  convergence against pre-use spec changes shaped D-047; (2) Outsider-unique
+  methodology-claim downgrade proposal shaped D-048.4; (3) Outsider's
+  ratification-as-third-path framing informed D-045 Branch B.
+participants:
+  - perspective: generalist
+    manifest_path: manifests/generalist.manifest.yaml
+    raw_response_file: 01a-perspective-generalist.md
+  - perspective: outsider
+    manifest_path: manifests/outsider.manifest.yaml
+    raw_response_file: 01d-perspective-outsider.md
+  - perspective: skeptic
+    manifest_path: manifests/skeptic.manifest.yaml
+    raw_response_file: 01c-perspective-skeptic.md
+  - perspective: steward
+    manifest_path: manifests/steward.manifest.yaml
+    raw_response_file: 01b-perspective-steward.md
+synthesizer:
+  identity: "session-007 orchestrating agent (Claude Opus 4.7, Claude Code)"
+  model_family: claude
+  model_id: claude-opus-4-7
+  provider: anthropic
+  was_deliberator: false
+  perspective_played: none

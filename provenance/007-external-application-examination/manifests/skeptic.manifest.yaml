@@ -1,0 +1,24 @@
+perspective: skeptic
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 subagent (general-purpose) invoked via Claude Code Agent tool; subagent agentId a55838be4f44aa6d6"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "1M context"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/007-external-application-examination/01-brief-shared.md (Section 7 — Skeptic stance appended inline in the Agent tool prompt, required adversarial role per D-017); anchor commit cfb761751c0f8681012c9eebd5ffcfdcc54a358a"
+delivered_at: 2026-04-19T09:11Z
+received_at: 2026-04-19T09:13Z
+raw_response_file: provenance/007-external-application-examination/01c-perspective-skeptic.md
+transport_notes: "Invoked via Claude Code Agent tool in a parallel tool-call batch with run_in_background=true alongside Generalist and Steward subagents and the Outsider codex Bash invocation. Subagent used general-purpose type, model pinned to opus via the Agent tool's model parameter, ran in context isolated from other perspectives. Response returned in ~98 seconds (task duration 97822ms; token usage 16,627 total). Adversarial role preserved six load-bearing dissents: (1) rejected Q1 A/B framing; (2) audited Session 006's close as having redefined OI-009 without deliberation; (3) dissented on criteria-first as circular, proposed 'just ask'; (4) rejected software-adjacent first targets strongly; (5) argued against pre-use spec changes (cross-model convergence with Outsider); (6) argued OI-009 activated regardless of Session 007 outcome. Skeptic's Q1 audit and D-048.5 reflect this session's most structurally significant preserved-minority finding. No post-submission editing."
+output_edited_after_submission: false
+participation_shape: perspective

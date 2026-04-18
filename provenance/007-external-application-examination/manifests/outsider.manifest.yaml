@@ -1,0 +1,24 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: "OpenAI GPT-5 invoked via Codex CLI (codex exec, research preview v0.121.0); OpenAI session id 019da2e3-d854-72c2-bd39-42545da77631"
+model_family: gpt
+model_id: gpt-5.4
+model_version: unknown
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator, per CLAUDE.md guidance to prefer Codex for reasoning tasks; continuation of Sessions 005/006 operator-selection pattern"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/007-external-application-examination/01-brief-shared.md (Section 7 — Outsider stance); delivered as stdin to `codex exec --sandbox read-only` via /tmp/session-007-outsider-brief.md; anchor commit cfb761751c0f8681012c9eebd5ffcfdcc54a358a"
+delivered_at: 2026-04-19T09:11Z
+received_at: 2026-04-19T09:15Z
+raw_response_file: provenance/007-external-application-examination/01d-perspective-outsider.md
+transport_notes: "Invoked via 'cat /tmp/session-007-outsider-brief.md | codex exec --sandbox read-only > /tmp/session-007-outsider-raw.txt'. Raw output preserved verbatim including Codex banner (OpenAI Codex v0.121.0 research preview), model banner (model: gpt-5.4, provider: openai, reasoning effort: xhigh, session id 019da2e3-d854-72c2-bd39-42545da77631), prompt echo, primary response, 'tokens used' line (18,723 tokens), and end-of-stream duplicate response. No post-submission editing. Codex sandbox policy 'read-only' confirms the invocation did not permit workspace modification by the Outsider. Transport is CLI wrapper; the workspace guarantees the record (committed stdout), not the generation (dependent on OpenAI's API). training_lineage_overlap_with_claude: independent-claim is a claim based on model-identity self-report (OpenAI GPT-5 is distinct from Anthropic Claude) and is not cryptographically verified (see validate.sh check 13 honest-limit comment and D-029). This is the methodology's third operational use of the Outsider participation mechanism (Sessions 005, 006 prior); per D-049, none of Session 007's decisions trigger D-023, so the sustained-practice tally does NOT advance (remains 2 of 3) even though the Outsider participated — this is the first non-advancing non-Claude session and is recorded as a novel data pattern. Three concrete cross-model influences on outcomes were recorded (see D-049): Skeptic+Outsider convergence against pre-use spec changes shaping D-047; Outsider-unique downgrade-of-claim proposal shaping D-048.4; Outsider's ratification-as-third-path framing informing D-045 Branch B."
+output_edited_after_submission: false
+participation_shape: perspective

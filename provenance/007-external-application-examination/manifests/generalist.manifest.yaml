@@ -1,0 +1,24 @@
+perspective: generalist
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 subagent (general-purpose) invoked via Claude Code Agent tool; subagent agentId a792b8dd0d2d9f3b2"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "1M context"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/007-external-application-examination/01-brief-shared.md (Section 7 — Generalist stance appended inline in the Agent tool prompt); anchor commit cfb761751c0f8681012c9eebd5ffcfdcc54a358a"
+delivered_at: 2026-04-19T09:11Z
+received_at: 2026-04-19T09:13Z
+raw_response_file: provenance/007-external-application-examination/01a-perspective-generalist.md
+transport_notes: "Invoked via Claude Code Agent tool in a parallel tool-call batch with run_in_background=true alongside Steward and Skeptic subagents and the Outsider codex Bash invocation. Subagent used general-purpose type, model pinned to opus via the Agent tool's model parameter, ran in context isolated from other perspectives. Response returned in ~104 seconds (task duration 104106ms; token usage 16,604 total). Role stance pushed hard toward Position A per brief; response also addressed Q5 conditionally (if deferred, what increment) and Q6 criterion-proposal. No post-submission editing."
+output_edited_after_submission: false
+participation_shape: perspective

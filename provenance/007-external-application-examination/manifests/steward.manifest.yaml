@@ -1,0 +1,24 @@
+perspective: steward
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 subagent (general-purpose) invoked via Claude Code Agent tool; subagent agentId a149fc2976627566a"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "1M context"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/007-external-application-examination/01-brief-shared.md (Section 7 — Steward stance appended inline in the Agent tool prompt); anchor commit cfb761751c0f8681012c9eebd5ffcfdcc54a358a"
+delivered_at: 2026-04-19T09:11Z
+received_at: 2026-04-19T09:13Z
+raw_response_file: provenance/007-external-application-examination/01b-perspective-steward.md
+transport_notes: "Invoked via Claude Code Agent tool in a parallel tool-call batch with run_in_background=true alongside Generalist and Skeptic subagents and the Outsider codex Bash invocation. Subagent used general-purpose type, model pinned to opus via the Agent tool's model parameter, ran in context isolated from other perspectives. Response returned in ~109 seconds (task duration 109456ms; token usage 16,657 total). Steward's stance favoured the process-gap reframing of Position A; response proposed the session-as-preparation framing adopted in D-044 and the criteria-plus-user-direction mechanism adopted in D-045. No post-submission editing."
+output_edited_after_submission: false
+participation_shape: perspective
