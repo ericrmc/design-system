@@ -1,0 +1,36 @@
+session: "005"
+deliberation: "Schema enforcement and first operational non-Claude participation"
+composition:
+  participants_family: cross-model
+  cross_model: true
+  non_claude_participants: 1
+deliberation_anchor_commit: 6e434ec876552b71ae4326a3787a83553276cfa9
+note: |
+  Session 005 is the methodology's first heterogeneous-participant deliberation.
+  Three Claude Opus 4.7 subagents (archivist, implementer, skeptic) plus one
+  non-Claude participant (outsider = OpenAI GPT-5 via Codex CLI). Shape A
+  (participant as perspective) per D-021. Closes OI-010 per D-032; begins the
+  sustained-practice tally for OI-004 per D-033 (1 of 3).
+  cross_model: true is consistent with outsider.manifest.yaml's
+  training_lineage_overlap_with_claude: independent-claim. Per D-029 the check
+  verifies consistency-of-self-report, not truthfulness-of-self-report.
+participants:
+  - perspective: archivist
+    manifest_path: manifests/archivist.manifest.yaml
+    raw_response_file: 01a-perspective-archivist.md
+  - perspective: implementer
+    manifest_path: manifests/implementer.manifest.yaml
+    raw_response_file: 01b-perspective-implementer.md
+  - perspective: outsider
+    manifest_path: manifests/outsider.manifest.yaml
+    raw_response_file: 01d-perspective-outsider.md
+  - perspective: skeptic
+    manifest_path: manifests/skeptic.manifest.yaml
+    raw_response_file: 01c-perspective-skeptic.md
+synthesizer:
+  identity: "session-005 orchestrating agent (Claude Opus 4.7, Claude Code)"
+  model_family: claude
+  model_id: claude-opus-4-7
+  provider: anthropic
+  was_deliberator: false
+  perspective_played: none

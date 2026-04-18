@@ -1,0 +1,24 @@
+perspective: archivist
+participant_kind: claude-subagent
+participant_identity: "Anthropic Claude Opus 4.7 instance launched by Claude Code Agent tool, subagent_type=general-purpose, model=opus, session-005 orchestrator"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/005-schema-enforcement/01-brief-shared.md (Section 7.C), anchor commit 6e434ec876552b71ae4326a3787a83553276cfa9"
+delivered_at: 2026-04-18T11:42Z
+received_at: 2026-04-18T11:44Z
+raw_response_file: provenance/005-schema-enforcement/01a-perspective-archivist.md
+transport_notes: "Agent tool returned the response synchronously; response committed verbatim."
+output_edited_after_submission: false
+participation_shape: perspective

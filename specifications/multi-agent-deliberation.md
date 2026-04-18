@@ -4,7 +4,7 @@ version: 2
 status: active
 created: 2026-04-17
 last-updated: 2026-04-18
-updated-by-session: 004
+updated-by-session: 005
 supersedes: multi-agent-deliberation-v1.md
 ---
 
@@ -272,18 +272,18 @@ OI-004 is not automatically closed on meeting these criteria; a future session m
 
 ### Open Extensions
 
-These directions are noted as candidates for future revisions, not mandated:
+These directions are noted as candidates for future revisions, not mandated. Each entry records its **activation precondition**: the concrete event or schema change that would make the extension worth revisiting (per D-035, Session 005; the pattern is "keep rule-history inside the artifact that enforces the rule" per the Archivist's Session 005 Q6 proposal).
 
-- **Differentiated context per perspective** (from Session 003's Futurist position) — each perspective receives only the workspace context its stance requires, declared by the brief.
-- **Cross-lineage-influence ratio** (from Session 004's Skeptic) — a measured ratio, across a rolling window of deliberations, of decisions where a non-Claude participant's position differed from the synthesized Claude consensus and the synthesis adopted the non-Claude position. Suggested floor: above 10% over a ten-deliberation window for non-Claude participation to be considered genuinely impactful. Not mandated; candidate for a validation-tool enhancement.
-- **Pre-committed dissent log** (from Session 004's Skeptic) — after synthesis the operator writes what they expected the synthesis to conclude before reading it, committed as a separate hashed file. Measurement tool for operator-synthesis alignment.
-- **Integrity hashing, append-only raw files, convener attestation** (from Session 004's Archivist) — `raw_response_sha256` per raw output, enforced by `validate.sh`; raw files append-only from commit; a `convener_attestation` field in manifests. All deferred to a future tooling session.
-- **Structural validation cross-check for OI-004 honesty** (from Session 004's Skeptic) — `validate.sh` fails sessions that claim OI-004 narrowing in a decision record while recording all `participant_kind: claude-subagent` in their provenance. Requires extending the validator's parsing beyond structural checks.
-- **Disagreement-density metric** (from Session 003) — count or rate disagreements across perspectives' outputs; flag suspiciously low values as likely training-induced correlation.
-- **Pluggable synthesizer role** — different model, human reviewer, or panel synthesising. Requires designing synthesizer selection and accountability.
-- **Non-Claude synthesizer** — when synthesis is itself load-bearing and contested, the synthesizer may be a non-Claude participant (reducing the single-model re-entry risk).
-- **Multi-agent synthesis** — recursive application of this pattern to the synthesis step itself when contested.
-- **Non-Anthropic model participation via API** — direct path to OI-004 closure that becomes available when the workspace's permissions and secrets allow an outbound non-Anthropic API call.
+- **Differentiated context per perspective** (from Session 003's Futurist position) — each perspective receives only the workspace context its stance requires, declared by the brief. *Activation precondition: a session surfaces evidence that shared-brief uniform context distorted outputs (e.g., a brief-priming failure beyond the level observed in Session 004's "training-distribution theatre" phrase).*
+- **Cross-lineage-influence ratio** (from Session 004's Skeptic) — a measured ratio, across a rolling window of deliberations, of decisions where a non-Claude participant's position differed from the synthesized Claude consensus and the synthesis adopted the non-Claude position. Suggested floor: above 10% over a ten-deliberation window for non-Claude participation to be considered genuinely impactful. Not mandated; candidate for a validation-tool enhancement. *Activation precondition: OI-004 approaches closure (closure criterion 3 explicitly requires this metric or equivalent evidence-of-impact).*
+- **Pre-committed dissent log** (from Session 004's Skeptic) — after synthesis the operator writes what they expected the synthesis to conclude before reading it, committed as a separate hashed file. Measurement tool for operator-synthesis alignment. *Activation precondition: a session surfaces evidence of suspected operator-synthesis alignment (e.g., a synthesis that reads as confirmation of the operator's stated priors rather than of the raw outputs).*
+- **Integrity hashing, append-only raw files, convener attestation** (from Session 004's Archivist) — `raw_response_sha256` per raw output, enforced by `validate.sh`; raw files append-only from commit; a `convener_attestation` field in manifests. All deferred to a future tooling session. *Activation precondition: one instance of suspected post-hoc editing of a raw output, OR a future session decides check 13's gaming surface needs narrowing. These three items are paired; adopt together or not at all, since each alone is partial.*
+- **Structural validation cross-check for OI-004 honesty** (from Session 004's Skeptic) — `validate.sh` fails sessions that claim OI-004 narrowing in a decision record while recording all `participant_kind: claude-subagent` in their provenance. Requires extending the validator's parsing beyond structural checks. *Activation precondition: a `triggers_met:` (or equivalent) schema extension is added to decision-record frontmatter (prerequisite for v2 Validation checks 1 and 2). First test case now exists: Session 005's D-033 narrowing.*
+- **Disagreement-density metric** (from Session 003) — count or rate disagreements across perspectives' outputs; flag suspiciously low values as likely training-induced correlation. *Activation precondition: a reporter-tool scope is defined distinct from `validate.sh` (which is scoped to structural checks, not measurements).*
+- **Pluggable synthesizer role** — different model, human reviewer, or panel synthesising. Requires designing synthesizer selection and accountability. *Activation precondition: a session surfaces a load-bearing synthesizer-framing failure that single-synthesizer conventions cannot correct.*
+- **Non-Claude synthesizer** — when synthesis is itself load-bearing and contested, the synthesizer may be a non-Claude participant (reducing the single-model re-entry risk). *Activation precondition: check 13 gaming becomes a live concern (recorded in provenance) AND a non-Claude synthesizer channel is available.*
+- **Multi-agent synthesis** — recursive application of this pattern to the synthesis step itself when contested. *Activation precondition: a session surfaces a synthesis quality gap unaddressed by single-synthesizer conventions (citation, dissent-preservation, `[synth]` markers, quote-over-paraphrase).*
+- **Non-Anthropic model participation via API** — direct path to OI-004 closure that becomes available when the workspace's permissions and secrets allow an outbound non-Anthropic API call. *Activation precondition: a concrete need for API-based transport that CLI wrappers (demonstrated usable in Session 005 via `codex exec`) cannot serve.*
 
 ## Validation
 

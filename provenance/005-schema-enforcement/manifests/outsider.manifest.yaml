@@ -1,0 +1,24 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: "OpenAI GPT-5 invoked via Codex CLI (codex exec, research preview v0.121.0); OpenAI session id 019da073-c9ce-7361-922c-acf2362209d9"
+model_family: gpt
+model_id: gpt-5.4
+model_version: unknown
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator, per CLAUDE.md guidance to prefer Codex for reasoning tasks"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/005-schema-enforcement/01-brief-shared.md (Section 7.D), anchor commit 6e434ec876552b71ae4326a3787a83553276cfa9; delivered as stdin to `codex exec --sandbox read-only`"
+delivered_at: 2026-04-18T11:42Z
+received_at: 2026-04-18T11:48Z
+raw_response_file: provenance/005-schema-enforcement/01d-perspective-outsider.md
+transport_notes: "Invoked via 'cat <brief> | codex exec --sandbox read-only > output.txt'. Raw output preserved verbatim including Codex banner, prompt echo, primary response, 'tokens used' line, and end-of-stream duplicate response. No post-submission editing. Codex sandbox policy 'read-only' confirms the invocation did not permit workspace modification by the Outsider. Transport is CLI wrapper; the workspace guarantees the record (committed stdout), not the generation (dependent on OpenAI's API). training_lineage_overlap_with_claude: independent-claim is a claim based on model-identity self-report and OpenAI/Anthropic being distinct model providers; this claim is not cryptographically verified (see validate.sh check 13 honest-limit comment and D-029)."
+output_edited_after_submission: false
+participation_shape: perspective

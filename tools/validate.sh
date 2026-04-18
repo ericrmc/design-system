@@ -200,6 +200,141 @@ else
 fi
 echo ""
 
+# [11] Multi-agent three-raw-output floor (D-028, D-030)
+# Gate: a session directory containing at least one file matching *-perspective-*.md
+# is multi-agent; verify ≥3 such files exist.
+echo "[11] Multi-agent three-raw-output floor"
+for dir in "${provdirs[@]}"; do
+  dirname=$(basename "$dir")
+  shopt -s nullglob
+  perspective_files=("$dir"*-perspective-*.md)
+  shopt -u nullglob
+  if [[ ${#perspective_files[@]} -eq 0 ]]; then
+    continue  # not a multi-agent session; out-of-scope
+  fi
+  if [[ ${#perspective_files[@]} -ge 3 ]]; then
+    pass "$dirname — ${#perspective_files[@]} raw perspective files"
+  else
+    fail "$dirname — only ${#perspective_files[@]} raw perspective file(s); multi-agent requires ≥3"
+  fi
+done
+echo ""
+
+# [12] Heterogeneous-participant schema well-formedness (D-028, D-030)
+# Gate: a session directory containing a manifests/ subdirectory.
+# For each *.manifest.yaml in manifests/, verify D-024 required fields are present as literal keys.
+# Stores per-session fail state in BLOCKED_SESSIONS (space-separated) for the sequencing
+# rule (D-030 §3). Uses a flat string rather than associative array for bash 3.2 compatibility.
+BLOCKED_SESSIONS=""
+echo "[12] Heterogeneous-participant schema well-formedness"
+D024_REQUIRED_FIELDS=(
+  perspective participant_kind participant_identity
+  model_family model_id model_version provider endpoint invocation_method
+  sampling training_lineage_overlap_with_claude
+  participant_selected_by participant_selection_method
+  identity_known context_source delivered_at received_at
+  raw_response_file transport_notes output_edited_after_submission
+  participation_shape
+)
+D024_SAMPLING_SUBFIELDS=(temperature top_p max_tokens)
+for dir in "${provdirs[@]}"; do
+  dirname=$(basename "$dir")
+  manifests_dir="${dir}manifests"
+  if [[ ! -d "$manifests_dir" ]]; then
+    continue  # no manifests/ directory; out-of-scope (D-030 §1)
+  fi
+  shopt -s nullglob
+  manifest_files=("$manifests_dir"/*.manifest.yaml "$manifests_dir"/*.manifest.yml)
+  shopt -u nullglob
+  if [[ ${#manifest_files[@]} -eq 0 ]]; then
+    fail "$dirname — manifests/ directory present but no *.manifest.yaml files found"
+    BLOCK_CHECK_13[$dirname]=1
+    continue
+  fi
+  session_ok=true
+  for mf in "${manifest_files[@]}"; do
+    mname=$(basename "$mf")
+    missing=""
+    for field in "${D024_REQUIRED_FIELDS[@]}"; do
+      if ! grep -qE "^${field}:" "$mf"; then
+        missing="${missing} ${field}"
+      fi
+    done
+    for sub in "${D024_SAMPLING_SUBFIELDS[@]}"; do
+      if ! grep -qE "^[[:space:]]+${sub}:" "$mf"; then
+        missing="${missing} sampling.${sub}"
+      fi
+    done
+    if [[ -z "$missing" ]]; then
+      pass "$dirname/manifests/$mname — all D-024 required fields present"
+    else
+      fail "$dirname/manifests/$mname — missing D-024 fields:${missing}"
+      session_ok=false
+    fi
+  done
+  if ! $session_ok; then
+    BLOCKED_SESSIONS="${BLOCKED_SESSIONS} ${dirname}"
+  fi
+done
+echo ""
+
+# [13] Cross-model-claim honesty (D-028, D-029, D-030)
+#
+# HONEST LIMIT (document read before touching this check):
+# This check verifies the session's claim is internally consistent with its
+# manifests. It does not and cannot verify that the manifests' lineage claims
+# are themselves true. Manifest truth relies on operator integrity and the
+# `participant_selected_by` field's accountability. Known gaming modes recorded
+# in D-029: value-flipping (editing training_lineage_overlap_with_claude),
+# `unknown` laundering, paper-human classification, wrapper impersonation. A
+# failure here is a consistency failure; a pass is not a truth certificate.
+#
+# Gate: session declares cross_model: true in either participants.yaml or any
+# file matching *-deliberation*.md (synthesis) frontmatter. Runs after check 12
+# per the sequencing rule; sessions where check 12 failed are reported BLOCKED.
+echo "[13] Cross-model-claim honesty"
+for dir in "${provdirs[@]}"; do
+  dirname=$(basename "$dir")
+  # Discover cross_model declaration
+  declared_cross_model=false
+  shopt -s nullglob
+  candidate_declarations=("${dir}participants.yaml" "${dir}participants.yml" "${dir}"*-deliberation*.md "${dir}"*deliberation.md)
+  shopt -u nullglob
+  for cf in "${candidate_declarations[@]}"; do
+    [[ -f "$cf" ]] || continue
+    if grep -qE "^cross_model:[[:space:]]*true" "$cf" 2>/dev/null; then
+      declared_cross_model=true
+      break
+    fi
+  done
+  if ! $declared_cross_model; then
+    continue  # no cross-model claim; out-of-scope
+  fi
+  # Sequencing: if check 12 failed for this session, block check 13
+  if [[ " ${BLOCKED_SESSIONS} " == *" ${dirname} "* ]]; then
+    echo "  ⊘ $dirname — BLOCKED: check 12 failed for this session; cannot evaluate check 13"
+    continue
+  fi
+  # Consistency check: at least one manifest must have training_lineage_overlap_with_claude
+  # other than known-overlap, or participant_kind: human
+  manifests_dir="${dir}manifests"
+  honest=false
+  if [[ -d "$manifests_dir" ]]; then
+    if grep -qE "^training_lineage_overlap_with_claude:[[:space:]]*(independent-claim|unknown)" "$manifests_dir"/*.manifest.yaml 2>/dev/null; then
+      honest=true
+    fi
+    if grep -qE "^participant_kind:[[:space:]]*human" "$manifests_dir"/*.manifest.yaml 2>/dev/null; then
+      honest=true
+    fi
+  fi
+  if $honest; then
+    pass "$dirname — cross_model: true is consistent with participant manifests"
+  else
+    fail "$dirname — cross_model: true declared but no participant manifest records training_lineage_overlap_with_claude other than known-overlap, and no participant_kind: human. Fix one of: (a) correct cross_model to false; (b) correct a manifest's training_lineage_overlap_with_claude to unknown or independent-claim (if truthful); (c) add a human participant manifest (if one participated). NOTE: this check verifies consistency of self-report, not truthfulness; see honest-limit comment in validate.sh."
+  fi
+done
+echo ""
+
 # --- Summary ---
 echo "--- Tier 1 Summary ---"
 echo "Passed: $PASS  |  Failed: $FAIL  |  Warnings: $WARN"
@@ -230,6 +365,12 @@ echo "      accumulating ceremony without advancing?"
 echo ""
 echo "  Q5. Are there specifications that describe things that no longer exist,"
 echo "      or things that exist without being specified?"
+echo ""
+echo "  Q6. This session records cross_model: true. Name the concrete evidence —"
+echo "      invocation transcript, CLI command, wall-clock gap, human presence —"
+echo "      that distinguishes a genuine non-Claude participant from a Claude"
+echo "      subagent with an edited manifest. If you cannot, flip cross_model to"
+echo "      false. (Skip if this session does not claim cross-model participation.)"
 echo ""
 
 if [[ $FAIL -gt 0 ]]; then
