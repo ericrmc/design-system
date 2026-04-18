@@ -5,6 +5,11 @@
 
 set -euo pipefail
 
+# Session from which the triggers_met schema is enforced (D-039, Session 006).
+# Checks 14 and 15 apply only to sessions numbered >= this constant.
+# See specifications/validation-approach.md v3 "Gating Conventions (checks 14, 15)".
+readonly TRIGGERS_MET_ADOPTION_SESSION=6
+
 WORKSPACE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PASS=0
 FAIL=0
@@ -335,6 +340,190 @@ for dir in "${provdirs[@]}"; do
 done
 echo ""
 
+# [14] Multi-agent trigger coverage (D-037, D-038, D-039, D-040)
+#
+# HONEST LIMIT (read before touching this check):
+# This check verifies consistency between a decision's self-declared triggers_met
+# and the session's multi-agent artefacts. It does not and cannot verify that the
+# triggers_met: declaration is itself a truthful classification of the decision
+# against D-016. The declaration's truth relies on operator integrity and the
+# triggers_rationale: field's adversarial visibility to Tier 2 review.
+# Known false-compliance patterns (D-040 rationale): under-declaration, mono-
+# perspective launder, strawman positions, fabricated load-bearing claim. A
+# failure here is a consistency failure; a pass is not a truthfulness certificate.
+#
+# Gate: session number >= TRIGGERS_MET_ADOPTION_SESSION (=6). Runs after check 11
+# per the sequencing rule (D-040 §Sequencing); sessions where check 11 failed are
+# reported BLOCKED. Check 14 does NOT depend on check 12 (it inspects perspective
+# files, not manifests — per the Outsider's precision argument in Session 006).
+echo "[14] Multi-agent trigger coverage (triggers_met)"
+BLOCKED_SESSIONS_14=""
+for dir in "${provdirs[@]}"; do
+  dirname=$(basename "$dir")
+  session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
+  session_int=$((10#$session_num))
+  if [[ $session_int -lt $TRIGGERS_MET_ADOPTION_SESSION ]]; then
+    continue  # pre-adoption; out-of-scope
+  fi
+  decisions_file="${dir}02-decisions.md"
+  if [[ ! -f "$decisions_file" ]]; then
+    continue  # no decisions file yet (session may be WIP); out-of-scope
+  fi
+  # Count perspective files (used by the "multi-agent artefacts present" branch)
+  shopt -s nullglob
+  perspective_files=("$dir"*-perspective-*.md)
+  shopt -u nullglob
+  perspective_count=${#perspective_files[@]}
+  # Check 11 dependency: if perspective files exist but <3, check 11 will fail;
+  # we block check 14 for this session.
+  check_11_failed=false
+  if [[ ${perspective_count} -gt 0 && ${perspective_count} -lt 3 ]]; then
+    check_11_failed=true
+  fi
+  if $check_11_failed; then
+    echo "  ⊘ $dirname — BLOCKED: check 11 failed for this session; cannot evaluate check 14"
+    BLOCKED_SESSIONS_14="${BLOCKED_SESSIONS_14} ${dirname}"
+    continue
+  fi
+  # Iterate decisions. Each decision block runs from '## D-NNN:' heading to the
+  # next '## ' heading. We parse the file once and build an array of blocks.
+  session_any_fail=false
+  decisions=()
+  current=""
+  d_id=""
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^##[[:space:]]+D-[0-9]+: ]]; then
+      if [[ -n "$current" ]]; then
+        decisions+=("${d_id}||${current}")
+      fi
+      d_id=$(echo "$line" | sed -E 's/^## (D-[0-9]+):.*/\1/')
+      current="$line"
+    elif [[ -n "$current" ]]; then
+      current="${current}"$'\n'"${line}"
+    fi
+  done < "$decisions_file"
+  if [[ -n "$current" ]]; then
+    decisions+=("${d_id}||${current}")
+  fi
+  for decision_entry in "${decisions[@]}"; do
+    did="${decision_entry%%||*}"
+    dblock="${decision_entry#*||}"
+    # Extract Triggers met: line
+    triggers_line=$(echo "$dblock" | grep -E '^\*\*Triggers met:\*\*' | head -1 || true)
+    if [[ -z "$triggers_line" ]]; then
+      # Post-adoption decision without triggers_met line → fail
+      fail "$dirname/$did — post-adoption decision missing **Triggers met:** line. Add **Triggers met:** [d016_X, d023_X] or **Triggers met:** [none] per D-037."
+      session_any_fail=true
+      continue
+    fi
+    # Check for d016_* in the list
+    if echo "$triggers_line" | grep -qE 'd016_[0-9]+'; then
+      # Multi-agent trigger fires. Require perspective count >= 3 OR single-agent-reason annotation.
+      has_single_agent_reason=false
+      if echo "$dblock" | grep -qE '^\*\*Single-agent reason:\*\*'; then
+        has_single_agent_reason=true
+      fi
+      if [[ ${perspective_count} -ge 3 ]] || $has_single_agent_reason; then
+        pass "$dirname/$did — d016_* trigger covered ($([[ ${perspective_count} -ge 3 ]] && echo "${perspective_count} perspective files" || echo "single-agent reason annotated"))"
+      else
+        fail "$dirname/$did — declares d016_* trigger but session has ${perspective_count} perspective files (expected ≥3) and no **Single-agent reason:** annotation. NOTE: this check verifies consistency of self-report, not truthfulness; see honest-limit comment in validate.sh."
+        session_any_fail=true
+      fi
+    else
+      pass "$dirname/$did — no d016_* trigger declared"
+    fi
+  done
+  if $session_any_fail; then
+    BLOCKED_SESSIONS_14="${BLOCKED_SESSIONS_14} ${dirname}"
+  fi
+done
+echo ""
+
+# [15] Non-Claude trigger coverage (D-037, D-038, D-039, D-040)
+#
+# HONEST LIMIT (read before touching this check):
+# This check verifies consistency between a decision's self-declared d023_*
+# triggers and the session's non-Claude participant manifests. It does not verify
+# that a manifest labeled non-Claude in fact represents a non-Claude participant
+# (that is check 13's consistency scope) nor that the substantive adequacy of
+# any skip reason is genuine (a Tier 2 concern). The declaration's truth relies
+# on operator integrity.
+# Known false-compliance patterns (D-040 rationale): mislabeled manifest, bogus
+# skip annotation, pattern of skips.
+#
+# Gate: session number >= TRIGGERS_MET_ADOPTION_SESSION (=6) AND check 12 passed.
+# Runs after check 12 per the sequencing rule (D-040 §Sequencing).
+echo "[15] Non-Claude trigger coverage (triggers_met)"
+for dir in "${provdirs[@]}"; do
+  dirname=$(basename "$dir")
+  session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
+  session_int=$((10#$session_num))
+  if [[ $session_int -lt $TRIGGERS_MET_ADOPTION_SESSION ]]; then
+    continue  # pre-adoption; out-of-scope
+  fi
+  decisions_file="${dir}02-decisions.md"
+  if [[ ! -f "$decisions_file" ]]; then
+    continue
+  fi
+  # Sequencing: block if check 12 failed for this session.
+  if [[ " ${BLOCKED_SESSIONS} " == *" ${dirname} "* ]]; then
+    echo "  ⊘ $dirname — BLOCKED: check 12 failed for this session; cannot evaluate check 15"
+    continue
+  fi
+  manifests_dir="${dir}manifests"
+  # Determine if session has a non-Claude manifest (participant_kind outside
+  # {claude-subagent, anthropic-other}).
+  has_non_claude=false
+  if [[ -d "$manifests_dir" ]]; then
+    if grep -hE '^participant_kind:[[:space:]]*(non-anthropic-model|human|unknown)' "$manifests_dir"/*.manifest.yaml 2>/dev/null | grep -q .; then
+      has_non_claude=true
+    fi
+  fi
+  # Iterate decisions (same parsing approach as check 14)
+  decisions=()
+  current=""
+  d_id=""
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^##[[:space:]]+D-[0-9]+: ]]; then
+      if [[ -n "$current" ]]; then
+        decisions+=("${d_id}||${current}")
+      fi
+      d_id=$(echo "$line" | sed -E 's/^## (D-[0-9]+):.*/\1/')
+      current="$line"
+    elif [[ -n "$current" ]]; then
+      current="${current}"$'\n'"${line}"
+    fi
+  done < "$decisions_file"
+  if [[ -n "$current" ]]; then
+    decisions+=("${d_id}||${current}")
+  fi
+  for decision_entry in "${decisions[@]}"; do
+    did="${decision_entry%%||*}"
+    dblock="${decision_entry#*||}"
+    triggers_line=$(echo "$dblock" | grep -E '^\*\*Triggers met:\*\*' | head -1 || true)
+    if [[ -z "$triggers_line" ]]; then
+      continue  # check 14 already fails this case; don't double-report
+    fi
+    if echo "$triggers_line" | grep -qE 'd023_[0-9]+'; then
+      # Non-Claude trigger fires. Require non-Claude manifest OR skip annotation.
+      has_skip=false
+      if echo "$dblock" | grep -qE '^\*\*Non-Claude participation:\*\*' && \
+         echo "$dblock" | grep -qE 'reason:' && \
+         echo "$dblock" | grep -qE 'retry_in_session:'; then
+        has_skip=true
+      fi
+      if $has_non_claude || $has_skip; then
+        pass "$dirname/$did — d023_* trigger covered ($($has_non_claude && echo "non-Claude manifest present" || echo "skip annotation with reason + retry_in_session"))"
+      else
+        fail "$dirname/$did — declares d023_* trigger but no manifest has participant_kind outside {claude-subagent, anthropic-other} and no **Non-Claude participation:** skip annotation with reason: and retry_in_session: fields. NOTE: this check verifies consistency of self-report, not truthfulness; see honest-limit comment in validate.sh."
+      fi
+    else
+      pass "$dirname/$did — no d023_* trigger declared"
+    fi
+  done
+done
+echo ""
+
 # --- Summary ---
 echo "--- Tier 1 Summary ---"
 echo "Passed: $PASS  |  Failed: $FAIL  |  Warnings: $WARN"
@@ -371,6 +560,14 @@ echo "      invocation transcript, CLI command, wall-clock gap, human presence �
 echo "      that distinguishes a genuine non-Claude participant from a Claude"
 echo "      subagent with an edited manifest. If you cannot, flip cross_model to"
 echo "      false. (Skip if this session does not claim cross-model participation.)"
+echo ""
+echo "  Q7. For each decision in this session declaring **Triggers met:**, read"
+echo "      the decision's Decision and Rationale text and state whether the"
+echo "      declared trigger list is consistent with the decision's content. For"
+echo "      any **Non-Claude participation:** skipped annotation, state whether"
+echo "      the reason is substantive (not formulaic) and the retry_in_session:"
+echo "      commitment is credible. Flag mismatches and weak reasons; they are"
+echo "      the dishonesty surface this session's Tier 1 checks cannot reach."
 echo ""
 
 if [[ $FAIL -gt 0 ]]; then

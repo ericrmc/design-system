@@ -1,0 +1,24 @@
+perspective: skeptic
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 subagent (general-purpose) invoked via Claude Code Agent tool; subagent agentId a2d09dbd9039178db"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "1M context"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/006-triggers-met-schema/01-brief-shared.md (Section 7.C), anchor commit 925081e33bfd001a47f55b44af20ff6abb1b0a47"
+delivered_at: 2026-04-19T08:27Z
+received_at: 2026-04-19T08:28Z
+raw_response_file: provenance/006-triggers-met-schema/01c-perspective-skeptic.md
+transport_notes: "Invoked via Claude Code Agent tool in a parallel tool-call batch with adversarial role-stance (required per D-017). Subagent used general-purpose type, ran in context isolated from other perspectives. Response returned in ~82 seconds, captured verbatim as raw-output file. The Skeptic's response preserved its adversarial dissent on Tier 1 placement and on session-number gating (converging with the Outsider's position against the Implementer). No post-submission editing."
+output_edited_after_submission: false
+participation_shape: perspective

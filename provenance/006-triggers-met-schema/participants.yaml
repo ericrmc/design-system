@@ -1,0 +1,36 @@
+session: "006"
+deliberation: "Triggers-Met Schema Extension"
+composition:
+  participants_family: cross-model
+  cross_model: true
+  non_claude_participants: 1
+deliberation_anchor_commit: 925081e33bfd001a47f55b44af20ff6abb1b0a47
+note: |
+  Session 006 is the methodology's second heterogeneous-participant deliberation.
+  Three Claude Opus 4.7 subagents (archivist, implementer, skeptic) plus one
+  non-Claude participant (outsider = OpenAI GPT-5 via Codex CLI). Shape A
+  (participant as perspective) per D-021. Advances OI-004 sustained-practice
+  tally from 1 of 3 to 2 of 3 per D-043.
+  cross_model: true is consistent with outsider.manifest.yaml's
+  training_lineage_overlap_with_claude: independent-claim. Per D-029 the check
+  verifies consistency-of-self-report, not truthfulness-of-self-report.
+participants:
+  - perspective: archivist
+    manifest_path: manifests/archivist.manifest.yaml
+    raw_response_file: 01a-perspective-archivist.md
+  - perspective: implementer
+    manifest_path: manifests/implementer.manifest.yaml
+    raw_response_file: 01b-perspective-implementer.md
+  - perspective: outsider
+    manifest_path: manifests/outsider.manifest.yaml
+    raw_response_file: 01d-perspective-outsider.md
+  - perspective: skeptic
+    manifest_path: manifests/skeptic.manifest.yaml
+    raw_response_file: 01c-perspective-skeptic.md
+synthesizer:
+  identity: "session-006 orchestrating agent (Claude Opus 4.7, Claude Code)"
+  model_family: claude
+  model_id: claude-opus-4-7
+  provider: anthropic
+  was_deliberator: false
+  perspective_played: none

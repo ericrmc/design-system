@@ -1,11 +1,12 @@
 ---
-title: Multi-Agent Deliberation
-version: 3
-status: active
+title: Multi-Agent Deliberation (historical v2)
+version: 2
+status: superseded
+superseded-by: multi-agent-deliberation.md (v3)
 created: 2026-04-17
-last-updated: 2026-04-19
-updated-by-session: 006
-supersedes: multi-agent-deliberation-v2.md
+last-updated: 2026-04-18
+updated-by-session: 005
+supersedes: multi-agent-deliberation-v1.md
 ---
 
 # Multi-Agent Deliberation
@@ -16,9 +17,7 @@ This specification defines how the methodology instantiates genuine multi-perspe
 
 The term "multi-agent deliberation" describes a property, not a mechanism: that the perspectives reasoning about a question arrive at their positions without seeing each other's positions. The current implementations realise this property via parallel context-isolated subagents of the Claude model family, optionally augmented by non-Claude participants (human reviewers or non-Anthropic models) following the Non-Claude Participation mechanism below. Future implementations may extend this further via different-model agents accessed through their own endpoints, persistent personas, or asynchronous cross-session deliberation; the specification is written so those extensions are changes of mechanism, not of pattern.
 
-Version 3 adds the Trigger-Coverage Annotation Schema (`triggers_met:` + `triggers_rationale:` per-decision) and the associated session-number gating rule, operationalising v2 Validation items 1 and 2 as `validate.sh` checks 14 and 15. It supersedes v2 (`multi-agent-deliberation-v2.md`).
-
-Version 2 added the Non-Claude Participation mechanism, the three-layer heterogeneous-participant recording schema, and associated trigger rules. It superseded v1 (`multi-agent-deliberation-v1.md`).
+Version 2 adds the Non-Claude Participation mechanism, the three-layer heterogeneous-participant recording schema, and associated trigger rules. It supersedes v1 (`multi-agent-deliberation-v1.md`).
 
 ## Specification
 
@@ -59,48 +58,6 @@ Non-Claude participation is **optional** for all other decisions.
 Unstated skips on required-trigger decisions are a specification violation.
 
 **Bootstrap exemption (one-time).** Session 004, which established these rules, was exempt because the rules did not exist when it began. Future sessions revising this mechanism do not share the exemption.
-
-### Trigger-Coverage Annotation Schema
-
-Added in v3 (Session 006) to make trigger coverage machine-verifiable by `tools/validate.sh` checks 14 and 15. The schema is prospective-only from Session 006; pre-adoption decisions (D-001 through D-036) are out-of-scope.
-
-**Field: `triggers_met:`.** A flat list of trigger identifiers that the decision meets.
-
-- Identifier format: lowercase-underscore, `d016_N` or `d023_N` where `N` is the clause number within the current D-016 or D-023 ruleset.
-- Current allowed values (as of v3): `d016_1`, `d016_2`, `d016_3`, `d016_4`, `d023_1`, `d023_2`, `d023_3`, `d023_4`.
-- Empty-state token: `triggers_met: [none]`. YAML-standard `triggers_met: []` is explicitly **not** valid — `[none]` is required as a positive author assertion. The convention is chosen to make it harder to silence the field accidentally.
-- Absence semantics: in a post-adoption session (≥006), absence of `triggers_met:` is a validation failure. In a pre-adoption session (<006), absence is expected and out-of-scope for checks 14 and 15.
-
-**Field: `triggers_rationale:`.** A required prose sibling providing a one-to-two-sentence explanation of why each listed trigger applies (or why none apply for `[none]`).
-
-- Purpose: adversarial visibility. A decades-later reviewer can audit whether the `triggers_met:` list aligns with the decision's content.
-- The checks do not parse `triggers_rationale:`; it is archival and adversarial content, not structural.
-- It is nevertheless a required field — a decision record with `triggers_met:` but no `triggers_rationale:` is malformed.
-
-**Placement.** Per-decision inline, directly under the decision's `## D-NNN:` heading, using the bolded-key format that matches existing decision-record idiom:
-
-```markdown
-## D-NNN: [Title]
-
-**Triggers met:** [d016_2, d016_3]
-
-**Triggers rationale:** One-to-two-sentence explanation of why each listed trigger applies.
-
-**Decision:** ...
-```
-
-The validator parses `**Triggers met:**` lines with a line-anchored regex; the bracketed list is extracted with a simple sed/awk expression. Multi-document YAML is not used.
-
-**Future rule additions.** The identifier namespace is append-only. A new D-NNN that introduces a trigger reserves fresh identifiers (e.g., `d040_1`). Existing records are not rewritten — their `triggers_met:` stays accurate as of their authoring. The validator's recognized-identifier set must be updated in the same session that introduces new identifiers.
-
-**Retroactivity.** No backfill of D-001 through D-036. The immutability rule (D-017; workspace-structure §provenance) is honored. `tools/validate.sh` gates checks 14 and 15 on session number ≥6 via an explicit `TRIGGERS_MET_ADOPTION_SESSION=6` constant (see `validation-approach.md` v3 Gating Conventions). If a future session needs historical trigger classification, that is a distinct session's job producing a new artefact (e.g., `reclassification.md`) that references pre-adoption decisions without editing them.
-
-**Complementary annotations.** Two additional decision-level annotations support the rules:
-
-- `**Single-agent reason:**` — a bolded-key line on any decision that declares a `d016_*` trigger but was made single-agent anyway. Required for check 14 to pass in that case.
-- `**Non-Claude participation:**` — a bolded-key line on any decision that declares a `d023_*` trigger but was made without non-Claude participation. Must include a `reason:` sub-field and a `retry_in_session:` sub-field. Required for check 15 to pass in that case.
-
-Both annotations are prose-plus-structured-fields; see `validation-approach.md` v3 for parse details.
 
 ### Perspectives
 
@@ -322,7 +279,7 @@ These directions are noted as candidates for future revisions, not mandated. Eac
 - **Cross-lineage-influence ratio** (from Session 004's Skeptic) — a measured ratio, across a rolling window of deliberations, of decisions where a non-Claude participant's position differed from the synthesized Claude consensus and the synthesis adopted the non-Claude position. Suggested floor: above 10% over a ten-deliberation window for non-Claude participation to be considered genuinely impactful. Not mandated; candidate for a validation-tool enhancement. *Activation precondition: OI-004 approaches closure (closure criterion 3 explicitly requires this metric or equivalent evidence-of-impact).*
 - **Pre-committed dissent log** (from Session 004's Skeptic) — after synthesis the operator writes what they expected the synthesis to conclude before reading it, committed as a separate hashed file. Measurement tool for operator-synthesis alignment. *Activation precondition: a session surfaces evidence of suspected operator-synthesis alignment (e.g., a synthesis that reads as confirmation of the operator's stated priors rather than of the raw outputs).*
 - **Integrity hashing, append-only raw files, convener attestation** (from Session 004's Archivist) — `raw_response_sha256` per raw output, enforced by `validate.sh`; raw files append-only from commit; a `convener_attestation` field in manifests. All deferred to a future tooling session. *Activation precondition: one instance of suspected post-hoc editing of a raw output, OR a future session decides check 13's gaming surface needs narrowing. These three items are paired; adopt together or not at all, since each alone is partial.*
-- **Structural validation cross-check for OI-004 honesty** (from Session 004's Skeptic) — `validate.sh` fails sessions that claim OI-004 narrowing in a decision record while recording all `participant_kind: claude-subagent` in their provenance. Requires extending the validator's parsing beyond structural checks. *Activation precondition (revised Session 006, D-042): `triggers_met:` is adopted prospectively (done Session 006 via D-037 through D-040) AND at least one post-adoption decision asserting an OI-004 state change exists, OR a separate non-mutating retrospective index has been produced for earlier cases per the D-039 retrospective-artefact pattern. Rationale for revision: Session 005's D-033 narrowing (the original first test case) predates `triggers_met:` adoption under D-039's session-number gating; a derivative check would have no in-scope test case until a post-adoption OI-004-state-change decision is made. Additionally, Session 006's D-043 is itself an OI-004 state change and implementing the check in Session 006 would have required grading Session 006's own claim (Skeptic, Session 006 Q6) — a conflict of interest on first firing.*
+- **Structural validation cross-check for OI-004 honesty** (from Session 004's Skeptic) — `validate.sh` fails sessions that claim OI-004 narrowing in a decision record while recording all `participant_kind: claude-subagent` in their provenance. Requires extending the validator's parsing beyond structural checks. *Activation precondition: a `triggers_met:` (or equivalent) schema extension is added to decision-record frontmatter (prerequisite for v2 Validation checks 1 and 2). First test case now exists: Session 005's D-033 narrowing.*
 - **Disagreement-density metric** (from Session 003) — count or rate disagreements across perspectives' outputs; flag suspiciously low values as likely training-induced correlation. *Activation precondition: a reporter-tool scope is defined distinct from `validate.sh` (which is scoped to structural checks, not measurements).*
 - **Pluggable synthesizer role** — different model, human reviewer, or panel synthesising. Requires designing synthesizer selection and accountability. *Activation precondition: a session surfaces a load-bearing synthesizer-framing failure that single-synthesizer conventions cannot correct.*
 - **Non-Claude synthesizer** — when synthesis is itself load-bearing and contested, the synthesizer may be a non-Claude participant (reducing the single-model re-entry risk). *Activation precondition: check 13 gaming becomes a live concern (recorded in provenance) AND a non-Claude synthesizer channel is available.*
@@ -344,8 +301,4 @@ To validate this specification:
 9. For any session that records `cross_model: true`, verify that at least one participant's manifest has `training_lineage_overlap_with_claude` other than `known-overlap` (i.e., `unknown` or `independent-claim`) or `participant_kind: human`. A session recording `cross_model: true` with all-Claude manifests is a validation failure.
 10. Confirm that OI-004 is still open. If a future session claims to close OI-004, verify the closure is justified by the criteria listed in the Closure section and decided explicitly, not asserted.
 
-Status of automation (as of v3, Session 006):
-
-- Checks 3, 8, 9 are automated as `validate.sh` checks 11, 12, 13 respectively (Session 005, D-028).
-- Checks 1 and 2 are automated as `validate.sh` checks 14 and 15 respectively (Session 006, D-040), gated on session ≥ 006 per D-039 and dependent on the `triggers_met:` schema (D-037, D-038).
-- Checks 4–7, 10 remain candidates for the Tier 2 guided-assessment questions.
+Checks 1–3, 8, 9 are candidates for automation in a future revision of `tools/validate.sh`. Checks 4–7, 10 are candidates for the Tier 2 guided-assessment questions.

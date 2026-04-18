@@ -1,0 +1,24 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: "OpenAI GPT-5 invoked via Codex CLI (codex exec, research preview v0.121.0); OpenAI session id 019da2b2-7240-7a60-b326-2322b17bf66e"
+model_family: gpt
+model_id: gpt-5.4
+model_version: unknown
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator, per CLAUDE.md guidance to prefer Codex for reasoning tasks; continuation of Session 005 operator-selection pattern"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/006-triggers-met-schema/01-brief-shared.md (Section 7.D), anchor commit 925081e33bfd001a47f55b44af20ff6abb1b0a47; delivered as stdin to `codex exec --sandbox read-only`"
+delivered_at: 2026-04-19T08:25Z
+received_at: 2026-04-19T08:28Z
+raw_response_file: provenance/006-triggers-met-schema/01d-perspective-outsider.md
+transport_notes: "Invoked via 'cat /tmp/session-006-outsider-brief.md | codex exec --sandbox read-only > /tmp/session-006-outsider-raw.txt'. Raw output preserved verbatim including Codex banner, prompt echo, 'codex' intermediate reasoning marker, primary response, 'tokens used' line (22,088 tokens), and end-of-stream duplicate response. No post-submission editing. Codex sandbox policy 'read-only' confirms the invocation did not permit workspace modification by the Outsider. Transport is CLI wrapper; the workspace guarantees the record (committed stdout), not the generation (dependent on OpenAI's API). training_lineage_overlap_with_claude: independent-claim is a claim based on model-identity self-report (OpenAI GPT-5 is distinct from Anthropic Claude) and is not cryptographically verified (see validate.sh check 13 honest-limit comment and D-029). This is the methodology's second operational use of the Outsider participation mechanism (first was Session 005); it advances OI-004 sustained-practice tally 1 -> 2 of 3 per v2 spec closure criteria and D-033."
+output_edited_after_submission: false
+participation_shape: perspective

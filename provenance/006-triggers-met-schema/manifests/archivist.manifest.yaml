@@ -1,0 +1,24 @@
+perspective: archivist
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 subagent (general-purpose) invoked via Claude Code Agent tool; subagent agentId a509342f86d58d2de"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "1M context"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/006-triggers-met-schema/01-brief-shared.md (Section 7.A), anchor commit 925081e33bfd001a47f55b44af20ff6abb1b0a47"
+delivered_at: 2026-04-19T08:27Z
+received_at: 2026-04-19T08:28Z
+raw_response_file: provenance/006-triggers-met-schema/01a-perspective-archivist.md
+transport_notes: "Invoked via Claude Code Agent tool in a parallel tool-call batch alongside Implementer, Skeptic subagents and the Outsider's codex exec invocation. Subagent used general-purpose type, ran in context isolated from other perspectives. Response returned in ~84 seconds, captured verbatim as raw-output file. No post-submission editing. training_lineage_overlap_with_claude: known-overlap is declared because all three Claude subagents in this session share the Claude Opus 4.7 model family with the orchestrating agent."
+output_edited_after_submission: false
+participation_shape: perspective
