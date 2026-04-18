@@ -6,4 +6,4 @@ Before finishing your response, stage all changed/new files, commit with a conci
 
 ## Multi-agent work
 
-When work would benefit from multiple independent perspectives or parallel efforts, consider using agent teams via the `TeamCreate` tool (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`).
+When work would benefit from multiple independent perspectives or parallel efforts, consider using agent teams via the `TeamCreate` tool (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`). You also have access to the `gemini` CLI tool for non-Anthropic LLM access.
