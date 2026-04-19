@@ -14,6 +14,8 @@ supersedes: validation-approach-v2.md
 
 This specification defines how the methodology validates itself: what is checked, how checks are organized, and what the checks can and cannot assure. It serves the methodology's self-hosting principle — a methodology that cannot verify its own specifications cannot evolve reliably.
 
+**Scope note (added as a minor correction in Session 009 per D-056).** This specification covers **Workspace validation** as defined in `methodology-kernel.md` v2 §7. **Domain validation** (the second sense of §7, concerning whether an external artefact functions in its target domain) is performed by domain-actors outside this specification's Tier 1 / Tier 2 scope and is not automated by `tools/validate.sh`. Its governance lives in the kernel §7 text itself.
+
 Version 3 adds two new Tier 1 checks (14, 15) that operationalise v2 `multi-agent-deliberation.md` Validation items 1 and 2 (now v3 Validation items), and one new Tier 2 question (Q7) paired with checks 14/15's honest limits. It specifies gating, severity, and sequencing rules for the new checks. It supersedes v2 (`validation-approach-v2.md`).
 
 Version 2 added three new Tier 1 checks (11, 12, 13) that enforce the D-024 heterogeneous-participant schema introduced by `multi-agent-deliberation.md` v2, and one new Tier 2 question paired with check 13's honest limit. It superseded v1 (`validation-approach-v1.md`).

@@ -1,11 +1,12 @@
 ---
 title: Workspace Structure
-version: 2
-status: active
+version: 1
+status: superseded
 created: 2026-04-17
-last-updated: 2026-04-19
-updated-by-session: 009
-supersedes: workspace-structure-v1.md
+last-updated: 2026-04-17
+updated-by-session: 002
+supersedes: none
+superseded-by: workspace-structure.md
 ---
 
 # Workspace Structure
@@ -25,7 +26,6 @@ The workspace has the following top-level structure:
 /specifications/
 /provenance/
 /tools/
-/applications/
 ```
 
 ### PROMPT.md
@@ -103,27 +103,9 @@ Contains tooling that supports the methodology's operations. Tools are executabl
 Current contents:
 - `validate.sh` — Two-tier validation tool (see `specifications/validation-approach.md`)
 
-### applications/
-
-Contains **external artefacts** — work-products the methodology has produced for use outside the workspace (specifications, sequences, templates, design fragments, and the like). Organized by the session that originally produced the artefact:
-
-```
-/applications/
-  /NNN-[slug]/
-    [artefact-files]
-```
-
-`NNN` is the producing session's number; `[slug]` is a short descriptive name. Filenames within the directory are descriptive (not numbered for reading order) — the numbered-reading-order convention applies to provenance records only.
-
-External artefacts are **mutable**: they may be revised by later sessions in response to domain validation (see `methodology-kernel.md` §7 Domain validation) or other feedback. Revisions update the artefact in place; the revising session's provenance records what changed and why. When an artefact is revised, any corresponding copies in the originating session's provenance directory and in prior revising sessions' provenance remain untouched (per the provenance immutability rule) and serve as historical witnesses to earlier versions.
-
-Each external artefact file includes in its frontmatter the fields `originating_session` (the session that first produced the artefact) and, when applicable, `regularized_in_session` (the session that moved the artefact into `applications/` after the fact) and `provenance_witness_path` (the path to the frozen provenance copy, if one exists). Subsequent revisions update `last-revised-session` in the frontmatter.
-
-**Regularization of pre-existing external artefacts.** When an external artefact was placed in a producing session's provenance directory before `applications/` existed as a defined top-level directory, the artefact is regularized into `applications/` by **copy-plus-reference**: a copy is made to `applications/NNN-[slug]/[filename]` with the frontmatter fields above; the provenance copy is not moved, modified, or deleted. The regularizing session's decision record is the authoritative cross-reference.
-
 ### Additional directories
 
-New top-level directories may be created by future sessions when the work demands them (e.g., `implementations/`, `examples/`). Any new directory should be documented by updating this specification. `applications/` was defined by Session 009 (D-054) for external artefacts and is no longer a hypothetical example.
+New top-level directories may be created by future sessions when the work demands them (e.g., `implementations/`, `examples/`). Any new directory should be documented by updating this specification.
 
 ## Validation
 
@@ -134,5 +116,3 @@ To validate this specification:
 3. Check that each provenance directory follows the naming convention `NNN-title/`
 4. Check that `SESSION-LOG.md` has an entry for every provenance directory
 5. Check that no provenance record dated before the current session has been modified since its session closed (immutability check via git)
-6. Check that each directory in `applications/` corresponds to an external artefact produced or regularized in a session whose decision record in provenance authorises its presence
-7. Check that every external artefact file in `applications/` carries the `originating_session` frontmatter field; for regularized artefacts, also `regularized_in_session` and `provenance_witness_path`

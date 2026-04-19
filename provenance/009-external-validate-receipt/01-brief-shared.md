@@ -3,7 +3,7 @@ session: 009
 title: Shared Brief — Kernel Validate & Workspace-Structure Revisions (W4 + W2)
 date: 2026-04-19
 status: finalised-before-launch
-deliberation-anchor-commit: TBD-set-at-commit
+deliberation-anchor-commit: 3260f0bf08b96c806cef3ef5dd618781988d27f0
 perspectives:
   - reviser (Claude Opus 4.7, subagent)
   - minimalist (Claude Opus 4.7, subagent)

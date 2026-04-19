@@ -1,0 +1,41 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: "OpenAI GPT-5 family (banner: model gpt-5.4; provider openai) via Codex CLI research preview"
+model_family: gpt
+model_id: gpt-5.4
+model_version: "Codex CLI v0.121.0 (research preview); session id 019da57c-c15b-7961-a4e9-0cc4aaddf824"
+provider: openai
+endpoint: codex-cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: "session-009 orchestrating agent (Claude Opus 4.7, Claude Code)"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "provenance/009-external-validate-receipt/01-brief-shared.md (sections 1-6) piped via Bash heredoc concatenation with role-specific stance (section 7) to `codex exec --sandbox read-only`"
+delivered_at: 2026-04-19
+received_at: 2026-04-19
+raw_response_file: 01d-perspective-outsider.md
+transport_notes: |
+  Non-Claude participant delivered via `codex exec --sandbox read-only` invoked
+  from Bash. The orchestrating agent constructed the combined brief (shared sections
+  1-6 + Outsider role-specific stance section 7) as a heredoc-piped input and
+  captured stdout verbatim to /tmp/s009/outsider-raw.txt. The verbatim stdout was
+  then written to the raw response file including:
+    - CLI banner identifying OpenAI Codex v0.121.0 (research preview)
+    - workdir, model (gpt-5.4), provider (openai), approval (never),
+      sandbox (read-only), reasoning effort (xhigh), reasoning summaries (none),
+      and OpenAI session id 019da57c-c15b-7961-a4e9-0cc4aaddf824
+    - the user-prompt echo from stdin (the complete brief)
+    - the primary response body after the "codex" marker
+    - the "tokens used" line (16,851 tokens)
+    - the end-of-stream duplication of the response body (a known property of
+      codex exec stdout; not a content edit; Session 008 recorded the same pattern)
+  Per the v3 transport guarantee: convener fidelity over the record is enforced;
+  the duplication is preserved rather than edited out to maintain integrity of
+  verbatim committment. No post-submission editing of content.
+output_edited_after_submission: false
+participation_shape: perspective

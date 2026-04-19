@@ -1,11 +1,12 @@
 ---
 title: Methodology Kernel
-version: 2
-status: active
+version: 1
+status: superseded
 created: 2026-04-17
-last-updated: 2026-04-19
-updated-by-session: 009
-supersedes: methodology-kernel-v1.md
+last-updated: 2026-04-17
+updated-by-session: 003
+supersedes: none
+superseded-by: methodology-kernel.md
 ---
 
 # Methodology Kernel
@@ -89,17 +90,13 @@ Artifacts should be produced to the standard defined in their respective specifi
 
 #### 7. Validate
 
-Validate the session's output at each level on which it makes claims. Two senses apply.
-
-**Workspace validation** applies to every session. Check that:
+Check that the workspace is internally consistent:
 - New specifications don't contradict existing ones
 - Specifications describe the workspace as it actually is
 - Provenance records are complete and well-formed
 - Open issues reflect the actual state of uncertainty
 
-**Domain validation** applies when a session produces or revises an artefact intended for use outside the workspace. Obtain evidence from the domain-actor who holds the problem the artefact addresses — the user of a sequence, the reader of a specification, the participant in a process, or an equivalent — that the artefact functioned for its intended use. Record who performed the validation, what was tried, what happened, and whether modifications were requested. Domain validation may complete out-of-session; when it does, the receiving session records the report and decides whether it triggers revision.
-
-If either validation reveals problems, they are either fixed in this session (return to Produce) or recorded as open issues for subsequent sessions.
+If validation reveals problems, they are either fixed in this session (return to Produce) or recorded as open issues for subsequent sessions.
 
 #### 8. Record
 

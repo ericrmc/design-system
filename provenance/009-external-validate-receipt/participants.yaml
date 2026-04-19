@@ -1,0 +1,82 @@
+session: "009"
+deliberation: "Kernel Validate & Workspace-Structure Revisions (W4 + W2)"
+composition:
+  participants_family: cross-model
+  cross_model: true
+  non_claude_participants: 1
+deliberation_anchor_commit: 3260f0bf08b96c806cef3ef5dd618781988d27f0
+note: |
+  Session 009 is the methodology's fifth heterogeneous-participant deliberation
+  and the third required-trigger deliberation with non-Claude participation
+  (Sessions 005, 006 being the first and second; Sessions 007, 008 included
+  non-Claude participation voluntarily without firing a D-023 trigger).
+
+  Three Claude Opus 4.7 subagents (Reviser — precision-focused drafter;
+  Minimalist — smallest-defensible-change; Skeptic — adversarial per
+  methodology-kernel.md §Convene) plus one non-Claude participant (Outsider =
+  OpenAI GPT-5 via Codex CLI). Shape A (participant as perspective) per D-021.
+
+  This deliberation fires d023_1 (D-053 modifies methodology-kernel.md §7)
+  and d023_4 (D-056 asserts OI-004 state change — tally advance from 2 of 3
+  to 3 of 3). Non-Claude participation was present for both. Session 009
+  therefore advances the OI-004 sustained-practice tally; closure criterion 2
+  becomes newly satisfied, but closure is not automatic — criterion 4
+  (articulated definition of "substantively different training provenance"
+  and enumeration of acceptable participant kinds) remains unmet and awaits
+  a future session's explicit closure deliberation.
+
+  cross_model: true is consistent with outsider.manifest.yaml's
+  training_lineage_overlap_with_claude: independent-claim. Per D-029 the
+  check verifies consistency-of-self-report, not truthfulness-of-self-report.
+
+  Recorded cross-model impact on outcomes (criterion 3 evidence from Session 009):
+    1. Outsider's copy-plus-reference mechanism [01d, Q2] was the direct source
+       for D-054's Session 008 artefact regularization procedure. Neither the
+       Reviser's "move" proposal nor the Minimalist/Skeptic "leave in place"
+       proposals accommodated both provenance immutability and external-artefact
+       mutability; the Outsider's third-way resolved the tension.
+    2. Outsider's domain-actor phrasing [01d, Q1 and Q4] shaped D-053's adopted
+       kernel §7 text, replacing the initially-sketched user-specific phrasing
+       with the broader "domain-actor who holds the problem the artefact
+       addresses" construction that covers users, experts, panels, and other
+       receipt shapes.
+    3. Outsider's Q3 "silent-bypass is exactly what validation tooling must not
+       do" position [01d, Q3] was not adopted (D-055 defers the tool fix) but
+       is preserved as load-bearing minority dissent in D-055's Rejected
+       Alternatives and forms the explicit re-visit trigger for OI-012.
+    4. Outsider's Meta-note observation that "tools/validate.sh is close to
+       becoming the de facto definition of Validate" [01d, Meta-note] is
+       Outsider-unique across Sessions 005-009 and motivates the D-053 framing
+       that places Domain validation alongside Workspace validation as a
+       first-class sense rather than a tool-adjacent corollary.
+
+  Cumulative criterion-3 data points across Sessions 005-009: fifteen (three
+  added in Session 009 beyond the Session 008 cumulative count of twelve —
+  items 1, 2, and 4 above; item 3 is a fourth but counted conservatively as
+  a dissent-preservation rather than an outcome-shaping influence).
+
+  This is Session 009's Session-level synthesis-anchoring deliberation. The
+  synthesizer is the orchestrating agent (Claude Opus 4.7, Claude Code) and
+  did not play any of the four perspectives. Single-agent synthesis re-entry
+  point per the v3 spec's Limitations.
+
+participants:
+  - perspective: minimalist
+    manifest_path: manifests/minimalist.manifest.yaml
+    raw_response_file: 01b-perspective-minimalist.md
+  - perspective: outsider
+    manifest_path: manifests/outsider.manifest.yaml
+    raw_response_file: 01d-perspective-outsider.md
+  - perspective: reviser
+    manifest_path: manifests/reviser.manifest.yaml
+    raw_response_file: 01a-perspective-reviser.md
+  - perspective: skeptic
+    manifest_path: manifests/skeptic.manifest.yaml
+    raw_response_file: 01c-perspective-skeptic.md
+synthesizer:
+  identity: "session-009 orchestrating agent (Claude Opus 4.7, Claude Code)"
+  model_family: claude
+  model_id: claude-opus-4-7
+  provider: anthropic
+  was_deliberator: false
+  perspective_played: none

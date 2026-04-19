@@ -1,0 +1,28 @@
+perspective: skeptic
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 subagent — Skeptic (adversarial role per methodology-kernel.md §Convene)"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: unknown
+provider: anthropic
+endpoint: claude-code-agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-009 orchestrating agent (Claude Opus 4.7, Claude Code)"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "provenance/009-external-validate-receipt/01-brief-shared.md (sections 1-6) + inline role-specific stance in the Agent prompt (section 7)"
+delivered_at: 2026-04-19
+received_at: 2026-04-19
+raw_response_file: 01c-perspective-skeptic.md
+transport_notes: |
+  Claude Opus 4.7 subagent via Claude Code's Agent tool. Parallel-launched alongside
+  the three other perspectives. Duration ~133 seconds. Total tokens ~26,202.
+  Output committed verbatim; no post-submission editing. Skeptic role preserved
+  adversarial stance including the drop-Q1-entirely minority position in Q5.
+output_edited_after_submission: false
+participation_shape: perspective
