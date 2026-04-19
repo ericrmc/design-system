@@ -1,0 +1,24 @@
+perspective: skeptic
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 subagent invoked via Claude Code Agent tool (subagent_type: general-purpose); role: adversarial (required per methodology-kernel.md §Convene)"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/008-first-external-application/01-brief-shared.md (sections 1-6, byte-identical across perspectives); role-specific stance (section 7 — The Skeptic, adversarial) passed inline in the Agent-tool prompt; anchor commit ddeb5172da8d79ff7c0cc9acaa9a9f2c4d3c2d4a"
+delivered_at: 2026-04-19T03:16Z
+received_at: 2026-04-19T03:18Z
+raw_response_file: provenance/008-first-external-application/01c-perspective-skeptic.md
+transport_notes: "Agent tool invocation with model=opus, subagent_type=general-purpose. Agent read the shared brief from disk as instructed and composed the response from brief + inlined role-specific stance. Duration: ~99 seconds (per Agent tool metadata). No post-submission editing. Response committed verbatim from the Agent-tool result content; trailing tool-metadata lines stripped as non-perspective content. Skeptic produced an adversarial pick (Candidate C, governance protocol) that Skeptic explicitly flagged they would not pick from a non-adversarial stance — dissent honesty preserved."
+output_edited_after_submission: false
+participation_shape: perspective

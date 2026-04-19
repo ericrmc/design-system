@@ -1,0 +1,24 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: "OpenAI GPT-5 invoked via Codex CLI (codex exec, research preview v0.121.0); OpenAI session id 019da3bb-53c2-7113-8e70-61fe62c953c1"
+model_family: gpt
+model_id: gpt-5.4
+model_version: unknown
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: "Eric McCowan (session operator) via Claude Code orchestrator, per CLAUDE.md guidance to prefer Codex for reasoning tasks; continuation of Sessions 005/006/007 operator-selection pattern"
+participant_selection_method: self
+identity_known: true
+context_source: "provenance/008-first-external-application/01-brief-shared.md (sections 1-6, byte-identical across perspectives); role-specific stance (section 7 — The Outsider) appended at invocation time; full brief delivered as stdin to `codex exec --sandbox read-only` via /tmp/session-008-outsider-brief.md; anchor commit ddeb5172da8d79ff7c0cc9acaa9a9f2c4d3c2d4a"
+delivered_at: 2026-04-19T03:16Z
+received_at: 2026-04-19T03:18Z
+raw_response_file: provenance/008-first-external-application/01d-perspective-outsider.md
+transport_notes: "Invoked via '{ cat provenance/008-first-external-application/01-brief-shared.md; cat <<OUTSIDER_STANCE_EOF ... OUTSIDER_STANCE_EOF; } > /tmp/session-008-outsider-brief.md; cat /tmp/session-008-outsider-brief.md | codex exec --sandbox read-only > /tmp/session-008-outsider-raw.txt'. Raw output preserved verbatim including Codex banner (OpenAI Codex v0.121.0 research preview), model banner (model: gpt-5.4, provider: openai, reasoning effort: xhigh, session id 019da3bb-53c2-7113-8e70-61fe62c953c1), prompt echo, primary response, 'tokens used' line (13,391 tokens), and end-of-stream duplicate response. No post-submission editing. Codex sandbox policy 'read-only' confirms the invocation did not permit workspace modification by the Outsider. Transport is CLI wrapper; the workspace guarantees the record (committed stdout), not the generation (dependent on OpenAI's API). training_lineage_overlap_with_claude: independent-claim is a claim based on model-identity self-report (OpenAI GPT-5 is distinct from Anthropic Claude) and is not cryptographically verified (see validate.sh check 13 honest-limit comment and D-029). This is the methodology's fourth operational use of the Outsider participation mechanism (Sessions 005, 006, 007 prior). Per Session 007 D-049 precedent, no D-023 trigger fires for target-selection (no kernel modification, no spec revision, no OI-004 state change); Outsider inclusion is conservative rather than required; OI-004 sustained-practice tally does NOT advance from this deliberation alone. The Outsider's contribution is the recommended pick (meal-rotation) plus the 'representability bias' framing that is part of the deliberation's four-way Q5 convergence — a cross-model criterion-3 impact on outcomes even though criterion 2 (sustained practice) does not advance."
+output_edited_after_submission: false
+participation_shape: perspective

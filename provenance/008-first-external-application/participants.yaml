@@ -1,0 +1,72 @@
+session: "008"
+deliberation: "First External Application Target Selection (Branch B)"
+composition:
+  participants_family: cross-model
+  cross_model: true
+  non_claude_participants: 1
+deliberation_anchor_commit: ddeb5172da8d79ff7c0cc9acaa9a9f2c4d3c2d4a
+note: |
+  Session 008 is the methodology's fourth heterogeneous-participant deliberation.
+  Three Claude Opus 4.7 subagents (explorer, pragmatist, skeptic — the last
+  adversarial per methodology-kernel.md §Convene) plus one non-Claude
+  participant (outsider = OpenAI GPT-5 via Codex CLI). Shape A (participant
+  as perspective) per D-021.
+
+  Per Session 007 D-049 precedent, no D-023 trigger fires for target-selection
+  (no kernel modification, no spec revision, no OI-004 state change). The
+  sustained-practice tally for OI-004 therefore does NOT advance from this
+  deliberation; remains at 2 of 3 coming into Session 008. Non-Claude
+  participation was included conservatively (second consecutive conservative
+  non-Claude session after Session 007) because (a) D-046 criterion 6
+  explicitly calls for anti-agent-bias in target selection and distinct
+  training lineage is a concrete anti-bias signal; (b) continuation of
+  Sessions 005/006/007 operational pattern; (c) the recommended-pick
+  convergence with cross-model support is a stronger signal than a Claude-
+  only agreement would be.
+
+  cross_model: true is consistent with outsider.manifest.yaml's
+  training_lineage_overlap_with_claude: independent-claim. Per D-029 the
+  check verifies consistency-of-self-report, not truthfulness-of-self-report.
+
+  Criterion-3 (recorded impact on outcomes) evidence from Session 008, to
+  be recorded in Session 008's closing accounting decision:
+    1. Four-way convergence on Q5 document-shape / representability bias
+       crossing the model-family axis — Outsider's "representability bias"
+       framing is not mere lexical echo of Claude phrasings; it's an
+       independent arrival at the same structural finding. This is the
+       strongest single cross-model signal in Session 008.
+    2. Outsider's "preference instability" failure-mode naming [01d, Q3]
+       — distinct from Claude perspectives' failure-mode formulations.
+    3. Outsider's independent recommendation of meal-rotation as the
+       first-target candidate, which informs the synthesizer's shortlist
+       composition reasoning for D-046 criterion 6's "not pre-shaped by
+       orchestrating agent" requirement.
+    4. Outsider-unique "hospitality package" fourth-candidate proposal
+       [01d, Q5] — a non-document artefact class (invitation framing,
+       menu logic, room flow, timing, contingency plan) that no Claude
+       perspective named.
+
+  This is Session 008's Assess-activity deliberation. The Produce activity
+  may generate its own decision(s) whose D-023 classification will be
+  determined by content.
+
+participants:
+  - perspective: explorer
+    manifest_path: manifests/explorer.manifest.yaml
+    raw_response_file: 01a-perspective-explorer.md
+  - perspective: outsider
+    manifest_path: manifests/outsider.manifest.yaml
+    raw_response_file: 01d-perspective-outsider.md
+  - perspective: pragmatist
+    manifest_path: manifests/pragmatist.manifest.yaml
+    raw_response_file: 01b-perspective-pragmatist.md
+  - perspective: skeptic
+    manifest_path: manifests/skeptic.manifest.yaml
+    raw_response_file: 01c-perspective-skeptic.md
+synthesizer:
+  identity: "session-008 orchestrating agent (Claude Opus 4.7, Claude Code)"
+  model_family: claude
+  model_id: claude-opus-4-7
+  provider: anthropic
+  was_deliberator: false
+  perspective_played: none

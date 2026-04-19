@@ -1,3 +1,23 @@
+---
+session: 008
+title: Shared Brief — First External Application Target Selection (Branch B)
+date: 2026-04-19
+status: finalised-before-launch
+deliberation-anchor-commit: ddeb5172da8d79ff7c0cc9acaa9a9f2c4d3c2d4a
+perspectives:
+  - explorer (Claude Opus 4.7, subagent)
+  - pragmatist (Claude Opus 4.7, subagent)
+  - skeptic (Claude Opus 4.7, subagent, adversarial)
+  - outsider (OpenAI GPT-5 via Codex CLI, non-Claude participant per D-021 Shape A)
+note: |
+  This brief's sections 1–6 are byte-identical across all four perspectives.
+  The frontmatter above was added to the committed file for validate.sh
+  check 8 compliance; it was NOT part of what perspectives saw during the
+  independent phase (perspectives received section headings starting at
+  "# Shared Brief — Session 008" through the role-specific stance section).
+  Frontmatter is file-level metadata for provenance tracking, not content.
+---
+
 # Shared Brief — Session 008
 
 **Notice to all perspectives.** This brief's non-role-specific sections (1–6) are **byte-identical** across all four perspectives (Explorer, Pragmatist, Skeptic, Outsider). Only the Role-Specific Stance section at the end differs. All perspectives answer the same design questions from the same stated context. Do not coordinate; do not seek external context beyond this brief; do not read workspace files during your reasoning.
