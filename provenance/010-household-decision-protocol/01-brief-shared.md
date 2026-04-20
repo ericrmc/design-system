@@ -4,7 +4,7 @@ title: Shared Brief — Two-Person Household Decision Protocol
 date: 2026-04-20
 status: complete
 participants_expected: [drafter, mediator, outsider, skeptic]
-deliberation_anchor_commit: TBD-populated-at-commit
+deliberation_anchor_commit: 22c5216
 ---
 
 # Shared Brief — Session 010 Deliberation

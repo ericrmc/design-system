@@ -1,0 +1,24 @@
+perspective: skeptic
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 parallel subagent via Claude Code Agent tool (subagent_type: general-purpose)"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "4.7 (1M context)"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-010 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "provenance/010-household-decision-protocol/01-brief-shared.md (sections 1, 2, 3, 5, 6 byte-identical across perspectives); role-specific stance (section 4c Skeptic) appended at invocation time; full brief delivered as Agent prompt parameter; anchor commit 22c521695beb3a04ad0a63a26eba73f81797c4c8"
+delivered_at: 2026-04-20T01:11Z
+received_at: 2026-04-20T01:13Z
+raw_response_file: provenance/010-household-decision-protocol/01d-perspective-skeptic.md
+transport_notes: "Agent final-message response, written verbatim to raw_response_file with only YAML frontmatter added at top by orchestrator. Agent usage: 20,180 total_tokens, 0 tool_uses, 98,966 ms duration. Returned in the same parallel Agent/Bash batch as drafter, mediator, outsider. File-naming note: raw-response files in Session 010 are lettered alphabetically by role name (01a=drafter, 01b=mediator, 01c=outsider, 01d=skeptic), while the brief's §4 Role-specific stance subsections are lettered by a different order (4a Drafter, 4b Mediator, 4c Skeptic, 4d Outsider). Skeptic's role-specific stance therefore lives in brief §4c but raw-response file is 01d. Minor inconsistency; documented here for future auditability. Neither convention is mandated by the multi-agent-deliberation.md v3 spec; alphabetical file lettering was adopted for Session 010 to match the synthesis's alphabetical processing order per spec §Synthesis."
+output_edited_after_submission: false
+participation_shape: perspective

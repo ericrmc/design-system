@@ -1,0 +1,24 @@
+perspective: mediator
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 parallel subagent via Claude Code Agent tool (subagent_type: general-purpose)"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "4.7 (1M context)"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-010 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "provenance/010-household-decision-protocol/01-brief-shared.md (sections 1, 2, 3, 5, 6 byte-identical across perspectives); role-specific stance (section 4b Mediator) appended at invocation time; full brief delivered as Agent prompt parameter; anchor commit 22c521695beb3a04ad0a63a26eba73f81797c4c8"
+delivered_at: 2026-04-20T01:11Z
+received_at: 2026-04-20T01:13Z
+raw_response_file: provenance/010-household-decision-protocol/01b-perspective-mediator.md
+transport_notes: "Agent final-message response, written verbatim to raw_response_file with only YAML frontmatter added at top by orchestrator. Agent usage: 19,869 total_tokens, 0 tool_uses, 92,007 ms duration. Returned in the same parallel Agent/Bash batch as drafter, outsider, skeptic."
+output_edited_after_submission: false
+participation_shape: perspective
