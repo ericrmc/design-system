@@ -1,3 +1,13 @@
+---
+session: 011
+title: Perspective — Outsider
+date: 2026-04-20
+status: complete
+perspective: outsider
+committed_at: 2026-04-20T05:03Z
+transport_notes: "Raw stdout from `codex exec --sandbox read-only`, committed verbatim including CLI banner, user-prompt echo, 'codex' marker, response body, 'tokens used' line with token count, and end-of-stream duplicate response body. End-of-stream duplication is a known property of codex exec stdout (see Session 005/006/007/008/009/010 Outsider raw outputs) and is preserved rather than edited out to maintain verbatim integrity. OpenAI Codex v0.121.0 (research preview), model: gpt-5.4, provider: openai, reasoning effort: xhigh, session id: 019da943-2c45-7f30-bab8-ce303aba09db, 13,820 tokens reported. Invocation: cat /tmp/session-011-outsider-brief.md | codex exec --sandbox read-only > /tmp/session-011-outsider-raw.txt 2>&1."
+---
+
 Reading prompt from stdin...
 OpenAI Codex v0.121.0 (research preview)
 --------

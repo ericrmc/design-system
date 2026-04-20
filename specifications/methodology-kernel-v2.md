@@ -1,11 +1,13 @@
 ---
 title: Methodology Kernel
-version: 3
-status: active
+version: 2
+status: superseded
 created: 2026-04-17
-last-updated: 2026-04-20
-updated-by-session: 011
-supersedes: methodology-kernel-v2.md
+last-updated: 2026-04-19
+updated-by-session: 009
+supersedes: methodology-kernel-v1.md
+superseded-by: methodology-kernel.md
+superseded-at-session: 011
 ---
 
 # Methodology Kernel
@@ -28,9 +30,7 @@ Each session performs nine activities. These are a **vocabulary, not a strict se
 
 #### 1. Read
 
-Absorb what the session will reason from before changing anything. In every session this includes **workspace reading**: the full current state of the workspace — every file, every specification, every provenance record, and, where relevant, recent version-control history. Build a complete picture of the workspace's own state.
-
-When the session produces or revises an artefact intended for use outside the workspace, it also includes **domain reading**: the domain constraints the session operates under (stated by the user or operator in-session), cited external materials introduced into the session, and domain knowledge that the orchestrating agent surfaces explicitly as input to the work. Domain reading enlarges what must be understood; it does not permit silent import of outside ideas. Knowledge not already present in the workspace or in the session's explicit domain inputs must still be introduced through an explicit surveying or hypothesising step (per PROMPT.md). Perspective pretraining enters the session via stance briefs and perspective responses, not via §1 Read.
+Absorb the full current state of the workspace. Every file, every specification, every provenance record. If the workspace is under version control, understand the recent history. Build a complete picture before changing anything.
 
 This is a receptive activity. Its output is understanding, not artifacts.
 

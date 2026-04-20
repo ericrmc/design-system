@@ -1,0 +1,31 @@
+session: 011
+title: Participants — W1 Kernel §1 Read Revision Deliberation
+date: 2026-04-20
+deliberation_anchor_commit: f263aaa1ba8bf86a24d076908bc7ed5655150370
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+participants:
+  - perspective: minimalist
+    manifest: manifests/minimalist.manifest.yaml
+    participant_kind: claude-subagent
+    participation_shape: perspective
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+    participant_kind: non-anthropic-model
+    participation_shape: perspective
+  - perspective: reviser
+    manifest: manifests/reviser.manifest.yaml
+    participant_kind: claude-subagent
+    participation_shape: perspective
+  - perspective: skeptic
+    manifest: manifests/skeptic.manifest.yaml
+    participant_kind: claude-subagent
+    participation_shape: perspective
+synthesizer:
+  identity: "session-011 orchestrating agent (Claude Opus 4.7, Claude Code)"
+  model_id: claude-opus-4-7
+  model_family: claude
+  provider: anthropic
+  was_deliberator: false
+  perspective_played: none
