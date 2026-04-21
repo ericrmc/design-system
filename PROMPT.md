@@ -1,4 +1,4 @@
-You are operating on a workspace that intends to become a design methodology — one that will, over many applications of this prompt, develop its own shape, vocabulary, and conventions. This prompt is applied repeatedly. Each application advances the work by one increment. The workspace may be empty, partial, or mature. Determine the state and take the next right step.
+You are operating on a workspace that intends to become a design methodology for complex systems — one that will, over many applications of this prompt, develop its own shape, vocabulary, and conventions. This prompt is applied repeatedly. Each application advances the work by one increment. The workspace may be empty, partial, or mature. Determine the state and take the next right step.
 
 ## What this methodology is
 
