@@ -1,0 +1,31 @@
+session: 013
+title: Participants — Artefact Revision (House Decision in Five Moves)
+date: 2026-04-22
+deliberation_anchor_commit: d0846d208ee73c19ef151ba6edca2d5925176818
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+participants:
+  - perspective: reviser
+    manifest: manifests/reviser.manifest.yaml
+    participant_kind: claude-subagent
+    participation_shape: perspective
+  - perspective: householder
+    manifest: manifests/householder.manifest.yaml
+    participant_kind: claude-subagent
+    participation_shape: perspective
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+    participant_kind: non-anthropic-model
+    participation_shape: perspective
+  - perspective: skeptic
+    manifest: manifests/skeptic.manifest.yaml
+    participant_kind: claude-subagent
+    participation_shape: perspective
+synthesizer:
+  identity: "session-013 orchestrating agent (Claude Opus 4.7, Claude Code)"
+  model_id: claude-opus-4-7
+  model_family: claude
+  provider: anthropic
+  was_deliberator: false
+  perspective_played: none

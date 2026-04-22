@@ -4,7 +4,7 @@ title: Shared Brief — Artefact Revision (Session 010 House Decision in Five Mo
 date: 2026-04-22
 status: finalised-before-launch
 participants_expected: [reviser, householder, outsider, skeptic]
-deliberation_anchor_commit: PENDING
+deliberation_anchor_commit: d0846d208ee73c19ef151ba6edca2d5925176818
 note: |
   Sections 1, 2, 3, 5, 6 are byte-identical across all four perspectives. Only
   section 4 (role-specific stance) is delivered uniquely to each perspective.

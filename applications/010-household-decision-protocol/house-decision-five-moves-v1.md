@@ -1,32 +1,28 @@
 ---
-title: A House Decision in Five Moves
+title: A House Decision in Five Moves (v1, superseded)
 originating_session: 010
-last-revised-session: 013
-version: 2
-status: active
-supersedes: house-decision-five-moves-v1.md
+last-revised-session: 010
+version: 1
+status: superseded
+superseded-by: house-decision-five-moves.md
+superseded-by-session: 013
 artefact_kind: household decision process
 domain: household / small-shared-decisions
 external_legibility_note: |
-  This is the canonical copy of the external artefact produced in Session 010
-  and revised in Session 013 in response to the user's Validate receipt.
-  Designed to be readable on its own by a couple who have a small-to-medium
-  household decision to make, with no methodology context required. The
-  frontmatter is file-level metadata; the body below is the artefact. A reader
-  who extracts only the body (from the H1 heading onward) should still have a
-  usable conversation guide.
+  This is the **original** (v1) copy of the external artefact produced in
+  Session 010. It is preserved in place because Session 013 revised the artefact
+  in response to the user's Validate receipt (per
+  `provenance/013-artefact-revision/00-validate-user-report.md` and D-066). The
+  canonical reader-facing version is now `house-decision-five-moves.md` (v2).
+  This v1 is kept for provenance — later sessions can re-read the original
+  design without mediation by the Session 013 revision.
 
-  Session 013 changes (per `provenance/013-artefact-revision/02-decisions.md`
-  D-066):
-    - Move 1 reframed from imperative-declarative to question-opener; three
-      example openings replace the prior single constraint-laden example line.
-    - Move 5 restructured in place and retitled "Close it, and name the
-      follow-through" — now handles both closing the decision and naming who
-      carries the next steps (ordering, scheduling, receiving); includes a
-      conditional note about replaced items (reuse / offer / donate / dispose).
-    - Moves 2, 3, 4; the opening framing; the after-note; and the "Not this"
-      section are preserved unchanged per the four-perspective deliberation's
-      scope discipline.
+  First use-from-scratch of the `applications/NNN-[slug]/` canonical path
+  introduced in Session 009 D-054 — no regularization step was needed.
+
+  First use in `applications/` of the in-place v1-preservation pattern for
+  external-artefact revisions (see D-066 and WX-13-6 for the pattern question;
+  OI-002 heuristic does not formally cover non-specification artefact revisions).
 ---
 
 # A House Decision in Five Moves
@@ -39,15 +35,9 @@ external_legibility_note: |
 
 ## 1. Name the decision
 
-One of you opens the conversation — usually with a question, not an answer. One line is enough.
+Say what you're deciding — one sentence is enough.
 
-> *"Should we talk about the lounge?"*
->
-> *"What should we do about that empty corner of the garden?"*
->
-> *"Do we want to sort the shelving out, or leave it for now?"*
-
-You don't need to know the budget, the timing, or exactly what you're buying yet. Some of that only surfaces later, once you've both said what you care about.
+> *Shelving for the lounge, around $500, before the end of the month.*
 
 If you're not sure it's even worth a real conversation, say that too. Sometimes the answer is "let's just do it." Sometimes naming the decision out loud is the only move you need.
 
@@ -89,25 +79,13 @@ If you both care and you disagree, you either keep talking or sleep on it. No ot
 
 ---
 
-## 5. Close it, and name the follow-through
+## 5. Close it, or name what's next
 
 Someone says it out loud:
 
-> *"Alright — bookshelves, up to $500, let's order them this weekend."*
+> *We've decided — we're going with the bookshelves, up to $500, ordering this weekend.*
 
-The other confirms. That's the decision closed.
-
-Then say who's handling what comes next — ordering, scheduling, being home for delivery, whatever the thing needs. It's a real bit of work; you both own the decision, but one of you is carrying the next steps. If it splits naturally, say how.
-
-> *"I'll place the order tonight."*
->
-> *"I can be home Saturday for the delivery."*
-
-Not a full plan — just enough that you both know what's been taken on.
-
-If something is being replaced, the old one is part of the follow-through too. Reuse it somewhere else, offer it to someone, donate it, or arrange disposal. This is often more work than people expect.
-
-> *"We'll offer the old shelf first, then donate it if no one takes it."*
+The other confirms.
 
 If you're not ready to close, say that too, and name when you'll come back to it — a specific day, not "soon."
 

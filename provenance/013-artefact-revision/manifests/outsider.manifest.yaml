@@ -1,0 +1,25 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: "OpenAI GPT-5 invoked via Codex CLI (codex exec, research preview v0.121.0); OpenAI session id 019db270-9e77-7c41-90a6-eae7261f5be2"
+model_family: gpt
+model_id: gpt-5.4
+model_version: "5.4"
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+  reasoning_effort: xhigh
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: "session-013 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "provenance/013-artefact-revision/01-brief-shared.md (sections 1, 2, 3, 5, 6 byte-identical across perspectives); role-specific stance (section 4d Outsider) appended at invocation time; full brief delivered as stdin to `codex exec --sandbox read-only` via /tmp/session-013-outsider-brief.md; anchor commit d0846d208ee73c19ef151ba6edca2d5925176818"
+delivered_at: 2026-04-22T04:00Z
+received_at: 2026-04-22T04:02Z
+raw_response_file: provenance/013-artefact-revision/01d-perspective-outsider.md
+transport_notes: "Committed verbatim from codex exec stdout including CLI banner (`OpenAI Codex v0.121.0 (research preview)`, `model: gpt-5.4`, `provider: openai`, `approval: never`, `sandbox: read-only`, `reasoning effort: xhigh`, `reasoning summaries: none`, `session id: 019db270-9e77-7c41-90a6-eae7261f5be2`), user prompt echo, `codex` response marker, response body (Q1-Q6 plus meta-note), `tokens used` line (13,899 tokens), and end-of-stream duplicate response body. End-of-stream duplication is a known property of `codex exec` stdout (documented in Sessions 005-012 Outsider manifests and close files) and is preserved rather than edited out to maintain verbatim integrity. Invocation command: `cat /tmp/session-013-outsider-brief.md | codex exec --sandbox read-only > /tmp/session-013-outsider-raw.txt 2>&1`. The `codex` binary is at `/opt/homebrew/bin/codex`. Model and reasoning-effort defaults come from `~/.codex/config.toml`. Returned in the same parallel Agent/Bash batch as reviser, householder, skeptic."
+output_edited_after_submission: false
+participation_shape: perspective

@@ -1,0 +1,24 @@
+perspective: reviser
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 parallel subagent via Claude Code Agent tool (subagent_type: general-purpose); agent id a34a1d650f3092fd6"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "4.7 (1M context)"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-013 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "provenance/013-artefact-revision/01-brief-shared.md (sections 1, 2, 3, 5, 6 byte-identical across perspectives); role-specific stance (section 4a Reviser) appended at invocation time; full brief delivered as Agent prompt parameter reading /tmp/session-013-reviser-brief.md; anchor commit d0846d208ee73c19ef151ba6edca2d5925176818"
+delivered_at: 2026-04-22T04:00Z
+received_at: 2026-04-22T04:03Z
+raw_response_file: provenance/013-artefact-revision/01a-perspective-reviser.md
+transport_notes: "Agent final-message response, written verbatim to raw_response_file with only YAML frontmatter added at top by orchestrator. Agent usage: 30,185 total_tokens, 1 tool_use (the Read of the brief), 168,391 ms duration. Returned in the same parallel Agent/Bash batch as householder, skeptic, outsider."
+output_edited_after_submission: false
+participation_shape: perspective
