@@ -1,11 +1,12 @@
 ---
 title: Workspace Structure
-version: 3
-status: active
+version: 2
+status: superseded
 created: 2026-04-17
-last-updated: 2026-04-22
-updated-by-session: 017
-supersedes: workspace-structure-v2.md
+last-updated: 2026-04-19
+updated-by-session: 009
+supersedes: workspace-structure-v1.md
+superseded-by: workspace-structure.md
 ---
 
 # Workspace Structure
@@ -14,29 +15,12 @@ supersedes: workspace-structure-v2.md
 
 This specification defines how the workspace is organized: what directories and files exist, what each contains, and how they relate. It ensures that any agent or person reading the workspace can orient themselves quickly and knows where to find — and where to put — each kind of content.
 
-Version 3 (Session 017, D-074) adds the three file-class distinction (engine-definition / development-provenance / application-scope) and documents `prompts/` as a new directory created by the PROMPT.md split. v2 preserved as `workspace-structure-v2.md`.
-
 ## Specification
-
-### File classes (added v3)
-
-Under the three-layer denotation established in `identity.md` v2 (Selvedge methodology / Selvedge engine / application), workspace files fall into one of three classes:
-
-- **Engine-definition files** — the loadable Selvedge engine. An external application workspace may (and should) clone this set without inheriting development-provenance. Enumerated canonically by `specifications/engine-manifest.md`. At `engine-v1`: `PROMPT.md`, `prompts/development.md`, `prompts/application.md`, `specifications/*.md` (all active files in the `specifications/` directory), `tools/validate.sh`.
-- **Development-provenance files** — the self-development application's own accumulated history. Not part of the engine load; not inherited by external-application workspaces by default. Includes `SESSION-LOG.md`, `open-issues.md`, and `provenance/`.
-- **Application-scope files** — per-application content (inputs, outputs, application-specific briefs and notes). Mutable per the `applications/` directory rules below. Organised as `applications/NNN-<slug>/`.
-
-The normative rule: an external application workspace may load the engine-definition set as a read-only unit (or a cloned starting point) without inheriting development-provenance. The self-development application (this workspace) carries all three classes by construction (the engine is being developed here; the provenance is the development record; the applications are the by-products).
-
-### Top-level structure
 
 The workspace has the following top-level structure:
 
 ```
 /PROMPT.md
-/prompts/
-  development.md
-  application.md
 /SESSION-LOG.md
 /open-issues.md
 /specifications/
@@ -47,16 +31,7 @@ The workspace has the following top-level structure:
 
 ### PROMPT.md
 
-The bootstrap prompt. Under v3 (D-074, Session 017) `PROMPT.md` is a thin **dispatcher**: it names the three layers (methodology / engine / application), names the two operating modes (self-development and external-problem), and points to the two mode-specific executable prompts in `prompts/`. It is part of the engine-definition file class. It may be revised, but any revision is a significant event and recorded in provenance (as it was when the v3 split occurred in Session 017). The self-development application's executable content was moved to `prompts/development.md`; the template for external-problem applications lives at `prompts/application.md`.
-
-### prompts/
-
-Contains the two mode-specific executable prompts created by the D-074 split. Part of the engine-definition file class.
-
-- `prompts/development.md` — the self-development application's executable prompt. Carries the content that was in the pre-split `PROMPT.md` (minus the high-level framing moved up into the dispatcher), reframed as the engine's own self-development. This workspace's current application loads this file.
-- `prompts/application.md` — the template for external-problem applications. Loads the engine by reference (engine-manifest), names the slots an external application fills (problem statement, constraints, stakeholders, success condition, initial state), and declares that development-provenance is NOT part of the application's context unless explicitly imported. An external application workspace copies this file (typically renamed to `PROMPT.md` in the new workspace, or loaded from its canonical location here) and fills in the slots.
-
-Both files are revisable under the methodology's spec-revision discipline (significant revisions recorded in provenance; v-suffix preservation if substantive changes accumulate).
+The bootstrap prompt that drives the methodology. This file precedes the methodology — it is not produced by the process, it initiates the process. It may be revised, but any revision should be treated as a significant event and recorded in provenance.
 
 ### SESSION-LOG.md
 

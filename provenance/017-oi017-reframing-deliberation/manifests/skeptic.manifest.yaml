@@ -1,0 +1,24 @@
+perspective: skeptic
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 parallel subagent via Claude Code Agent tool (subagent_type: general-purpose), adversarial H1-advocate stance carrying Session 012 refuse-to-name minority and Session 013 strong-pause pattern forward per Convene §3; agent id a6bcc8e0d5f0adff1"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "4.7 (1M context)"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-017 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "provenance/017-oi017-reframing-deliberation/01-brief-shared.md (shared brief byte-identical across perspectives); role-specific stance (H1 advocate, adversarial) delivered inline in the Agent prompt parameter with explicit instruction to be genuinely adversarial; anchor commit f3e003b"
+delivered_at: 2026-04-22T14:00Z
+received_at: 2026-04-22T14:02Z
+raw_response_file: provenance/017-oi017-reframing-deliberation/01c-perspective-skeptic.md
+transport_notes: "Agent final-message response, written verbatim to raw_response_file with frontmatter prepended at top. Agent usage: 21,802 total_tokens, 0 tool_uses (constrained by prompt), 68,951 ms duration. Returned in the same parallel Agent/Bash batch as architect, operationalist, outsider."
+output_edited_after_submission: false
+participation_shape: perspective

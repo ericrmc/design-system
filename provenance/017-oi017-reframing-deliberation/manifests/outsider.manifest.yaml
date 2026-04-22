@@ -1,0 +1,25 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: "OpenAI GPT-5 invoked via Codex CLI (codex exec, research preview v0.121.0); OpenAI session id 019db36d-14a0-7d10-863e-179677eef35b"
+model_family: gpt
+model_id: gpt-5.4
+model_version: "5.4"
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+  reasoning_effort: xhigh
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: "session-017 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "provenance/017-oi017-reframing-deliberation/01-brief-shared.md (sections 1-5 byte-identical to shared brief, prepended with Outsider preamble and stance); full brief delivered as stdin to `codex exec -` via /tmp/outsider_brief.md; anchor commit f3e003b"
+delivered_at: 2026-04-22T14:00Z
+received_at: 2026-04-22T14:02Z
+raw_response_file: provenance/017-oi017-reframing-deliberation/01d-perspective-outsider.md
+transport_notes: "Committed verbatim from codex exec stdout. Raw captured output at /tmp/outsider_response.txt (also mirrored to tool-results cache). Output includes CLI banner (`OpenAI Codex v0.121.0 (research preview)`, `model: gpt-5.4`, `provider: openai`, `approval: never`, `sandbox: read-only`, `reasoning effort: xhigh`, `reasoning summaries: none`, `session id: 019db36d-14a0-7d10-863e-179677eef35b`), user prompt echo, `codex` response marker, response body (Q1-Q7), `tokens used 19,120` line, and end-of-stream duplicate response body. End-of-stream duplication matches Sessions 005-014 Outsider output patterns and is preserved in the captured raw file; raw_response_file (01d-perspective-outsider.md) contains only the single response body with frontmatter prepended. Invocation command: `cat /tmp/outsider_brief.md | codex exec - 2>&1 | tee /tmp/outsider_response.txt`, run as background task id b7jpu9gxn. The `codex` binary is at `/opt/homebrew/bin/codex`. Model and reasoning-effort defaults come from `~/.codex/config.toml`. Returned via background-task completion notification; aligned to the same parallel Agent batch as architect, operationalist, skeptic."
+output_edited_after_submission: false
+participation_shape: perspective

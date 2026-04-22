@@ -1,48 +1,36 @@
-You are operating on a workspace that intends to become a design methodology for complex systems — one that will, over many applications of this prompt, develop its own shape, vocabulary, and conventions. This prompt is applied repeatedly. Each application advances the work by one increment. The workspace may be empty, partial, or mature. Determine the state and take the next right step.
+You are about to execute the **Selvedge engine** against a specific application. This file is the dispatcher: it names the layers, names the two operating modes, and points to the mode-specific executable prompt. Load the pointed-at prompt and proceed under its instructions.
 
-## What this methodology is
+## The three layers
 
-This workspace is building a design methodology: a structured approach for designing complex things, in an era when machine intelligence can participate meaningfully in the design process. What emerges from this workspace is intended to be used by others, on their own projects, in their own domains. The methodology is self-hosting — it evolves itself by running its own process on itself. Specifications are the durable artefacts that persist between its stages, and provenance — the reasoning trail, the rejected alternatives, the dissenting views — is preserved alongside decisions so that future readers, human or agent, can reconstruct not just what was decided but what was considered and why.
+Per `specifications/identity.md` v2:
 
-The methodology exists because traditional ways of managing requirements and design intent were optimized for a world where humans were the expensive part of producing and maintaining specifications. In a world where language models can read, generate, challenge, and evolve specifications at the moment they are needed, the old ceremonies collapse into something lighter and more continuous. This workspace is an attempt to discover what that lighter approach looks like, by being built through the approach it proposes.
+- **Selvedge** (unqualified) — names the methodology: the abstract-approach, domain-general mechanic of diverse perspectives reasoning together, producing durable artefacts, preserving reasoning, and evolving the system by running the same mechanic on its own outputs.
+- **Selvedge engine** — denotes the current loadable implementation, enumerated in `specifications/engine-manifest.md`. The engine is the concrete file set; the methodology is the approach it realises.
+- **Application of the Selvedge engine** — any specific run of the engine against a problem. Two kinds recognised: self-development and external-problem.
 
-The methodology is not specific to any domain. It may be used to design software, research programmes, physical systems, policy interventions, curricula, organisations, or anything else where a complex thing must be brought into being and evolved over time. What the methodology produces, and what counts as validation of what it produces, will depend on the domain in which it is applied. The methodology itself — the mechanic of diverse perspectives reasoning together, producing durable artefacts, preserving their reasoning, and evolving the system by running the same mechanic on its own outputs — is domain-general.
+## The two operating modes
 
-The workspace's shape, its stages if it has them, its vocabulary, its conventions, and even its name should emerge from the process rather than be imposed from outside. On the first application of this prompt, before doing substantial work, survey the landscape of approaches that people have developed for designing complex things — across whatever traditions, disciplines, and eras seem relevant. Understand what problems each approach solves, what each gets right, where each tends to fail. Then reason about what this methodology should take from that landscape, what it should reject, and what it may need to invent because nothing existing quite fits. That reasoning is the first piece of provenance committed to the workspace.
+Every session runs the engine in exactly one mode. The mode is determined by the workspace's state (see §Dispatch below).
 
-A preference, not a rule: text-based artefacts in a format that is both human-readable and machine-readable tend to serve this kind of methodology well, because they can be read by people, parsed by agents, diffed between versions, and preserved indefinitely with minimal tooling. Markdown is the obvious candidate for most work. For domains where text alone cannot carry the specification — a spatial layout, a circuit diagram, a molecular structure, a musical score — use whatever representation the domain demands, but keep a text-based record of the intent and reasoning alongside it so the provenance remains legible.
+- **Self-development** — the engine evolves its own specifications by running on its own outputs. This workspace has been the self-development application across sessions 001–017+. Executable prompt: `prompts/development.md`.
+- **External-problem** — the engine runs against a non-self problem in an application-specific workspace. The application's context (problem statement, constraints, stakeholders, success condition, initial state) is slotted into the executable prompt template. Executable prompt: `prompts/application.md`.
 
-Another preference, not a rule: the methodology should include some mechanism by which the workspace can demonstrate that its specifications still describe reality. In a software context this is automated tests. In a research context it may be reproducibility of results. In a policy context it may be a pilot study or an evaluation against stated outcomes. In a physical system it may be a qualification campaign. The word "test" is used in this prompt as a shorthand for whatever form of validation is appropriate; the methodology should develop its own language for this as it matures.
+## Dispatch
 
-## How to operate
+**If the workspace contains `SESSION-LOG.md` with prior sessions of self-development, plus the engine-definition files enumerated in `specifications/engine-manifest.md` §3, plus development-provenance in `provenance/` — this is the self-development application's source workspace.** Load `prompts/development.md` and proceed under its instructions.
 
-Begin by reading the workspace completely. Every file, every document, every historical record, every commit message if the workspace is under version control. Build a full picture of what exists before changing anything.
+**If the workspace contains the engine-definition files but a fresh (empty or near-empty) `SESSION-LOG.md`, a fresh `open-issues.md`, an empty `provenance/`, and an `applications/NNN-<slug>/brief.md` naming the problem — this is an external-problem application's workspace.** Load `prompts/application.md`, populate its slots from the `brief.md`, and proceed under its instructions.
 
-From that reading, determine what state the methodology is in and what should happen next. If the workspace has not yet defined its own structure, the first work is to do so — by surveying prior approaches, reasoning about what this methodology needs, and committing a proposed shape along with the reasoning that led to it. If the workspace has defined a structure but not yet applied it, the next work is to begin applying it. If the structure has been applied but produces artefacts that have not been validated, the next work is validation. If everything has been exercised at least once, the methodology is in evolution mode — identify the weakest aspect of the current system and do whatever work addresses it.
+**If the workspace does not yet contain the engine-definition files, or the dispatch is otherwise ambiguous**, halt and seek clarification from the operator. Do not attempt to infer the mode from partial evidence.
 
-State your determination explicitly at the start of each session, so the next application of this prompt has a clear record of what you inferred and why.
+Engine version loaded is declared in `specifications/engine-manifest.md` §2. Every session's provenance should record which engine version was loaded.
 
-Before doing any substantive work, read everything the workspace has preserved about prior decisions. If an idea was considered and rejected earlier, do not silently re-propose it. If you believe a rejected idea deserves reconsideration, cite the prior rejection and explain what has changed. Continuity of reasoning is the whole point of preserving provenance.
+## Operating discipline (applies in both modes)
 
-Substantive work in this methodology should not be done by a single perspective. Convene a group of AI agents with genuinely different viewpoints suited to the work at hand. Some perspectives generate options, some challenge them, some attend to what is unknown, some attend to what has been ignored, some reason about how the work will be received by those who must live with it. The specific perspectives, their number, and how they collaborate are for you to develop. Over repeated applications, patterns will emerge — document them when they do, so future applications can build on what worked.
+Every application of the engine follows the rules in `prompts/development.md` §Rules that hold across applications. Those rules are invariant across modes: do not import ideas from outside the process; do not skip steps; do not overwrite prior specifications silently; preserve all provenance; leave the workspace in a coherent state at the end of every application.
 
-The work should produce a concrete output: a structured record of what was proposed, what was decided, what was rejected with reasoning, and what remains uncertain. This record is the provenance. Commit it to the workspace in a way that preserves it permanently and makes it findable by future applications. Alongside the provenance, update or create whichever artefacts the work warrants. If the work produced a new specification, write the specification. If it produced an implementation, build it. If it surfaced problems, record them where subsequent work will find them. The structure of the workspace should evolve to serve the methodology, not the other way around.
+The nine-activity kernel (Read, Assess, Convene, Deliberate, Decide, Produce, Validate, Record, Close) per `specifications/methodology-kernel.md` is the same in both modes. The multi-agent deliberation triggers per `specifications/multi-agent-deliberation.md` apply in both modes. The two-tier validation per `specifications/validation-approach.md` applies in both modes. The three senses of validation per kernel §7 apply in both modes.
 
-Before ending the session, verify the workspace is in a coherent state. Specifications describe the system as it currently is. Validations pass against those specifications, or their failures are documented as open issues for subsequent work to address. Any human-facing summary of the workspace accurately reflects its current state. Every piece of work done in this session has committed its provenance.
+## Now dispatch
 
-## Rules that hold across applications
-
-Do not import ideas from outside the process. If an insight arrived through reading something unrelated, a conversation with a human, or your own pretraining, introduce it as an input to an explicit surveying or hypothesising step rather than committing it directly. The value of this methodology is that its artefacts are traceable to the reasoning that produced them.
-
-Do not skip steps. Each piece of work's output is the next piece's input, and skipping breaks the chain of reasoning that makes the methodology evolveable.
-
-Do not overwrite prior specifications silently. When a specification is revised, preserve the prior version and make the succession traceable. The form of that preservation — filenames, directory structure, supersession markers, or something else — is for you to develop. Whatever you choose, be consistent so future readers can follow the thread.
-
-Preserve all provenance. Do not delete historical records, even when they feel embarrassing or outdated. A rejected idea from long ago may be the key to understanding a decision made today.
-
-Leave the workspace in a coherent state at the end of every application. If a piece of work cannot complete, commit what was produced, document the blocker, and end cleanly rather than leaving work in an indeterminate state.
-
-## Now begin
-
-Read the workspace. Determine what state it is in. Read prior provenance. Convene the perspectives suited to the work at hand. Do the work. Commit its outputs and its record. Report what was done, what state the workspace is now in, and what the next application should address.
-
+Inspect the workspace. Determine which mode applies. Load the appropriate executable prompt. Proceed under that prompt's instructions.

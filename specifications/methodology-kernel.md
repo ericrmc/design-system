@@ -14,6 +14,8 @@ supersedes: methodology-kernel-v3.md
 
 This specification defines the core process of the methodology: what happens during each application of the prompt, in what order, and to what standard. It is the minimum viable process — the kernel that every session follows. As the methodology matures, additional specifications may elaborate on individual activities, but this kernel defines the overall shape.
 
+This specification defines the Selvedge methodology kernel: the abstract execution semantics that a conforming engine must realise. `specifications/engine-manifest.md` enumerates the files that constitute the current engine; `specifications/identity.md` establishes the denotation layering (Selvedge names the methodology; "Selvedge engine" denotes the current executable implementation; each session is an application of that engine). The kernel applies equally to the self-development application and to external-problem applications.
+
 ## Specification
 
 ### Application Model

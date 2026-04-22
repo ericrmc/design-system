@@ -1,0 +1,25 @@
+session: 017
+title: OI-017 Reframing Deliberation
+date: 2026-04-22
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+deliberation_anchor_commit: f3e003b
+
+participants:
+  - perspective: architect
+    manifest: manifests/architect.manifest.yaml
+    hypothesis_assigned: H2 (full reframing)
+    raw_output: 01a-perspective-architect.md
+  - perspective: operationalist
+    manifest: manifests/operationalist.manifest.yaml
+    hypothesis_assigned: H3 (partial reframing)
+    raw_output: 01b-perspective-operationalist.md
+  - perspective: skeptic
+    manifest: manifests/skeptic.manifest.yaml
+    hypothesis_assigned: H1 (no reframing, adversarial)
+    raw_output: 01c-perspective-skeptic.md
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+    hypothesis_assigned: none (independent; proposed and advocated H4 layered model)
+    raw_output: 01d-perspective-outsider.md
