@@ -1,0 +1,14 @@
+session: 022
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+oi004_qualifying_participants: [outsider]
+participants:
+  - perspective: architect
+    manifest: manifests/architect.manifest.yaml
+  - perspective: conservator
+    manifest: manifests/conservator.manifest.yaml
+  - perspective: skeptic
+    manifest: manifests/skeptic.manifest.yaml
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml

@@ -1,0 +1,37 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: OpenAI GPT-5.4 via codex exec
+model_family: gpt
+model_id: gpt-5.4
+model_version: 5.4
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: orchestrator (Claude Opus 4.7 main)
+participant_selection_method: solicited-externally
+identity_known: true
+context_source: /tmp/022-outsider-prompt.txt (concatenation of provenance/022-workspace-scaling-trajectory/01-brief-shared.md + 01d-stance-outsider.md + response-now instruction)
+delivered_at: 2026-04-22T22:17
+received_at: 2026-04-22T22:26
+raw_response_file: provenance/022-workspace-scaling-trajectory/01d-perspective-outsider.md
+transport_notes: |
+  Invocation: `codex exec -c model_reasoning_effort=xhigh < /tmp/022-outsider-prompt.txt > /tmp/022-outsider-response.txt 2>&1`
+  Stdin-pipe form used per Session 021 lesson (argument-substitution stdin-wait hang). Exit code 0; background task id bfutmoq27.
+  Session id: 019db521-775f-7872-9b38-f0c4b0094c28
+  Reasoning effort: xhigh
+  Tokens used: 46,382 (per codex end-of-stream tokens-used line)
+  Outsider performed pre-response workspace exploration: multiple `exec` tool calls reading CLAUDE.md, prompts/development.md, prompts/application.md, specifications/methodology-kernel.md, specifications/workspace-structure.md, specifications/engine-manifest.md, specifications/validation-approach.md, specifications/multi-agent-deliberation.md §Provenance Layout, tools/validate.sh, and provenance/014-oi016-resolution/01d-perspective-outsider.md structure. Second session with this workspace-exploration pattern (first was Session 021).
+  Response is preserved verbatim including CLI banner, four codex markers delimiting tool-call sections, reasoning-summary entries, end-of-stream duplicate response body (per Session 014 precedent), and tokens-used line.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: "unknown-but-asserted"
+aggregator_intermediary: "n/a"
+selection_relationship_to_operator: "n/a"
+independence_basis: organization-distinct

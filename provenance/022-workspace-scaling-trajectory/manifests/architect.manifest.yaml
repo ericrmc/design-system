@@ -1,0 +1,30 @@
+perspective: architect
+participant_kind: claude-subagent
+participant_identity: Claude Opus 4.7 (parallel subagent, internal id a4da78d682a218af3)
+model_family: claude
+model_id: claude-opus-4-7
+model_version: 4.7
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: orchestrator (Claude Opus 4.7 main)
+participant_selection_method: solicited-externally
+identity_known: true
+context_source: provenance/022-workspace-scaling-trajectory/01-brief-shared.md + provenance/022-workspace-scaling-trajectory/01a-stance-architect.md
+delivered_at: 2026-04-22T22:17
+received_at: 2026-04-22T22:22
+raw_response_file: provenance/022-workspace-scaling-trajectory/01a-perspective-architect.md
+transport_notes: Launched via Agent tool (subagent_type=general-purpose, model=opus) in parallel batch with Conservator, Skeptic, and Outsider (codex exec). Context-isolated from other perspectives.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+training_lineage_evidence_pointer: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown
