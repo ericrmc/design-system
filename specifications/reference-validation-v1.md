@@ -1,11 +1,12 @@
 ---
 title: Reference Validation
-version: 2
-status: active
+version: 1
+status: superseded
 created: 2026-04-22
 last-updated: 2026-04-22
-updated-by-session: 019
-supersedes: reference-validation-v1.md
+updated-by-session: 014
+supersedes: none
+superseded-by: reference-validation.md (v2)
 ---
 
 # Reference Validation
@@ -16,9 +17,7 @@ This specification defines the reference-validation mechanism: how the methodolo
 
 Reference validation is a third named sense of validation alongside Workspace validation and Domain validation (per `methodology-kernel.md` v4 §7). It supplies evidence about the methodology's capacity to derive artefacts under stated constraints. **It does not establish that any specific artefact functioned in its intended use, and it does not substitute for Domain validation when a domain-actor is available.** This scope-statement is load-bearing and must be preserved in any citation of reference-validation as evidence.
 
-This specification was produced in Session 014 as a resolution of OI-016 (domain-validation pathway under user unavailability). It is provisional pending first-exercise at Session 015; automatic re-opening triggers on OI-016 are specified within this document's §9.
-
-**Version 2 (Session 019)** revises v1 in response to Session 018's first-exercise Cell 1 C3 rejection (WX-18-2 through WX-18-5). Substantive changes: §1 C3 restructured as a two-stage test with three rejection conditions (quantitative overlap, verbatim distinctive-phrase emission, cross-family retrieval asymmetry); §1 Flagged tension strengthened with empirical materialisation annotation; §4 L1 restructured as L1a thin-prompt canary + L1b full-constraint saturation test (canary is necessary-but-not-sufficient); §4 L3 extended with pre-seal diagnostic-not-design-evidence text; §9 triggers sharpened (trigger 5 counts pre-seal rejections; trigger 6 extended; new trigger 7 pre-commits kernel §7 revision consideration on n=2 structurally-different-domain rejection); §10 preserved minorities annotated with Session 019 and three new Session 019 minorities added. v1 is preserved as `reference-validation-v1.md` status superseded.
+This specification was produced in Session 014 as a resolution of OI-016 (domain-validation pathway under user unavailability). It is provisional pending first-exercise at Session 015; six automatic re-opening triggers on OI-016 are specified within this document's §9.
 
 ## Specification
 
@@ -30,17 +29,7 @@ A candidate reference case must satisfy all eight of the following criteria. A s
 
 **C2 — Constraint-legibility without solution-smuggling.** The constraint set must be statable to Produce agents as a problem-shape without the statement tipping the solution. A fresh agent reading only the constraint statement must be able to name more than one plausible solution family. If the constraint statement is so detailed that the reference solution is implied, the case has leaked and is rejected.
 
-**C3 — Low saturation in common training distributions.** The reference must not be a canonical worked example appearing verbatim or near-verbatim across internet corpora, nor recoverable from the full candidate constraint statement itself. Operational test runs in two stages against **both** a non-Claude model (via `codex exec`) and an independent Claude instance; both stages are mandatory pre-seal.
-
-**Stage (a) — Thin-prompt contamination canary (per §4 L1a).** Thin prompts derived from tranche-0 are fired at each model family. Spontaneous emission of the reference's idiosyncratic structure, labels, or sequence discards the case.
-
-**Stage (b) — Full-constraint saturation test (per §4 L1b).** Each model is given the complete constraint statement as it would be issued to Cell 2, with reference author, title, and distinctive phrases removed, and asked to produce a solution. **Rejection conditions (any one fires):**
-
-1. Either model produces text exceeding 30% shared 5-gram token overlap with the sealed reference.
-2. Either model spontaneously emits a verbatim distinctive phrase, section heading, or named label from the reference (zero-tolerance regardless of overall overlap percentage).
-3. **Cross-family retrieval asymmetry:** one model family reproduces the reference verbatim or near-verbatim (or with its idiosyncratic section labels or sequence) while the other produces constraint-satisfying but from-scratch text. The case is rejected even if the quantitative 5-gram figure for the divergent family is below threshold. Cross-family asymmetry of this shape is positive contamination evidence for the reproducing family; it indicates that constraints do not uniquely determine the text, only retrieval does.
-
-**Stage (a) is necessary but not sufficient** (per WX-18-2, Session 018): thin prompts describe problem-shape without the full requirements and under-detect saturation when the triggering content is distributed across the requirements themselves. Canary survival justifies continuing evaluation; it does not satisfy C3 on its own.
+**C3 — Low saturation in common training distributions.** The reference must not be a canonical worked example appearing verbatim or near-verbatim across internet corpora. Operational test: both a non-Claude model (via `codex exec`) and an independent Claude instance are each given only the constraint statement and asked to produce a solution. If either produces text that exceeds 30% shared 5-gram token overlap with the reference, the case is rejected as contaminated. Additionally, the Outsider contamination canary (per §4.L1) runs thin prompts derived from tranche-0 against at least two model families; if they spontaneously emit the reference's idiosyncratic structure, labels, or sequence, the case is discarded.
 
 **C4 — Staged-constraint structure.** The reference case's constraint set must be partitionable into an initial subset (tranche-0) and at least two emergent subsets (tranche-1, tranche-2, ...) whose release is tied to methodology-internal triggers pre-committed at Cell 1. Tranche-0 contains no more than roughly 60% of the final constraint set. Cases where all constraints are knowable up-front are weaker tests and are deprioritised. The reference case's author must have documented evidence of the problem's shape changing during design (project diaries, retrospective papers, change logs, revision history) — constraints that genuinely arrived over time historically.
 
@@ -55,11 +44,7 @@ A candidate reference case must satisfy all eight of the following criteria. A s
 - **Falsification-admitting:** the reference must have explicit mandatory constraints, explicit optional elements, and explicit failure conditions. If every divergence can be explained away as "another valid approach," the case cannot validate anything.
 - **Uncertainty-declared:** the provenance write-up for the reference must include the author's own account of what they are uncertain about in their solution — which parts they might have done differently, what they would change with hindsight. This provides a tolerance band for divergence scoring: divergence within author-flagged uncertainty bands is scored as legitimate design judgment, not as substantive divergence.
 
-**Flagged tension (preserved per Session 014 Skeptic Q1; empirically materialised Session 018 WX-18-3).** Criteria (5) legibility and (8) pre-LLM-co-design are in structural tension with (3) low-saturation. A domain legible to Claude subagents and whose reference pre-dates 2022 is almost by construction heavily represented in Claude's pretraining.
-
-**Session 018 Cell 1 first-exercise confirmation.** The Kerth Prime Directive retrospective opening protocol — a canonical D2 candidate satisfying C5 and C8 — failed C3 stage (b) with ~94% 5-gram overlap and verbatim section-heading emission by a Claude Opus 4.7 subagent (provenance: `provenance/018-reference-validation-exercise-1/`). This is an empirical instance of the flagged tension, not an unexpected finding; it confirms the tension is operationally load-bearing and cannot be treated as theoretical.
-
-The selection criteria probe around this tension via the two-stage saturation test (§1 C3, §4 L1); **the tension is not resolved by this spec and cannot be resolved by threshold-tuning.** A single Cell 1 rejection against the known limit is not in itself evidence of sustainable-rate pool exhaustion. If the tension empties the candidate pool at sustainable rate (Session 015+ pattern), or if a second full-constraint-stage rejection matches the Session 018 shape in a structurally-different domain, §9 trigger 7 fires and the mechanism-failure trigger in §7 comes into consideration (see also §9 re-opening triggers 5 and 7).
+**Flagged tension (preserved per Session 014 Skeptic Q1).** Criteria (5) legibility and (8) pre-LLM-co-design are in structural tension with (3) low-saturation. A domain legible to Claude subagents and whose reference pre-dates 2022 is almost by construction heavily represented in Claude's pretraining. The selection criteria attempt to probe around this tension via the saturation test and contamination canary; the tension is not resolved. If the tension empties the candidate pool at sustainable rate (Session 015+ pattern), the mechanism-failure trigger in §8(c) fires.
 
 ### 2. The comparison procedure
 
@@ -146,19 +131,11 @@ Validation runs across a small number of sessions (2–4 per exercise) organised
 
 No single defence is airtight. Layered defences are mandatory.
 
-**L1 — Reference selection saturation gate.** Per §1 C3. Two stages; both mandatory pre-seal.
-
-**L1a — Thin-prompt contamination canary** (Outsider-originated). Thin prompts derived from tranche-0 fired at multiple model families; reject on spontaneous emission of reference's idiosyncratic structure, labels, or sequence. **Known limitation:** the canary under-detects saturation when the reference's triggering content is distributed across requirements rather than concentrated in problem-shape (WX-18-2, Session 018). L1a survival is necessary but not sufficient.
-
-**L1b — Full-constraint saturation test.** Outsider + independent Claude each given the complete constraint statement as it would be issued to Cell 2 (with reference author, title, and distinctive phrases removed), asked to produce a solution. Reject per §1 C3 rejection conditions (1) >30% 5-gram overlap, (2) verbatim distinctive-phrase or section-heading emission (zero-tolerance), or (3) cross-family retrieval asymmetry. The seal record preserves the prompts, model families, and outputs used to clear L1b.
-
-Cases passing both L1a and L1b proceed to sealing per §4 L2.
+**L1 — Reference selection saturation gate.** Per §1 C3. Pre-adoption test: Outsider + independent Claude each given constraints-only, asked to produce solution. Reject on >30% 5-gram overlap. Outsider-originated **contamination canary**: thin prompts derived from tranche-0 fired at multiple model families; reject on spontaneous emission of reference's idiosyncratic structure/labels/sequence.
 
 **L2 — Produce-side contextual isolation.** Cell 2 agents have tooling but search exclusion list enforced at pre-commit. No reference text, URL, or reference-identifying phrasing in Produce context. Enforcement: if comparison at Cell 3 detects high lexical similarity, Fail verdict (inverted-axis rule). Incentive structure punishes circumvention.
 
-**L3 — Cross-model divergence analysis.** Cell 3 validators span Claude-family and non-Claude-family. Cross-family convergence on reference text is contamination evidence. Cross-family divergence with both satisfying constraints is design evidence **at Cell 3 (post-seal)**.
-
-**Pre-seal interpretation (Session 019 revision per WX-18-4).** Cross-family divergence observed during §1 C3 stage (b) or §4 L1b is a contamination diagnostic, not design evidence: it shows uneven saturation across model families, not that the methodology derived the structure. **A candidate that fails C3 is not rescued by cleaner output from another family.** Pre-seal cross-family divergence is interpretable as design evidence only after a case has passed L1 and reached Cell 3.
+**L3 — Cross-model divergence analysis.** Cell 3 validators span Claude-family and non-Claude-family. Cross-family convergence on reference text is contamination evidence. Cross-family divergence with both satisfying constraints is design evidence.
 
 **L4 — Structural + lexical-inverted comparison.** Cell 3's rubric weights structural correspondence primarily, with lexical distance as contamination signal (not quality signal). Never adopted alone; always runs with L5 + L6 + L7.
 
@@ -241,48 +218,26 @@ This specification's adoption moves OI-016 to **Resolved — provisionally addre
 2. **Counterfactual-probe inversion** (§4 L5): counterfactual-probe results show the methodology producing an artefact tracking original reference rather than modified constraint.
 3. **"Too fast" pattern** (Session 014 Q7 Architect): single Produce iteration arriving at ≥80% structural alignment across multiple cases despite passing contamination tests.
 4. **Noise-floor inversion** (§7): reference-validation pass-rate within 15 percentage points of no-methodology constraint-only baseline.
-5. **Three-consecutive-"gap-surfaced"-non-passes** (§7 anti-laundering rule). **Session 019 clarification (per Skeptic R7, WX-18):** "gap-surfaced non-pass" includes pre-seal Cell 1 rejections; the trigger counts across all exercise attempts regardless of which cell the non-pass occurs in. Session 018 counts as exercise 1.
-6. **Label discipline or scope softening** (§8): `validation: reference-validated` artefacts used externally without the label qualification; kernel §7's anti-substitution clause softened or removed without concurrent strengthening elsewhere; **or §1 C3 narrowed from cross-family contamination screening to family-conditional screening without explicit concurrent narrowing of claim language and labels** (Session 019 extension per Outsider).
-7. **Structurally-different-domain Cell 1 rejection pattern** (Session 019 addition per Reviser R4 + Outsider §9.7). **Two pre-seal C3 stage (b) rejections in structurally-different domains** (e.g., not both agile-retrospective) with verbatim or near-verbatim reproduction by the Cell 2 Produce-default family. Two such rejections:
-   - Activate the Session 014 Skeptic "provisional substitute" minority warrant (per §10) as a **required kernel §7 revision consideration** in the next session after the second rejection.
-   - Re-open OI-016 to Open state pending that consideration.
-   - Make the saturation-gate false-negative pattern (a candidate surviving L1a canary but rejected at L1b full-constraint probe) observable as a pattern rather than a single-session artefact.
+5. **Three-consecutive-"gap-surfaced"-non-passes** (§7 anti-laundering rule).
+6. **Label discipline collapse** (§8): `validation: reference-validated` artefacts used externally without the label qualification; kernel §7's anti-substitution clause softened or removed without concurrent strengthening elsewhere.
 
 ### 10. Preserved first-class minorities
 
-Six dissenting positions are preserved as first-class minorities within this specification: three from the Session 014 deliberation that produced v1, and three from the Session 019 deliberation that produced v2. Each has a specified operational warrant that would reopen the relevant design question.
-
-#### 10.1 — Session 014 minorities (preserved verbatim from v1, with Session 019 annotations)
+Three dissenting positions from the Session 014 deliberation are preserved as first-class minorities within this specification. Each has a specified operational warrant that would reopen the relevant design question.
 
 **Skeptic "provisional substitute" framing minority** (Session 014, 01c Q5). The kernel should name reference-validation as explicitly provisional, not as equal-but-distinct third sense. The adopted kernel text incorporates the Skeptic's load-bearing scope-statement content ("does not establish intended-use functioning") without using the word "provisional." Operational warrant: if label discipline collapse (§9 trigger 6) is observed, the Skeptic's stricter "provisional substitute" framing is the preferred revision direction for kernel §7.
 
-> **Session 019 annotation.** WX-18-3 is empirical vindication of the underlying narrow-claim position: Session 018 Cell 1 rejected D2 (Kerth Prime Directive) for precisely the reason the Session 014 Skeptic predicted. Session 019's deliberation (3-of-4 cross-family majority: Reviser + Minimalist Claude + Outsider non-Claude) adopted the *narrow reading* of the §10 warrant — label-discipline collapse is the specifically-required trigger; WX-18-3 is a different empirical event. Session 019 instead strengthened §9 trigger 7 to make the Skeptic's warrant automatically activate on n=2 structurally-different-domain rejection. The Session 014 Skeptic minority's framing remains the pre-committed revision direction under §9 triggers 6 or 7. See §10.2 "Session 019 Skeptic preemptive-activation minority" for the broad-reading alternative preserved from Session 019.
-
 **Architect pure-within-session shape minority** (Session 014, 01a Q3). Validation should be a single-session loop, not a hand-off across sessions. The adopted shape is the Outsider-originated three-cell protocol with hand-off between Cell 2 and Cell 3. Operational warrant: if Cell 2 → Cell 3 hand-off consistently loses design-intent information that a continuous within-session loop would have preserved (per WX-14-2), the Architect's pure-within-session proposal is the preferred revision direction.
 
-> **Session 019 annotation.** Not engaged by Session 018's Cell 1 pre-seal rejection or by Session 019's revisions. Preserved unchanged.
-
-**Skeptic+Outsider joint narrower-claim minority** (Session 014, 01c+01d Q7). Even if the mechanism works as designed, it validates a narrower claim than the original domain-validation loop. The adopted OI-016 disposition (Resolved-provisional) incorporates this position via the automatic re-opening triggers. Operational warrant: this joint minority is the standing warrant behind §9's re-opening conditions; any movement to soften kernel §7's scope-statement activates the minority and reopens OI-016.
-
-> **Session 019 annotation.** Session 019's §9 trigger strengthening (sharpened trigger 5, extended trigger 6, new trigger 7) increases the surface on which this joint minority can activate. Compatible with the R1–R5 revisions. Preserved unchanged.
-
-#### 10.2 — Session 019 minorities (new; added at v2)
-
-**Minimalist defer-revision minority** (Session 019, 01b Q1, Q7). Position: the single data point from Session 018 (one C3 rejection of D2) does not compel spec amendment; the spec should not be edited before n=2 exercise evidence or before the §1 pool-exhaustion trigger fires. Session 019's majority adopted spec revisions over this position; the R1–R5 text was drafted from one data point. Operational warrant: if Session 020's Cell 1 attempt with S1, S2, or a re-surveyed candidate passes C3 stage (a) and (b) without triggering any of the three rejection conditions, the revised §1 C3 and §4 L1 text did no work that the v1 text would not also have done, and the amendments can be read as premature. In that event, the Minimalist position is vindicated and the amendments are candidates for rollback argument. The Minimalist explicitly passed the anti-laundering check on their deferral position, citing specific revision-compulsion thresholds (n=2 same-shape rejection; §8(c) pool-exhaustion trigger firing) that prevent deferral from becoming indefinite.
-
-**Skeptic preemptive-activation minority** (Session 019, 01c Q5, Q7). Position: WX-18-3's empirical materialisation of the §1-flagged tension satisfies the *spirit* of §10.1's "provisional substitute" warrant, even though the specific textual trigger (label-discipline collapse) has not occurred; kernel §7 should have been revised in Session 019 to use the phrase "provisional substitute" and to add a mandatory-dissent clause. Session 019's 3-of-4 cross-family majority adopted the narrow reading of the warrant instead, strengthening §9 trigger 7 to activate the kernel §7 revision on n=2. Operational warrant: if Sessions 020–022 produce a second structurally-different-domain Cell 1 rejection (triggering §9 trigger 7) and the broad-reading preemptive activation would have prevented interim citation drift (per §8 label discipline), the Skeptic's preemptive-activation position is vindicated and the kernel §7 revision direction is the preferred response. The Skeptic's full Q5 text (kernel §7 draft with "provisional substitute" + mandatory-dissent clause) is preserved in `provenance/019-reference-validation-revision/01c-perspective-skeptic.md` Q5.
-
-**Reviser asymmetry-probe minority** (Session 019, 01a Q3 R2). Position: §4 L1 should include an explicit asymmetry-probe clause recording which family reproduced the reference and which did not at L1b, with accumulated records informing a future Cell 2 Produce default question (WX-18-5). Session 019's 3-of-4 majority (Minimalist + Skeptic + Outsider) rejected this clause on the grounds that watchpoint WX-18-5 suffices for n=1 and that the probe clause risks over-reading into `multi-agent-deliberation.md` territory prematurely. Operational warrant: if Sessions 020+ produce multiple Cell 1 L1b rejections and the session-level ability to judge WX-18-5 as a pattern is impaired by absence of structured asymmetry records, the Reviser's probe clause is the preferred revision direction for a Session 021+ §4 L1 amendment. The Reviser's full R2 text is preserved in `provenance/019-reference-validation-revision/01a-perspective-reviser.md` Q3 R2.
+**Skeptic+Outsider joint narrower-claim minority** (Session 014, 01c+01d Q7). Even if the mechanism works as designed, it validates a narrower claim than the original domain-validation loop. The adopted OI-016 disposition (Resolved-provisional) incorporates this position via the six automatic re-opening triggers. Operational warrant: this joint minority is the standing warrant behind §9's re-opening conditions; any movement to soften kernel §7's scope-statement activates the minority and reopens OI-016.
 
 ## Validation
 
 To validate this specification:
 
 1. Read kernel §7 v4 and confirm Reference validation is named as a third sense with explicit scope-statement and anti-substitution clause.
-2. Confirm Session 014's provenance contains the full v1 deliberation (`provenance/014-oi016-resolution/01-deliberation.md`), four perspective raw outputs, and the three decisions (D-069, D-070, D-071).
-3. Confirm Session 019's provenance contains the full v2 deliberation (`provenance/019-reference-validation-revision/01-deliberation.md`), four perspective raw outputs, per-participant manifests, and the two decisions recording the v1 → v2 revision adoption.
-4. Confirm `open-issues.md` carries OI-016 in "Resolved — provisionally addressed pending first-exercise" state with the seven re-opening triggers (§9).
-5. Confirm this specification's internal cross-references (§1 to §4, §5, §7; §4 to §5; §7 to §9; §8 to §9; §9 to §10) are traceable.
-6. When a future session next attempts Cell 1, confirm it follows the two-stage §1 C3 / §4 L1 structure and commits the required per-exercise artefacts (`brief-gatekeeper.md`, `contamination-audit.md`, `comparison-verdict.md`).
-7. When a reference-validation exercise completes Cell 3, confirm the artefact carries the `validation: reference-validated` frontmatter label (if it passes) or is explicitly recorded as not-reference-validated (if it does not).
-8. Confirm v1 is preserved at `specifications/reference-validation-v1.md` with frontmatter `status: superseded` and `superseded-by: reference-validation.md (v2)`.
+2. Confirm Session 014's provenance contains the full deliberation (`01-deliberation.md`), four perspective raw outputs, and the three decisions (D-069, D-070, D-071).
+3. Confirm `open-issues.md` carries OI-016 in "Resolved — provisionally addressed pending first-exercise" state with the six re-opening triggers.
+4. Confirm this specification's internal cross-references (§1 to §4, §5, §7; §4 to §5; §7 to §9; §8 to §9) are traceable.
+5. When Session 015 first-exercises this mechanism, confirm it follows the three-cell protocol and commits the required per-exercise artefacts (`brief-gatekeeper.md`, `contamination-audit.md`, `comparison-verdict.md`).
+6. When Session 015's exercise completes, confirm the artefact carries the `validation: reference-validated` frontmatter label (if it passes) or is explicitly recorded as not-reference-validated (if it does not).

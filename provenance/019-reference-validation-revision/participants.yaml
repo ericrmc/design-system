@@ -1,0 +1,27 @@
+session: 019
+deliberation: reference-validation-revision
+deliberation_anchor_commit: 0550552
+participants:
+  - perspective: reviser
+    manifest: manifests/reviser.manifest.yaml
+    raw_response_file: 01a-perspective-reviser.md
+    participant_kind: claude-subagent
+  - perspective: minimalist
+    manifest: manifests/minimalist.manifest.yaml
+    raw_response_file: 01b-perspective-minimalist.md
+    participant_kind: claude-subagent
+  - perspective: skeptic
+    manifest: manifests/skeptic.manifest.yaml
+    raw_response_file: 01c-perspective-skeptic.md
+    participant_kind: claude-subagent
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+    raw_response_file: 01d-perspective-outsider.md
+    participant_kind: non-anthropic-model
+synthesis:
+  file: 01-deliberation.md
+  synthesizer: "Claude Opus 4.7 (orchestrating agent)"
+composition:
+  participants_family: cross-model
+  cross_model: true
+  non_claude_participants: 1

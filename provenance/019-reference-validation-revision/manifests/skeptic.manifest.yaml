@@ -1,0 +1,24 @@
+perspective: skeptic
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 (1M context) parallel subagent launched via Claude Code Agent tool (general-purpose subagent_type); agent id adfdfb60af68022a0; briefed to inherit Session 014 Skeptic 'provisional substitute' minority + §1-flagged-tension forward"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "opus-4.7"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-019 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "Inline in Agent prompt: shared brief sections 1-3/5-6 plus role-specific stance (brief §4c Skeptic) plus reference material (current spec text excerpts + Session 014 Skeptic Q5 'provisional substitute' text quoted in full + Session 014 Skeptic Q7 procedural-self-deception test quoted in full); subagent instructed to also Read the committed brief; deliberation anchor commit 0550552"
+delivered_at: 2026-04-22T18:28Z
+received_at: 2026-04-22T18:31Z
+raw_response_file: provenance/019-reference-validation-revision/01c-perspective-skeptic.md
+transport_notes: "Committed verbatim from subagent Write output. Subagent is adversarial perspective per kernel §3; specifically briefed to push hard on Q5 (kernel §7 preemptive activation) and Q8 (anti-laundering scrutiny). Agent tool duration 152,880 ms (~2:33). Usage 33,492 tokens across 2 tool uses. Launched in parallel with reviser, minimalist, outsider."
+output_edited_after_submission: false
+participation_shape: perspective
