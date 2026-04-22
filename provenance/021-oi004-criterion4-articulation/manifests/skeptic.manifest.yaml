@@ -1,0 +1,24 @@
+perspective: skeptic
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 (1M context) subagent invoked via Agent tool, general-purpose subagent_type; Claude Code CLI; Anthropic"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "4.7"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-021 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "Inline Agent prompt referencing provenance/021-oi004-criterion4-articulation/01-brief-shared.md (full brief read by subagent via Read tool); preamble assigning Skeptic role per §8.2; subagent instructed to read full brief but treat §8.1/§8.3/§8.4 as visible-context-only and address only §8.2 stance for own response; deliberation anchor commit 31951bd"
+delivered_at: 2026-04-22T20:48Z
+received_at: 2026-04-22T20:56Z
+raw_response_file: provenance/021-oi004-criterion4-articulation/01b-perspective-skeptic.md
+transport_notes: "Committed verbatim from Agent tool stdout. Agent reported ~3,400 words, within 2,000-3,500 target. Agent ID a94180a54bc4e3eb1; total_tokens 44,277; tool_uses 2; duration 271,960 ms. Position: articulation-yes (minimal definition); closure-no (sub-option (b) keep-open with three named conditions); refuses enumeration of unexercised participant kinds (B-F not enumerated, only A enumerated, G watchable). Engine bump for articulation only. Specific falsifier thresholds named per §9."
+output_edited_after_submission: false
+participation_shape: perspective

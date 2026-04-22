@@ -10,6 +10,17 @@ set -euo pipefail
 # See specifications/validation-approach.md v3 "Gating Conventions (checks 14, 15)".
 readonly TRIGGERS_MET_ADOPTION_SESSION=6
 
+# Session from which OI-004 criterion-4 schema is enforced (D-082, Session 021).
+# Checks 16, 17, 19 apply only to sessions numbered >= this constant.
+# Check 18 is presence-gated (fires only when oi-004-retrospective.md exists).
+# See specifications/validation-approach.md v4 "Gating Conventions (checks 16-19)".
+readonly CRITERION4_ARTICULATION_SESSION=21
+
+# Closed set of acceptable participant_organisation values (D-082 R3, Session 021).
+# Extensible by named decision per multi-agent-deliberation.md v4 §Acceptable
+# Participant Kinds. Membership check used by check 19.
+readonly PARTICIPANT_ORGANISATION_CLOSED_SET="anthropic openai google meta xai mistral deepseek cohere local human-individual other-named"
+
 WORKSPACE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PASS=0
 FAIL=0
@@ -524,6 +535,170 @@ for dir in "${provdirs[@]}"; do
 done
 echo ""
 
+# [16] Independent-claim evidence-pointer presence (D-082, Session 021)
+#
+# HONEST LIMIT (read before touching this check):
+# This check verifies the *presence* of the training_lineage_evidence_pointer
+# field in manifests claiming training_lineage_overlap_with_claude:
+# independent-claim. It does not and cannot verify the *truthfulness* of the
+# evidence the pointer points to. A pointer to a fabricated note passes. The
+# Tier 2 question paired with this check is the designed counter-pressure.
+#
+# Gate: session number >= CRITERION4_ARTICULATION_SESSION (=21).
+echo "[16] Independent-claim evidence-pointer presence"
+for dir in "${provdirs[@]}"; do
+  dirname=$(basename "$dir")
+  session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
+  session_int=$((10#$session_num))
+  if [[ $session_int -lt $CRITERION4_ARTICULATION_SESSION ]]; then
+    continue  # pre-adoption; out-of-scope
+  fi
+  manifests_dir="${dir}manifests"
+  if [[ ! -d "$manifests_dir" ]]; then
+    continue
+  fi
+  for mf in "$manifests_dir"/*.manifest.yaml; do
+    [[ -f "$mf" ]] || continue
+    mfname=$(basename "$mf")
+    if grep -qE '^training_lineage_overlap_with_claude:[[:space:]]*independent-claim' "$mf"; then
+      if grep -qE '^training_lineage_evidence_pointer:[[:space:]]*\S+' "$mf"; then
+        pass "$dirname/$mfname — independent-claim evidence pointer present"
+      else
+        fail "$dirname/$mfname — independent-claim without training_lineage_evidence_pointer. NOTE: this check verifies presence of the pointer, not truthfulness of the evidence it points to; see honest-limit comment in validate.sh."
+      fi
+    fi
+  done
+done
+echo ""
+
+# [17] Claude-output-in-training disclosure presence (D-082, Session 021)
+#
+# HONEST LIMIT (read before touching this check):
+# This check verifies *disclosure of self-report* of whether Claude outputs
+# were in the participant's training set. It does not verify the truthfulness
+# of the self-report. A known-no claim by a provider that secretly trained on
+# Claude outputs passes. The value of the check is that 'unknown' (or absence)
+# becomes mechanically visible, raising the cost of silently treating opaque-
+# distillation participants as fully independent. Same operator-integrity
+# floor as check 13.
+#
+# Gate: session number >= CRITERION4_ARTICULATION_SESSION (=21).
+# Out-of-scope: participant_kind in {claude-subagent, anthropic-other}.
+echo "[17] Claude-output-in-training disclosure"
+for dir in "${provdirs[@]}"; do
+  dirname=$(basename "$dir")
+  session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
+  session_int=$((10#$session_num))
+  if [[ $session_int -lt $CRITERION4_ARTICULATION_SESSION ]]; then
+    continue  # pre-adoption; out-of-scope
+  fi
+  manifests_dir="${dir}manifests"
+  if [[ ! -d "$manifests_dir" ]]; then
+    continue
+  fi
+  for mf in "$manifests_dir"/*.manifest.yaml; do
+    [[ -f "$mf" ]] || continue
+    mfname=$(basename "$mf")
+    pkind=$(grep -E '^participant_kind:' "$mf" | head -1 | sed -E 's/^participant_kind:[[:space:]]*//' | tr -d '[:space:]')
+    case "$pkind" in
+      claude-subagent|anthropic-other) continue ;;  # out-of-scope per honest-limit
+    esac
+    if grep -qE '^claude_output_in_training:[[:space:]]*(known-yes|known-no|unknown|n/a)' "$mf"; then
+      pass "$dirname/$mfname — claude_output_in_training disclosed"
+    else
+      fail "$dirname/$mfname — missing claude_output_in_training field (required for participant_kind=${pkind} per multi-agent-deliberation.md v4 §Heterogeneous-Participant Recording Schema). NOTE: this check verifies disclosure presence, not truthfulness; see honest-limit comment in validate.sh."
+    fi
+  done
+done
+echo ""
+
+# [18] OI-004 closure-retrospective well-formedness (D-082, Session 021)
+#
+# HONEST LIMIT (read before touching this check):
+# This check verifies *structural well-formedness* of any oi-004-retrospective.md
+# artefact present in the workspace. It does not verify the substantive adequacy
+# of the cited evidence. The Tier 2 Q8 question paired with this check is the
+# designed counter-pressure: a closure-retrospective that mechanically passes
+# this check but cannot survive Q8 substantive review should not justify OI-004
+# closure. Same pattern as check 13 + Tier 2 Q6.
+#
+# Gate: presence of any provenance/*/oi-004-retrospective.md file.
+echo "[18] OI-004 closure-retrospective well-formedness"
+shopt -s nullglob
+retrospectives=("$WORKSPACE_ROOT"/provenance/*/oi-004-retrospective.md)
+shopt -u nullglob
+if [[ ${#retrospectives[@]} -eq 0 ]]; then
+  echo "  (no oi-004-retrospective.md present; out-of-scope)"
+else
+  for r in "${retrospectives[@]}"; do
+    rdir=$(basename "$(dirname "$r")")
+    missing=""
+    for section in "## Qualifying Deliberations Table" \
+                   "## Summary Tally" \
+                   "## P4 Assertion"; do
+      if ! grep -qF "$section" "$r"; then
+        missing="${missing} '${section}'"
+      fi
+    done
+    if [[ -z "$missing" ]]; then
+      pass "$rdir/oi-004-retrospective.md — well-formed"
+    else
+      fail "$rdir/oi-004-retrospective.md — missing required section(s):${missing}. NOTE: this check verifies structural well-formedness only; substantive adequacy is Tier 2 Q8."
+    fi
+  done
+fi
+echo ""
+
+# [19] Non-Anthropic participant_organisation closed-set membership (D-082, Session 021)
+#
+# HONEST LIMIT (read before touching this check):
+# This check verifies that participant_organisation is present and falls within
+# the spec-enumerated closed set. It does not verify that the declared
+# organisation is the actual developer of the model. Same operator-integrity
+# floor as checks 13/16/17.
+#
+# Gate: session number >= CRITERION4_ARTICULATION_SESSION (=21).
+# In-scope: participant_kind: non-anthropic-model.
+echo "[19] Non-Anthropic participant_organisation closed-set membership"
+for dir in "${provdirs[@]}"; do
+  dirname=$(basename "$dir")
+  session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
+  session_int=$((10#$session_num))
+  if [[ $session_int -lt $CRITERION4_ARTICULATION_SESSION ]]; then
+    continue  # pre-adoption; out-of-scope
+  fi
+  manifests_dir="${dir}manifests"
+  if [[ ! -d "$manifests_dir" ]]; then
+    continue
+  fi
+  for mf in "$manifests_dir"/*.manifest.yaml; do
+    [[ -f "$mf" ]] || continue
+    mfname=$(basename "$mf")
+    pkind=$(grep -E '^participant_kind:' "$mf" | head -1 | sed -E 's/^participant_kind:[[:space:]]*//' | tr -d '[:space:]')
+    if [[ "$pkind" != "non-anthropic-model" ]]; then
+      continue  # out-of-scope
+    fi
+    porg=$(grep -E '^participant_organisation:' "$mf" | head -1 | sed -E 's/^participant_organisation:[[:space:]]*//' | tr -d '[:space:]')
+    if [[ -z "$porg" ]]; then
+      fail "$dirname/$mfname — participant_kind=non-anthropic-model but participant_organisation field missing or empty"
+      continue
+    fi
+    in_set=false
+    for allowed in $PARTICIPANT_ORGANISATION_CLOSED_SET; do
+      if [[ "$porg" == "$allowed" ]]; then
+        in_set=true
+        break
+      fi
+    done
+    if $in_set; then
+      pass "$dirname/$mfname — participant_organisation '$porg' in closed set"
+    else
+      fail "$dirname/$mfname — participant_organisation '$porg' not in closed set. Allowed: $PARTICIPANT_ORGANISATION_CLOSED_SET. To extend the closed set, name the addition in a decision record and update PARTICIPANT_ORGANISATION_CLOSED_SET in validate.sh in the same session."
+    fi
+  done
+done
+echo ""
+
 # --- Summary ---
 echo "--- Tier 1 Summary ---"
 echo "Passed: $PASS  |  Failed: $FAIL  |  Warnings: $WARN"
@@ -568,6 +743,18 @@ echo "      any **Non-Claude participation:** skipped annotation, state whether"
 echo "      the reason is substantive (not formulaic) and the retry_in_session:"
 echo "      commitment is credible. Flag mismatches and weak reasons; they are"
 echo "      the dishonesty surface this session's Tier 1 checks cannot reach."
+echo ""
+echo "  Q8. OI-004 closure-retrospective substantive adequacy (paired with"
+echo "      check 18). If this session contains an oi-004-retrospective.md, read"
+echo "      its Qualifying Deliberations Table and P4 Assertion. For each row"
+echo "      marked frame-replacement-or-novel-mechanism, verify the cited"
+echo "      synthesis section actually contains a non-Claude-originated reframing"
+echo "      (not paraphrase or restatement of a Claude perspective's argument)."
+echo "      For the P4 assertion, verify the cited divergence shows the synthesis"
+echo "      adopted a position that contradicts (or substantively augments) the"
+echo "      Claude consensus, not merely supplemented it. Flag rows where the"
+echo "      substantive claim is weaker than the structural claim suggests."
+echo "      (Skip if no oi-004-retrospective.md present.)"
 echo ""
 
 if [[ $FAIL -gt 0 ]]; then

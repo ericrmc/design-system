@@ -1,0 +1,24 @@
+perspective: articulator
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 (1M context) subagent invoked via Agent tool, general-purpose subagent_type; Claude Code CLI; Anthropic"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "4.7"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-021 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "Inline Agent prompt referencing provenance/021-oi004-criterion4-articulation/01-brief-shared.md (full brief read by subagent via Read tool); preamble assigning Articulator role per §8.1; subagent instructed to read full brief but treat §8.2/§8.3/§8.4 as visible-context-only and address only §8.1 stance for own response; deliberation anchor commit 31951bd"
+delivered_at: 2026-04-22T20:48Z
+received_at: 2026-04-22T20:58Z
+raw_response_file: provenance/021-oi004-criterion4-articulation/01a-perspective-articulator.md
+transport_notes: "Committed verbatim from Agent tool stdout. Agent reported 3,493 words, within 2,000-3,500 target. Agent ID ac954619eabc350f5; total_tokens 57,413; tool_uses 6; duration 425,621 ms. Position taken: D-Min ∩ O-Corr two-clause hybrid (§5.1 permissive baseline ∩ §5.3 empirical-corroboration). Drafted exact spec text per §9 instruction. Engaged Q5 self-application honestly with four-argument defence."
+output_edited_after_submission: false
+participation_shape: perspective

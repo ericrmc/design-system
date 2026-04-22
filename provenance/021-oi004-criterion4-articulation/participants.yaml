@@ -1,0 +1,24 @@
+session: 021
+deliberation: oi004-criterion4-articulation
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+participants:
+  - perspective: articulator
+    manifest: manifests/articulator.manifest.yaml
+    raw_response: 01a-perspective-articulator.md
+    participant_kind: claude-subagent
+  - perspective: skeptic
+    manifest: manifests/skeptic.manifest.yaml
+    raw_response: 01b-perspective-skeptic.md
+    participant_kind: claude-subagent
+  - perspective: operationaliser
+    manifest: manifests/operationaliser.manifest.yaml
+    raw_response: 01c-perspective-operationaliser.md
+    participant_kind: claude-subagent
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+    raw_response: 01d-perspective-outsider.md
+    participant_kind: non-anthropic-model
+deliberation_anchor_commit: 31951bd
+brief_path: 01-brief-shared.md

@@ -1,0 +1,24 @@
+perspective: operationaliser
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 (1M context) subagent invoked via Agent tool, general-purpose subagent_type; Claude Code CLI; Anthropic"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "4.7"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-021 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "Inline Agent prompt referencing provenance/021-oi004-criterion4-articulation/01-brief-shared.md (full brief read by subagent via Read tool); preamble assigning Operationaliser role per §8.3; subagent permitted reference reads of multi-agent-deliberation.md, validation-approach.md, tools/validate.sh to ground schema deltas in implementable surface; instructed to treat §8.1/§8.2/§8.4 as visible-context-only and address only §8.3 stance for own response; deliberation anchor commit 31951bd"
+delivered_at: 2026-04-22T20:48Z
+received_at: 2026-04-22T20:56Z
+raw_response_file: provenance/021-oi004-criterion4-articulation/01c-perspective-operationaliser.md
+transport_notes: "Committed verbatim from Agent tool stdout. Agent reported ~3,400 words, within 2,000-3,500 target. Agent ID a6ace12dc48e05b9d; total_tokens 78,964; tool_uses 8; duration 259,160 ms. Position: definitional-with-empirical-floor (P1 closed-set provider, P2 claude_output_in_training, P3 closed-set selection method, P4 cumulative operational corroboration). Drafted four schema additions + three new validate.sh checks (16/17/18) + new Tier 2 Q8. Closure sub-option (b) — articulate now, leave OI-004 in new state 'Articulated; awaiting closure-retrospective.' Engine v1→v2 bump warranted for articulation; closure deferred."
+output_edited_after_submission: false
+participation_shape: perspective

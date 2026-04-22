@@ -1,11 +1,12 @@
 ---
 title: Multi-Agent Deliberation
-version: 4
-status: active
+version: 3
+status: superseded
 created: 2026-04-17
-last-updated: 2026-04-22
-updated-by-session: 021
-supersedes: multi-agent-deliberation-v3.md
+last-updated: 2026-04-19
+updated-by-session: 006
+supersedes: multi-agent-deliberation-v2.md
+superseded-by: multi-agent-deliberation.md (v4)
 ---
 
 # Multi-Agent Deliberation
@@ -18,9 +19,7 @@ This specification applies equally to the self-development application and to ex
 
 The term "multi-agent deliberation" describes a property, not a mechanism: that the perspectives reasoning about a question arrive at their positions without seeing each other's positions. The current implementations realise this property via parallel context-isolated subagents of the Claude model family, optionally augmented by non-Claude participants (human reviewers or non-Anthropic models) following the Non-Claude Participation mechanism below. Future implementations may extend this further via different-model agents accessed through their own endpoints, persistent personas, or asynchronous cross-session deliberation; the specification is written so those extensions are changes of mechanism, not of pattern.
 
-Version 4 adds the OI-004 criterion-4 articulation (`### Criterion-4 Articulation for OI-004`), the acceptable-participant-kinds enumeration (`### Acceptable Participant Kinds for OI-004`), six new Layer 2 manifest fields (`participant_organisation`, `claude_output_in_training`, `training_lineage_evidence_pointer`, `aggregator_intermediary`, `selection_relationship_to_operator`, `independence_basis`), one new synthesis frontmatter field (`oi004_qualifying_participants`), one new session-level participants.yaml block (`mechanical_cross_family_invocation:`), the four-state OI-004 lifecycle, and the closure procedure (operationalised by `validate.sh` checks 16-19 and `validation-approach.md` v4 Tier 2 Q8). It supersedes v3 (`multi-agent-deliberation-v3.md`). Adopted Session 021 per D-082; engine-v1 → engine-v2 bump declared in `engine-manifest.md` §2 + §7.
-
-Version 3 added the Trigger-Coverage Annotation Schema (`triggers_met:` + `triggers_rationale:` per-decision) and the associated session-number gating rule, operationalising v2 Validation items 1 and 2 as `validate.sh` checks 14 and 15. It superseded v2 (`multi-agent-deliberation-v2.md`).
+Version 3 adds the Trigger-Coverage Annotation Schema (`triggers_met:` + `triggers_rationale:` per-decision) and the associated session-number gating rule, operationalising v2 Validation items 1 and 2 as `validate.sh` checks 14 and 15. It supersedes v2 (`multi-agent-deliberation-v2.md`).
 
 Version 2 added the Non-Claude Participation mechanism, the three-layer heterogeneous-participant recording schema, and associated trigger rules. It superseded v1 (`multi-agent-deliberation-v1.md`).
 
@@ -187,19 +186,6 @@ output_edited_after_submission: true | false
 participation_shape: perspective | reviewer
 ```
 
-**Layer 2 fields added in v4 (D-082, Session 021)** — for OI-004 criterion-4 enforcement; see §Criterion-4 Articulation for OI-004 below for normative use:
-
-```yaml
-participant_organisation: <organisation-name from closed set>  # required when participant_kind: non-anthropic-model. Closed set enumerated in tools/validate.sh PARTICIPANT_ORGANISATION_CLOSED_SET; extensible by named decision per validation-approach.md v4 §Closed-set extension discipline. Operationalised by check 19.
-claude_output_in_training: known-yes | known-no | unknown | n/a  # required when participant_kind in {non-anthropic-model, human}; n/a permitted for human. Out-of-scope for {claude-subagent, anthropic-other}. Operationalised by check 17. The `unknown` value is signal per the Unknown-field rule and surfaces to Tier 2 Q8 review.
-training_lineage_evidence_pointer: <provenance-relative path | URL | "unknown-but-asserted">  # required when training_lineage_overlap_with_claude: independent-claim. Operationalised by check 16. The pointer must resolve to: a model card or training-data card published by the provider (URL); a provider-public statement on Claude-distillation policy (URL); a workspace-internal note explaining what evidence the operator inspected (provenance-relative path); or the literal string "unknown-but-asserted" with mandatory transport_notes explanation.
-aggregator_intermediary: <string or "n/a">  # required when access via aggregator (e.g., OpenRouter); names the aggregator. "n/a" for direct provider access.
-selection_relationship_to_operator: <free-text or "n/a">  # required when participant_kind: human. Records relationship-to-operator and selection method context per the OI-004 criterion-4 articulation human-branch requirement.
-independence_basis: organization-distinct | local-open-weights | human-selection-distinct | mixed-panel | unknown  # required for participants claimed for OI-004 narrowing. Records the basis on which the participant claims criterion-4 eligibility.
-```
-
-The v4 fields are required from session 021 onward for participants claimed for OI-004 narrowing; pre-adoption sessions (001-020) are out-of-scope per the immutability rule (D-017) and per the session-number gating in `validation-approach.md` v4.
-
 **Layer 3 — Session-level index.** `provenance/NNN/participants.yaml` (preferred) or `provenance/NNN/participants.md` listing each participant and their manifest path.
 
 **Composition fields (synthesis frontmatter).** The synthesis file's frontmatter records:
@@ -208,22 +194,7 @@ The v4 fields are required from session 021 onward for participants claimed for 
 participants_family: claude-only | mixed-anthropic | cross-model
 cross_model: true | false
 non_claude_participants: <integer>
-oi004_qualifying_participants: [<list-of-perspective-names>]  # added v4: explicit declaration of which perspectives' manifests satisfy criterion-4 articulation; empty list permitted for sessions making no OI-004-narrowing claim
 ```
-
-**Session-level participants index extension (added v4, D-082, Session 021).** When mechanical cross-family invocation occurs outside the perspective-deliberation frame (e.g., the Session 018 contamination-canary pattern), it is recorded as a separate top-level block in `provenance/NNN/participants.yaml`:
-
-```yaml
-mechanical_cross_family_invocation:
-  - purpose: <free text, e.g. "C3 5-gram overlap test", "L1 contamination canary">
-    invoked_model: <model id>
-    provider: <provider id>
-    invocation_method: <cli-wrapper | api | other>
-    decision_shaped: <D-NNN id or "none">
-    evidence_pointer: <provenance-relative path>
-```
-
-This block records mechanical cross-family invocation as corroborating evidence for criterion 3 of OI-004 (recorded impact on outcomes); it is **not** a participant kind for criterion 4 (per §Acceptable Participant Kinds for OI-004 below). The block is optional; absence is permitted (most sessions will not record mechanical invocation).
 
 `participants_family: mixed-anthropic` is the value for intra-Claude-family size-mixing (Opus + Sonnet + Haiku, any combination) — this **is not** cross-model participation (see the Claude-Only-Is-Not-Cross-Model rule below). `cross_model: true` requires at least one participant with `training_lineage_overlap_with_claude` other than `known-overlap`.
 
@@ -332,100 +303,9 @@ OI-004 may be considered for closure when all of the following hold:
 1. **Participant independence.** At least one participant in qualifying deliberations has `training_lineage_overlap_with_claude: independent-claim` (non-Anthropic model) or `participant_kind: human` with a `participant_selection_method` other than `self`.
 2. **Sustained practice.** Non-Claude participation has occurred in at least three required-trigger deliberations across different sessions, recorded correctly per the schema above.
 3. **Recorded impact.** The synthesis or decision records show that non-Claude input shaped at least one outcome — the cross-lineage-influence ratio (see Open Extensions) is non-zero.
-4. **Articulation.** A successor decision defines what "substantively different training provenance" means and enumerates acceptable participant kinds. Articulated Session 021 per D-082; see §Criterion-4 Articulation for OI-004 below.
+4. **Articulation.** A successor decision defines what "substantively different training provenance" means and enumerates acceptable participant kinds.
 
-OI-004 is not automatically closed on meeting these criteria; a future session must deliberate and decide. "Closable" and "closed" are distinct states. The OI now has a four-state lifecycle (added v4); see §Closure Procedure for OI-004 below.
-
-### Criterion-4 Articulation for OI-004
-
-(Added v4 per D-082, Session 021.)
-
-Criterion 4 requires an **independence warrant** with two branches: model-provenance independence (for LLM participants) and selection independence (for human participants). The two-branch structure follows the Outsider's frame-completion contribution at Session 021 [01d, Q1] — "training provenance" is the right question for model participants but the wrong question for humans, where selection-process independence is the load-bearing dimension.
-
-**For model participants**, "substantively different training provenance" is established by ALL of the following:
-
-1. **Organisational origin distinct from Anthropic.** Recorded as `participant_organisation: <name>` in the Layer 2 manifest; the organisation MUST NOT be Anthropic, MUST NOT be a known Anthropic-derived entity, and MUST be a value in the closed set enumerated in `tools/validate.sh` PARTICIPANT_ORGANISATION_CLOSED_SET (initial set: openai, google, meta, xai, mistral, deepseek, cohere, local, other-named; extensible by named decision per `validation-approach.md` v4 §Closed-set extension discipline).
-
-2. **No documented Claude-derived training dependency.** No public documentation that the LLM was trained on Claude outputs (distillation, synthetic-data sourcing, or RLAIF using a Claude reward model). Recorded as `claude_output_in_training: known-no | known-yes | unknown` in the Layer 2 manifest. Where `known-yes`, the participant fails this prong. Where `unknown`, the participant is recorded as such; `unknown` is itself signal per the unknown-field rule and surfaces to Tier 2 Q8 review (see `validation-approach.md` v4).
-
-3. **Stable attributable identity at provider / model-family / model-id granularity.** Sufficient for audit: a future auditor must be able to identify *which specific model* participated. Recorded across the existing `provider`, `model_family`, `model_id`, `model_version` fields. A participant lacking any of these is `unknown` at that level and fails this prong.
-
-**For human participants**, the analogous requirement is **selection independence from the operator**:
-
-1. `participant_selection_method` MUST NOT be `self`.
-2. Selection method MUST be one of `solicited-externally`, `pre-registered`, or `solicited-from-graph` (the last conditionally; see §Acceptable Participant Kinds for OI-004 below).
-3. Selection-method context MUST be recorded in `selection_relationship_to_operator` (free-text or `n/a`).
-
-**Operational corroboration** (criterion 3, the existing acceptance test) is required to convert eligibility-under-this-articulation into actual narrowing. Criterion-4 articulation defines *who can count*; criterion 3 verifies *whether they did*. This bifurcation follows the 2-of-4 cross-family Session 021 split with cross-family weighting (Skeptic + Outsider) on placing operational corroboration in criterion 3 rather than in criterion-4 definition. The Articulator's [01a, Q1] D-Min ∩ O-Corr position and the Operationaliser's [01c, Q1] P4 position (operational corroboration as definitional prong) are preserved as joint first-class minority §5.5 in `provenance/021-oi004-criterion4-articulation/01-deliberation.md` with operational activation triggers.
-
-**Audit-time test.** For any deliberation `S` claiming OI-004-narrowing participation by `P`:
-
-1. Verify `P`'s manifest declares the v4 fields `participant_organisation` (if `non-anthropic-model`), `claude_output_in_training`, `training_lineage_evidence_pointer` (if `independent-claim`), `selection_relationship_to_operator` (if `human`), and `independence_basis`. Missing fields are validation failures (checks 16, 17, 19).
-2. Verify the model-branch or human-branch prongs above hold per declared values. If any prong fails, the criterion-4-narrowing claim for `P` is rejected.
-3. Verify criterion-3 evidence (recorded impact) for `P` exists in the deliberation's synthesis or decision record. If absent, the participant is eligible-on-trust for an introductory window of three required-trigger deliberations; thereafter, criterion-3 evidence is required.
-
-### Acceptable Participant Kinds for OI-004
-
-(Added v4 per D-082, Session 021.)
-
-The following participant categories are **acceptable** when their per-participant manifest satisfies the criterion-4 articulation prongs above.
-
-**Qualifying alone** (count toward OI-004 narrowing without combination):
-
-- **Non-Anthropic LLM via own provider's endpoint.** `participant_kind: non-anthropic-model`; `provider` in closed set; `aggregator_intermediary: n/a`. Examples: GPT-family via `codex exec`; Gemini via Google API; Llama via Meta endpoint.
-- **Non-Anthropic LLM via aggregator API.** Same as above but with the underlying provider/model/version recorded; `aggregator_intermediary: <name>` field required and non-empty. Operator MUST disclose if the aggregator is known to apply system-prompt modifications that could mask training-provenance signal.
-- **Locally hosted open-weight model.** `participant_kind: non-anthropic-model`; `provider: local`; weights lineage recorded in `transport_notes`; `claude_output_in_training: known-no` (open-weight models with public training-data cards typically support this) or `unknown` with explicit acknowledgement.
-- **Human reviewer recruited externally.** `participant_kind: human`; `participant_selection_method: solicited-externally`. Recruitment channel MUST be recorded in `selection_relationship_to_operator`; compensation, if any, MUST be disclosed in `transport_notes`.
-- **Human reviewer pre-registered.** `participant_kind: human`; `participant_selection_method: pre-registered`. Pre-registration date and basis MUST be recorded.
-
-**Qualifying only in combination** with another qualifying participant:
-
-- **Human reviewer from operator's social graph.** `participant_kind: human`; `participant_selection_method: solicited-from-graph`; `selection_relationship_to_operator:` annotation required and substantive. Per the existing Limitations note, this category alone does not substantiate cross-provenance independence; combination with at least one Qualifying-Alone participant is required.
-
-**Qualifying shapes**: both `participation_shape: perspective` and `participation_shape: reviewer` qualify if the independence-preserving procedure is documented per the existing Non-Claude Participation Mechanism section.
-
-**Recommended for high-stakes deliberations** (D-023-triggering; engine-version bumps; OI closures): panel of multiple non-Claude participants. Not required for criterion 4; recorded as a synthesis-frontmatter signal for future analyses.
-
-**Excluded**:
-
-- `participant_kind: claude-subagent` (per existing Claude-Only-Is-Not-Cross-Model rule).
-- `participant_kind: anthropic-other` — the affirmative complement to Claude-Only-Is-Not-Cross-Model: intra-Anthropic mixing does not satisfy OI-004 even with model-branding distinctions. (Per Operationaliser [01c, Q2] and Outsider [01d, Q2] convergence.)
-- `participant_kind: unknown`.
-- Any participant with `training_lineage_overlap_with_claude: known-overlap`.
-- `participant_kind: human` with `participant_selection_method: self`.
-
-**Mechanical cross-family invocation outside the perspective-deliberation frame** (the Session 018 pattern) is **NOT** a participant kind for OI-004 narrowing. It MAY be recorded as corroborating evidence for criterion 3 in the session-level participants index via the `mechanical_cross_family_invocation:` block (schema above). Mechanical invocation supplements but does not substitute for participant-perspective contribution. (4-of-4 cross-family convergence at Session 021.)
-
-The Skeptic's [01b, Q2] strict-enumeration position — enumerate only kinds the methodology has operationally exercised — is preserved as first-class minority §5.1 in `provenance/021-oi004-criterion4-articulation/01-deliberation.md` with operational activation triggers including unexercised-enumeration-cited-as-narrowing-basis.
-
-### Closure Procedure for OI-004
-
-(Added v4 per D-082, Session 021.)
-
-OI-004 has four ordered states:
-
-1. **Open.** Default until criteria 1–3 are satisfied.
-2. **Closable pending criterion-4 articulation.** Criteria 1–3 satisfied; criterion 4 not yet articulated. (Sessions 009–020 held this state.)
-3. **Articulated; awaiting closure-retrospective.** All four criteria articulated as auditable predicates per §Criterion-4 Articulation above. Closure requires a one-time `oi-004-retrospective.md` artefact applying the criteria to the cumulative record. (Sessions 021+ hold this state.)
-4. **Closed.** The retrospective artefact is committed, `validate.sh` check 18 passes for the artefact, Tier 2 Q8 has been answered substantively, and a successor session has decided on OI-004 closure with explicit citation to the retrospective.
-
-States are advanced by named decisions, not asserted by prose annotation. A state advance from Articulated (state 3) to Closed (state 4) requires ALL of the following:
-
-(i) **Closure-retrospective artefact** committed at `provenance/<NNN-closure-session>/oi-004-retrospective.md` containing the three required sections (`## Qualifying Deliberations Table`, `## Summary Tally`, `## P4 Assertion`) per check 18; plus `validate.sh` check 18 PASS; plus Tier 2 Q8 substantively answered.
-
-The retrospective's Qualifying Deliberations Table contains one row per Sessions-005-onwards qualifying deliberation with columns: session number; decision id(s); participant kinds; per-prong satisfaction (boolean per row) of criterion-4 articulation prongs; criterion-3 data points contributed; frame-replacement-or-novel-mechanism flag (boolean).
-
-The Summary Tally totals: total qualifying deliberations; total non-Claude participants; total criterion-3 data points; total frame-replacement-or-novel-mechanism instances.
-
-The P4 Assertion explicitly cites at least one cross-lineage divergence-from-Claude-consensus with `[provenance/<NNN>/<file>, §X]` citation. (Per Skeptic [01b, Q3] condition (i): a documented case where the non-Claude participant's position contradicted Claude-perspective consensus AND the synthesis adopted the non-Claude position.)
-
-(ii) **Successor-session adjudication.** The closure decision must be made by a session distinct from the session that articulated criterion 4 (Session 021 for the initial articulation). The successor session must be a multi-agent deliberation with non-Claude participation per §When Non-Claude Participation Is Required clause 4 (asserts a change in OI-004 state). The successor session's Outsider should not be the same instance as the articulating session's Outsider where feasible.
-
-(iii) **Cross-model contradiction-prevailing data point** identified in the retrospective per the P4 Assertion above. If absent in the existing record, OI-004 remains in state 3 until such a case occurs in a future deliberation.
-
-(iv) **Sustained-practice forward commitment**: voluntary:required ratio (counted across non-Claude participation history) remains ≥1.0 at successor-session adjudication time. Drift below would be evidence the discipline weakened post-articulation.
-
-The Articulator's [01a, Q6] and Outsider's [01d, Q6] sub-option-(a) "close-on-articulation" positions are preserved as first-class minorities §5.2 and §5.3 in `provenance/021-oi004-criterion4-articulation/01-deliberation.md` with operational activation triggers including the Outsider's "indefinitely movable finish line" warrant.
+OI-004 is not automatically closed on meeting these criteria; a future session must deliberate and decide. "Closable" and "closed" are distinct states.
 
 ### Interaction with Existing Decisions
 
@@ -434,9 +314,8 @@ The Articulator's [01a, Q6] and Outsider's [01d, Q6] sub-option-(a) "close-on-ar
 - **D-014** (minor-correction heuristic) — reaffirmed.
 - **D-016** (multi-agent triggers) — reaffirmed; this specification's "When Non-Claude Participation Is Required" extends, rather than replaces, D-016's triggers.
 - **D-020** (treatment of v1 kernel pointer as minor) — reaffirmed.
-- **D-022** (Claude-only is not cross-model) — integrated as the Claude-Only-Is-Not-Cross-Model rule above; v4 extends this to anthropic-other per §Acceptable Participant Kinds for OI-004.
-- **D-025** (this session does not narrow OI-004 operationally) — the specification records OI-004 as state 3 ("Articulated; awaiting closure-retrospective") per v4 four-state lifecycle.
-- **D-082** (Session 021 — OI-004 criterion-4 articulation; engine-v1 → engine-v2 bump) — adopts the criterion-4 articulation, acceptable-participant-kinds enumeration, schema additions, and four-state lifecycle in v4.
+- **D-022** (Claude-only is not cross-model) — integrated as the Claude-Only-Is-Not-Cross-Model rule above.
+- **D-025** (this session does not narrow OI-004 operationally) — the specification records OI-004 as open awaiting first operational use of the mechanism.
 
 ### Open Extensions
 

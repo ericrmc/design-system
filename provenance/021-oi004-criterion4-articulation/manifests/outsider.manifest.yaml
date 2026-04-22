@@ -1,0 +1,31 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: "OpenAI GPT-5.4 invoked via Codex CLI (codex exec, research preview v0.121.0); OpenAI session id 019db4d9-d3d1-76c3-b6b1-a6287d0b73af"
+model_family: gpt
+model_id: gpt-5.4
+model_version: "5.4"
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+  reasoning_effort: xhigh
+training_lineage_overlap_with_claude: independent-claim
+training_lineage_evidence_pointer: "unknown-but-asserted"
+claude_output_in_training: unknown
+participant_organisation: openai
+aggregator_intermediary: "n/a"
+selection_relationship_to_operator: "n/a"
+independence_basis: organization-distinct
+participant_selected_by: "session-021 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "Composed prompt at /tmp/021-outsider-prompt.txt — preamble identifying Outsider role (§8.4 of brief) plus full contents of provenance/021-oi004-criterion4-articulation/01-brief-shared.md appended verbatim; deliberation anchor commit 31951bd. First invocation attempt (task id b5nowrg1x) hung in stdin-wait state with empty response body (only 'Reading additional input from stdin...' banner emitted); TaskStop invoked and relaunched via explicit stdin pipe (task id bmk9rdi27) which succeeded. Prompt file content was byte-identical across the two attempts; only invocation method differed (argument-substitution via `\"$(cat ...)\"` failed; stdin-redirect via `< file` succeeded)."
+delivered_at: 2026-04-22T20:58Z
+received_at: 2026-04-22T21:09Z
+raw_response_file: provenance/021-oi004-criterion4-articulation/01d-perspective-outsider.md
+transport_notes: "Committed verbatim from codex exec stdout. Raw captured output at /tmp/021-outsider-response.txt (1,408 lines) includes: OpenAI Codex v0.121.0 CLI banner (lines 1-12), user prompt echo (lines 13-325), three 'codex' response markers (lines 326, 743, 1009) corresponding to the Outsider invoking sed/ls exec commands to read specifications/engine-manifest.md, specifications/multi-agent-deliberation.md, open-issues.md, provenance/017/, and provenance/020/ in its own pre-response exploration phase, response body Q1-Q8 + Honest-limits (lines 1010-1207), 'tokens used 59489' line (1208-1209), end-of-stream duplicate response body (lines 1210-1407), and ==CODEX_DONE== marker (line 1408). End-of-stream duplication matches Sessions 005-020 Outsider output patterns. raw_response_file (01d-perspective-outsider.md) contains only the single primary response body extracted from lines 1010-1207. Invocation: `codex exec -c model_reasoning_effort=xhigh < /tmp/021-outsider-prompt.txt > /tmp/021-outsider-response.txt 2>&1`, run as background task id bmk9rdi27. NOVEL PATTERN for Session 021: Outsider performed pre-response workspace exploration (four 'exec' tool invocations before final response) — first session where Outsider used codex exec's sandboxed workspace-read capability rather than reasoning purely from brief content. Per §10 anti-import discipline the Outsider's own honest-limits section acknowledges this did not violate the constraint (workspace read is not pretraining import); the exploration grounded the response in the actual spec text rather than the brief's quoted excerpts. This is a Session 021 data pattern recorded for future OI-015 / criterion-4 deliberations. V4 FIELD EXPLANATIONS: training_lineage_evidence_pointer: 'unknown-but-asserted' is the mandatory-disclosure escape hatch per multi-agent-deliberation.md v4 §Heterogeneous-Participant Recording Schema — the operator has not performed external model-card verification of GPT-5.4's public training-data disclosures within Session 021's timebox; the `unknown-but-asserted` value is signal per the unknown-field rule and surfaces to future audit. claude_output_in_training: 'unknown' for the same reason — OpenAI does not publicly disclose whether GPT-5.4's training data includes Claude outputs; the Outsider's own honest-limits [01d] acknowledges this. participant_organisation: 'openai' is in the PARTICIPANT_ORGANISATION_CLOSED_SET at engine-v2. aggregator_intermediary: 'n/a' because codex exec accesses OpenAI's provider endpoint directly, not via an aggregator. selection_relationship_to_operator: 'n/a' for non-anthropic-model participant_kind. independence_basis: 'organization-distinct' because the participant is from OpenAI, distinct from Anthropic (the load-bearing independence claim)."
+output_edited_after_submission: false
+participation_shape: perspective
