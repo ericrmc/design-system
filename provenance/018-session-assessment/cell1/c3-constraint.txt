@@ -1,0 +1,15 @@
+A small team (6-12 people) is about to begin a retrospective — a meeting where the team looks back on a recent project or work period with the intent of learning what to do differently next time. The participants range from individual contributors to managers, and some participants report to others in the room. Previous retrospectives in this team have sometimes devolved into blame, defensiveness, or silence; this time the facilitator wants to begin differently.
+
+The facilitator needs an opening protocol — the first 5-15 minutes of the retrospective, before any content discussion begins. The opening's job is to make honest, non-defensive conversation possible for the remaining time.
+
+What the opening protocol must do:
+
+1. Establish a shared framing about how the team will interpret what they discover. Participants should leave the opening with a common understanding that failures surfaced during the retrospective will not attach to individuals.
+
+2. Assess whether the room is actually safe enough to proceed. The facilitator needs some signal — not just a claim — about whether participants feel they can speak candidly. The signal must be generatable in a way that does not depend on participants being willing to self-report safety publicly.
+
+3. Be repeatable. The same opening can be used across multiple retrospectives with different teams. It does not require the facilitator to improvise a new opening each time.
+
+4. Be concise. The opening fits within 5-15 minutes. It does not consume the retrospective's main time budget.
+
+Output format: facilitator's script with literal words to say aloud where applicable, facilitator actions described in plain English where speaking doesn't apply, timing annotations per segment, any physical materials required. Length target: 400-800 words.
