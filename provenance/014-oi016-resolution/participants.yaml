@@ -1,0 +1,31 @@
+session: 014
+title: Participants — OI-016 Resolution
+date: 2026-04-22
+deliberation_anchor_commit: 197a611
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+participants:
+  - perspective: architect
+    manifest: manifests/architect.manifest.yaml
+    participant_kind: claude-subagent
+    participation_shape: perspective
+  - perspective: operationalist
+    manifest: manifests/operationalist.manifest.yaml
+    participant_kind: claude-subagent
+    participation_shape: perspective
+  - perspective: skeptic
+    manifest: manifests/skeptic.manifest.yaml
+    participant_kind: claude-subagent
+    participation_shape: perspective
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+    participant_kind: non-anthropic-model
+    participation_shape: perspective
+synthesizer:
+  identity: "session-014 orchestrating agent (Claude Opus 4.7, Claude Code)"
+  model_id: claude-opus-4-7
+  model_family: claude
+  provider: anthropic
+  was_deliberator: false
+  perspective_played: none

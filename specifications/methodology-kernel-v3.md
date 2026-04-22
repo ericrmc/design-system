@@ -1,11 +1,13 @@
 ---
 title: Methodology Kernel
-version: 4
-status: active
+version: 3
+status: superseded
 created: 2026-04-17
-last-updated: 2026-04-22
-updated-by-session: 014
-supersedes: methodology-kernel-v3.md
+last-updated: 2026-04-20
+updated-by-session: 011
+supersedes: methodology-kernel-v2.md
+superseded-by: methodology-kernel.md
+superseded-by-session: 014
 ---
 
 # Methodology Kernel
@@ -91,7 +93,7 @@ Artifacts should be produced to the standard defined in their respective specifi
 
 #### 7. Validate
 
-Validate the session's output at each level on which it makes claims. Three senses apply.
+Validate the session's output at each level on which it makes claims. Two senses apply.
 
 **Workspace validation** applies to every session. Check that:
 - New specifications don't contradict existing ones
@@ -99,13 +101,9 @@ Validate the session's output at each level on which it makes claims. Three sens
 - Provenance records are complete and well-formed
 - Open issues reflect the actual state of uncertainty
 
-**Domain validation** applies when a session produces or revises an artefact intended for use outside the workspace and a domain-actor is available. Obtain evidence from the domain-actor who holds the problem the artefact addresses — the user of a sequence, the reader of a specification, the participant in a process, or an equivalent — that the artefact functioned for its intended use. Record who performed the validation, what was tried, what happened, and whether modifications were requested. Domain validation may complete out-of-session; when it does, the receiving session records the report and decides whether it triggers revision.
+**Domain validation** applies when a session produces or revises an artefact intended for use outside the workspace. Obtain evidence from the domain-actor who holds the problem the artefact addresses — the user of a sequence, the reader of a specification, the participant in a process, or an equivalent — that the artefact functioned for its intended use. Record who performed the validation, what was tried, what happened, and whether modifications were requested. Domain validation may complete out-of-session; when it does, the receiving session records the report and decides whether it triggers revision.
 
-**Reference validation** applies when a session produces an external-intent artefact and no domain-actor is available. A reference-validation exercise pairs the methodology's Produce step (run blind against a staged constraint tranche set whose emergent constraints surface during the run) with comparison against a pre-selected documented proven solution the Produce agents do not see. The exercise runs across a small number of sessions in a sealed three-cell protocol (Curation, Produce, Validation) specified in `specifications/reference-validation.md`. The exercise records constraint-satisfaction, structural correspondence, cross-model divergence, and a contamination audit.
-
-**Reference validation supplies evidence about the methodology's capacity to derive artefacts under stated constraints. It does not establish that the artefact functioned in its intended use. It does not substitute for Domain validation when a domain-actor is available.** Artefacts passing reference-validation carry the label `validation: reference-validated` in frontmatter and retain that scoping in any later citation.
-
-If any validation reveals problems, they are either fixed in this session (return to Produce) or recorded as open issues for subsequent sessions.
+If either validation reveals problems, they are either fixed in this session (return to Produce) or recorded as open issues for subsequent sessions.
 
 #### 8. Record
 

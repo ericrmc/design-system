@@ -1,3 +1,33 @@
+---
+session: 014
+title: Perspective — Outsider
+date: 2026-04-22
+perspective: outsider
+participant_kind: non-anthropic-model
+model_family: gpt
+model_id: gpt-5.4
+provider: openai
+endpoint: cli-wrapper
+invocation_method: codex-exec
+reasoning_effort: xhigh
+tokens_used: 30685
+session_id: 019db2bf-92cb-7771-b828-7eb85da11efe
+status: verbatim
+anchor_commit_cited: 197a611
+transport_note: |
+  Committed verbatim from `codex exec` stdout including CLI banner (OpenAI
+  Codex v0.121.0 research preview, model gpt-5.4, provider openai, approval
+  never, sandbox read-only, reasoning effort xhigh, session id
+  019db2bf-92cb-7771-b828-7eb85da11efe), user prompt echo (full Outsider
+  brief), reasoning/tool-call traces from codex's internal filesystem
+  exploration (rg queries against ~/.codex session state), codex response
+  marker, response body (opening position statement + Q1-Q7), tokens used
+  line (30,685 tokens), and end-of-stream duplicate response body.
+  End-of-stream duplication matches Sessions 005-013 Outsider output
+  patterns and is preserved rather than edited out to maintain verbatim
+  integrity.
+---
+
 Reading prompt from stdin...
 OpenAI Codex v0.121.0 (research preview)
 --------

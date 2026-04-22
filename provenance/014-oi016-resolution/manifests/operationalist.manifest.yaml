@@ -1,0 +1,24 @@
+perspective: operationalist
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 parallel subagent via Claude Code Agent tool (subagent_type: general-purpose), operational-viability stance per Convene §3; agent id ae9ac640bf1c0f0d5"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "4.7 (1M context)"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-014 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "provenance/014-oi016-resolution/01-brief-shared.md (shared brief byte-identical across perspectives); role-specific stance (section 5 Operationalist + §4 Q-list) delivered via Agent prompt parameter; anchor commit 197a611"
+delivered_at: 2026-04-22T11:13Z
+received_at: 2026-04-22T11:23Z
+raw_response_file: provenance/014-oi016-resolution/01b-perspective-operationalist.md
+transport_notes: "Agent final-message response, written verbatim to raw_response_file with frontmatter at top. Agent usage: 53,656 total_tokens, 4 tool_uses, 557,012 ms duration. Returned in the same parallel Agent/Bash batch as architect, skeptic, outsider."
+output_edited_after_submission: false
+participation_shape: perspective
