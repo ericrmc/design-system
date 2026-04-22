@@ -2,8 +2,8 @@
 session: 014
 title: Shared Brief — OI-016 Resolution Deliberation
 date: 2026-04-22
-status: pre-anchor
-anchor-commit: PENDING
+status: anchored
+anchor-commit: 197a611
 agenda: OI-016 resolution — design a reference-validation mechanism
 ratified-agenda: user-ratified Option A with explicit steering toward a fourth option (reference-validation)
 perspectives: [architect, operationalist, skeptic, outsider]
@@ -197,7 +197,7 @@ Target length 2,500–4,000 words per perspective. Favour concrete over meta. Us
 
 ## 8. Anchor commit
 
-This brief is anchored at commit `PENDING` (to be filled after commit, before the `codex exec` invocation for the Outsider). The Outsider's brief will cite the anchor hash as the anti-tampering witness. Claude subagents are dispatched in parallel from the same message as the `codex exec` call to make the parallel-execution window auditable.
+This brief is anchored at commit `197a611` (recorded 2026-04-22, before the `codex exec` invocation for the Outsider). The Outsider's brief cites the anchor hash as the anti-tampering witness. Claude subagents are dispatched in parallel from the same message as the `codex exec` call to make the parallel-execution window auditable.
 
 ## 9. Scope boundaries
 
