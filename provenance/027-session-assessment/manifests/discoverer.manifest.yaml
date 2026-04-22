@@ -1,0 +1,32 @@
+---
+perspective: discoverer
+participant_kind: claude-subagent
+participant_identity: "Claude subagent launched via Agent tool; role-pre-registered stance per multi-agent-deliberation.md v4 §Perspectives"
+model_family: claude
+model_id: unknown
+model_version: unknown
+provider: anthropic
+endpoint: claude-code-agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-027-orchestrating-agent
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/027-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-23T08:20:00Z
+received_at: 2026-04-23T08:20:00Z
+raw_response_file: provenance/027-session-assessment/01b-perspective-discoverer.md
+transport_notes: "Role-specific §4 stance inlined in agent prompt per multi-agent-deliberation.md v4 §Stance Briefs; shared sections §1-§3 and §5-§6 byte-identical across all three perspective prompts per the brief-diffing property. Independent phase preserved via parallel Agent launches (each subagent runs in isolated context without access to sibling outputs)."
+output_edited_after_submission: false
+participation_shape: perspective
+# v4 OI-004 fields — out-of-scope for claude-subagent per multi-agent-deliberation.md v4 §Criterion-4 Articulation; Session 027 does not claim OI-004 narrowing
+# participant_organisation: out-of-scope (claude-subagent)
+# claude_output_in_training: out-of-scope (claude-subagent)
+# training_lineage_evidence_pointer: out-of-scope (not independent-claim)
+# selection_relationship_to_operator: n/a (not human)
+# independence_basis: n/a (not claimed for OI-004 narrowing)
+---

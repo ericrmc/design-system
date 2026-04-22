@@ -1,0 +1,18 @@
+---
+session: 027
+participants_family: claude-only
+cross_model: false
+non_claude_participants: 0
+oi004_qualifying_participants: []
+participants:
+  - perspective: archivist
+    manifest: manifests/archivist.manifest.yaml
+    raw_response: 01a-perspective-archivist.md
+  - perspective: discoverer
+    manifest: manifests/discoverer.manifest.yaml
+    raw_response: 01b-perspective-discoverer.md
+  - perspective: minimalist
+    manifest: manifests/minimalist.manifest.yaml
+    raw_response: 01c-perspective-minimalist.md
+# No mechanical_cross_family_invocation: this session does not perform cross-family mechanical invocation
+---

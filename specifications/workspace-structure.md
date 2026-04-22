@@ -3,8 +3,8 @@ title: Workspace Structure
 version: 4
 status: active
 created: 2026-04-17
-last-updated: 2026-04-22
-updated-by-session: 022
+last-updated: 2026-04-23
+updated-by-session: 027
 supersedes: workspace-structure-v3.md
 ---
 
@@ -155,6 +155,8 @@ status: complete | in-progress
 ```
 
 Provenance records are **immutable** once the session closes. Errors or retractions are recorded in subsequent sessions, not by editing past records.
+
+**Folder-name discipline** (added v4, Session 027 per D-094, minor amendment): at session open, the provenance folder is created as `NNN-session-assessment` (where NNN is the zero-padded session number). The folder name is **permanent**: it is not revised at session close and is not revised by subsequent sessions. Discoverability of session content is carried by `SESSION-LOG.md` (thin-index), which holds each session's descriptive title; the folder name is the container address, not the thin-index. Sessions 017-022 that received content-reflective folder names (`017-oi017-reframing-deliberation` through `022-workspace-scaling-trajectory`) are historical artefacts of an informal pre-Session-027 convention and are not retroactively altered (D-017 immutability). Session 015 and Sessions 023-026 retained the opening default and are likewise preserved as-is. This clause codifies operational behavior already in practice from Session 023 onward; it introduces no new close-step obligation and no new validator check. Minority positions preserved at Session 027 per D-094 (see `provenance/027-session-assessment/02-decisions.md`) include: a close-step rename-when-substantive discipline (Discoverer); a change of opening default from `NNN-session-assessment` to `NNN-session` (Minimalist); and an advisory-only placement in `prompts/development.md` (Archivist). Each minority has a documented activation warrant; none fires at Session 027 close.
 
 **Archive-pack subdirectory** (added v4): when a session's raw perspective file or other provenance file exceeds the default-read per-file budget (`specifications/read-contract.md` §2), the file is archive-packed before session close per `read-contract.md` §9. Archive-packs live at `provenance/NNN-title/archive/<slug>/` with `manifest.yaml` + numbered chunks. Retroactive migration of a closed session's over-budget file uses the copy-plus-reference discipline (Session 009 D-054 precedent): the archive-pack is created in the migrating session's provenance directory, not the originating session's directory, preserving D-017 immutability.
 
