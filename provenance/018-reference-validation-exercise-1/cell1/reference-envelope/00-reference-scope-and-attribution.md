@@ -2,9 +2,13 @@
 session: 018
 title: Reference Scope & Attribution — Kerth Prime Directive + Safety Poll (Retrospective Opening)
 date: 2026-04-22
-status: sealed
-sealed_by: Case Steward (Claude Opus 4.7, orchestrating agent)
+status: drafted-not-sealed
+draft_rejected_at_c3_gate: true
+see_also: ../03-c3-test-result.md
 ---
+
+> **NOT SEALED.** D2 rejected at C3 pre-seal gate per `../03-c3-test-result.md`. This envelope was drafted during Cell 1 sourcing but the case pack was never sealed (no anti-drift-witness commit for a sealed case). Files preserved as provenance of what was drafted before rejection. The `status: sealed` fields in per-component files below are also rewritten to `drafted-not-sealed`.
+
 
 # Reference Scope & Attribution
 

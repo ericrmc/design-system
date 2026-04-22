@@ -2,7 +2,7 @@
 session: 018
 title: Anti-Drift Witnesses — Source URLs + Fetch Dates
 date: 2026-04-22
-status: sealed
+status: drafted-not-sealed
 component: anti-drift-witnesses
 ---
 

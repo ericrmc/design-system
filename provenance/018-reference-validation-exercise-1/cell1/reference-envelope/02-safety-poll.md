@@ -2,7 +2,7 @@
 session: 018
 title: The Safety Poll — Norman L. Kerth (per Kerievsky secondary source)
 date: 2026-04-22
-status: sealed
+status: drafted-not-sealed
 component: safety-poll
 source_qualification: derivative (Kerievsky blog post citing Kerth 2001)
 ---

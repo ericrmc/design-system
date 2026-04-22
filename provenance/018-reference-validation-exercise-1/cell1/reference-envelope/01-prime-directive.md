@@ -2,7 +2,7 @@
 session: 018
 title: The Prime Directive (Verbatim) — Norman L. Kerth, 2001
 date: 2026-04-22
-status: sealed
+status: drafted-not-sealed
 component: prime-directive
 ---
 
