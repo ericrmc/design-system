@@ -1,0 +1,28 @@
+archive_id: 022-outsider
+originating_session: 022
+originating_path: provenance/022-workspace-scaling-trajectory/01d-perspective-outsider.md (original moved into this archive-pack at session close per read-contract.md §9)
+migrated_in_session: 022
+kind: raw-perspective
+total_bytes: 168247
+total_words: 22611
+chunk_count: 4
+chunk_boundary_rule: byte-range
+source_hash_sha256: a6f8734f792c1dfb9d3387247eb9d1c70c72cf28531ae1c6db7efc7555d740b8
+chunks:
+  - ordinal: 1
+    file: 01-chunk.md
+    byte_range: "0-49999"
+    chunk_hash_sha256: af5dd03325e87f7347e9594a3a0daf2ef8bb4bd68d90b3649ce8228033005c14
+  - ordinal: 2
+    file: 02-chunk.md
+    byte_range: "50000-99999"
+    chunk_hash_sha256: 26de4e2b1087a29dad60659a7c284e6effb34100274133b02b0aadba2c8e1d8f
+  - ordinal: 3
+    file: 03-chunk.md
+    byte_range: "100000-149999"
+    chunk_hash_sha256: fb94e6894d4bd2e3195575fc71c16982119956bb2d6b1b1c39296f08d50f644d
+  - ordinal: 4
+    file: 04-chunk.md
+    byte_range: "150000-168246"
+    chunk_hash_sha256: e968de21a740b5dd0e6822ef306948f8d5abcb2335a1a4c3eb9af201249aed7f
+readers_note: Session 022 OpenAI GPT-5.4 Outsider perspective via codex exec (session_id 019db521-775f-7872-9b38-f0c4b0094c28; tokens_used 46,382; reasoning effort xhigh). Full CLI banner + echoed brief + four codex markers with pre-response workspace-exploration tool calls + reasoning summary + response body (opening + Q1-Q9 + Honest Limits) + end-of-stream duplicate response body preserved verbatim per Session 014 precedent. Read chunk 04 for the response body tail (Q7-Q9 + Honest Limits); chunks 01-03 for brief echo + reasoning traces + response body. Per read-contract.md §9, the original file at 01d-perspective-outsider.md was moved into this archive-pack at session close; there is no duplication.

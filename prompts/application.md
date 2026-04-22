@@ -38,15 +38,15 @@ All rules and activities from `prompts/development.md` §How to operate and §Ru
 
 ### Read
 
-The session's Read activity covers:
+The session's Read activity covers, per `specifications/read-contract.md`:
 
-- **Workspace reading** — the full current state of this application's workspace (this workspace, not the engine's source workspace). Every file, every prior session's provenance, every prior artefact in `applications/`.
+- **Workspace reading** — the default-read surface of this application's workspace (this workspace, not the engine's source workspace). This is the set enumerated in `read-contract.md` §1, scoped to this application: active-status specifications, the `SESSION-LOG.md` index, `open-issues/index.md`, every prior session's `03-close.md`, the currently-active session's provenance directory, PROMPT.md / `prompts/development.md` / `prompts/application.md`, and `applications/`. The archive surface (raw perspective records from closed sessions, superseded specification versions, over-budget annotations preserved as archive-packs) is read by explicit reference — `[archive: path]` citations — as the session's work requires.
 - **Domain reading** — this application's problem statement, constraints, stakeholders, success condition, initial state (the slots above), plus any domain materials introduced into the session.
-- **Engine reading** — the loaded engine-definition files (`specifications/` + `tools/validate.sh` + `PROMPT.md` + this file). These are the normative rules the session executes under. They are not up for revision within this application's sessions unless a kernel-revision is explicitly authorised by the engine's source workspace.
+- **Engine reading** — the loaded engine-definition files (`specifications/` + `tools/validate.sh` + `PROMPT.md` + `prompts/` + this file). These are the normative rules the session executes under. They are not up for revision within this application's sessions unless a kernel-revision is explicitly authorised by the engine's source workspace.
 
 ### Convene and Deliberate
 
-Per `specifications/methodology-kernel.md` §3 and `specifications/multi-agent-deliberation.md` v3, substantive work requires multi-perspective deliberation with adversarial coverage. For this application, perspectives are selected to surface the problem's specific contested dimensions. Domain perspectives (a perspective whose stance is grounded in domain knowledge — a practitioner, a stakeholder, a target audience) are expected to appear in most external-problem applications.
+Per `specifications/methodology-kernel.md` §3 and `specifications/multi-agent-deliberation.md` v4, substantive work requires multi-perspective deliberation with adversarial coverage. For this application, perspectives are selected to surface the problem's specific contested dimensions. Domain perspectives (a perspective whose stance is grounded in domain knowledge — a practitioner, a stakeholder, a target audience) are expected to appear in most external-problem applications.
 
 ### Validate
 
@@ -60,11 +60,11 @@ The choice of validation sense is an application decision made at Session 001's 
 
 ### Produce
 
-External artefacts live in `applications/NNN-<slug>/` per `specifications/workspace-structure.md` v3 §applications. Frontmatter includes `originating_session`, `artefact_kind`, `domain`, `engine_version`, and validation-label fields per the workspace-structure conventions.
+External artefacts live in `applications/NNN-<slug>/` per `specifications/workspace-structure.md` v4 §applications. Frontmatter includes `originating_session`, `artefact_kind`, `domain`, `engine_version`, and validation-label fields per the workspace-structure conventions.
 
 ### Record and Close
 
-Provenance accumulates in `provenance/NNN-<slug>/` as in the self-development application. `SESSION-LOG.md` accumulates one-line session entries. `open-issues.md` accumulates application-scoped open issues (distinct from engine-scoped open issues, which live in the source workspace).
+Provenance accumulates in `provenance/NNN-<slug>/` as in the self-development application. `SESSION-LOG.md` is a thin one-line-per-session index per `workspace-structure.md` v4 §SESSION-LOG.md. `open-issues/` is a directory with per-OI files (`OI-NNN.md`) plus `index.md` per `workspace-structure.md` v4 §open-issues. At session close, the orchestrator verifies the default-read budget (`read-contract.md` §8); any current-session raw exceeding the per-file ceiling is archive-packed per `read-contract.md` §9.
 
 ## Anti-silent-import and anti-laundering
 

@@ -21,6 +21,14 @@ readonly CRITERION4_ARTICULATION_SESSION=21
 # Participant Kinds. Membership check used by check 19.
 readonly PARTICIPANT_ORGANISATION_CLOSED_SET="anthropic openai google meta xai mistral deepseek cohere local human-individual other-named"
 
+# Session from which the read-contract is enforced (D-084, Session 022).
+# Check 20 applies only to sessions numbered >= this constant.
+# Checks 21 and 22 are presence-gated on provenance/*/archive/ subdirectories.
+# See specifications/validation-approach.md v5 "Gating Conventions (checks 20, 21, 22)".
+readonly READ_CONTRACT_ADOPTION_SESSION=22
+readonly DEFAULT_READ_HARD_WORD_CEILING=15000
+readonly DEFAULT_READ_SOFT_WORD_CEILING=10000
+
 WORKSPACE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PASS=0
 FAIL=0
@@ -38,14 +46,24 @@ echo "--- Tier 1: Structural Checks ---"
 echo ""
 
 # [1] Required top-level files
+# Post-Session-022 (D-084 R8b): open-issues.md replaced by open-issues/ directory
+# with open-issues/index.md as the required default-read entry point.
 echo "[1] Required files"
-for f in PROMPT.md SESSION-LOG.md open-issues.md; do
+for f in PROMPT.md SESSION-LOG.md; do
   if [[ -f "$WORKSPACE_ROOT/$f" ]]; then
     pass "$f exists"
   else
     fail "$f missing"
   fi
 done
+# open-issues: accept either legacy single-file OR post-R8b directory
+if [[ -f "$WORKSPACE_ROOT/open-issues/index.md" ]]; then
+  pass "open-issues/index.md exists (post-R8b directory form)"
+elif [[ -f "$WORKSPACE_ROOT/open-issues.md" ]]; then
+  pass "open-issues.md exists (pre-R8b single-file form)"
+else
+  fail "open-issues missing (neither open-issues.md nor open-issues/index.md present)"
+fi
 echo ""
 
 # [2] Required directories
@@ -699,6 +717,207 @@ for dir in "${provdirs[@]}"; do
 done
 echo ""
 
+# [20] Default-read surface per-file budget (D-084, Session 022)
+#
+# HONEST LIMIT (read before touching this check):
+# This check measures word count (wc -w) of body content after the frontmatter
+# closing delimiter for files enumerated in read-contract.md §1. It does not
+# verify that a file under the budget is well-structured as an orientation-layer
+# artefact, nor that its content is actually relevant to the current session.
+# A file can pass check 20 while being effectively unreadable (e.g., an opaque
+# 14,999-word wall of text); substantive readability is a Tier 2 concern.
+#
+# Gate: session number >= READ_CONTRACT_ADOPTION_SESSION (=22).
+# Pre-adoption sessions' SESSION-LOG.md / open-issues.md states are frozen;
+# the migrations in D-084 R8a/R8b bring them under budget as of Session 022.
+echo "[20] Default-read surface per-file budget"
+# Check if current session (last provenance directory by sort) is >= adoption session
+check20_active=false
+if [[ ${#provdirs[@]} -gt 0 ]]; then
+  last_dir=$(printf '%s\n' "${provdirs[@]}" | sort | tail -1)
+  last_dirname=$(basename "$last_dir")
+  last_session_num=$(echo "$last_dirname" | grep -o '^[0-9]\{3\}' || echo "000")
+  last_session_int=$((10#$last_session_num))
+  if [[ $last_session_int -ge $READ_CONTRACT_ADOPTION_SESSION ]]; then
+    check20_active=true
+  fi
+fi
+if ! $check20_active; then
+  echo "  (pre-adoption; check 20 out-of-scope)"
+  echo ""
+else
+  # Build default-read surface file list per read-contract.md §1
+  default_read_files=()
+
+  # (1) Active-status specifications (status: active in frontmatter, not superseded)
+  for spec in "$WORKSPACE_ROOT"/specifications/*.md; do
+    [[ -f "$spec" ]] || continue
+    # Read frontmatter status field (between the first two --- lines)
+    status=$(awk 'BEGIN{fm=0} /^---$/{fm++; if(fm==2)exit; next} fm==1 && /^status:/{print $2; exit}' "$spec")
+    if [[ "$status" == "active" ]]; then
+      default_read_files+=("$spec")
+    fi
+  done
+
+  # (2) PROMPT.md and prompts/*.md
+  [[ -f "$WORKSPACE_ROOT/PROMPT.md" ]] && default_read_files+=("$WORKSPACE_ROOT/PROMPT.md")
+  for p in "$WORKSPACE_ROOT"/prompts/*.md; do
+    [[ -f "$p" ]] && default_read_files+=("$p")
+  done
+
+  # (3) SESSION-LOG.md
+  [[ -f "$WORKSPACE_ROOT/SESSION-LOG.md" ]] && default_read_files+=("$WORKSPACE_ROOT/SESSION-LOG.md")
+
+  # (4) open-issues/index.md (post-R8b) or open-issues.md (pre-R8b, during migration)
+  if [[ -f "$WORKSPACE_ROOT/open-issues/index.md" ]]; then
+    default_read_files+=("$WORKSPACE_ROOT/open-issues/index.md")
+  elif [[ -f "$WORKSPACE_ROOT/open-issues.md" ]]; then
+    default_read_files+=("$WORKSPACE_ROOT/open-issues.md")
+  fi
+
+  # (5) Every provenance/*/03-close.md
+  for close in "$WORKSPACE_ROOT"/provenance/*/03-close.md; do
+    [[ -f "$close" ]] && default_read_files+=("$close")
+  done
+
+  # Measure each file
+  for file in "${default_read_files[@]}"; do
+    # Skip body-word-count computation if file missing
+    [[ -f "$file" ]] || continue
+
+    rel=$(realpath --relative-to="$WORKSPACE_ROOT" "$file" 2>/dev/null || echo "${file#$WORKSPACE_ROOT/}")
+
+    # Extract body (content after closing --- of frontmatter, if frontmatter present).
+    # If line 1 is '---', treat as frontmatter and body starts after the next '---'.
+    # Otherwise, body is the entire file.
+    first_line=$(head -1 "$file")
+    if [[ "$first_line" == "---" ]]; then
+      body=$(awk 'BEGIN{fm=0; body=0} NR==1 && /^---$/{fm=1; next} fm==1 && /^---$/{body=1; next} body==1{print}' "$file")
+    else
+      body=$(cat "$file")
+    fi
+    word_count=$(echo "$body" | wc -w | tr -d '[:space:]')
+
+    if [[ $word_count -gt $DEFAULT_READ_HARD_WORD_CEILING ]]; then
+      fail "$rel — $word_count words exceeds hard ceiling ($DEFAULT_READ_HARD_WORD_CEILING). Restructure per read-contract.md §8 (split file or relocate detail to archive-pack)."
+    elif [[ $word_count -gt $DEFAULT_READ_SOFT_WORD_CEILING ]]; then
+      warn "$rel — $word_count words exceeds soft warning threshold ($DEFAULT_READ_SOFT_WORD_CEILING). Approaching hard ceiling ($DEFAULT_READ_HARD_WORD_CEILING)."
+    else
+      pass "$rel — $word_count words within budget"
+    fi
+  done
+  echo ""
+fi
+
+# [21] Archive-pack manifest integrity (D-084, Session 022)
+#
+# HONEST LIMIT (read before touching this check):
+# This check verifies that each manifest.yaml under provenance/*/archive/*/
+# has the required keys and that source_hash_sha256 matches the actual hash
+# of concatenated chunks in ordinal order. It does not verify that the
+# archive's content is what was originally intended, or that the archive
+# is the right artefact for the session that created it.
+#
+# Gate: presence of any provenance/*/archive/ subdirectory.
+echo "[21] Archive-pack manifest integrity"
+archive_dirs=("$WORKSPACE_ROOT"/provenance/*/archive/*/)
+if [[ ! -d "${archive_dirs[0]}" ]]; then
+  echo "  (no archive-packs present; check 21 out-of-scope)"
+  echo ""
+else
+  for adir in "${archive_dirs[@]}"; do
+    [[ -d "$adir" ]] || continue
+    manifest="$adir/manifest.yaml"
+    relname="${adir#$WORKSPACE_ROOT/}"
+    if [[ ! -f "$manifest" ]]; then
+      fail "$relname — manifest.yaml missing"
+      continue
+    fi
+
+    # Check required keys present
+    required_keys=(archive_id originating_session originating_path migrated_in_session kind total_bytes total_words chunk_count chunk_boundary_rule source_hash_sha256)
+    missing_keys=""
+    for key in "${required_keys[@]}"; do
+      if ! grep -qE "^${key}:" "$manifest"; then
+        missing_keys="${missing_keys} $key"
+      fi
+    done
+    if [[ -n "$missing_keys" ]]; then
+      fail "$relname — manifest.yaml missing required keys:$missing_keys"
+      continue
+    fi
+
+    # Extract stored hash
+    stored_hash=$(grep -E '^source_hash_sha256:' "$manifest" | head -1 | sed -E 's/^source_hash_sha256:[[:space:]]*//' | tr -d '[:space:]"')
+
+    # Find chunks; concatenate in ordinal order; compute hash
+    chunks=("$adir"/[0-9][0-9]-*.md)
+    if [[ ! -f "${chunks[0]}" ]]; then
+      # Try single-source form
+      if [[ -f "$adir/00-source.md" ]]; then
+        computed_hash=$(shasum -a 256 "$adir/00-source.md" | awk '{print $1}')
+      else
+        fail "$relname — no chunks or 00-source.md present"
+        continue
+      fi
+    else
+      computed_hash=$(cat "${chunks[@]}" | shasum -a 256 | awk '{print $1}')
+    fi
+
+    if [[ "$stored_hash" == "$computed_hash" ]]; then
+      pass "$relname — manifest well-formed; source_hash_sha256 matches"
+    else
+      fail "$relname — source_hash_sha256 mismatch. stored=$stored_hash computed=$computed_hash"
+    fi
+  done
+  echo ""
+fi
+
+# [22] Archive-pack citation consistency (D-084, Session 022)
+#
+# HONEST LIMIT (read before touching this check):
+# This check verifies that every [archive: <path>] reference in a default-read
+# file resolves to an existing archive-pack directory. It does not verify
+# that the cited content actually supports the claim at the citation site.
+# Tier 2 Q9 is the paired counter-pressure.
+#
+# Gate: presence of any provenance/*/archive/ subdirectory.
+echo "[22] Archive-pack citation consistency"
+if [[ ! -d "${archive_dirs[0]}" ]]; then
+  echo "  (no archive-packs present; check 22 out-of-scope)"
+  echo ""
+else
+  # Find archive references in all .md files under workspace (excluding .git)
+  any_refs=false
+  broken_refs=0
+  while IFS= read -r line; do
+    file=$(echo "$line" | cut -d: -f1)
+    ref=$(echo "$line" | grep -oE '\[archive: [^]]+\]')
+    path=$(echo "$ref" | sed -E 's/\[archive: ([^#]+)(#[^]]+)?\]/\1/' | tr -d '[:space:]')
+    # Skip placeholder references (documentation examples with angle brackets or
+    # the literal tokens "path" and "slug" used as generic placeholder text).
+    # These are spec-text illustrations, not real references.
+    if [[ "$path" == *"<"*">"* ]] || [[ "$path" == "path" ]]; then
+      continue
+    fi
+    any_refs=true
+    # Check if path exists (accept trailing slash)
+    resolved="$WORKSPACE_ROOT/${path%/}/"
+    rel_file="${file#$WORKSPACE_ROOT/}"
+    if [[ -d "$resolved" ]]; then
+      pass "$rel_file — archive reference resolves: $path"
+    else
+      fail "$rel_file — archive reference does not resolve: $path (tried $resolved)"
+      broken_refs=$((broken_refs + 1))
+    fi
+  done < <(grep -rn --include="*.md" --exclude-dir=".git" --exclude-dir=".claude" --exclude-dir=".serena" -E '\[archive: [^]]+\]' "$WORKSPACE_ROOT" 2>/dev/null || true)
+
+  if ! $any_refs; then
+    echo "  (no [archive: ...] references found in default-read files; check 22 in-scope but no references to validate)"
+  fi
+  echo ""
+fi
+
 # --- Summary ---
 echo "--- Tier 1 Summary ---"
 echo "Passed: $PASS  |  Failed: $FAIL  |  Warnings: $WARN"
@@ -755,6 +974,18 @@ echo "      adopted a position that contradicts (or substantively augments) the"
 echo "      Claude consensus, not merely supplemented it. Flag rows where the"
 echo "      substantive claim is weaker than the structural claim suggests."
 echo "      (Skip if no oi-004-retrospective.md present.)"
+echo ""
+echo "  Q9. Read-contract adherence (paired with check 22). For this session's"
+echo "      work, verify: (a) the default-read surface enumeration in"
+echo "      read-contract.md §1 was actually followed — every enumerated file"
+echo "      was read at session open before any substantive work; (b) any"
+echo "      archive-surface records relied on for load-bearing claims are cited"
+echo "      via the [archive: path] convention in default-read files; (c) any"
+echo "      non-reads of relevant archive records were declared in the session's"
+echo "      honest-limits section with the gap they leave. Flag silent skips —"
+echo "      these are the harness-layer laundering pattern the read-contract"
+echo "      exists to prevent. Flag reliance on archive-surface claims without"
+echo "      corresponding reads (the witness-dumping pattern WX-22-1 tracks)."
 echo ""
 
 if [[ $FAIL -gt 0 ]]; then

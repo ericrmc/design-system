@@ -1,0 +1,16 @@
+archive_id: 022-pre-R8b-open-issues
+originating_session: pre-022
+originating_path: open-issues.md
+migrated_in_session: 022
+kind: over-budget-annotation
+total_bytes: 76497
+total_words: 9783
+chunk_count: 1
+chunk_boundary_rule: single-file
+source_hash_sha256: 322783d441907f0ac894c18dfb4280c3299bd34720cf5da1900bdca6cba1cd85
+chunks:
+  - ordinal: 1
+    file: 00-source.md
+    line_range: "1-211"
+    chunk_hash_sha256: 322783d441907f0ac894c18dfb4280c3299bd34720cf5da1900bdca6cba1cd85
+readers_note: Pre-Session-022 single-file open-issues.md preserved verbatim. Content was split into per-OI files at open-issues/OI-NNN.md and open-issues/resolved/OI-NNN.md under D-084 R8b; this archive is the byte-identical witness to the pre-split form.

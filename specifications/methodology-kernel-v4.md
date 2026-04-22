@@ -1,11 +1,12 @@
 ---
 title: Methodology Kernel
-version: 5
-status: active
+version: 4
+status: superseded
+superseded-by: methodology-kernel.md (v5)
 created: 2026-04-17
 last-updated: 2026-04-22
-updated-by-session: 022
-supersedes: methodology-kernel-v4.md
+updated-by-session: 014
+supersedes: methodology-kernel-v3.md
 ---
 
 # Methodology Kernel
@@ -30,11 +31,7 @@ Each session performs nine activities. These are a **vocabulary, not a strict se
 
 #### 1. Read
 
-Absorb what the session will reason from before changing anything. In every session this includes **workspace reading** of the default-read surface: the active specifications (per `specifications/engine-manifest.md` §3), the dispatcher and executable prompts (`PROMPT.md`, `prompts/development.md`, `prompts/application.md`), the `SESSION-LOG.md` index, `open-issues/index.md`, every prior session's `03-close.md`, and every file in the current session's provenance directory. The enumeration is specified in `specifications/read-contract.md` §1 and is closed — a file not on the default-read enumeration is archive surface.
-
-The **archive surface** (raw perspective records from closed sessions, superseded specification versions, over-budget annotations preserved as archive-packs per `read-contract.md` §4) is read by explicit reference as the session's work requires; it is not default-read. A session relying on an archive-surface record for a load-bearing claim cites it via the `[archive: path]` convention (`read-contract.md` §6), and either reads the cited chunk(s) in full or declares in the session's honest-limits section why the chunk was not read and what gap that leaves. Silent non-reads of relevant archive records are a validation concern per `validation-approach.md` v5 Tier 2 Q9.
-
-Build a complete picture of the workspace's default-read surface and of any archive-surface material the session depends on.
+Absorb what the session will reason from before changing anything. In every session this includes **workspace reading**: the full current state of the workspace — every file, every specification, every provenance record, and, where relevant, recent version-control history. Build a complete picture of the workspace's own state.
 
 When the session produces or revises an artefact intended for use outside the workspace, it also includes **domain reading**: the domain constraints the session operates under (stated by the user or operator in-session), cited external materials introduced into the session, and domain knowledge that the orchestrating agent surfaces explicitly as input to the work. Domain reading enlarges what must be understood; it does not permit silent import of outside ideas. Knowledge not already present in the workspace or in the session's explicit domain inputs must still be introduced through an explicit surveying or hypothesising step (per PROMPT.md). Perspective pretraining enters the session via stance briefs and perspective responses, not via §1 Read.
 

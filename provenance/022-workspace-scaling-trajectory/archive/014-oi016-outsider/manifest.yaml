@@ -1,0 +1,84 @@
+archive_id: 022-014-oi016-outsider
+originating_session: 014
+originating_path: provenance/014-oi016-resolution/01d-perspective-outsider.md
+migrated_in_session: 022
+kind: raw-perspective
+total_bytes: 868082
+total_words: 96651
+chunk_count: 18
+chunk_boundary_rule: byte-range
+source_hash_sha256: a85061c6b228d6db120a145fe3cf03d6d57ada1a789a3083281d1d0f71bb5745
+chunks:
+  - ordinal: 1
+    file: 01-chunk.md
+    byte_range: "0-49999"
+    chunk_hash_sha256: 182c5d3cb0343e44a7bd3027f74c4868995234a1cc4f0392bdf031c7866c276e
+  - ordinal: 2
+    file: 02-chunk.md
+    byte_range: "50000-99999"
+    chunk_hash_sha256: 15589a0d6e4e7fb7d7b7af16b432834ab432d1d98a137c9a6ae748651a065c2f
+  - ordinal: 3
+    file: 03-chunk.md
+    byte_range: "100000-149999"
+    chunk_hash_sha256: 80b8f5d1ae6c5ab129103e3fa3c69d405fa8ff904bbc0a7493b610dcd8b2a7f1
+  - ordinal: 4
+    file: 04-chunk.md
+    byte_range: "150000-199999"
+    chunk_hash_sha256: 7fd018c4d78f81e337af22f0d21c6bdaf7d9e8fa9fd5bc11ebbe9e6a008303f7
+  - ordinal: 5
+    file: 05-chunk.md
+    byte_range: "200000-249999"
+    chunk_hash_sha256: 00981e41f84f93ad70400fcf67796f084756339794cc60889ced58facdce0002
+  - ordinal: 6
+    file: 06-chunk.md
+    byte_range: "250000-299999"
+    chunk_hash_sha256: f522a23d1631ab79fc46630ef1d699f3e9a33ccb898b3d6a6d4423958ae67af9
+  - ordinal: 7
+    file: 07-chunk.md
+    byte_range: "300000-349999"
+    chunk_hash_sha256: f5b741cf61426486aa28bb57eb66104a02b71574474af2ed7e96e6e29721b44b
+  - ordinal: 8
+    file: 08-chunk.md
+    byte_range: "350000-399999"
+    chunk_hash_sha256: d74c665973a7b3d7b9363b6c6d16a92abc4d6961ddc004a470fb1f6a31cb1dc2
+  - ordinal: 9
+    file: 09-chunk.md
+    byte_range: "400000-449999"
+    chunk_hash_sha256: 728170ff0d7efa6b5c956515d1a286c4c9fbe38af494fc7b69c0ee156d1036f4
+  - ordinal: 10
+    file: 10-chunk.md
+    byte_range: "450000-499999"
+    chunk_hash_sha256: cd329b665a2ec1228abde3d4ba536e6d38e390e8712289d7c6b37dd53e5ec631
+  - ordinal: 11
+    file: 11-chunk.md
+    byte_range: "500000-549999"
+    chunk_hash_sha256: f89d7a70ff295a746e20171432e222bdbdce960f83653a3088e4adcab1626349
+  - ordinal: 12
+    file: 12-chunk.md
+    byte_range: "550000-599999"
+    chunk_hash_sha256: 53f28116e2aaedec859eb08b5edf4beb02e22838a1fd2cb709b522479d76004e
+  - ordinal: 13
+    file: 13-chunk.md
+    byte_range: "600000-649999"
+    chunk_hash_sha256: 4a808720078ad04bb2853d604d18301fae7bbb9618586c1fdabeaf6159aff5e5
+  - ordinal: 14
+    file: 14-chunk.md
+    byte_range: "650000-699999"
+    chunk_hash_sha256: ff6949236d3634593835c0571d488d83c0444fa02d6bc2995906b9446163add9
+  - ordinal: 15
+    file: 15-chunk.md
+    byte_range: "700000-749999"
+    chunk_hash_sha256: d39a2d7046892707439050eda1ffa51d5b93c071d2b98c5e05932bda821ddac6
+  - ordinal: 16
+    file: 16-chunk.md
+    byte_range: "750000-799999"
+    chunk_hash_sha256: 288e7c69fbe47a991a8c97944cf4121196f262299c2eb43a852838fa581db919
+  - ordinal: 17
+    file: 17-chunk.md
+    byte_range: "800000-849999"
+    chunk_hash_sha256: dfa598c3ef7efb7f12c204ca9bd7d0e8f41df96d4b88c95529de39df41149dfa
+  - ordinal: 18
+    file: 18-chunk.md
+    byte_range: "850000-868081"
+    chunk_hash_sha256: 96e95fcb225bb83956cac3e0923cc49db5a5bb61ff5c7adf0c0dd09f9835d5e6
+readers_note: Session 014 OI-016 deliberation Outsider perspective (GPT-5 via codex exec; tokens_used 30,685). Full CLI banner + codex markers + reasoning/tool-call traces + response body + end-of-stream duplicate response body preserved verbatim per Session 014 precedent. Byte-range splitting used because line-range chunking produced over-budget chunks (individual lines up to 3,328 words). Read chunk 01 first for frontmatter + opening; chunks 04-06 contain the substantive response body.

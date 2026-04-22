@@ -1,11 +1,12 @@
 ---
 title: Validation Approach
-version: 5
-status: active
+version: 4
+status: superseded
+superseded-by: validation-approach.md (v5)
 created: 2026-04-17
 last-updated: 2026-04-22
-updated-by-session: 022
-supersedes: validation-approach-v4.md
+updated-by-session: 021
+supersedes: validation-approach-v3.md
 ---
 
 # Validation Approach
@@ -18,9 +19,7 @@ This specification defines how the methodology validates itself: what is checked
 
 **Scope note (added as a minor correction in Session 017 per D-074).** The Tier 1 structural checks and Tier 2 guided-assessment questions defined in this specification apply equally to the self-development application and to external-problem applications of the Selvedge engine. Validation is engine-level; the specific artefacts checked (and the appropriate domain-validation pathway) vary by application kind, but the two-tier discipline is invariant.
 
-Version 5 adds three new Tier 1 checks (20, 21, 22) operationalising the read-contract in `specifications/read-contract.md` v1 (D-084, Session 022), and one new Tier 2 question (Q9) addressing read-contract adherence. It specifies gating, severity, and sequencing rules for the new checks. It supersedes v4 (`validation-approach-v4.md`).
-
-Version 4 adds four new Tier 1 checks (16, 17, 18, 19) operationalising the OI-004 criterion-4 articulation in `multi-agent-deliberation.md` v4 (D-082, Session 021), and one new Tier 2 question (Q8) paired with check 18's honest limit. It specifies gating, severity, and sequencing rules for the new checks. It superseded v3 (`validation-approach-v3.md`).
+Version 4 adds four new Tier 1 checks (16, 17, 18, 19) operationalising the OI-004 criterion-4 articulation in `multi-agent-deliberation.md` v4 (D-082, Session 021), and one new Tier 2 question (Q8) paired with check 18's honest limit. It specifies gating, severity, and sequencing rules for the new checks. It supersedes v3 (`validation-approach-v3.md`).
 
 Version 3 added two new Tier 1 checks (14, 15) that operationalised v2 `multi-agent-deliberation.md` Validation items 1 and 2 (now v3+ Validation items), and one new Tier 2 question (Q7) paired with checks 14/15's honest limits. It specified gating, severity, and sequencing rules for those checks. It superseded v2 (`validation-approach-v2.md`).
 
@@ -61,9 +60,6 @@ The following checks are automated:
 | 17 | Claude-output-in-training disclosure: each manifest with `participant_kind` in `{non-anthropic-model, human}` has a `claude_output_in_training:` field whose value is in `{known-yes, known-no, unknown, n/a}` | multi-agent-deliberation v4 §Heterogeneous-Participant Recording Schema | Fail | session ≥ 021 |
 | 18 | OI-004 closure-retrospective well-formedness: any `provenance/*/oi-004-retrospective.md` artefact contains the three required sections `## Qualifying Deliberations Table`, `## Summary Tally`, `## P4 Assertion` | multi-agent-deliberation v4 §Closure Procedure for OI-004 | Fail | presence of `oi-004-retrospective.md` artefact |
 | 19 | Non-Anthropic participant_organisation closed-set membership: each manifest with `participant_kind: non-anthropic-model` has non-empty `participant_organisation:` field whose value is in the spec-enumerated closed set | multi-agent-deliberation v4 §Acceptable Participant Kinds for OI-004 | Fail | session ≥ 021 |
-| 20 | Default-read surface per-file budget: every file in `read-contract.md` §1 default-read enumeration has body-word-count ≤ `DEFAULT_READ_HARD_WORD_CEILING` (Fail) or ≤ `DEFAULT_READ_SOFT_WORD_CEILING` (Warn) | read-contract §2 | Fail/Warn | session ≥ 022 |
-| 21 | Archive-pack manifest integrity: every `provenance/*/archive/*/manifest.yaml` has required keys and the stored `source_hash_sha256` matches actual hash of concatenated chunks in ordinal order | read-contract §7 | Fail | presence of any `archive/` subdirectory under `provenance/*/` |
-| 22 | Archive-pack citation consistency: every `[archive: path]` reference in a default-read surface file resolves to an existing archive-pack path; chunk ordinals named in the reference exist in the manifest | read-contract §6 | Fail | presence of any `archive/` subdirectory under `provenance/*/` |
 
 Checks marked **Fail** cause the tool to exit with a non-zero code. Checks marked **Warning** are reported but do not cause failure.
 
@@ -96,36 +92,6 @@ Checks marked **Fail** cause the tool to exit with a non-zero code. Checks marke
 **Closed-set extension discipline.** The PARTICIPANT_ORGANISATION_CLOSED_SET in `validate.sh` is initialised at engine-v2 with values `{anthropic, openai, google, meta, xai, mistral, deepseek, cohere, local, human-individual, other-named}`. Extending this set requires a named decision in a session's `02-decisions.md` and a same-session update to the constant. Adding a new provider is **not** a substantive revision to `multi-agent-deliberation.md` per OI-002 heuristic (the spec already permits the closed set to extend); it is a substantive update to `tools/validate.sh` per `engine-manifest.md` §5 only when the addition substantively changes what counts as criterion-4-eligible. Routine provider additions (e.g., adding `cohere` after first operational use) are treated as minor validator-data updates not triggering an engine-version bump. This convention is established Session 021 and may be revisited if it produces silent failures.
 
 **Consequence for prior sessions.** Sessions 001 through 020 are out-of-scope for checks 16, 17, 19. Session 021 and later sessions whose manifests claim OI-004 narrowing must include the new fields per the schema in `multi-agent-deliberation.md` v4. Pre-adoption sessions retain their original manifests unchanged.
-
-### Gating Conventions (checks 20, 21, 22) — Session-number and presence-gating
-
-**Session-number-gating (check 20).** Check 20 applies only to sessions numbered ≥ 022 (the session that adopted `specifications/read-contract.md` v1). The gate is encoded as an explicit constant `READ_CONTRACT_ADOPTION_SESSION=22` near the top of `validate.sh`. Out-of-scope sessions (001 through 021) produce no output from check 20 — pre-adoption SESSION-LOG.md / open-issues.md sizes are preserved as-is until the R8a / R8b migrations complete in Session 022.
-
-**Presence-gating (checks 21, 22).** Checks 21 and 22 fire only when at least one `provenance/*/archive/*/` directory exists. The archive-pack infrastructure does not exist until Session 022 creates the first archive-pack (Session 014 Outsider retroactive migration per R8c); pre-existence sessions are out-of-scope.
-
-**Rationale for mixed gating.** Check 20 measures default-read surface files that exist prospectively from the adoption session onward. Checks 21 and 22 measure archive-packs that exist only when created; presence-gating is the correct mechanism per Session 005 D-030 precedent.
-
-**Budget constants.** Encoded near the top of `validate.sh`:
-
-```
-DEFAULT_READ_HARD_WORD_CEILING=15000
-DEFAULT_READ_SOFT_WORD_CEILING=10000
-READ_CONTRACT_ADOPTION_SESSION=22
-```
-
-Any revision to these constants is a substantive revision to `tools/validate.sh` per `engine-manifest.md` §5 and requires an engine-version bump.
-
-**Measurement.** Check 20 measures word count via `wc -w` on body content after the closing YAML frontmatter delimiter. Frontmatter and the three-dash delimiters themselves are excluded.
-
-**Default-read surface detection.** The validator maintains a canonical default-read file-set derived from `read-contract.md` §1. The implementation uses a glob-based helper (not filename heuristics) reading the §1 enumeration patterns:
-- `specifications/*.md` where frontmatter `status: active` (not `superseded`, `draft`, or `deprecated`).
-- `PROMPT.md`, `prompts/development.md`, `prompts/application.md`.
-- `SESSION-LOG.md`.
-- `open-issues/index.md`.
-- `provenance/*/03-close.md`.
-- Files in the currently-active session's provenance directory (only the most recent NNN- directory containing an un-closed `03-close.md` or no `03-close.md` at all).
-
-Archive-pack files and superseded-status specifications are excluded from check 20 scope.
 
 ### Sequencing (check 13 after check 12; check 14 after check 11; check 15 after check 12)
 
@@ -210,8 +176,6 @@ The following questions are printed for the assessor to consider:
 
 8. **OI-004 closure-retrospective substantive adequacy (new in v4; paired with check 18):** If this session contains an `oi-004-retrospective.md`, read its Qualifying Deliberations Table and P4 Assertion. For each row marked frame-replacement-or-novel-mechanism, verify the cited synthesis section actually contains a non-Claude-originated reframing (not paraphrase or restatement of a Claude perspective's argument). For the P4 assertion, verify the cited divergence shows the synthesis adopted a position that contradicts (or substantively augments) the Claude consensus, not merely supplemented it. Flag rows where the substantive claim is weaker than the structural claim suggests. (Skip if no `oi-004-retrospective.md` present.)
 
-9. **Read-contract adherence (new in v5; paired with check 22):** For this session's work, verify: (a) the default-read surface enumeration in `read-contract.md` §1 was actually followed — every enumerated file was read at session open before any substantive work; (b) any archive-surface records relied on for load-bearing claims are cited via the `[archive: path]` convention in default-read files; (c) any non-reads of relevant archive records were declared in the session's honest-limits section with the gap they leave. Flag silent skips — these are the harness-layer laundering pattern the read-contract exists to prevent. Flag reliance on archive-surface claims without corresponding reads (the "witness-dumping" pattern WX-22-1 tracks).
-
 ### Tool Location and Behavior
 
 The validation tool is located at `tools/validate.sh`. It:
@@ -243,9 +207,6 @@ Automated structural checks verify form, not meaning. Passing all structural che
 - Claude-output-in-training disclosures (check 17) are truthful (the check verifies disclosure presence, not truthfulness — same operator-integrity floor as check 13).
 - Closure-retrospective substantive content (check 18) is well-grounded (the check verifies structural well-formedness only; substantive adequacy is Tier 2 Q8).
 - Participant_organisation values (check 19) reflect actual model developers (the check verifies closed-set membership, not factual provenance).
-- Default-read budgets (check 20) measure file size, not file relevance to the session's work. A file under the budget may still be effectively not-read; a file over the budget has failed even if its content was fully read in segments.
-- Archive-pack manifest integrity (check 21) verifies hash match on stored-vs-computed, not that the archive's content is what was intended or that the archive is the right artefact to preserve.
-- Archive-pack citation consistency (check 22) verifies path and ordinal existence, not that the cited content supports the citing claim. Tier 2 Q9 is the designed counter-pressure.
 
 These deeper questions are the purpose of Tier 2, which depends on honest assessment by the agent or human conducting the session. The methodology acknowledges that when a single AI agent both does the work and assesses it, Tier 2 is self-assessment rather than independent validation. This is a known limitation (see D-009), mitigated by making the questions explicit and recording the assessment in provenance, and further mitigated since Session 005 by the D-023 non-Claude-participation rule for meta-deliberations on self-assessment mechanisms.
 
@@ -261,8 +222,8 @@ Checks 14 and 15 are **consistency between self-declared triggers and session ar
 
 To validate this specification:
 
-1. Run `tools/validate.sh` and verify it performs the twenty-two structural checks listed in the table above.
-2. Verify the tool prints the nine guided questions listed above.
+1. Run `tools/validate.sh` and verify it performs the nineteen structural checks listed in the table above.
+2. Verify the tool prints the eight guided questions listed above.
 3. Compare the tool's actual checks against the table in this specification — they should match.
 4. Verify the tool is read-only (it makes no changes to any file).
 5. Verify the tool exits with code 0 when all fail-severity checks pass, and code 1 otherwise.

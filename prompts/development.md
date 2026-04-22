@@ -16,13 +16,13 @@ Another preference, not a rule: every application of the engine should include s
 
 ## How to operate
 
-Begin by reading the workspace completely. Every file, every document, every historical record, every commit message if the workspace is under version control. Build a full picture of what exists before changing anything.
+Begin by reading the workspace's default-read surface completely: the active specifications (per `specifications/engine-manifest.md` §3), the current `SESSION-LOG.md` index, the current `open-issues/index.md`, and each prior session's `03-close.md`. Then enumerate the archive-surface records relevant to this session's subject matter; for each, either read it in full via its archive manifest + chunk references, or declare in the session's honest-limits section why it was not read and what gap that leaves. The default-read and archive surface enumerations are specified canonically in `specifications/read-contract.md`. Build a full picture of what exists before changing anything.
 
 From that reading, determine what state the methodology is in and what should happen next. If the workspace has not yet defined its own structure, the first work is to do so — by surveying prior approaches, reasoning about what this methodology needs, and committing a proposed shape along with the reasoning that led to it. If the workspace has defined a structure but not yet applied it, the next work is to begin applying it. If the structure has been applied but produces artefacts that have not been validated, the next work is validation. If everything has been exercised at least once, the methodology is in evolution mode — identify the weakest aspect of the current system and do whatever work addresses it.
 
 State your determination explicitly at the start of each session, so the next application of this prompt has a clear record of what you inferred and why.
 
-Before doing any substantive work, read everything the workspace has preserved about prior decisions. If an idea was considered and rejected earlier, do not silently re-propose it. If you believe a rejected idea deserves reconsideration, cite the prior rejection and explain what has changed. Continuity of reasoning is the whole point of preserving provenance.
+Before doing any substantive work, consult the workspace's record of prior decisions: `SESSION-LOG.md` entries, `open-issues/` status files, and — for any decision load-bearing to this session's work — the relevant `02-decisions.md` and any archive-surface records it references (via the `[archive: path]` convention per `read-contract.md` §6). If an idea was considered and rejected earlier, do not silently re-propose it. If you believe a rejected idea deserves reconsideration, cite the prior rejection and explain what has changed. Continuity of reasoning is the whole point of preserving provenance.
 
 Substantive work in this methodology should not be done by a single perspective. Convene a group of AI agents with genuinely different viewpoints suited to the work at hand. Some perspectives generate options, some challenge them, some attend to what is unknown, some attend to what has been ignored, some reason about how the work will be received by those who must live with it. The specific perspectives, their number, and how they collaborate are for you to develop. Over repeated applications, patterns will emerge — document them when they do, so future applications can build on what worked.
 
@@ -40,7 +40,7 @@ Do not skip steps. Each piece of work's output is the next piece's input, and sk
 
 Do not overwrite prior specifications silently. When a specification is revised, preserve the prior version and make the succession traceable. The form of that preservation — filenames, directory structure, supersession markers, or something else — is for you to develop. Whatever you choose, be consistent so future readers can follow the thread.
 
-Preserve all provenance. Do not delete historical records, even when they feel embarrassing or outdated. A rejected idea from long ago may be the key to understanding a decision made today.
+Preserve all provenance. Do not delete, silently compress, or summarise historical records. A rejected idea from long ago may be the key to understanding a decision made today. When a record exceeds the default-read budget configured in `specifications/read-contract.md`, preserve it as an immutable archive-pack with byte-identical preservation, a pointer-only manifest, integrity hashes, and stable references from the default-read surface.
 
 Leave the workspace in a coherent state at the end of every application. If a piece of work cannot complete, commit what was produced, document the blocker, and end cleanly rather than leaving work in an indeterminate state.
 

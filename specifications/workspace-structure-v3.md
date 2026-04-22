@@ -1,11 +1,12 @@
 ---
 title: Workspace Structure
-version: 4
-status: active
+version: 3
+status: superseded
+superseded-by: workspace-structure.md (v4)
 created: 2026-04-17
 last-updated: 2026-04-22
-updated-by-session: 022
-supersedes: workspace-structure-v3.md
+updated-by-session: 020
+supersedes: workspace-structure-v2.md
 ---
 
 # Workspace Structure
@@ -13,8 +14,6 @@ supersedes: workspace-structure-v3.md
 ## Purpose
 
 This specification defines how the workspace is organized: what directories and files exist, what each contains, and how they relate. It ensures that any agent or person reading the workspace can orient themselves quickly and knows where to find — and where to put — each kind of content.
-
-Version 4 (Session 022, D-084) adds the `open-issues/` directory split (replacing the single `open-issues.md` file per the v3 §open-issues split-authorisation clause), adds cross-references to `specifications/read-contract.md` (new v1 specification governing default-read vs archive surface distinction), and adds the archive-surface subdirectory convention (`provenance/NNN-title/archive/`). v3 preserved as `workspace-structure-v3.md`.
 
 Version 3 (Session 017, D-074) adds the three file-class distinction (engine-definition / development-provenance / application-scope) and documents `prompts/` as a new directory created by the PROMPT.md split. v2 preserved as `workspace-structure-v2.md`.
 
@@ -40,26 +39,9 @@ The workspace has the following top-level structure:
   development.md
   application.md
 /SESSION-LOG.md
-/open-issues/
-  index.md
-  OI-NNN.md      (one file per open issue)
-  resolved/
-    OI-NNN.md    (one file per resolved issue)
+/open-issues.md
 /specifications/
 /provenance/
-  NNN-title/
-    00-assessment.md
-    01-brief-shared.md       (if preserved separately)
-    01X-perspective-<role>.md
-    01-deliberation.md
-    02-decisions.md
-    03-close.md
-    manifests/
-    participants.yaml
-    archive/                 (if over-threshold raws were archive-packed per read-contract.md §4)
-      <slug>/
-        manifest.yaml
-        0N-chunk.md
 /tools/
 /applications/
 ```
@@ -79,24 +61,11 @@ Both files are revisable under the methodology's spec-revision discipline (signi
 
 ### SESSION-LOG.md
 
-A thin one-line-per-session index for quick orientation. Each entry is one Markdown table row containing the session number, date, title, and a one-sentence summary of the decision surface. The canonical detail for each session lives in its provenance `03-close.md` file; the SESSION-LOG entry is an index over that detail, not a replacement.
+A running index of sessions for quick orientation. Each entry is one line (one Markdown table row) containing the session number, date, title, and a summary of what was accomplished. The summary length scales to session complexity: planning-only, single-perspective, or assessment-only sessions produce shorter summaries; deliberation sessions producing substantive spec revisions, cross-model influences, or external artefacts produce longer summaries calibrated to record the decision surface and load-bearing influences. The canonical detail for each session lives in its provenance `03-close.md` file; the SESSION-LOG entry is an index over that detail, not a replacement. This file is updated at the close of each session.
 
-SESSION-LOG.md is default-read surface per `specifications/read-contract.md` §1 and must satisfy the default-read per-file budget (currently 15,000 words hard ceiling, 10,000 words soft warning). A long-form per-session summary that would push SESSION-LOG.md over budget belongs in `03-close.md`, not in SESSION-LOG. This file is updated at the close of each session.
+### open-issues.md
 
-The post-Session-022 thin-index form replaces the pre-Session-022 variable-length-summary form per Session 022 R8a; the pre-Session-022 SESSION-LOG content is preserved in `provenance/022-workspace-scaling-trajectory/archive/pre-R8a-SESSION-LOG/` as an archive-pack witness.
-
-### open-issues/
-
-A directory containing the workspace's known questions, gaps, uncertainties, and unresolved disagreements. Each issue lives in its own file `OI-NNN.md` (where NNN is the OI number, zero-padded if necessary to sort correctly). A thin index `open-issues/index.md` lists all active OIs with one-line status summaries; `open-issues/resolved/` holds resolved issues with reference to the session that resolved them.
-
-The `open-issues/` directory replaces the pre-Session-022 single `open-issues.md` file. The split was authorised by the v3 "unless the number of issues makes a single file unwieldy" clause and is exercised in Session 022 per D-084 R8b.
-
-Per `specifications/read-contract.md` §1, `open-issues/index.md` is default-read surface; per-OI files (`OI-NNN.md`) are default-read when relevant to the session's work and archive-surface-accessed otherwise (the thin-index-plus-relevant-detail pattern).
-
-Each `OI-NNN.md` carries:
-- Frontmatter: `id`, `surfaced-in-session`, `status`.
-- Brief description of the issue.
-- Full historical annotation record (lossless preservation of prior `open-issues.md` content for each OI).
+A list of known questions, gaps, uncertainties, and unresolved disagreements. Each entry has a brief description, the session that identified it, and its current status. Issues are removed when resolved (with a reference to the session that resolved them). This is a single file, not a directory, unless the number of issues makes a single file unwieldy.
 
 ### specifications/
 
@@ -120,8 +89,6 @@ The body of each specification has three sections:
 3. **Validation** — How to verify this specification still describes reality
 
 When a specification undergoes substantive revision, the prior version is preserved with a version suffix (e.g., `workspace-structure-v1.md`) and the new version takes the canonical filename. Minor corrections are committed through git without file-level versioning.
-
-Superseded-status specifications (those carrying frontmatter `status: superseded`) are archive-surface per `specifications/read-contract.md` §3; they are not default-read at session open but remain preserved verbatim and accessible by explicit reference via their `-vN.md` filenames.
 
 Status lifecycle:
 - **draft** — Proposed but not yet deliberated and accepted
@@ -155,8 +122,6 @@ status: complete | in-progress
 ```
 
 Provenance records are **immutable** once the session closes. Errors or retractions are recorded in subsequent sessions, not by editing past records.
-
-**Archive-pack subdirectory** (added v4): when a session's raw perspective file or other provenance file exceeds the default-read per-file budget (`specifications/read-contract.md` §2), the file is archive-packed before session close per `read-contract.md` §9. Archive-packs live at `provenance/NNN-title/archive/<slug>/` with `manifest.yaml` + numbered chunks. Retroactive migration of a closed session's over-budget file uses the copy-plus-reference discipline (Session 009 D-054 precedent): the archive-pack is created in the migrating session's provenance directory, not the originating session's directory, preserving D-017 immutability.
 
 ### tools/
 

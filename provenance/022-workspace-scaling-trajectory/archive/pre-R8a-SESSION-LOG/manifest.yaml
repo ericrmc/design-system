@@ -1,0 +1,16 @@
+archive_id: 022-pre-R8a-SESSION-LOG
+originating_session: pre-022
+originating_path: SESSION-LOG.md
+migrated_in_session: 022
+kind: over-budget-annotation
+total_bytes: 87230
+total_words: 10405
+chunk_count: 1
+chunk_boundary_rule: single-file
+source_hash_sha256: 4ecf2b4a4f70bbb4e7b27189c749e317f10c98ea8230173d31367db65ce66c09
+chunks:
+  - ordinal: 1
+    file: 00-source.md
+    line_range: "1-25"
+    chunk_hash_sha256: 4ecf2b4a4f70bbb4e7b27189c749e317f10c98ea8230173d31367db65ce66c09
+readers_note: Pre-Session-022 SESSION-LOG.md preserved verbatim, pre-thin-index restoration. Detailed per-session summaries that were in this file are duplicated in each session's `provenance/NNN-title/03-close.md`. This archive is the byte-identical witness to the pre-restoration form.
