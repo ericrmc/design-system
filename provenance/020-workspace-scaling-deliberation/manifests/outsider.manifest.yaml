@@ -1,0 +1,25 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: "OpenAI GPT-5.4 invoked via Codex CLI (codex exec, research preview v0.121.0); OpenAI session id 019db491-3ac2-7e53-950c-b1c2ead7a4af"
+model_family: gpt
+model_id: gpt-5.4
+model_version: "5.4"
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+  reasoning_effort: xhigh
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: "session-020 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "Composed prompt at /tmp/020-outsider-prompt.txt — preamble identifying Outsider role (§8 of brief) plus full contents of provenance/020-workspace-scaling-deliberation/01-brief-shared.md appended verbatim; deliberation anchor commit c4025d5"
+delivered_at: 2026-04-22T20:55Z
+received_at: 2026-04-22T20:58Z
+raw_response_file: provenance/020-workspace-scaling-deliberation/01d-perspective-outsider.md
+transport_notes: "Committed verbatim from codex exec stdout. Raw captured output at /tmp/020-outsider-response.txt (600 lines) includes CLI banner ('OpenAI Codex v0.121.0 (research preview)', 'model: gpt-5.4', 'provider: openai', 'approval: never', 'sandbox: read-only', 'reasoning effort: xhigh', 'reasoning summaries: none', 'session id: 019db491-3ac2-7e53-950c-b1c2ead7a4af'), user prompt echo (lines 13-275), 'codex' response markers (lines 278, 280), response body Q1-Q8 + Honest-limits (lines 281-439), 'tokens used 22182' line (440-441), and end-of-stream duplicate response body. End-of-stream duplication matches Sessions 005-019 Outsider output patterns and is preserved in the captured raw file; raw_response_file (01d-perspective-outsider.md) contains only the single response body. Invocation: `codex exec -c model_reasoning_effort=xhigh \"$(cat /tmp/020-outsider-prompt.txt)\" > /tmp/020-outsider-response.txt 2>&1`, run as background task id bla5uyw2s. Launched in parallel with splitter, tooler, skeptic (Agent tool) in a single tool-call batch."
+output_edited_after_submission: false
+participation_shape: perspective

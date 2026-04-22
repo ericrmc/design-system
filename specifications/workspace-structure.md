@@ -4,7 +4,7 @@ version: 3
 status: active
 created: 2026-04-17
 last-updated: 2026-04-22
-updated-by-session: 017
+updated-by-session: 020
 supersedes: workspace-structure-v2.md
 ---
 
@@ -60,7 +60,7 @@ Both files are revisable under the methodology's spec-revision discipline (signi
 
 ### SESSION-LOG.md
 
-A running index of sessions for quick orientation. Each entry is one line containing the session number, date, title, and a brief note on what was accomplished. This file is updated at the close of each session.
+A running index of sessions for quick orientation. Each entry is one line (one Markdown table row) containing the session number, date, title, and a summary of what was accomplished. The summary length scales to session complexity: planning-only, single-perspective, or assessment-only sessions produce shorter summaries; deliberation sessions producing substantive spec revisions, cross-model influences, or external artefacts produce longer summaries calibrated to record the decision surface and load-bearing influences. The canonical detail for each session lives in its provenance `03-close.md` file; the SESSION-LOG entry is an index over that detail, not a replacement. This file is updated at the close of each session.
 
 ### open-issues.md
 

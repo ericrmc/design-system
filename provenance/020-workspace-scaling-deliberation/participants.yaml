@@ -1,0 +1,19 @@
+---
+session: 020
+deliberation_anchor_commit: c4025d5
+cross_model: true
+non_claude_participants: 1
+participants_family: cross-model
+required_trigger: false
+voluntary_non_claude: true
+perspectives:
+  - splitter
+  - tooler
+  - skeptic
+  - outsider
+manifests:
+  - manifests/splitter.manifest.yaml
+  - manifests/tooler.manifest.yaml
+  - manifests/skeptic.manifest.yaml
+  - manifests/outsider.manifest.yaml
+---

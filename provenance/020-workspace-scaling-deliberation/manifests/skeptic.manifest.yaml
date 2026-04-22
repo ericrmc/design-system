@@ -1,0 +1,24 @@
+perspective: skeptic
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 (1M context) parallel subagent launched via Claude Code Agent tool (general-purpose subagent_type); agent id a8a594b76d4d9b076"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "opus-4.7"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-020 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "Inline in Agent prompt: pointer to shared brief at provenance/020-workspace-scaling-deliberation/01-brief-shared.md (§8 Skeptic stance); instruction to inherit Session 019 Minimalist defer-revision warrant in spirit from provenance/019-reference-validation-revision/01b-perspective-minimalist.md; deliberation anchor commit c4025d5"
+delivered_at: 2026-04-22T20:55Z
+received_at: 2026-04-22T21:00Z
+raw_response_file: provenance/020-workspace-scaling-deliberation/01c-perspective-skeptic.md
+transport_notes: "Committed verbatim from subagent Write output. Subagent constrained in prompt to no-git and no-commit (override of CLAUDE.md workflow per Session 018 WX-18-1 lesson). Agent duration 268216 ms (~4:28). Usage 84075 tokens across 10 tool uses. Launched in parallel with splitter, tooler (Agent tool) and outsider (codex exec background) in a single tool-call batch."
+output_edited_after_submission: false
+participation_shape: perspective

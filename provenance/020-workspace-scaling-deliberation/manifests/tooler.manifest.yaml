@@ -1,0 +1,24 @@
+perspective: tooler
+participant_kind: claude-subagent
+participant_identity: "Claude Opus 4.7 (1M context) parallel subagent launched via Claude Code Agent tool (general-purpose subagent_type); agent id acf555eab29bc0100"
+model_family: claude
+model_id: claude-opus-4-7
+model_version: "opus-4.7"
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: "session-020 orchestrating agent"
+participant_selection_method: pre-registered
+identity_known: true
+context_source: "Inline in Agent prompt: pointer to shared brief at provenance/020-workspace-scaling-deliberation/01-brief-shared.md (§8 Tooler stance); explicit authorisation to hands-on-investigate mempalace on a throwaway /tmp path; deliberation anchor commit c4025d5"
+delivered_at: 2026-04-22T20:55Z
+received_at: 2026-04-22T21:05Z
+raw_response_file: provenance/020-workspace-scaling-deliberation/01b-perspective-tooler.md
+transport_notes: "Committed verbatim from subagent Write output. Subagent constrained in prompt to no-git and no-commit (override of CLAUDE.md workflow per Session 018 WX-18-1 lesson). Subagent performed hands-on mempalace investigation on throwaway /tmp/mempalace-test-cse/ (21 copied files, workspace not mutated; global palace retains `mempalace_test_cse` wing). Agent duration 616032 ms (~10:16). Usage 94591 tokens across 46 tool uses. Launched in parallel with splitter, skeptic (Agent tool) and outsider (codex exec background) in a single tool-call batch."
+output_edited_after_submission: false
+participation_shape: perspective
