@@ -1,0 +1,1 @@
+An adult with chronic muscular tension (from desk work and stress) lies on the floor with knees bent, feet flat, and a small book under the head. Their intention is to rest and release tension without performing any physical movement. Write instruction text for the first 3 minutes of this practice. Output as if speaking to the practitioner. Approximately 500 words.

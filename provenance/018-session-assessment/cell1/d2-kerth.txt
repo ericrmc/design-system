@@ -1,0 +1,1 @@
+Design a short opening protocol (to read aloud) for a team retrospective. The opening establishes psychological safety so people can name failures without blame landing on individuals. Output is the facilitator's literal script. Approximately 300 words.

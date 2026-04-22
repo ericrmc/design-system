@@ -1,0 +1,1 @@
+Design a micro-pattern that moves 12 adults, in 12 minutes, from individual silent thought to whole-group synthesis of a posed question. The pattern uses multiple group sizes with explicit timing per segment. Output is the facilitator's brief: what to say at each transition and how long each segment runs. Approximately 600 words.
