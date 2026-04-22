@@ -1,0 +1,30 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: OpenAI Codex v0.121.0 (research preview); model gpt-5.4; session id 019db6a2-ba9d-7b01-881a-75975c9c2700
+model_family: gpt
+model_id: gpt-5.4
+model_version: "0.121.0-research-preview-2026-04"
+provider: openai
+endpoint: codex-exec-cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: ericmccowan
+participant_selection_method: self
+identity_known: true
+context_source: /tmp/023-outsider-prompt.txt (content of provenance/023-session-assessment/01-brief-shared.md plus §7.D stance activation; anchor commit 1c9f452)
+delivered_at: 2026-04-23
+received_at: 2026-04-23
+raw_response_file: provenance/023-session-assessment/archive/023-outsider/ (archive-pack; 4 byte-range chunks; SHA-256 verified; original moved at close per read-contract.md v2 §9 — file exceeds 8K hard ceiling at 20,142 words)
+transport_notes: "Invocation: codex exec -c model_reasoning_effort=xhigh < /tmp/023-outsider-prompt.txt > /tmp/023-outsider-response.txt 2>&1. Background task id bexunn7qx. Duration ~6 minutes wall-clock. Token count 68,078 (first codex marker). Reasoning effort xhigh; sandbox read-only; approval never. Stdin-pipe invocation form per Session 021 transport lesson. Pre-response workspace exploration: sed reads of specifications/read-contract.md, specifications/engine-manifest.md, specifications/validation-approach.md, open-issues/OI-002.md, provenance/022-workspace-scaling-trajectory/01-deliberation.md (§5.3/§5.4), provenance/022-workspace-scaling-trajectory/03-close.md, provenance/022-workspace-scaling-trajectory/archive/022-outsider/manifest.yaml, and extract from archive chunk — pattern n=3 continuing Session 021/022 behavior."
+output_edited_after_submission: false
+participation_shape: perspective
+claude_output_in_training: unknown
+participant_organisation: openai
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+training_lineage_evidence_pointer: unknown-but-asserted

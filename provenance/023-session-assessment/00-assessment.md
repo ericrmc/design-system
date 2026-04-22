@@ -41,7 +41,7 @@ Check 20 default-read surface measurement: 33 files measured; all within 15,000-
 
 Check 21 archive-pack manifest integrity: all four archive-pack manifests' `source_hash_sha256` fields match the SHA-256 of their concatenated chunks in ordinal order. Verified this session open: pre-R8a-SESSION-LOG, pre-R8b-open-issues, 014-oi016-outsider, 022-outsider.
 
-Check 22 archive-pack citation consistency: "no [archive: ...] references found in default-read files; check 22 in-scope but no references to validate." This is the expected state one session after read-contract adoption — the read-contract discipline is live, but no default-read file has yet needed to cite an archive record via the `[archive: path]` convention. (Short-form intra-session citations like `[01d-QN]` within closed-session synthesis files are archive-surface themselves, so they are outside check 22's scope.)
+Check 22 archive-pack citation consistency: "no [archive: ...] references found in default-read files; check 22 in-scope but no references to validate." This is the expected state one session after read-contract adoption — the read-contract discipline is live, but no default-read file has yet needed to cite an archive record via the `[archive: <path>]` convention. (Short-form intra-session citations like `[01d-QN]` within closed-session synthesis files are archive-surface themselves, so they are outside check 22's scope.)
 
 Tier 2 questions Q1–Q9 acknowledged. Responses embedded in this assessment and in the eventual `03-close.md`.
 
@@ -79,7 +79,7 @@ Honest over-declaration pattern: Session 021 D-082 declared `d016_1` over-inclus
 
 ### 3.6 — Additional observation: check 22 empty-surface
 
-Check 22 currently has no references to validate because no default-read file in this workspace cites archive material via the `[archive: path]` convention. This is expected one session in; the convention is prospective. If this state persists across multiple sessions, it is a signal that the canonical form is not being used in practice (sessions may be reaching for archive content without citing via the canonical form, which is the WX-22-1 laundering-as-codification pattern). For now, the state is expected and not a concern.
+Check 22 currently has no references to validate because no default-read file in this workspace cites archive material via the `[archive: <path>]` convention. This is expected one session in; the convention is prospective. If this state persists across multiple sessions, it is a signal that the canonical form is not being used in practice (sessions may be reaching for archive content without citing via the canonical form, which is the WX-22-1 laundering-as-codification pattern). For now, the state is expected and not a concern.
 
 ## 4. Honest-limits on my Read
 

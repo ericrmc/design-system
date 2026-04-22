@@ -1,0 +1,29 @@
+perspective: skeptic
+participant_kind: claude-subagent
+participant_identity: Claude Opus 4.7 subagent via Agent tool (general-purpose subagent_type, adversarial role)
+model_family: claude
+model_id: claude-opus-4-7
+model_version: claude-opus-4-7
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: ericmccowan
+participant_selection_method: self
+identity_known: true
+context_source: provenance/023-session-assessment/01-brief-shared.md (anchor commit 1c9f452)
+delivered_at: 2026-04-23
+received_at: 2026-04-23
+raw_response_file: provenance/023-session-assessment/01c-perspective-skeptic.md
+transport_notes: "Claude Opus 4.7 Agent call (general-purpose subagent_type), duration ~121 seconds, total_tokens 25900. Parallel with Calibrator and Pacer in the same orchestrator message. Adversarial role per multi-agent-deliberation.md v4 §Perspectives adversarial-requirement."
+output_edited_after_submission: false
+participation_shape: perspective
+claude_output_in_training: n/a
+participant_organisation: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown

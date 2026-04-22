@@ -25,9 +25,15 @@ readonly PARTICIPANT_ORGANISATION_CLOSED_SET="anthropic openai google meta xai m
 # Check 20 applies only to sessions numbered >= this constant.
 # Checks 21 and 22 are presence-gated on provenance/*/archive/ subdirectories.
 # See specifications/validation-approach.md v5 "Gating Conventions (checks 20, 21, 22)".
+# Budget values revised at engine-v4 per D-086 Session 023:
+# - Hard ceiling 15000 → 8000 words (calibration-corrective per empirical 3.0× tokens-per-word ratio).
+# - Soft warning 10000 → 6000 words (~75% of hard per design principle in read-contract.md §2).
+# See specifications/read-contract.md v2 §2 + §10 versioning.
 readonly READ_CONTRACT_ADOPTION_SESSION=22
-readonly DEFAULT_READ_HARD_WORD_CEILING=15000
-readonly DEFAULT_READ_SOFT_WORD_CEILING=10000
+readonly DEFAULT_READ_HARD_WORD_CEILING=8000
+readonly DEFAULT_READ_SOFT_WORD_CEILING=6000
+readonly DEFAULT_READ_AGGREGATE_ADVISORY=90000
+readonly DEFAULT_READ_AGGREGATE_ACTIVATION=100000
 
 WORKSPACE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PASS=0
@@ -806,6 +812,29 @@ else
       pass "$rel — $word_count words within budget"
     fi
   done
+
+  # Aggregate default-read surface report (added v2 per D-086, Session 023 R3/R5).
+  # Informational; not pass/fail/warn at engine-v4. Thresholds inform Session N+1
+  # deliberation if fired. See read-contract.md v2 §2a.
+  aggregate_words=0
+  for file in "${default_read_files[@]}"; do
+    [[ -f "$file" ]] || continue
+    first_line=$(head -1 "$file")
+    if [[ "$first_line" == "---" ]]; then
+      body=$(awk 'BEGIN{fm=0; body=0} NR==1 && /^---$/{fm=1; next} fm==1 && /^---$/{body=1; next} body==1{print}' "$file")
+    else
+      body=$(cat "$file")
+    fi
+    wc_out=$(echo "$body" | wc -w | tr -d '[:space:]')
+    aggregate_words=$((aggregate_words + wc_out))
+  done
+  echo ""
+  echo "  Aggregate default-read surface: $aggregate_words words across ${#default_read_files[@]} files."
+  if [[ $aggregate_words -ge $DEFAULT_READ_AGGREGATE_ACTIVATION ]]; then
+    echo "  ⚡ Activation threshold reached (≥${DEFAULT_READ_AGGREGATE_ACTIVATION} words). Session N+1 should deliberate aggregate hard budget per read-contract §2a and §5.3 minority."
+  elif [[ $aggregate_words -ge $DEFAULT_READ_AGGREGATE_ADVISORY ]]; then
+    echo "  ⚠ Advisory threshold reached (≥${DEFAULT_READ_AGGREGATE_ADVISORY} words). Approaching activation (${DEFAULT_READ_AGGREGATE_ACTIVATION}); next session should note aggregate in close."
+  fi
   echo ""
 fi
 

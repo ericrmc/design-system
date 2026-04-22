@@ -1,0 +1,15 @@
+session: 023
+participants:
+  - perspective: calibrator
+    manifest: manifests/calibrator.manifest.yaml
+  - perspective: pacer
+    manifest: manifests/pacer.manifest.yaml
+  - perspective: skeptic
+    manifest: manifests/skeptic.manifest.yaml
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+
+oi004_qualifying_participants: [outsider]
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1

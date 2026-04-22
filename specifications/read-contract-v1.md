@@ -1,11 +1,13 @@
 ---
 title: Read Contract
-version: 2
-status: active
+version: 1
+status: superseded
 created: 2026-04-22
-last-updated: 2026-04-23
-updated-by-session: 023
-supersedes: read-contract-v1.md
+last-updated: 2026-04-22
+updated-by-session: 022
+supersedes: none
+superseded-by: read-contract.md (v2)
+superseded-at-session: 023
 ---
 
 # Read Contract
@@ -43,35 +45,14 @@ The enumeration is closed. A file not enumerated here is archive surface by §3.
 
 Per-file constraints:
 
-- **Hard ceiling: 8,000 words.** Any file in the §1 enumeration exceeding 8,000 words of body content (frontmatter excluded) is a validation failure at `tools/validate.sh` check 20. The session that produces such a file must either reduce it or restructure it (e.g., split into multiple files each under the ceiling; relocate detail to archive surface with reference from the default-read file).
-- **Soft warning: 6,000 words.** Any file in the §1 enumeration between 6,000 and 8,000 words triggers a validator warning (not a failure). The warning is signal that the file is approaching the ceiling; the next session should consider restructuring. The 6,000-word value is ~75% of the 8,000-word hard ceiling; this ratio is the design principle for future revisions (the validator constants are named integers per `tools/validate.sh`; the ratio lives here as the design guide).
+- **Hard ceiling: 15,000 words.** Any file in the §1 enumeration exceeding 15,000 words of body content (frontmatter excluded) is a validation failure at `tools/validate.sh` check 20. The session that produces such a file must either reduce it or restructure it (e.g., split into multiple files each under the ceiling; relocate detail to archive surface with reference from the default-read file).
+- **Soft warning: 10,000 words.** Any file in the §1 enumeration between 10,000 and 15,000 words triggers a validator warning (not a failure). The warning is signal that the file is approaching the ceiling; the next session should consider restructuring.
 
 Measurement: word count via `wc -w` on body content after the closing YAML frontmatter delimiter. The word-count metric is chosen for stability across tokenisers (per Session 022 Outsider [01d-Q6] + Conservator [01b-Q6] convergence).
 
-**Rationale for the chosen values (revised Session 023).** The current single-Read-tool ceiling at the time of adoption is approximately 25,000 tokens. Empirical measurement of workspace prose-with-markdown files at Session 022 (SESSION-LOG 10,405 words → 33,227 tokens; open-issues 9,783 words → 27,437 tokens) shows a tokens-per-word ratio of approximately 3.0×, not the 1.3× that the v1 Rationale used. At the corrected ratio, 8,000 words is approximately 24,000 tokens — narrowly within the single-Read ceiling, aligned with the reader-contract intent that default-read means "read in full at every session open." The 6,000-word soft warning is approximately 18,000 tokens, well within single-Read, providing early signal before files approach the ceiling.
+**Rationale for the chosen values.** The current single-Read-tool ceiling at the time of adoption is approximately 25,000 tokens (≈ 19,250 words at a 1.3× words-to-tokens approximation). A 15,000-word hard ceiling leaves headroom below the single-read ceiling. The 10,000-word soft warning provides early signal before files approach the hard ceiling.
 
-The v1 Rationale's 15,000-word hard ceiling (≈ 45,000 tokens, ~1.8× the single-Read ceiling) was set under an empirically wrong calibration. The v1 values produced a ceiling that routinely required paginated reading at files near the ceiling — misaligned with default-read's own purpose. Session 022's Honest Notes flagged this error; Session 023 corrected the values per D-086.
-
-**Known consequence at v2 adoption.** `specifications/multi-agent-deliberation.md` at 6,403 words exceeds the new 6,000-word soft warning at v2 adoption. This is the designed function of the soft warning: to prompt restructure when a file approaches the ceiling. Session 024+ remediation options per §8 below.
-
-**Minority positions preserved (Session 023 D-086 R10 §5):**
-
-- **§5.1 Pacer 10K/7.5K minority** (Session 023 [01b-Q1, Q2]). Position: 10,000-word hard ceiling with 7.5K soft warning preserves calibration-corrective discipline while leaving growth headroom. Activation warrant: if the adopted 8K/6K budget produces three or more restructure-for-budget events in the next 5 sessions (restructures prompted by budget rather than by content completion), revisit upward toward 10K/7.5K. Alternatively, if 8K binds on `multi-agent-deliberation.md` or `reference-validation.md` in a way that forces content-coherence-damaging split, this position becomes preferred revision direction.
-
-- **§5.2 Skeptic no-change + warrant-literalism minority** (Session 023 [01c-Q1]). Position: the v1 Outsider-§5.3 activation warrant had not literally fired; revising values one session into a five-session grace window subverts the spec's own governance mechanism for self-revision. Vindication warrant: if within 5 sessions of Session 022 adoption (i.e., by Session 027) no default-read file exceeds 7,500 words and no restructure-for-budget event occurs, the Skeptic no-change position is vindicated retroactively — Session 023's revision was premature.
-
-- **§5.3 Pacer aggregate-hard-budget minority** (Session 023 [01b-Q3]). Position: adopt aggregate default-read surface hard budget at 90K hard / 80K soft now; naming a budget creates the forcing function that watchpoint-only reporting lacks. Activation warrant: if aggregate exceeds 100,000 words OR grows >10% in a single session without compensating restructure, this position becomes preferred revision direction.
-
-- **§5.5 tokeniser-drift watch minority** (Session 023 [01a-Honest Limits, 01d-Honest Limits]). Position: the 3.0× tokens-per-word ratio used in the revised Rationale is measured on two files only; applicability across file-types is not empirically verified. Activation warrant: if any single-Read attempt on a default-read file fails due to token-budget-exceeded despite the file being under the 8K word ceiling, re-measure the tokens-per-word ratio across a sample of default-read files and re-calibrate.
-
-### 2a. Aggregate default-read surface report (added v2)
-
-`tools/validate.sh` check 20 additionally reports the aggregate word count across all default-read surface files in every Tier 1 run. This is informational at v2 (not pass/fail/warn). Advisory and activation thresholds:
-
-- **Advisory:** aggregate ≥ 90,000 words. Validator emits an advisory note; next session should note the aggregate in close.
-- **Activation:** aggregate ≥ 100,000 words OR aggregate grows >10% in a single session without compensating restructure. Session N+1 should deliberate whether to add an aggregate hard budget per §5.3 minority.
-
-The aggregate report is a prophylactic against the accretion failure mode the Session 022 Outsider identified ("per-file control alone is not sufficient if the default-read set keeps growing by accretion" [archive: provenance/022-workspace-scaling-trajectory/archive/022-outsider/#chunk-04, Q6]). At engine-v4 adoption, aggregate is approximately 81,500 words across 33 default-read files; advisory threshold not reached; activation threshold not reached.
+**Outsider minority position** (§5.3 of `provenance/022-workspace-scaling-trajectory/01-deliberation.md`): 8,000-word per-file budget is the conservative-preferable value; 15,000 may be permissive. Activation warrant: if any default-read file exceeds 10,000 words (soft warning) within 5 sessions of adoption without subsequent restructure, the 8,000-word ceiling becomes the preferred revision direction.
 
 ### 3. Archive surface
 
@@ -194,13 +175,9 @@ The SESSION-LOG entry for the session records archive-pack presence with a one-p
 
 ### 10. Versioning
 
-Version 1 established Session 022 per D-084. Version 2 established Session 023 per D-086 (§2 budget-value recalibration from 15K/10K to 8K/6K; §2 Rationale corrected for empirical 3.0× tokens-per-word ratio; §2a aggregate report added; §5.1/§5.2/§5.3/§5.5 minorities added). v1 preserved as `read-contract-v1.md` with `status: superseded`.
-
-Subsequent revisions to this specification follow OI-002 substantive-vs-minor heuristic (`open-issues/OI-002.md`):
-- **Substantive:** any change to the §1 enumeration, §2 budget values, §2a aggregate thresholds, §4 archive-pack structure, §5 manifest fields, §6 reference convention, or §7 integrity mechanism. Engine-version bump per `engine-manifest.md` §5.
+Version 1 established Session 022 per D-084. Subsequent revisions to this specification follow OI-002 substantive-vs-minor heuristic (`open-issues/OI-002.md`):
+- **Substantive:** any change to the §1 enumeration, §2 budget values, §4 archive-pack structure, §5 manifest fields, §6 reference convention, or §7 integrity mechanism. Engine-version bump per `engine-manifest.md` §5.
 - **Minor:** clarifying text edits, cross-reference updates, examples within existing scope.
-
-Watchpoint recorded Session 023 D-086 R10 §5.5: if `read-contract.md §2` budget values are revised a second time within three sessions of Session 023 v2 adoption, examine whether the spec's design frame (per-file word count as measurement primitive) is itself miscalibrated — consider token-count or hybrid metrics.
 
 ## Validation
 
