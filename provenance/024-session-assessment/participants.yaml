@@ -1,0 +1,22 @@
+---
+session: 024
+title: Session 024 participants index
+date: 2026-04-23
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+oi004_qualifying_participants: [outsider]
+---
+
+# Session 024 participants
+
+| Perspective | Kind | Model | Provider | Manifest |
+|---|---|---|---|---|
+| Splitter | claude-subagent | claude-opus-4-7 | anthropic | manifests/splitter.manifest.yaml |
+| Archivist | claude-subagent | claude-opus-4-7 | anthropic | manifests/archivist.manifest.yaml |
+| Skeptic | claude-subagent | claude-opus-4-7 | anthropic | manifests/skeptic.manifest.yaml |
+| Outsider | non-anthropic-model | gpt-5.4 | openai | manifests/outsider.manifest.yaml |
+
+Non-Claude participation was voluntary under MAD v4 §Non-Claude Participation Is Recommended clause for d016_3-only decisions (per D-088 trigger analysis). D-088 declares `triggers_met: [d016_3]` and does not trigger d023_*.
+
+Outsider qualifies for OI-004 criterion-4 narrowing per MAD v4 §Acceptable Participant Kinds ("Non-Anthropic LLM via own provider's endpoint"): participant_organisation `openai` in closed set; claude_output_in_training `unknown`; training_lineage_overlap_with_claude `independent-claim`; provider/model_family/model_id/model_version stable and attributable. OI-004 criterion-3 gains 2 data points this session (§4.1 brief-factual-error catch; §4.2 budget-literal drift catch per `01-deliberation.md` §4).

@@ -1,0 +1,32 @@
+---
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: OpenAI GPT-5.4 via codex exec v0.121.0 (research preview), reasoning effort xhigh, sandbox read-only
+model_family: gpt
+model_id: gpt-5.4
+model_version: research-preview-0.121.0
+provider: openai
+endpoint: codex-exec-cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: orchestrator (session 024)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: /tmp/024-outsider-prompt.txt (brief §1-§6 + Outsider §7 stance + §8-§10; same brief content as Claude subagents)
+delivered_at: 2026-04-23T06:31:12Z
+received_at: 2026-04-23T06:38:00Z
+raw_response_file: provenance/024-session-assessment/archive/024-outsider/ (archive-packed per read-contract v2 §9; original moved to chunks)
+transport_notes: "Invocation: codex exec -c model_reasoning_effort=xhigh < /tmp/024-outsider-prompt.txt > /tmp/024-outsider-response.txt 2>&1. Background task id byyzfb7kb. Session id 019db6e4-502d-77c0-9feb-c0f3274eb012. Tokens used: 120,810. Outsider performed pre-response workspace exploration (n=4 pattern across Sessions 021/022/023/024; multiple exec tool calls reading active specs + provenance 021/022/023 + OI-002 + OI-018 + 00-assessment.md + ran tools/validate.sh directly); this is the mechanism by which Outsider caught both §4.1 brief-factual-error (6,403 stale vs live 6,386) and §4.2 budget-literal drift in adjacent specs. CLI banner preserved verbatim in archive chunk 01."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+---

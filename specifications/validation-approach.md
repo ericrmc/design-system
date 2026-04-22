@@ -3,8 +3,8 @@ title: Validation Approach
 version: 5
 status: active
 created: 2026-04-17
-last-updated: 2026-04-22
-updated-by-session: 022
+last-updated: 2026-04-23
+updated-by-session: 024
 supersedes: validation-approach-v4.md
 ---
 
@@ -108,8 +108,8 @@ Checks marked **Fail** cause the tool to exit with a non-zero code. Checks marke
 **Budget constants.** Encoded near the top of `validate.sh`:
 
 ```
-DEFAULT_READ_HARD_WORD_CEILING=15000
-DEFAULT_READ_SOFT_WORD_CEILING=10000
+DEFAULT_READ_HARD_WORD_CEILING=8000
+DEFAULT_READ_SOFT_WORD_CEILING=6000
 READ_CONTRACT_ADOPTION_SESSION=22
 ```
 

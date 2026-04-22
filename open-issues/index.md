@@ -8,8 +8,8 @@ This file is the default-read surface entry point per `specifications/read-contr
 
 | OI | Title | Surfaced | Status |
 |----|-------|----------|--------|
-| [OI-002](OI-002.md) | Threshold for substantive revision vs. minor correction | Session 001 | Open — heuristic stable; 10th data point Session 023 |
-| [OI-004](OI-004.md) | Incorporating genuinely independent perspectives | Session 001 | **Articulated; awaiting closure-retrospective** (state 3/4 per MAD v4); tally 8-of-3; voluntary:required 8:8 |
+| [OI-002](OI-002.md) | Threshold for substantive revision vs. minor correction | Session 001 | Open — heuristic stable; 11th data point Session 024 |
+| [OI-004](OI-004.md) | Incorporating genuinely independent perspectives | Session 001 | **Articulated; awaiting closure-retrospective** (state 3/4 per MAD v4); tally 8-of-3; voluntary:required 9:8; criterion-3 cumulative 67 |
 | [OI-005](OI-005.md) | Sub-activities and work-type variants | Session 001 | Unblocked; W1 addressed Session 011; W4 addressed Session 009 |
 | [OI-006](OI-006.md) | Cross-references between specifications | Session 001 | Open — deferred until need arises |
 | [OI-007](OI-007.md) | Scaling the open issues format | Session 001 | Open — count 13; directory split adopted Session 022 per D-084 R8b |
@@ -19,7 +19,7 @@ This file is the default-read surface entry point per `specifications/read-contr
 | [OI-012](OI-012.md) | `validate.sh` hard-coded `02-decisions.md` path | Session 009 | Open — deferred; no active collision pressure |
 | [OI-013](OI-013.md) | Non-file external artefacts | Session 009 | Open — monitor; no activation trigger fired |
 | [OI-014](OI-014.md) | Domain-actor receipt shape variance | Session 009 | Open — monitor; interdependent with OI-016 |
-| [OI-015](OI-015.md) | Laundering enforcement gap in domain reading | Session 011 | Open — Session 023 is positive exercise (5th) |
+| [OI-015](OI-015.md) | Laundering enforcement gap in domain reading | Session 011 | Open — Session 024 is positive exercise (6th) |
 | [OI-016](OI-016.md) | Domain-validation pathway under user unavailability | Session 013 | **Resolved — provisionally addressed pending first-exercise** (resolved-provisional state); seven auto-reopening triggers in `reference-validation.md` v2 §9 |
 | [OI-018](OI-018.md) | Revisit engine-manifest.md §5 bump-trigger criteria | Session 023 | Open — deferred; §5.4 cadence minority activated Session 023; activation-trigger-gated |
 

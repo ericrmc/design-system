@@ -4,7 +4,7 @@ version: 2
 status: active
 created: 2026-04-22
 last-updated: 2026-04-23
-updated-by-session: 023
+updated-by-session: 024
 supersedes: read-contract-v1.md
 ---
 
@@ -106,7 +106,7 @@ provenance/NNN-title/archive/<slug>/
   ...
 ```
 
-Chunk size target: each chunk ≤ 10,000 words (matching the §2 soft warning) so that reading any individual chunk never exceeds comfortable read budget.
+Chunk size target: each chunk ≤ 6,000 words (matching the §2 soft warning) so that reading any individual chunk never exceeds comfortable read budget. In practice, byte-range chunking at ~50,000 bytes yields chunks of approximately 5,000-7,000 words for typical workspace prose (Session 022/023/024 precedent); the word-count target is a design guide, not a hard per-chunk constraint.
 
 Boundary rule: **mechanical only** — either line-range or byte-range boundaries. Content-aware boundaries (e.g., "end at a paragraph break," "split at a heading") are forbidden because they introduce chunking judgment that can silently edit content over time. Line-range and byte-range boundaries are both mechanical and auditable; the manifest declares which rule was used via `chunk_boundary_rule: line-range | byte-range | single-file`. Line-range is preferred where the file's line-length distribution is bounded; byte-range is the fallback when the file contains very long lines that would otherwise produce oversized chunks (the Session 014 Outsider file exemplifies this: a 96,651-word file with individual lines of up to 3,328 words; line-range chunking produced chunks over 36,000 words that would themselves breach the default-read budget, so byte-range splitting into 50,000-byte chunks was used).
 
@@ -180,12 +180,12 @@ Remediation must not summarise or silently compress; the archive-pack discipline
 
 ### 9. Close-time obligation for current-session raws
 
-At every session close, the orchestrator measures each raw perspective file and each provenance file in the current session directory. Any file exceeding the default-read per-file hard ceiling (§2: 15,000 words) is archive-packed before session close.
+At every session close, the orchestrator measures each raw perspective file and each provenance file in the current session directory. Any file exceeding the default-read per-file hard ceiling (§2: 8,000 words) is archive-packed before session close.
 
 Mechanism for current-session raw-to-archive-pack migration:
 
 1. Create `provenance/NNN-title/archive/<slug>/` where `<slug>` is a short descriptive identifier (typically matching the perspective role and question theme).
-2. Split the file into line-range chunks each ≤ 10,000 words. Preserve byte-identical content.
+2. Split the file into line-range or byte-range chunks each ≤ 6,000 words (or ~50,000 bytes, which yields comparable chunk sizes per §4). Preserve byte-identical content.
 3. Write `manifest.yaml` with the required fields (§5), computing all hashes.
 4. **Remove the original file** from the provenance root. The original content now lives in the archive-pack chunks (byte-identical); there is no duplication. (This removal is permissible during session close because D-017 immutability binds only on closed sessions.)
 5. Update any in-session references (e.g., from `01-deliberation.md`) to use the `[archive: path]` convention.

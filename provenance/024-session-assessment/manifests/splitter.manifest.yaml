@@ -1,0 +1,28 @@
+---
+perspective: splitter
+participant_kind: claude-subagent
+participant_identity: Claude Opus 4.7 subagent launched via Agent tool, subagent_type general-purpose
+model_family: claude
+model_id: claude-opus-4-7
+model_version: 1m-context
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: orchestrator (session 024)
+participant_selection_method: self
+identity_known: true
+context_source: provenance/024-session-assessment/01-brief-shared.md (brief §1-§6 + role stance §7 inline in Agent prompt + §8-§10)
+delivered_at: 2026-04-23T06:24:00Z
+received_at: 2026-04-23T06:28:00Z
+raw_response_file: provenance/024-session-assessment/01a-perspective-splitter.md
+transport_notes: "Subagent launched via Agent tool; prompt included full brief inline. Subagent used Write tool to save perspective file directly. Body: 3,479 words."
+output_edited_after_submission: false
+participation_shape: perspective
+claude_output_in_training: n/a
+independence_basis: known-overlap
+---

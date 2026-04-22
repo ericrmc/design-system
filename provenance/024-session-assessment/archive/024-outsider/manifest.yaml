@@ -1,0 +1,50 @@
+---
+archive_id: 024-outsider
+originating_session: 024
+originating_path: provenance/024-session-assessment/01d-perspective-outsider.md
+migrated_in_session: 024
+kind: raw-perspective
+total_bytes: 416736
+total_words: 46321
+chunk_count: 9
+chunk_boundary_rule: byte-range
+source_hash_sha256: f8f69fa7b383a9f8651b9aa364b845c4f848d6aec0d60bee332f138010295dcb
+chunks:
+  - ordinal: 1
+    file: 01-chunk.md
+    byte_range: "1-50000"
+    chunk_hash_sha256: a1b9a4a9511fb541b02329349ce404ec44756d512ecedd0651a7c961e3e88214
+  - ordinal: 2
+    file: 02-chunk.md
+    byte_range: "50001-100000"
+    chunk_hash_sha256: a3ef710f7ef006c7a6a838d608ca3c6660c788d041bf8b2a6c84dbfd7e8af12d
+  - ordinal: 3
+    file: 03-chunk.md
+    byte_range: "100001-150000"
+    chunk_hash_sha256: 6b6c80d0a2a472ab461e52263fcb8033bf092366c95bba7794b12e8596761440
+  - ordinal: 4
+    file: 04-chunk.md
+    byte_range: "150001-200000"
+    chunk_hash_sha256: c66d1271bf7b75c49dc0863b834dc56a9469316049c22367530ba14444cbcdda
+  - ordinal: 5
+    file: 05-chunk.md
+    byte_range: "200001-250000"
+    chunk_hash_sha256: 8776b43145459dc81f1f0137b867da4725f93ee1adf3a24078604ddadf3eb47f
+  - ordinal: 6
+    file: 06-chunk.md
+    byte_range: "250001-300000"
+    chunk_hash_sha256: d222d2c6a0f213aba0a714711edc750c4c184e2d10627a2e70bacdb2b87175f2
+  - ordinal: 7
+    file: 07-chunk.md
+    byte_range: "300001-350000"
+    chunk_hash_sha256: a9f2a1d313b4c039db18c508d0072f652d579c61043bfee30e9e6aac04f053df
+  - ordinal: 8
+    file: 08-chunk.md
+    byte_range: "350001-400000"
+    chunk_hash_sha256: 7273c1156fec775438c62bd681e181e471acee4331a1024063587b3c0357e7fe
+  - ordinal: 9
+    file: 09-chunk.md
+    byte_range: "400001-416736"
+    chunk_hash_sha256: 14226abbb53b0c196b768b11c6baa81190bf4c479995a8996b78ac7bf954d6bf
+readers_note: "Session 024 Outsider perspective (OpenAI GPT-5.4 via codex exec). Position: A.4 now with concrete conversion condition (convert to A.2 OI-004 seam if MAD reaches 7,500 words OR a content-driven MAD revision arises); found brief-factual-error (6,403 is stale Session-023 witness; live is 6,386) and budget-literal drift in validation-approach.md §Gating Conventions (still 15K/10K) and read-contract.md §4/§9 (stale 15K / 10K). Response body at chunk 09 starting near the final 'codex' marker."
+---

@@ -1,0 +1,110 @@
+---
+session: 024
+title: Perspective — Skeptic
+date: 2026-04-23
+status: complete
+perspective: skeptic
+committed_at: bb2e3f2
+---
+
+# Skeptic
+
+## Q1 Position: A.4 carry-the-warning is the correct Session 024 response. A.1 light compression is a conditional fallback only if specific coherence-neutral reductions can be named; A.2 and A.3 are wrong on the merits at 6,403 words.
+
+**Q1 Reasoning.** MAD is at 6,403 words — 107% of soft-warn and 80% of hard ceiling. The file is readable; nothing is broken. Per brief §4.1, read-contract.md v2 §8 uses *consider* in "the next session should consider restructuring"; brief §2 notes explicitly that *consider ≠ execute*. The spec sequences remediation from lightest (reduce in place) to heaviest (relocate to archive). Carry-the-warning is lighter still and named as legitimate. Reading §8 as mandating restructuring on first fire would read a soft threshold as a hard one — turning the two-tier design (6K soft, 8K hard) into pointless duplication.
+
+Brief §1 tells me Session 023 adopted 6K/8K *precisely so files approaching the hard ceiling would surface before they broke anything*. The mechanism is working as designed. The honest response to a designed warning firing at its designed trigger is to notice, deliberate, decide — not to treat firing as a forcing function for structural change. If first-fire were action-forcing we would not need two tiers; we would have an 8K ceiling with an early-warning buffer. The two-tier design implies the soft warning creates a deliberation space, not a mandate.
+
+The §3.1 table shows MAD's content is not redundant: every section is either normative core (triggers, schemas, mechanism, synthesis, limitations, validation) or a load-bearing OI-004 surface validator checks 16-19 depend on (per brief §6 Q5). The four OI-004-scoped sections at 1,463 words got MAD to 6,403 because OI-004 criterion-4 articulation in Session 021 D-082 required that level of specification. That content is not bloat; it is the work. Structural change at first soft-warn risks damaging content that was itself the output of a substantive deliberation three sessions ago.
+
+A.1 in-place compression is acceptable only if the deliberation can point to specific, demonstrable compression targets — e.g., one YAML block in §Heterogeneous-Participant Recording Schema literally duplicated elsewhere — and show removing it is content-preserving. Brief §3.1 notes ~400 of 772 words there are YAML/code; suggestive but not sufficient. Code examples in a normative schema section are often the schema, not commentary. Without specific content-preserving cuts, A.1 collapses into "shave text until it fits" — exactly the "summarise or silently compress" that §4.1 §8 second paragraph forbids.
+
+A.2 split is wrong because it solves a 6,403-word first-fire by creating a new default-read file. Brief §3.2: aggregate unchanged, file count 35→36. We pay a full spec-revision + engine-v-bump (Q2) + second-order harness-policy cost in exchange for a cosmetic split that leaves 4,940 and 1,463 words in two buckets both still default-read. Restructuring that redistributes rather than reduces the read burden.
+
+A.3 relocate-to-archive is wrong because what would move — YAML schema blocks in §Heterogeneous-Participant Recording Schema, §Open Extensions — is either normative (the YAML is *how* heterogeneous participants are recorded) or validator-referenced. WX-22-1 (brief §4.6) names this risk directly: codifying routing-around rather than repairing the read-contract. Moving the YAML to archive converts "default-read schema the validator consults every session" into "archive reference consulted by exception" — either the validator still consults it (archive designation cosmetic) or it doesn't (check broken).
+
+## Q2 Position: The chosen shape (A.4) is not an engine-v-bump. If the deliberation nonetheless converged on A.1/A.2/A.3, engine-v5 would be the default reading per §4.4, and §5.4 would escalate to substantive per brief §3.3.
+
+**Q2 Reasoning.** A.4 is a deliberated decision-not-to-act. Per brief §2, A.4 involves no spec change, no tool change, no engine-v bump. The engine-manifest §5 criteria (brief §4.4) require a substantive revision to an engine-definition file; no such revision occurs under A.4. The d016_3-triggered deliberation is still recorded at close, but the spec surface is byte-unchanged.
+
+If the synthesis overrode Skeptic and took A.2 or A.3, engine-v5 is the honest reading and I reject any attempt to soften it. A.2 adds a new default-read file — that is a new engine-definition file per §4.4 first bullet. A.3 materially revises MAD's content surface by moving chunks to archive — that is a substantive revision to an existing engine-definition file per §4.4 second bullet. OI-018's alternative criteria (brief §4.5) — bundle-trigger, threshold-trigger, major-vs-minor differentiation, cadence-aware bumping — are *open issues not adopted policy*. We cannot invoke them to soften a current bump classification without first running the §5-revision deliberation that OI-018 itself names as its activation work. That would be retroactive application of a proposal in lieu of its consideration — exactly the kind of procedural shortcut §5.4 Session 022 cadence minority was raised to prevent.
+
+If engine-v5 fires, §5.4 (brief §3.3) escalates from activated to substantive; per D-086 R9 a dedicated engine-manifest §5 revision deliberation is forced *in Session 024 itself*. The cadence minority was specifically about "three engine-v-bumps in four adjacent sessions" being unhealthy signal *regardless of individual-session merit*. A fourth bump in four sessions vindicates the minority, not refutes it, and the escalation mechanism was designed to force reckoning with that pattern rather than letting each session's local reasoning bypass it. "But this bump is warranted" is precisely the argument the mechanism anticipates and refuses.
+
+This is my hardest point against A.2/A.3: even if the content case for restructuring were strong — and I don't think it is at 6,403 words — the cadence argument stands independently. §5.4 does not care whether bump N+1 is warranted; it asks whether the rate of substantive engine changes is healthy. The answer at engine-v5 before Session 026 is no. Honest engagement with §5.4 means (a) not bumping — A.4 or a carefully-scoped A.1 under the §5 substantive threshold — or (b) bumping and running the OI-018 deliberation now, which consumes the session. I see no third option respecting both the cadence minority and the §8 options.
+
+## Q3 Position: A.4 is a content-completion-lack-of-event, not a budget-driven restructure; it preserves §5.2 runway. A.1/A.2/A.3 begin consuming §5.1's 3-event counter on the first data point in the 5-session window.
+
+**Q3 Reasoning.** Brief §4.2 §5.1 Pacer minority defines "restructure-for-budget events" as "restructures prompted by budget rather than by content completion." The test is *what prompted the restructure*, not whether the restructure has incidental content benefits. A Session 024 restructure would be prompted by a 6K soft-warn firing — a budget signal. Nobody is arguing MAD is incoherent or that a reader flagged it as unreadable; the brief §3.1 table shows section-by-section normative density, and no content-completion event (OI-004 closure, new specification requirement) has triggered this session. That is the definition of a budget-driven restructure. If Session 024 takes A.1/A.2/A.3, it is the first data point toward §5.1's 3-event activation threshold in the 5-session window Sessions 024–028.
+
+§5.2 Skeptic vindication (brief §4.3) requires that within the window "no default-read file exceeds 7,500 words and no restructure-for-budget event occurs." MAD is 6,403 — below 7,500. So the only way §5.2 vindication is lost this session is if we *choose* to fire a restructure-for-budget event. A.4 preserves the vindication runway straightforwardly. A.1/A.2/A.3 ends it at the earliest possible moment — one session in.
+
+Is ending §5.2's runway the right call on the merits? No. §5.2 was adopted in Session 023 because the v1→v2 revaluation was itself contested as premature. §5.2 says: if the new values do not bind in a way that forces restructure within 5 sessions, the Skeptic who wanted no change at all is retroactively vindicated. That vindication is procedural — it says the spec's self-revision discipline was subverted by changing values before the original warrant fired. Letting §5.2 run to Session 027 without firing a budget-driven restructure *is the test*. Firing one on first warn cancels the test — incoherent with the purpose of having the minority in the spec at all.
+
+The counter "but §5.1 Pacer might also be right" actually strengthens my position. If both §5.1 and §5.2 have legitimate minority standing, let the data accumulate before picking. A.4 accumulates data for both: if MAD stabilizes or shrinks over 025–028, §5.2 vindicates; if MAD grows or other files cross soft-warn, §5.1's evidence grows. A.1/A.2/A.3 forecloses the test and commits to one minority's framing without evidence.
+
+## Q4 Position: WX-22-1 laundering-as-codification bites directly on A.3 and is a live concern for A.2. A.4 does not engage WX-22-1 because no content moves.
+
+**Q4 Reasoning.** Brief §4.6 names the concern: the read-contract mechanism could inadvertently codify the harness-layer routing-around pattern by making archive-pack reference a normative mechanism rather than a repair. A.3 is the exact shape WX-22-1 warned about. Moving §Heterogeneous-Participant Recording Schema's YAML blocks to archive with `[archive: path]` references from the default-read layer treats detail as routinely-not-read. But the YAML blocks are how the heterogeneous-participant recording schema is expressed — they are the schema, not example commentary. The validator consults the schema. If "default-read" text carries a reference to the archive and the validator must follow the reference to do its job every session, then the archive is *de facto* default-read and the archive designation is a polite fiction that lets the word-count stay under threshold.
+
+This is laundering. The word-count budget says "don't have files over 6K/8K of default-read content." A.3 responds "we'll move the content to archive and have the default-read file reference it," which keeps the *read burden* identical but changes the file-count accounting. OI-015 was about harness-layer pattern-around; WX-22-1 extends the concern to the methodology layer. A.3 on MAD's normative content is exactly the methodology-layer realization of the pattern.
+
+A.2 split has the same concern in weaker form. Brief §6 Q4: "would Session 025 actually read both files at open, or only the 'core' one?" If OI-004-scoped sections move to a separate default-read file, both must be read in full every session open. The discipline to not treat the secondary file as de facto reference-only is fragile. OI-004 sections cross-reference §Limitations, §Closure Criteria, §Heterogeneous-Participant Recording Schema; validator checks 16-19 treat these as one surface. A split creates a boundary readers and validator must now cross — overhead for no gain unless the original file was unreadable as-is. It wasn't.
+
+A.4 engages WX-22-1 trivially: no content moves, no archive reference created, no split boundary added. WX-22-1 remains a watchpoint but is not advanced or retired by Session 024.
+
+## Q5 Position: OI-004 integrity weighs against A.2 split and decisively against A.3 relocate of the four OI-004 sections. Under A.4 there is zero integrity impact; under A.1 the integrity burden is whatever specific cuts are proposed.
+
+**Q5 Reasoning.** Brief §6 Q5 is explicit: the four OI-004-scoped sections (1,463 words, 23% of MAD) are load-bearing for Criterion-4 Articulation, Acceptable Participant Kinds, and Closure Procedure. Validator checks 16-19 + Q8 run every session against these predicates via validation-approach v5. A.3 relocate-to-archive is prima facie wrong: it converts validator-consulted predicates into archive-accessed ones — the validator either still reads them (archive designation cosmetic) or doesn't (check broken).
+
+A.2 split at the OI-004 seam preserves default-read status nominally but adds boundary-crossing cost. My answer to brief §6 Q5's final question: technically yes (both files default-read), practically weakly (the discipline to treat two files as one conceptual surface is fragile), and at cadence cost not justifying the marginal gain. Cross-reference density between OI-004 sections and the rest of MAD is high: Criterion-4 references Limitations; Closure Procedure references Heterogeneous-Participant Recording Schema fields; Acceptable Participant Kinds references Mechanism. A split forces duplication of cross-reference anchors or stable pointer-chasing.
+
+Under A.4, OI-004 integrity is zero-impact. The OI-004 surface was committed three sessions ago in Session 021 D-082. Restructuring its physical layout before its content has stabilized across many sessions reads as churn.
+
+Under specifically-scoped A.1, integrity cost is whatever cuts touch. If targets are solely YAML-example deduplication in §Heterogeneous-Participant Recording Schema — where the schema is written out twice or inline examples repeat field definitions — OI-004 integrity is preserved because the schema fields are untouched. If compression targets the OI-004 sections directly, integrity is damaged. The test: name specific redundant lines (literally-restated-elsewhere, not "a bit verbose"), show validator checks still pass. Short of that, A.1 is budget-pressure compression and §4.1 §8 forbids it.
+
+## Q6 Position: Under A.4, Session 024 close records a deliberated decision-not-to-act, names the evidence that would convert the decision to A.1/A.2/A.3 in a later session, preserves the §5.2 vindication runway, preserves §5.4 at activated (not substantive), and opens a Session 025 audit watchpoint on MAD growth.
+
+**Q6 Reasoning.** The close's essential surface under A.4:
+
+**Decision triggers.** d016_3 fires (substantive decision taken even though it was a decision-not-to-act — the deliberation itself was substantive per §Perspectives and required non-Claude participation). d023_2 fires (by Session 023 D-023 required non-Claude participation given this is a substantive-revision-or-decision deliberation). The Outsider participation this session satisfies d023. No d016_2 forward-annotation is needed for future substantive revision because A.4 is not a revision.
+
+**Engine-v classification.** No bump. Engine remains at v4. The close states explicitly that A.4 was evaluated against §4.4 criteria and found to not match — no new engine-definition file, no substantive revision to an existing one, no removal or supersession.
+
+**§5.4 engagement.** Activated status preserved. Close records that Session 024 evaluated A.2/A.3 (which would have triggered §5.4 substantive-escalation and a stacked OI-018 deliberation) and rejected them; §5.4 remains at activated-not-substantive through Session 024. The counter for "three engine-v-bumps in four adjacent sessions" does not advance.
+
+**§5.1 engagement.** Session 024 is not a restructure-for-budget event; §5.1's 3-event counter reads 0 in the 5-session window (Sessions 024–028). This must be recorded explicitly because a later session might argue otherwise.
+
+**§5.2 engagement.** Vindication runway preserved; MAD at 6,403 is below 7,500; no restructure-for-budget event fired. Session 024 is a pro-§5.2 data point.
+
+**WX-22-1 engagement.** Not advanced by A.4; remains on the watchlist.
+
+**New watchpoint opened (WX-24-1 proposed).** Monitor MAD word count across Sessions 025–028. Thresholds:
+- If MAD reaches 7,000 words by Session 026: reconsider A.1-scoped compression with specific named targets.
+- If MAD reaches 7,500 words before Session 028: §5.2 vindication lost on the main trigger (7,500-word ceiling), independent of any restructure-for-budget event; revisit §8 remediation urgently.
+- If MAD reaches 8,000 words: hard-fail per read-contract v2 §2; restructure is forced.
+
+**Synthesis-fidelity self-check.** Close states that the decision-not-to-act was contested by three perspectives (Architect/Conservator/Outsider — I am guessing, since I cannot read them) and defended by the Skeptic; synthesis records the substantive disagreement and the decision rule applied. If synthesis in fact converged to A.1/A.2/A.3 against my stance, the close records my dissent with the conditions under which my position could be revisited — per §8 format and MAD v4 §Synthesis.
+
+**Aggregate word-count delta.** No change under A.4 except Session 024's own 03-close.md contribution. If the close is kept concise, aggregate remains ~89,327 + close-size. Close must monitor the Check 20 §2a advisory (90,000 words) — we are 673 words below and adding close content.
+
+**Session 025 audit surface.** A Session 025 audit would look for: (a) did Session 024 genuinely deliberate A.1/A.2/A.3/A.4 on the merits rather than defaulting? (b) is the close specific about the conditions under which A.4 converts to A.1/A.2/A.3 in a later session? (c) is the §5.2 vindication runway explicitly preserved and the §5.1 event-counter explicitly not advanced? (d) is the §5.4 status correctly recorded as activated-not-substantive? (e) is the WX-24-1 watchpoint specific enough to trigger predictably in a future session? If all yes, Session 024 honored §8 remediation discipline. If the close is vague on any of these, Session 024 has drifted into budget-pressure response dressed up as deliberation.
+
+## Evidence that would change my position within Session 024
+
+Per my stance instruction to name specific evidence: I would accept light A.1 compression *only* under these conditions:
+
+1. A named list of specific lines or blocks in MAD that are literally duplicated elsewhere in MAD (not "similar to" — verbatim or near-verbatim repetition). The YAML schema in §Heterogeneous-Participant Recording Schema is the most plausible source: if the schema is written out once as fields and again as an example, the example can be trimmed to reference the fields.
+2. A demonstration that removing the named redundancy does not change the semantic surface — validator checks 16-19 and Q8 still pass, cross-references still resolve, load-bearing predicates still present.
+3. A residual word count above 5,500 (not 5,200 "well-clear"). A drop from 6,403 to 5,500 is a reasonable "above-soft-warn to clear-of-soft-warn" move; a drop to 5,200 or lower implies compression beyond redundancy removal, which is what §4.1 §8 forbids.
+4. The §5 revision classification-question: I would need the A.1 cuts to be classifiable as "typo corrections or formatting adjustments" or "minor elaborations" per §4.4's non-bump list. Removing duplicated YAML examples is plausibly minor; removing 900+ words of content is substantive. The classification must be defended explicitly in the close.
+
+Absent all four conditions being met with specific named cuts in the synthesis, A.1 fails my test and A.4 remains the honest response.
+
+## Honest Limits
+
+**What I did not do.** I did not read the actual MAD file text. The brief's §3.1 table and §4 excerpts are my source. A close reading of MAD might reveal either (a) specific redundancies I would accept as A.1-compressible, or (b) genuine coherence damage at 6,403 words that would change my A.4-preferring stance. I did not read the other three perspective files per constraint. I did not read validation-approach.md v5 or engine-manifest.md §5 directly — I reasoned from brief §4.4 and §4.5 excerpts. I did not read the Session 022 §5.4 minority text directly — I reasoned from brief §3.3 summary.
+
+**What I am uncertain about.** (1) Whether A.1 light compression can be genuinely content-preserving on MAD. The §Heterogeneous-Participant Recording Schema might or might not contain literal duplication; I assumed approximately 400 words of YAML could harbor some, but this is speculation. If there is no real redundancy, A.1 collapses into A.4 (do nothing) or into forbidden silent-compression. (2) Whether my characterization of validator checks 16-19 depending on §Heterogeneous-Participant Recording Schema YAML fields is accurate. Brief §6 Q5 says "load-bearing predicates for validator checks" but does not specify which sections; I may be overstating the risk of A.3 relocating the YAML. (3) Whether the Pacer §5.1 minority would themselves count A.4 as a non-event or as a missed opportunity. My reading is non-event, but that minority is not in the room.
+
+**Where my stance could be wrong.** (1) If Session 024's three Claude advocate perspectives converge on a specifically-scoped A.1 with named cuts that satisfy my four conditions above, the evidence argument goes against me and A.1 becomes the answer. I have explicitly named what would change my mind; the synthesis may meet it. (2) If the Outsider perspective reports that MAD is in fact incoherent at 6,403 words — a reader-reported coherence damage signal I do not have from the brief — then the restructuring case is content-driven rather than budget-driven, and §5.1 does not advance on that event. A.1 or a narrowly-scoped A.2 could then be correct. (3) If §5.4's cadence minority is itself wrong — if four engine-v bumps in four sessions is fine given the substantive content of each bump — then my Q2 cadence argument loses force. But §5.4 is spec-adopted, and adopted minorities are not for individual sessions to set aside; that is the work OI-018 names explicitly. (4) I may be overweighting procedural-runway preservation (§5.2 vindication, §5.1 event-counter non-advancement) at the cost of first-principles spec-hygiene. If the spec-hygiene case for restructuring is strong enough, the runway preservations are real but secondary. My stance is that at 6,403 words with no coherence signal from any reader, spec-hygiene does not override procedural patience. A Session 025 audit will tell us whether that judgment held.
