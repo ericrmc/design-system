@@ -1,0 +1,22 @@
+---
+session: 028
+date: 2026-04-23
+participants:
+  - perspective: Pacer-advocate
+    manifest: manifests/pacer-advocate.manifest.yaml
+    raw_response: 01a-perspective-pacer-advocate.md
+  - perspective: Skeptic-preserver
+    manifest: manifests/skeptic-preserver.manifest.yaml
+    raw_response: 01b-perspective-skeptic-preserver.md
+  - perspective: Synthesiser-integrator
+    manifest: manifests/synthesiser-integrator.manifest.yaml
+    raw_response: 01c-perspective-synthesiser-integrator.md
+  - perspective: Outsider
+    manifest: manifests/outsider.manifest.yaml
+    raw_response: 01d-perspective-outsider.md
+
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+oi004_qualifying_participants: [Outsider]
+---

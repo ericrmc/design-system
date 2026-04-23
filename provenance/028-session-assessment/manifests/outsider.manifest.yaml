@@ -1,0 +1,37 @@
+---
+perspective: Outsider
+participant_kind: non-anthropic-model
+participant_identity: OpenAI GPT-5-via-codex-cli (codex-cli 0.121.0; model_reasoning_effort=high)
+model_family: gpt-5
+model_id: gpt-5
+model_version: unknown (current codex-cli 0.121.0 default model)
+provider: openai
+endpoint: codex-cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: ericrmc@gmail.com (orchestrator)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/028-session-assessment/01-brief-shared.md (delivered via codex exec stdin as composed brief at /tmp/outsider-brief-028.md)
+delivered_at: 2026-04-23T09:30:00+10:00
+received_at: 2026-04-23T09:34:55+10:00
+raw_response_file: provenance/028-session-assessment/01d-perspective-outsider.md
+transport_notes: |
+  Invoked via `codex exec --config model_reasoning_effort=high --color=never --skip-git-repo-check <brief>` from the workspace.
+  The codex session output size was 66.2 KB including intermediate read-back of workspace files the Outsider chose to consult during independent reasoning (Outsider Honest Limits section declares the reads performed: read-contract.md, engine-manifest.md, OI-018.md, validate.sh aggregate-report section, Session 027 close, Session 028 00-assessment.md).
+  Tokens used (reported by codex): 56,140.
+  The codex output contained two copies of the final Outsider response separated by a `tokens used` line; both copies are byte-identical. The committed raw file at `01d-perspective-outsider.md` is the first-emitted copy (lines 191–344 of codex output), body word count 2,071 — within per-file soft budget; no archive-pack required per read-contract §9.
+  codex session banner did not print a session-id in the captured output.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: known-no
+training_lineage_evidence_pointer: https://openai.com/index/gpt-5
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+---

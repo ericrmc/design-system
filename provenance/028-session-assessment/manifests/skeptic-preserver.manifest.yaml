@@ -1,0 +1,29 @@
+---
+perspective: Skeptic-preserver
+participant_kind: claude-subagent
+participant_identity: claude-opus-4-7 (Anthropic Claude Opus 4.7 via Claude Code Agent tool)
+model_family: claude
+model_id: claude-opus-4-7
+model_version: claude-opus-4-7-1M-context
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: ericrmc@gmail.com (orchestrator)
+participant_selection_method: self
+identity_known: true
+context_source: provenance/028-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-23T00:00:00Z
+received_at: 2026-04-23T00:00:00Z
+raw_response_file: provenance/028-session-assessment/01b-perspective-skeptic-preserver.md
+transport_notes: Invoked via Claude Code Agent tool with subagent_type=general-purpose; brief embedded in agent prompt. Output committed verbatim. Adversarial role per MAD v4 §Perspectives.
+output_edited_after_submission: false
+participation_shape: perspective
+claude_output_in_training: n/a
+training_lineage_evidence_pointer: n/a
+independence_basis: n/a
+---

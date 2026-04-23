@@ -25,15 +25,22 @@ readonly PARTICIPANT_ORGANISATION_CLOSED_SET="anthropic openai google meta xai m
 # Check 20 applies only to sessions numbered >= this constant.
 # Checks 21 and 22 are presence-gated on provenance/*/archive/ subdirectories.
 # See specifications/validation-approach.md v5 "Gating Conventions (checks 20, 21, 22)".
-# Budget values revised at engine-v4 per D-086 Session 023:
+# Per-file budget values revised at engine-v4 per D-086 Session 023:
 # - Hard ceiling 15000 → 8000 words (calibration-corrective per empirical 3.0× tokens-per-word ratio).
 # - Soft warning 10000 → 6000 words (~75% of hard per design principle in read-contract.md §2).
-# See specifications/read-contract.md v2 §2 + §10 versioning.
+# Aggregate hard budget + close-rotation rule added at engine-v5 per D-096 Session 028:
+# - Aggregate hard ceiling 100000 / soft 90000 (§2b; pass/fail/warn, replacing v2 §2a informational-only).
+# - Close-rotation window 6 sessions (§2c; default-read includes only most recent 6 session 03-close.md files).
+# See specifications/read-contract.md v3 §2 + §2b + §2c + §10 versioning.
 readonly READ_CONTRACT_ADOPTION_SESSION=22
+readonly AGGREGATE_BUDGET_ADOPTION_SESSION=28
 readonly DEFAULT_READ_HARD_WORD_CEILING=8000
 readonly DEFAULT_READ_SOFT_WORD_CEILING=6000
 readonly DEFAULT_READ_AGGREGATE_ADVISORY=90000
 readonly DEFAULT_READ_AGGREGATE_ACTIVATION=100000
+readonly DEFAULT_READ_AGGREGATE_HARD=100000
+readonly DEFAULT_READ_AGGREGATE_SOFT=90000
+readonly DEFAULT_READ_CLOSE_RETENTION_WINDOW=6
 
 WORKSPACE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PASS=0
@@ -781,10 +788,30 @@ else
     default_read_files+=("$WORKSPACE_ROOT/open-issues.md")
   fi
 
-  # (5) Every provenance/*/03-close.md
-  for close in "$WORKSPACE_ROOT"/provenance/*/03-close.md; do
-    [[ -f "$close" ]] && default_read_files+=("$close")
-  done
+  # (5) The 03-close.md of the most recent DEFAULT_READ_CLOSE_RETENTION_WINDOW sessions.
+  #     (engine-v5 close-rotation rule per read-contract.md v3 §1 item 7 + §2c.
+  #      Older closes remain at their paths but are archive-surface by exclusion.)
+  #     Pre-engine-v5 behaviour (all closes default-read) applies if the current
+  #     session is before AGGREGATE_BUDGET_ADOPTION_SESSION (=28).
+  if [[ $last_session_int -ge $AGGREGATE_BUDGET_ADOPTION_SESSION ]]; then
+    # Take top N close files by descending session-number (NNN prefix of parent dir).
+    retained_closes=$(
+      for close in "$WORKSPACE_ROOT"/provenance/*/03-close.md; do
+        [[ -f "$close" ]] || continue
+        parent=$(basename "$(dirname "$close")")
+        nnn=$(echo "$parent" | grep -o '^[0-9]\{3\}')
+        [[ -n "$nnn" ]] && printf '%s\t%s\n' "$nnn" "$close"
+      done | sort -rn | head -n "$DEFAULT_READ_CLOSE_RETENTION_WINDOW" | cut -f2-
+    )
+    while IFS= read -r close; do
+      [[ -n "$close" && -f "$close" ]] && default_read_files+=("$close")
+    done <<< "$retained_closes"
+  else
+    # Pre-engine-v5: every close file is default-read.
+    for close in "$WORKSPACE_ROOT"/provenance/*/03-close.md; do
+      [[ -f "$close" ]] && default_read_files+=("$close")
+    done
+  fi
 
   # Measure each file
   for file in "${default_read_files[@]}"; do
@@ -813,9 +840,14 @@ else
     fi
   done
 
-  # Aggregate default-read surface report (added v2 per D-086, Session 023 R3/R5).
-  # Informational; not pass/fail/warn at engine-v4. Thresholds inform Session N+1
-  # deliberation if fired. See read-contract.md v2 §2a.
+  # Aggregate default-read surface report (added v2 per D-086, Session 023 R3/R5;
+  # promoted to pass/fail/warn at engine-v5 per D-096 Session 028).
+  #
+  # engine-v4 (Sessions 22-27): informational only (advisory/activation notes).
+  # engine-v5 (Session 28+): §2b budget enforcement:
+  #   - aggregate >= hard (100K): FAIL (session cannot close cleanly; structural remediation required)
+  #   - aggregate >= soft (90K): WARN (next substantive session must include aggregate-reducing action)
+  # §2a advisory/activation notes are retained for informational continuity.
   aggregate_words=0
   for file in "${default_read_files[@]}"; do
     [[ -f "$file" ]] || continue
@@ -830,10 +862,22 @@ else
   done
   echo ""
   echo "  Aggregate default-read surface: $aggregate_words words across ${#default_read_files[@]} files."
-  if [[ $aggregate_words -ge $DEFAULT_READ_AGGREGATE_ACTIVATION ]]; then
-    echo "  ⚡ Activation threshold reached (≥${DEFAULT_READ_AGGREGATE_ACTIVATION} words). Session N+1 should deliberate aggregate hard budget per read-contract §2a and §5.3 minority."
-  elif [[ $aggregate_words -ge $DEFAULT_READ_AGGREGATE_ADVISORY ]]; then
-    echo "  ⚠ Advisory threshold reached (≥${DEFAULT_READ_AGGREGATE_ADVISORY} words). Approaching activation (${DEFAULT_READ_AGGREGATE_ACTIVATION}); next session should note aggregate in close."
+  if [[ $last_session_int -ge $AGGREGATE_BUDGET_ADOPTION_SESSION ]]; then
+    # engine-v5 budget enforcement (§2b)
+    if [[ $aggregate_words -gt $DEFAULT_READ_AGGREGATE_HARD ]]; then
+      fail "Aggregate default-read surface — $aggregate_words words exceeds hard ceiling ($DEFAULT_READ_AGGREGATE_HARD). Session cannot close cleanly; execute structural remediation per read-contract §2c close-rotation or §8 per-file remediation to return below ${DEFAULT_READ_AGGREGATE_HARD}."
+    elif [[ $aggregate_words -gt $DEFAULT_READ_AGGREGATE_SOFT ]]; then
+      warn "Aggregate default-read surface — $aggregate_words words exceeds soft warning ($DEFAULT_READ_AGGREGATE_SOFT). Approaching hard ceiling ($DEFAULT_READ_AGGREGATE_HARD); next substantive session must include at least one aggregate-reducing action (close-rotation execution, spec-archive-migration, or enumeration restructure)."
+    else
+      pass "Aggregate default-read surface — $aggregate_words words within engine-v5 budget (soft $DEFAULT_READ_AGGREGATE_SOFT / hard $DEFAULT_READ_AGGREGATE_HARD)"
+    fi
+  else
+    # Pre-engine-v5 behaviour (informational only per v2 §2a)
+    if [[ $aggregate_words -ge $DEFAULT_READ_AGGREGATE_ACTIVATION ]]; then
+      echo "  ⚡ Activation threshold reached (≥${DEFAULT_READ_AGGREGATE_ACTIVATION} words). Session N+1 should deliberate aggregate hard budget per read-contract §2a and §5.3 minority."
+    elif [[ $aggregate_words -ge $DEFAULT_READ_AGGREGATE_ADVISORY ]]; then
+      echo "  ⚠ Advisory threshold reached (≥${DEFAULT_READ_AGGREGATE_ADVISORY} words). Approaching activation (${DEFAULT_READ_AGGREGATE_ACTIVATION}); next session should note aggregate in close."
+    fi
   fi
   echo ""
 fi
@@ -930,13 +974,21 @@ else
       continue
     fi
     any_refs=true
-    # Check if path exists (accept trailing slash)
-    resolved="$WORKSPACE_ROOT/${path%/}/"
     rel_file="${file#$WORKSPACE_ROOT/}"
-    if [[ -d "$resolved" ]]; then
+    # Engine-v5 (Session 028+): accept rotated-close citations of the form
+    # `[archive: provenance/NNN-title/03-close.md]` (read-contract.md v3 §2c).
+    # Engine-v4 (Sessions 022-027): accept only archive-pack directory paths
+    # of the form `[archive: provenance/NNN-title/archive/<slug>/]`.
+    # Check if path resolves as either a directory (archive-pack) or a regular
+    # file (rotated close).
+    resolved_dir="$WORKSPACE_ROOT/${path%/}/"
+    resolved_file="$WORKSPACE_ROOT/${path%/}"
+    if [[ -d "$resolved_dir" ]]; then
       pass "$rel_file — archive reference resolves: $path"
+    elif [[ -f "$resolved_file" ]] && [[ "$path" == */03-close.md ]]; then
+      pass "$rel_file — archive reference resolves (rotated close): $path"
     else
-      fail "$rel_file — archive reference does not resolve: $path (tried $resolved)"
+      fail "$rel_file — archive reference does not resolve: $path (tried $resolved_dir and $resolved_file)"
       broken_refs=$((broken_refs + 1))
     fi
   done < <(grep -rn --include="*.md" --exclude-dir=".git" --exclude-dir=".claude" --exclude-dir=".serena" -E '\[archive: [^]]+\]' "$WORKSPACE_ROOT" 2>/dev/null || true)
