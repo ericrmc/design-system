@@ -1,0 +1,1 @@
+A community wants to admit a new permanent member. The admission decision will be irreversible. The community already has established members and a hierarchical structure. Design the admission procedure, from first approach to final acceptance. Output is the procedure itself, as a structured text. Approximately 400-500 words.

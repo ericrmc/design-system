@@ -1,0 +1,79 @@
+Reading additional input from stdin...
+OpenAI Codex v0.121.0 (research preview)
+--------
+workdir: /Users/ericmccowan/Development/complex-systems-engine/provenance/032-session-assessment/cell1
+model: gpt-5.4
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 019db900-4dcc-7322-a5d1-2e89bfd254ae
+--------
+user
+A community wants to admit a new permanent member. The admission decision will be irreversible. The community already has established members and a hierarchical structure. Design the admission procedure, from first approach to final acceptance. Output is the procedure itself, as a structured text. Approximately 400-500 words.
+codex
+I’m drafting a governance procedure for an irreversible permanent admission, with multiple review gates, hierarchy-specific responsibilities, and a high-confidence final ratification.
+codex
+**Permanent Membership Admission Procedure**
+
+**1. First Approach**
+Any person seeking permanent membership begins by submitting a written expression of interest to the community’s Membership Steward. The statement must describe motivation, relevant history, understanding of the community’s purpose, and willingness to accept its rules, hierarchy, and obligations. At this stage, no promises are made, and the applicant is informed that permanent admission is irreversible and therefore subject to a long, deliberate process.
+
+**2. Sponsorship**
+The applicant must secure sponsorship from one established permanent member in good standing. The sponsor does not guarantee admission; the sponsor guarantees that the applicant is known well enough to justify formal consideration. The sponsor accepts responsibility for guiding the applicant through the process, answering questions, and reporting honestly on suitability.
+
+**3. Preliminary Eligibility Review**
+The Membership Steward verifies basic eligibility: legal and ethical standing, absence of conflicts that would harm the community, and practical capacity to participate long-term. The applicant signs a disclosure statement confirming that all relevant facts have been shared truthfully. If essential concerns arise, the process ends here. If the applicant passes screening, the file moves upward to the first supervisory level in the hierarchy.
+
+**4. Orientation and Observation Period**
+The applicant enters a defined observation period of not less than six months. During this time, the applicant may attend approved activities, serve in limited non-governing roles, and meet members across different ranks. The applicant does not yet hold permanent rights. The purpose is to test fit in practice rather than in theory. Attendance, conduct, reliability, and response to authority are documented.
+
+**5. Structured Evaluation**
+At the end of the observation period, the sponsor submits a report. Two additional established members from different levels of the hierarchy submit independent assessments. These evaluations address character, competence, discretion, ability to cooperate, respect for established authority, conflict behavior, and long-term alignment with the community’s norms and mission. The applicant is given one formal interview before the senior reviewing body and may respond to concerns in writing.
+
+**6. Senior Review**
+A Membership Council composed of senior members reviews the full dossier. The Council may approve advancement, extend observation, or reject the application. Advancement requires a clear finding that the applicant is suitable not only now but likely to remain suitable permanently. Because the decision is irreversible, uncertainty is treated as a reason to delay or refuse.
+
+**7. Community Notice and Objection Window**
+If the Council advances the applicant, a formal notice is circulated to all established permanent members for a fixed objection period, such as 30 days. Objections must be written, specific, and tied to the admission criteria. Anonymous objections are not sufficient on their own, but may trigger further inquiry. Any substantial objection reopens review.
+
+**8. Final Decision**
+After the objection window closes, the highest competent authority in the hierarchy conducts final ratification. Final acceptance requires both:
+1. A supermajority of the Membership Council.
+2. Formal confirmation by the head of the community or equivalent highest office.
+
+**9. Acceptance and Record**
+Upon ratification, the new member signs the permanent covenant of membership, is entered into the official register, and is publicly received. From that moment, the person holds full permanent status, with all rights, duties, and hierarchical obligations, and the admission cannot be revoked except under rules that already apply to permanent members generally.
+tokens used
+9,475
+**Permanent Membership Admission Procedure**
+
+**1. First Approach**
+Any person seeking permanent membership begins by submitting a written expression of interest to the community’s Membership Steward. The statement must describe motivation, relevant history, understanding of the community’s purpose, and willingness to accept its rules, hierarchy, and obligations. At this stage, no promises are made, and the applicant is informed that permanent admission is irreversible and therefore subject to a long, deliberate process.
+
+**2. Sponsorship**
+The applicant must secure sponsorship from one established permanent member in good standing. The sponsor does not guarantee admission; the sponsor guarantees that the applicant is known well enough to justify formal consideration. The sponsor accepts responsibility for guiding the applicant through the process, answering questions, and reporting honestly on suitability.
+
+**3. Preliminary Eligibility Review**
+The Membership Steward verifies basic eligibility: legal and ethical standing, absence of conflicts that would harm the community, and practical capacity to participate long-term. The applicant signs a disclosure statement confirming that all relevant facts have been shared truthfully. If essential concerns arise, the process ends here. If the applicant passes screening, the file moves upward to the first supervisory level in the hierarchy.
+
+**4. Orientation and Observation Period**
+The applicant enters a defined observation period of not less than six months. During this time, the applicant may attend approved activities, serve in limited non-governing roles, and meet members across different ranks. The applicant does not yet hold permanent rights. The purpose is to test fit in practice rather than in theory. Attendance, conduct, reliability, and response to authority are documented.
+
+**5. Structured Evaluation**
+At the end of the observation period, the sponsor submits a report. Two additional established members from different levels of the hierarchy submit independent assessments. These evaluations address character, competence, discretion, ability to cooperate, respect for established authority, conflict behavior, and long-term alignment with the community’s norms and mission. The applicant is given one formal interview before the senior reviewing body and may respond to concerns in writing.
+
+**6. Senior Review**
+A Membership Council composed of senior members reviews the full dossier. The Council may approve advancement, extend observation, or reject the application. Advancement requires a clear finding that the applicant is suitable not only now but likely to remain suitable permanently. Because the decision is irreversible, uncertainty is treated as a reason to delay or refuse.
+
+**7. Community Notice and Objection Window**
+If the Council advances the applicant, a formal notice is circulated to all established permanent members for a fixed objection period, such as 30 days. Objections must be written, specific, and tied to the admission criteria. Anonymous objections are not sufficient on their own, but may trigger further inquiry. Any substantial objection reopens review.
+
+**8. Final Decision**
+After the objection window closes, the highest competent authority in the hierarchy conducts final ratification. Final acceptance requires both:
+1. A supermajority of the Membership Council.
+2. Formal confirmation by the head of the community or equivalent highest office.
+
+**9. Acceptance and Record**
+Upon ratification, the new member signs the permanent covenant of membership, is entered into the official register, and is publicly received. From that moment, the person holds full permanent status, with all rights, duties, and hierarchical obligations, and the admission cannot be revoked except under rules that already apply to permanent members generally.

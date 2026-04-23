@@ -1,0 +1,163 @@
+Reading additional input from stdin...
+OpenAI Codex v0.121.0 (research preview)
+--------
+workdir: /Users/ericmccowan/Development/complex-systems-engine/provenance/032-session-assessment/cell1
+model: gpt-5.4
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 019db902-a769-7ad3-be4b-d1e3d6e42f5a
+--------
+user
+You are asked to produce a complete admission procedure responding to the constraints below. Output the procedure directly without preamble.
+
+PROBLEM
+
+Design an admission procedure for a hierarchical, permanent-membership community whose admission decision is effectively irreversible after final commitment. The community already has established members; this procedure governs how new applicants become full members.
+
+CONTEXT CONSTRAINTS
+
+1. Membership is permanent. Once an applicant has completed the procedure and received final acceptance, the relationship between the community and the new member is intended to last indefinitely. Reversal is technically possible but socially and practically severe; departure after final acceptance is treated as a serious event, not a routine resignation.
+
+2. The applicant has explicitly requested admission. The community is not recruiting; applicants self-present. The procedure begins when an external person knocks (literally or figuratively) and asks to join.
+
+3. Community fit is load-bearing. The community's continued functioning depends on each member being suited to its particular way of life, expectations, daily rhythm, and authority structure. Admitting a poorly-fit member is more costly than rejecting a marginally-fit applicant.
+
+4. The applicant cannot fully know what they are committing to in advance. The community's daily life, internal expectations, and cultural texture cannot be conveyed in a single document or conversation. Genuine consent requires lived exposure over time.
+
+5. The community cannot fully evaluate the applicant in advance. Suitability surfaces under sustained, low-stakes interaction with existing members. A first-impression interview is insufficient.
+
+6. Multiple graceful exit points are required. Both sides must be able to discontinue the process at clearly-defined points without dishonour or material penalty. The procedure must not lock in either side until the final commitment.
+
+7. The community has authority to admit or reject at every stage. The decision is asymmetric: the community holds final say, even though the applicant initiates and may withdraw. Mechanisms by which the community renders an interim or final decision must be specified.
+
+8. The final commitment must be a public, witnessed event. The transition from "candidate" to "full member" is a recognisable moment, attested by the community's existing members, not a private decision communicated by letter.
+
+9. Applicant resolve must be tested. Casual or impulsive applicants must be filtered out before they invest deeply. The procedure should make initial entry costly enough to deter the merely curious without creating a barrier insurmountable to the genuinely-committed.
+
+10. No specialised modern infrastructure. The procedure must be executable by a community that does not have access to electronic communication, formal psychometric assessment, background-check services, or third-party adjudicators. The community evaluates the applicant directly through its existing members.
+
+OUTPUT REQUESTED
+
+Produce a complete admission procedure as a structured text. The procedure should:
+
+(a) Specify the stages of the admission process, in order, from first approach to final acceptance.
+
+(b) For each stage, specify what happens, who is involved, what the duration is, and what the criteria for advancement to the next stage are.
+
+(c) Specify the exit conditions at each stage: how either side can discontinue, and what the consequence of discontinuation is.
+
+(d) Specify the final commitment ceremony: its form, its public witnessing, and the words or acts by which the candidate becomes a full member.
+
+(e) Specify the post-acceptance period if any (e.g., how the new member is integrated into the community after final acceptance).
+
+Target length: 700-1,200 words. Aim for prose specification of the procedure itself, not a meta-essay about admission procedures generally.
+codex
+Admission is only by self-presentation. No member seeks recruits. A person who comes asking to join is received courteously, but never admitted at once.
+
+1. **First Approach and First Refusal**  
+What happens: the applicant presents themselves at the gate, door, or other public point of contact and asks to join. The gatekeeper and one admissions elder hear the request, explain plainly that membership is for life, that the community is hierarchical, that daily life is demanding, and that departure after final reception is treated as grave. The applicant is offered one meal and, if necessary, one night’s lodging, then is told to depart and return no sooner than thirty days and no later than ninety days if still resolved. The first answer is therefore a deliberate refusal of immediate entry.  
+Who is involved: gatekeeper, admissions elder, and the head of the community, who is informed the same day.  
+Duration: one day of reception, followed by a thirty- to ninety-day waiting period outside the community.  
+Advancement: the applicant must return in person within the set window and renew the request without prompting. If literate, they bring a short handwritten petition; if not, they make the petition orally before the admissions elder.  
+Exit: the applicant may simply not return. The community may also tell the person not to return if the first approach revealed obvious incompatibility, violence, or deceit. Consequence: the matter ends without dishonor, debt, or claim on either side.
+
+2. **Inquiry Visit**  
+What happens: the returned applicant is admitted as an inquirer or guest. They live near the community, join meals, ordinary work, and public observances, and see the daily rhythm as it is actually kept. They do not enter private councils, vote, handle sensitive goods, or take on the name or marks of membership. Two hosts are assigned to answer questions honestly and observe conduct in ordinary conditions.  
+Who is involved: applicant, two hosts of established standing, work leaders, and the head.  
+Duration: fourteen days to six weeks.  
+Advancement: at the end of the visit, the applicant must personally ask to continue. The two hosts must separately report that the applicant shows basic steadiness, truthfulness, courtesy, teachability, and the ability to tolerate the community’s rhythm without complaint or performance. The head, with the admissions council, decides whether there is enough promise to test further.  
+Exit: the applicant may leave at any time by informing a host. The community may end the visit at any time for clear misfit or disruption. Consequence: departure is treated as the proper end of inquiry, not as failure. A new inquiry may be requested after six months.
+
+3. **Postulancy**  
+What happens: after a seven-day absence for reflection, the applicant may return and formally petition to enter as a postulant. If accepted, the postulant lives fully inside the community under a sponsor, follows the full timetable, performs ordinary labor, and submits to correction and supervision. The postulant has no vote, no office, and no access to the innermost deliberations. A simple dress, belt, badge, or other token marks this temporary state.  
+Who is involved: postulant, sponsor appointed by the head, work overseers, admissions council, and the head.  
+Duration: three months minimum, six months maximum.  
+Advancement: the sponsor must report that the postulant can sustain ordinary life without theatrical zeal, accept authority without resentment or servility, keep peace with others, and carry routine work reliably. The admissions council recommends advancement by majority; the head decides.  
+Exit: the postulant may ask to leave and is released the same day or the next morning. The community may dismiss the postulant at any time by the head’s decision after hearing the sponsor. Consequence: departure is in peace and without public disgrace. Unless there was fraud or harm, the person may petition again after one year.
+
+4. **Novitiate or Candidacy**  
+What happens: the postulant who persists petitions to become a novice or candidate. If accepted, they enter the long period of full exposure. They live the whole cycle of the community’s life, including busy seasons, dull seasons, scarcity, fatigue, conflict, and routine. They receive instruction in the rule, history, obligations, use of property, norms of obedience, and internal authority structure. They rotate through the principal forms of labor and meet monthly with the sponsor and quarterly with the admissions council.  
+Who is involved: candidate, sponsor, head, admissions council, and the whole body of members through sustained daily contact.  
+Duration: one full year minimum; it may be extended once by six months if the case remains unclear.  
+Advancement: at the end, the candidate must still freely ask for life membership. The sponsor and council must judge that suitability has appeared in ordinary life, not merely in aspiration. The criteria are stability of conduct, honesty, endurance, response to correction, compatibility with the community’s pace and devotions, ability to live under authority, and absence of unresolved enmity with members.  
+Exit: the candidate may withdraw at any time before final election. The community may dismiss at any time by decision of the head after consulting the council. Consequence: because no permanent bond yet exists, departure remains honorable and non-punitive.
+
+5. **Petition for Final Reception and Election**  
+What happens: after completing candidacy, the candidate spends seven days in silence or reduced speech and then submits a final petition, oral or written, asking to be received for life. The petition is read before the permanent members. For the next seven days, any permanent member may bring a grave objection privately to the council. The council hears objections, questions the sponsor and candidate, and then calls an election.  
+Who is involved: candidate, sponsor, permanent members, admissions council, and head.  
+Duration: fourteen days.  
+Advancement: permanent members cast secret assent or dissent by token, marked slip, or similar simple means. Admission requires at least a four-fifths assent of permanent members present, no grave objection upheld by the council, and the head’s approval. The decision is asymmetric: even after a favorable vote, only the head may call the final reception.  
+Exit: the candidate may withdraw the petition before the ceremony without dishonor. The community may decline by vote or by the head’s refusal. Consequence: the candidate departs in peace and is not spoken of as a failed member, since no final commitment was made.
+
+6. **Final Commitment Ceremony**  
+Final admission occurs only in public, in the common hall, assembly room, or place of worship, with the permanent members present as witnesses. On the night before, the candidate keeps vigil with the sponsor. At the ceremony, the sponsor presents the candidate and the council attests that the process is complete. The head asks three questions: whether the candidate still seeks admission, whether they understand that the bond is for life, and whether they freely place themselves under the rule and lawful authority of the community. The candidate answers each time, “I do.”
+
+The candidate then kneels or stands before the head and assembled members, places their hands in the head’s hands or upon the community’s book of rule, and says:  
+“Before these witnesses, I ask to be received as a full member of this community. I bind myself for life to its rule, labor, common life, and lawful authority, unless I am released for grave cause by the same community.”
+
+The head replies:  
+“By the judgment of this community, witnessed here, and by the authority entrusted to me, I receive you as a full member for life.”
+
+The new member signs or marks the register, and the sponsor attests the mark if needed. A visible sign of membership is then given: cloak, cord, key, seat, or other proper token. The members witness the act by standing, giving the peace, or speaking together, “We receive you.”
+
+7. **Post-Acceptance Settlement**  
+Reception is final, not provisional. The new member is immediately a full member. For the first year after reception, however, a settlement period applies. A senior companion other than the sponsor is assigned. The new member bears full obligations and has ordinary rights, but does not hold major office, train entrants, or sit on admission decisions during that first year. Monthly meetings with the companion and two formal conversations with the head are required.
+
+If grave trouble arises after final acceptance, it is treated as discipline within a permanent bond, not as routine withdrawal. The seriousness of that bond is why every earlier stage provides a real, clear, and graceful way out.
+tokens used
+14,437
+Admission is only by self-presentation. No member seeks recruits. A person who comes asking to join is received courteously, but never admitted at once.
+
+1. **First Approach and First Refusal**  
+What happens: the applicant presents themselves at the gate, door, or other public point of contact and asks to join. The gatekeeper and one admissions elder hear the request, explain plainly that membership is for life, that the community is hierarchical, that daily life is demanding, and that departure after final reception is treated as grave. The applicant is offered one meal and, if necessary, one night’s lodging, then is told to depart and return no sooner than thirty days and no later than ninety days if still resolved. The first answer is therefore a deliberate refusal of immediate entry.  
+Who is involved: gatekeeper, admissions elder, and the head of the community, who is informed the same day.  
+Duration: one day of reception, followed by a thirty- to ninety-day waiting period outside the community.  
+Advancement: the applicant must return in person within the set window and renew the request without prompting. If literate, they bring a short handwritten petition; if not, they make the petition orally before the admissions elder.  
+Exit: the applicant may simply not return. The community may also tell the person not to return if the first approach revealed obvious incompatibility, violence, or deceit. Consequence: the matter ends without dishonor, debt, or claim on either side.
+
+2. **Inquiry Visit**  
+What happens: the returned applicant is admitted as an inquirer or guest. They live near the community, join meals, ordinary work, and public observances, and see the daily rhythm as it is actually kept. They do not enter private councils, vote, handle sensitive goods, or take on the name or marks of membership. Two hosts are assigned to answer questions honestly and observe conduct in ordinary conditions.  
+Who is involved: applicant, two hosts of established standing, work leaders, and the head.  
+Duration: fourteen days to six weeks.  
+Advancement: at the end of the visit, the applicant must personally ask to continue. The two hosts must separately report that the applicant shows basic steadiness, truthfulness, courtesy, teachability, and the ability to tolerate the community’s rhythm without complaint or performance. The head, with the admissions council, decides whether there is enough promise to test further.  
+Exit: the applicant may leave at any time by informing a host. The community may end the visit at any time for clear misfit or disruption. Consequence: departure is treated as the proper end of inquiry, not as failure. A new inquiry may be requested after six months.
+
+3. **Postulancy**  
+What happens: after a seven-day absence for reflection, the applicant may return and formally petition to enter as a postulant. If accepted, the postulant lives fully inside the community under a sponsor, follows the full timetable, performs ordinary labor, and submits to correction and supervision. The postulant has no vote, no office, and no access to the innermost deliberations. A simple dress, belt, badge, or other token marks this temporary state.  
+Who is involved: postulant, sponsor appointed by the head, work overseers, admissions council, and the head.  
+Duration: three months minimum, six months maximum.  
+Advancement: the sponsor must report that the postulant can sustain ordinary life without theatrical zeal, accept authority without resentment or servility, keep peace with others, and carry routine work reliably. The admissions council recommends advancement by majority; the head decides.  
+Exit: the postulant may ask to leave and is released the same day or the next morning. The community may dismiss the postulant at any time by the head’s decision after hearing the sponsor. Consequence: departure is in peace and without public disgrace. Unless there was fraud or harm, the person may petition again after one year.
+
+4. **Novitiate or Candidacy**  
+What happens: the postulant who persists petitions to become a novice or candidate. If accepted, they enter the long period of full exposure. They live the whole cycle of the community’s life, including busy seasons, dull seasons, scarcity, fatigue, conflict, and routine. They receive instruction in the rule, history, obligations, use of property, norms of obedience, and internal authority structure. They rotate through the principal forms of labor and meet monthly with the sponsor and quarterly with the admissions council.  
+Who is involved: candidate, sponsor, head, admissions council, and the whole body of members through sustained daily contact.  
+Duration: one full year minimum; it may be extended once by six months if the case remains unclear.  
+Advancement: at the end, the candidate must still freely ask for life membership. The sponsor and council must judge that suitability has appeared in ordinary life, not merely in aspiration. The criteria are stability of conduct, honesty, endurance, response to correction, compatibility with the community’s pace and devotions, ability to live under authority, and absence of unresolved enmity with members.  
+Exit: the candidate may withdraw at any time before final election. The community may dismiss at any time by decision of the head after consulting the council. Consequence: because no permanent bond yet exists, departure remains honorable and non-punitive.
+
+5. **Petition for Final Reception and Election**  
+What happens: after completing candidacy, the candidate spends seven days in silence or reduced speech and then submits a final petition, oral or written, asking to be received for life. The petition is read before the permanent members. For the next seven days, any permanent member may bring a grave objection privately to the council. The council hears objections, questions the sponsor and candidate, and then calls an election.  
+Who is involved: candidate, sponsor, permanent members, admissions council, and head.  
+Duration: fourteen days.  
+Advancement: permanent members cast secret assent or dissent by token, marked slip, or similar simple means. Admission requires at least a four-fifths assent of permanent members present, no grave objection upheld by the council, and the head’s approval. The decision is asymmetric: even after a favorable vote, only the head may call the final reception.  
+Exit: the candidate may withdraw the petition before the ceremony without dishonor. The community may decline by vote or by the head’s refusal. Consequence: the candidate departs in peace and is not spoken of as a failed member, since no final commitment was made.
+
+6. **Final Commitment Ceremony**  
+Final admission occurs only in public, in the common hall, assembly room, or place of worship, with the permanent members present as witnesses. On the night before, the candidate keeps vigil with the sponsor. At the ceremony, the sponsor presents the candidate and the council attests that the process is complete. The head asks three questions: whether the candidate still seeks admission, whether they understand that the bond is for life, and whether they freely place themselves under the rule and lawful authority of the community. The candidate answers each time, “I do.”
+
+The candidate then kneels or stands before the head and assembled members, places their hands in the head’s hands or upon the community’s book of rule, and says:  
+“Before these witnesses, I ask to be received as a full member of this community. I bind myself for life to its rule, labor, common life, and lawful authority, unless I am released for grave cause by the same community.”
+
+The head replies:  
+“By the judgment of this community, witnessed here, and by the authority entrusted to me, I receive you as a full member for life.”
+
+The new member signs or marks the register, and the sponsor attests the mark if needed. A visible sign of membership is then given: cloak, cord, key, seat, or other proper token. The members witness the act by standing, giving the peace, or speaking together, “We receive you.”
+
+7. **Post-Acceptance Settlement**  
+Reception is final, not provisional. The new member is immediately a full member. For the first year after reception, however, a settlement period applies. A senior companion other than the sponsor is assigned. The new member bears full obligations and has ordinary rights, but does not hold major office, train entrants, or sit on admission decisions during that first year. Monthly meetings with the companion and two formal conversations with the head are required.
+
+If grave trouble arises after final acceptance, it is treated as discipline within a permanent bond, not as routine withdrawal. The seriousness of that bond is why every earlier stage provides a real, clear, and graceful way out.

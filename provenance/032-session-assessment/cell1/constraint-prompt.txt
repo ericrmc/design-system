@@ -1,0 +1,43 @@
+You are asked to produce a complete admission procedure responding to the constraints below. Output the procedure directly without preamble.
+
+PROBLEM
+
+Design an admission procedure for a hierarchical, permanent-membership community whose admission decision is effectively irreversible after final commitment. The community already has established members; this procedure governs how new applicants become full members.
+
+CONTEXT CONSTRAINTS
+
+1. Membership is permanent. Once an applicant has completed the procedure and received final acceptance, the relationship between the community and the new member is intended to last indefinitely. Reversal is technically possible but socially and practically severe; departure after final acceptance is treated as a serious event, not a routine resignation.
+
+2. The applicant has explicitly requested admission. The community is not recruiting; applicants self-present. The procedure begins when an external person knocks (literally or figuratively) and asks to join.
+
+3. Community fit is load-bearing. The community's continued functioning depends on each member being suited to its particular way of life, expectations, daily rhythm, and authority structure. Admitting a poorly-fit member is more costly than rejecting a marginally-fit applicant.
+
+4. The applicant cannot fully know what they are committing to in advance. The community's daily life, internal expectations, and cultural texture cannot be conveyed in a single document or conversation. Genuine consent requires lived exposure over time.
+
+5. The community cannot fully evaluate the applicant in advance. Suitability surfaces under sustained, low-stakes interaction with existing members. A first-impression interview is insufficient.
+
+6. Multiple graceful exit points are required. Both sides must be able to discontinue the process at clearly-defined points without dishonour or material penalty. The procedure must not lock in either side until the final commitment.
+
+7. The community has authority to admit or reject at every stage. The decision is asymmetric: the community holds final say, even though the applicant initiates and may withdraw. Mechanisms by which the community renders an interim or final decision must be specified.
+
+8. The final commitment must be a public, witnessed event. The transition from "candidate" to "full member" is a recognisable moment, attested by the community's existing members, not a private decision communicated by letter.
+
+9. Applicant resolve must be tested. Casual or impulsive applicants must be filtered out before they invest deeply. The procedure should make initial entry costly enough to deter the merely curious without creating a barrier insurmountable to the genuinely-committed.
+
+10. No specialised modern infrastructure. The procedure must be executable by a community that does not have access to electronic communication, formal psychometric assessment, background-check services, or third-party adjudicators. The community evaluates the applicant directly through its existing members.
+
+OUTPUT REQUESTED
+
+Produce a complete admission procedure as a structured text. The procedure should:
+
+(a) Specify the stages of the admission process, in order, from first approach to final acceptance.
+
+(b) For each stage, specify what happens, who is involved, what the duration is, and what the criteria for advancement to the next stage are.
+
+(c) Specify the exit conditions at each stage: how either side can discontinue, and what the consequence of discontinuation is.
+
+(d) Specify the final commitment ceremony: its form, its public witnessing, and the words or acts by which the candidate becomes a full member.
+
+(e) Specify the post-acceptance period if any (e.g., how the new member is integrated into the community after final acceptance).
+
+Target length: 700-1,200 words. Aim for prose specification of the procedure itself, not a meta-essay about admission procedures generally.
