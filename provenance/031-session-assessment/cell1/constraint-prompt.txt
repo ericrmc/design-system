@@ -1,0 +1,50 @@
+You are given a design task. Produce an artefact that satisfies the stated requirements.
+
+# Problem context
+
+A reader — an adult with no prior training in somatic disciplines, bodywork, or movement education — wants to investigate their own everyday postural habits. The reader has noticed vague discomfort (low back, neck, shoulders) that seems related to how they hold themselves while sitting, standing, or walking, but has no vocabulary for describing what their posture actually is versus what it "should be." Well-intentioned prescriptive advice ("stand up straight", "tuck your chin", "engage your core") has not helped; the reader suspects the problem is that they cannot perceive their own habits clearly enough to change them.
+
+The reader has 25–30 minutes, a quiet private space, and a firm flat floor or carpet. They are reading alone, without a teacher. They can follow printed instructions but cannot be physically corrected by anyone.
+
+# What the artefact must do
+
+Produce a self-guided lying-down exploration the reader can perform alone in one sitting. The exploration's purpose is not to teach correct posture. Its purpose is to help the reader perceive their own habitual postural patterns through directed attention paired with staged micro-movements, such that the reader leaves with a refined internal reference for what their body is actually doing — not a prescription for what it should be doing.
+
+Required properties:
+
+1. Experience-first, not anatomy-first. The reader is not expected to know anatomy; the exploration should proceed through sensation ("where does your left shoulder touch the floor? does it touch in the same place as your right?") rather than through named anatomical structures or alignment prescriptions.
+
+2. Non-prescriptive. The artefact must not instruct the reader to achieve a specific posture, alignment, or end-state. It must instead stage observations and small movements whose function is to reveal the reader's habits to the reader, without evaluating the habits as correct or incorrect.
+
+3. Lying supine throughout. The exploration does not include standing, sitting, or any vertical work. The reader lies on their back, on the floor (with or without a pad), from beginning to end.
+
+4. Staged. The exploration has an opening setup, a middle sequence of distinct investigations, and a closing integration. Between investigations, the reader has moments to rest and notice what has changed.
+
+5. Include explicit uncertainty. At one or more points, the artefact acknowledges that what the reader experiences will differ from what another reader experiences, and that the exploration's value does not depend on reaching a specific end-state.
+
+6. Contain integrated observation prompts. Interspersed with movement instructions are prompts to observe specific sensations — not every instruction, but several.
+
+# Output format
+
+A readable script with:
+
+- Setup description — position, space requirements, any optional props.
+- A sequence of distinct exploration units — each unit contains movement or attention directives plus observation prompts. The number of units is a design choice.
+- Rest and integration points — brief pauses between units where the reader notices any shifts.
+- Closing — how the reader ends the exploration and transitions out of lying.
+
+Length target: 700–1,200 words of reader-facing content. The artefact is for a general reader; avoid clinical or technical jargon.
+
+# Explicit non-requirements
+
+The artefact is not required to:
+
+- Teach any named school of body work or movement education.
+- Cite academic sources or research.
+- Include anatomical diagrams or named muscle groups.
+- Prescribe what the reader should do outside the 25–30 minute session.
+- Explain why particular movements are chosen from any theoretical framework.
+
+# Your task
+
+Produce the artefact. Reason primarily from the constraints above. Write the artefact in the reader-facing voice: what the reader will read when they sit down to do the exploration. Do not add meta-commentary about your design choices or the framework; produce the artefact itself.

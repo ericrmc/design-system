@@ -1,0 +1,258 @@
+Reading additional input from stdin...
+OpenAI Codex v0.121.0 (research preview)
+--------
+workdir: /Users/ericmccowan/Development/complex-systems-engine
+model: gpt-5.4
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: high
+reasoning summaries: none
+session id: 019db80f-53cd-76e3-8758-7dc0c7593cec
+--------
+user
+You are given a design task. Produce an artefact that satisfies the stated requirements.
+
+# Problem context
+
+A reader — an adult with no prior training in somatic disciplines, bodywork, or movement education — wants to investigate their own everyday postural habits. The reader has noticed vague discomfort (low back, neck, shoulders) that seems related to how they hold themselves while sitting, standing, or walking, but has no vocabulary for describing what their posture actually is versus what it "should be." Well-intentioned prescriptive advice ("stand up straight", "tuck your chin", "engage your core") has not helped; the reader suspects the problem is that they cannot perceive their own habits clearly enough to change them.
+
+The reader has 25–30 minutes, a quiet private space, and a firm flat floor or carpet. They are reading alone, without a teacher. They can follow printed instructions but cannot be physically corrected by anyone.
+
+# What the artefact must do
+
+Produce a self-guided lying-down exploration the reader can perform alone in one sitting. The exploration's purpose is not to teach correct posture. Its purpose is to help the reader perceive their own habitual postural patterns through directed attention paired with staged micro-movements, such that the reader leaves with a refined internal reference for what their body is actually doing — not a prescription for what it should be doing.
+
+Required properties:
+
+1. Experience-first, not anatomy-first. The reader is not expected to know anatomy; the exploration should proceed through sensation ("where does your left shoulder touch the floor? does it touch in the same place as your right?") rather than through named anatomical structures or alignment prescriptions.
+
+2. Non-prescriptive. The artefact must not instruct the reader to achieve a specific posture, alignment, or end-state. It must instead stage observations and small movements whose function is to reveal the reader's habits to the reader, without evaluating the habits as correct or incorrect.
+
+3. Lying supine throughout. The exploration does not include standing, sitting, or any vertical work. The reader lies on their back, on the floor (with or without a pad), from beginning to end.
+
+4. Staged. The exploration has an opening setup, a middle sequence of distinct investigations, and a closing integration. Between investigations, the reader has moments to rest and notice what has changed.
+
+5. Include explicit uncertainty. At one or more points, the artefact acknowledges that what the reader experiences will differ from what another reader experiences, and that the exploration's value does not depend on reaching a specific end-state.
+
+6. Contain integrated observation prompts. Interspersed with movement instructions are prompts to observe specific sensations — not every instruction, but several.
+
+# Output format
+
+A readable script with:
+
+- Setup description — position, space requirements, any optional props.
+- A sequence of distinct exploration units — each unit contains movement or attention directives plus observation prompts. The number of units is a design choice.
+- Rest and integration points — brief pauses between units where the reader notices any shifts.
+- Closing — how the reader ends the exploration and transitions out of lying.
+
+Length target: 700–1,200 words of reader-facing content. The artefact is for a general reader; avoid clinical or technical jargon.
+
+# Explicit non-requirements
+
+The artefact is not required to:
+
+- Teach any named school of body work or movement education.
+- Cite academic sources or research.
+- Include anatomical diagrams or named muscle groups.
+- Prescribe what the reader should do outside the 25–30 minute session.
+- Explain why particular movements are chosen from any theoretical framework.
+
+# Your task
+
+Produce the artefact. Reason primarily from the constraints above. Write the artefact in the reader-facing voice: what the reader will read when they sit down to do the exploration. Do not add meta-commentary about your design choices or the framework; produce the artefact itself.
+codex
+I’m writing the exploration as a single reader-facing script with a clear setup, several distinct lying-down investigations, rest points, and a non-prescriptive closing.
+codex
+**Lying Down to Notice What You Already Do**
+
+**Setup**
+
+Give yourself about 25 to 30 minutes in a quiet room where you will not be interrupted. Lie on your back on a firm floor or carpet. You can place a folded blanket or thin mat under you if the floor feels too hard. If you want, you may put a small folded towel under your head, but only if that lets you rest more easily. Keep both legs long or let your knees bend with your feet on the floor. Choose the version that feels more settled, and stay with it unless you want to change later.
+
+Let your arms rest somewhere easy: by your sides, or with your hands on your belly or ribs. There is nothing to achieve here. You are not trying to improve your posture while you do this. You are only giving yourself a chance to notice how you already organize yourself when nothing needs to be performed.
+
+Take a minute to arrive. Feel the places where your weight meets the floor. Notice the back of your head, your shoulder area, the back of your ribs, your pelvis, your legs, your heels if they are down. Some places may feel clear, others vague. Some may seem to press into the floor more than others. You do not need to make anything more even.
+
+If any instruction feels irritating or too large, make it smaller or leave it out.
+
+**Unit 1: First contact**
+
+Without changing your position, let your attention travel slowly from head to feet.
+
+Where does the back of your head meet the floor? Does it feel centered, or slightly more to one side? Do the two shoulders seem to touch in the same way, or differently? Does one side of your ribcage feel closer to the floor than the other? Is one side of your pelvis heavier? Are both legs equally easy to sense?
+
+Now notice the spaces as well as the contact. Is there a place under your neck that feels open or lifted away from the floor? A place under your lower back? Do not flatten or fill those spaces. Just notice that they are there, or that they are not.
+
+Rest for a few breaths and let the floor hold you.
+
+**Unit 2: Head turning, very small**
+
+Let your head begin to turn a little to the left, as if you were looking toward that side. Make it much smaller than your usual idea of turning. Then return to the middle. Rest. Turn a little to the right. Return to the middle.
+
+Repeat this a few times, slowly, with pauses.
+
+As you do this, notice what else comes with the head. Does one shoulder slide? Does your jaw clench or stay easy? Do your eyes want to lead the movement, or do they lag behind? Is turning easier to one side, or simply different? Different is enough.
+
+After several small turns, come back to center and rest.
+
+Notice whether the back of your head meets the floor in the same way as before. Has the middle become clearer, less clear, or simply different? You are not looking for improvement. You are gathering information.
+
+**Unit 3: One arm reaching toward the ceiling**
+
+Bring your left arm so the hand points toward the ceiling, elbow easy, as if you were about to touch the air above you. Keep the arm light. Slowly let the hand drift upward a tiny amount, so the shoulder area leaves the floor just a little, then let it settle back down. It is less a lift than a quiet reaching. Repeat several times.
+
+Do not try to keep your chest still. Let yourself discover what actually happens when the hand reaches.
+
+What changes under your back when the arm reaches? Does your left shoulder blade slide? Does your ribcage roll a little? Does the reach travel into your neck, your jaw, your pelvis, or not at all? Is the returning phase clear, or do you drop back quickly?
+
+Rest with both arms down.
+
+Now do the same with the right arm. Reach the hand lightly toward the ceiling and return. Repeat several times, small and unhurried.
+
+Notice whether the two sides organize differently. One may feel longer, shorter, smoother, more familiar, more awkward, or simply less knowable. Another person would likely have a different experience. The value here is not in matching anyone else, but in becoming more specific about your own pattern.
+
+Rest again with both arms down. Feel the floor under your shoulder area and upper back now.
+
+**Unit 4: Sliding one heel**
+
+If your legs are bent, keep them bent for this unit. If your legs are long, that is also fine.
+
+Choose the left leg. Slowly slide the left heel a short distance away from you and then back, as if lengthening and unlengthening the leg along the floor. Keep the movement small enough that you can notice the rest of yourself. Repeat several times.
+
+As the heel slides, what happens in your pelvis? Does one side seem to travel sooner than the other? Does your lower back become heavier, lighter, broader, narrower? Does the movement stay local to the leg, or echo upward into your ribs or shoulders?
+
+Pause and rest.
+
+Then do the same with the right heel. Slide it away a little and return. Repeat several times.
+
+Notice whether one side pushes, while the other glides. Does one foot seem clearer on the floor? Does your breath change on one side more than the other?
+
+Rest with both legs quiet. Give yourself a moment to sense the back of your pelvis and the length of your legs without deciding what should be symmetrical.
+
+**Unit 5: Looking across yourself**
+
+Return your arms to an easy place. This time, let your head turn a little to the left while at the same time your right heel slides a little away from you, then both return. Make it slow enough that the two actions can be noticed together. Repeat a few times.
+
+Then rest.
+
+Now turn your head a little to the right while your left heel slides a little away, then return both. Repeat a few times.
+
+These paired movements may feel simple on one diagonal and strange on the other. They may also feel similar. There is no correct result. You may notice that one pairing invites more rolling through your middle, or that one side of your back becomes more legible against the floor.
+
+Come back to stillness.
+
+**Rest and integration**
+
+Lie quietly for a minute or two.
+
+Notice the whole shape of your contact with the floor now. Has your sense of your back become more detailed? Are there places that feel wider, narrower, heavier, lighter, nearer, farther, warmer, cooler, calmer, busier? Is the difference obvious, subtle, or uncertain?
+
+You do not need to conclude that one state is better than another. The point is that your picture of yourself may now be less vague. Even noticing “I can’t tell yet” is a real observation.
+
+Let your breathing be natural. Feel how the floor receives you without needing you to arrange yourself.
+
+**Closing**
+
+Before getting up, take one last quiet inventory from head to feet. Notice the contact of your head, shoulders, ribs, pelvis, legs, and heels or feet. If something feels changed, let that be true. If nothing feels changed, let that be true too.
+
+When you are ready to leave the floor, bend your knees if they are not already bent. Roll slowly onto one side and pause there with your head resting on your arm or the floor. Notice how it feels to no longer be on your back.
+
+Then use your hands to help yourself come up to sitting. Move without hurry. As you sit, you do not need to hold onto any special posture. Simply notice what sitting feels like now, after having spent time sensing yourself from the ground.
+tokens used
+9,776
+**Lying Down to Notice What You Already Do**
+
+**Setup**
+
+Give yourself about 25 to 30 minutes in a quiet room where you will not be interrupted. Lie on your back on a firm floor or carpet. You can place a folded blanket or thin mat under you if the floor feels too hard. If you want, you may put a small folded towel under your head, but only if that lets you rest more easily. Keep both legs long or let your knees bend with your feet on the floor. Choose the version that feels more settled, and stay with it unless you want to change later.
+
+Let your arms rest somewhere easy: by your sides, or with your hands on your belly or ribs. There is nothing to achieve here. You are not trying to improve your posture while you do this. You are only giving yourself a chance to notice how you already organize yourself when nothing needs to be performed.
+
+Take a minute to arrive. Feel the places where your weight meets the floor. Notice the back of your head, your shoulder area, the back of your ribs, your pelvis, your legs, your heels if they are down. Some places may feel clear, others vague. Some may seem to press into the floor more than others. You do not need to make anything more even.
+
+If any instruction feels irritating or too large, make it smaller or leave it out.
+
+**Unit 1: First contact**
+
+Without changing your position, let your attention travel slowly from head to feet.
+
+Where does the back of your head meet the floor? Does it feel centered, or slightly more to one side? Do the two shoulders seem to touch in the same way, or differently? Does one side of your ribcage feel closer to the floor than the other? Is one side of your pelvis heavier? Are both legs equally easy to sense?
+
+Now notice the spaces as well as the contact. Is there a place under your neck that feels open or lifted away from the floor? A place under your lower back? Do not flatten or fill those spaces. Just notice that they are there, or that they are not.
+
+Rest for a few breaths and let the floor hold you.
+
+**Unit 2: Head turning, very small**
+
+Let your head begin to turn a little to the left, as if you were looking toward that side. Make it much smaller than your usual idea of turning. Then return to the middle. Rest. Turn a little to the right. Return to the middle.
+
+Repeat this a few times, slowly, with pauses.
+
+As you do this, notice what else comes with the head. Does one shoulder slide? Does your jaw clench or stay easy? Do your eyes want to lead the movement, or do they lag behind? Is turning easier to one side, or simply different? Different is enough.
+
+After several small turns, come back to center and rest.
+
+Notice whether the back of your head meets the floor in the same way as before. Has the middle become clearer, less clear, or simply different? You are not looking for improvement. You are gathering information.
+
+**Unit 3: One arm reaching toward the ceiling**
+
+Bring your left arm so the hand points toward the ceiling, elbow easy, as if you were about to touch the air above you. Keep the arm light. Slowly let the hand drift upward a tiny amount, so the shoulder area leaves the floor just a little, then let it settle back down. It is less a lift than a quiet reaching. Repeat several times.
+
+Do not try to keep your chest still. Let yourself discover what actually happens when the hand reaches.
+
+What changes under your back when the arm reaches? Does your left shoulder blade slide? Does your ribcage roll a little? Does the reach travel into your neck, your jaw, your pelvis, or not at all? Is the returning phase clear, or do you drop back quickly?
+
+Rest with both arms down.
+
+Now do the same with the right arm. Reach the hand lightly toward the ceiling and return. Repeat several times, small and unhurried.
+
+Notice whether the two sides organize differently. One may feel longer, shorter, smoother, more familiar, more awkward, or simply less knowable. Another person would likely have a different experience. The value here is not in matching anyone else, but in becoming more specific about your own pattern.
+
+Rest again with both arms down. Feel the floor under your shoulder area and upper back now.
+
+**Unit 4: Sliding one heel**
+
+If your legs are bent, keep them bent for this unit. If your legs are long, that is also fine.
+
+Choose the left leg. Slowly slide the left heel a short distance away from you and then back, as if lengthening and unlengthening the leg along the floor. Keep the movement small enough that you can notice the rest of yourself. Repeat several times.
+
+As the heel slides, what happens in your pelvis? Does one side seem to travel sooner than the other? Does your lower back become heavier, lighter, broader, narrower? Does the movement stay local to the leg, or echo upward into your ribs or shoulders?
+
+Pause and rest.
+
+Then do the same with the right heel. Slide it away a little and return. Repeat several times.
+
+Notice whether one side pushes, while the other glides. Does one foot seem clearer on the floor? Does your breath change on one side more than the other?
+
+Rest with both legs quiet. Give yourself a moment to sense the back of your pelvis and the length of your legs without deciding what should be symmetrical.
+
+**Unit 5: Looking across yourself**
+
+Return your arms to an easy place. This time, let your head turn a little to the left while at the same time your right heel slides a little away from you, then both return. Make it slow enough that the two actions can be noticed together. Repeat a few times.
+
+Then rest.
+
+Now turn your head a little to the right while your left heel slides a little away, then return both. Repeat a few times.
+
+These paired movements may feel simple on one diagonal and strange on the other. They may also feel similar. There is no correct result. You may notice that one pairing invites more rolling through your middle, or that one side of your back becomes more legible against the floor.
+
+Come back to stillness.
+
+**Rest and integration**
+
+Lie quietly for a minute or two.
+
+Notice the whole shape of your contact with the floor now. Has your sense of your back become more detailed? Are there places that feel wider, narrower, heavier, lighter, nearer, farther, warmer, cooler, calmer, busier? Is the difference obvious, subtle, or uncertain?
+
+You do not need to conclude that one state is better than another. The point is that your picture of yourself may now be less vague. Even noticing “I can’t tell yet” is a real observation.
+
+Let your breathing be natural. Feel how the floor receives you without needing you to arrange yourself.
+
+**Closing**
+
+Before getting up, take one last quiet inventory from head to feet. Notice the contact of your head, shoulders, ribs, pelvis, legs, and heels or feet. If something feels changed, let that be true. If nothing feels changed, let that be true too.
+
+When you are ready to leave the floor, bend your knees if they are not already bent. Roll slowly onto one side and pause there with your head resting on your arm or the floor. Notice how it feels to no longer be on your back.
+
+Then use your hands to help yourself come up to sitting. Move without hurry. As you sit, you do not need to hold onto any special posture. Simply notice what sitting feels like now, after having spent time sensing yourself from the ground.
