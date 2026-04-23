@@ -1,0 +1,28 @@
+archive_id: 040-pre-L-SESSION-LOG
+originating_session: pre-040
+originating_path: SESSION-LOG.md
+migrated_in_session: 040
+kind: over-budget-annotation
+total_bytes: 67917
+total_words: 7993
+chunk_count: 1
+chunk_boundary_rule: single-file
+source_hash_sha256: cefd8e49e7dd6c3b36067dfd269a0008a7ba473b8ba61ce0fab80f0bb87d83aa
+chunks:
+  - ordinal: 1
+    file: 00-source.md
+    line_range: "1-47"
+    chunk_hash_sha256: cefd8e49e7dd6c3b36067dfd269a0008a7ba473b8ba61ce0fab80f0bb87d83aa
+readers_note: |
+  Pre-Session-040 SESSION-LOG.md preserved verbatim before Path L preemptive
+  restructure. Content grew past the thin-index discipline re-established by
+  Session 022 R8a, accreting multi-cell multi-sentence rows (particularly
+  Sessions 028/032/033/034/036/037/038) that pushed the file to 7,993 words
+  (7 words under the 8,000 hard ceiling). Session 040 D-123 compressed rows
+  back to the single-sentence discipline stated in the file header and in
+  `specifications/workspace-structure.md` v5 §SESSION-LOG.md. Canonical
+  per-session detail already lives in each `provenance/NNN-title/03-close.md`
+  per `specifications/read-contract.md` v4 §1; no decision-surface
+  information is lost — this archive is the byte-identical witness to the
+  pre-restructure form. Analogous to Session 022 R8a pre-R8a-SESSION-LOG
+  archive-pack.
