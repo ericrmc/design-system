@@ -4,7 +4,7 @@ version: 4
 status: active
 created: 2026-04-17
 last-updated: 2026-04-23
-updated-by-session: 027
+updated-by-session: 030
 supersedes: workspace-structure-v3.md
 ---
 
@@ -81,7 +81,7 @@ Both files are revisable under the methodology's spec-revision discipline (signi
 
 A thin one-line-per-session index for quick orientation. Each entry is one Markdown table row containing the session number, date, title, and a one-sentence summary of the decision surface. The canonical detail for each session lives in its provenance `03-close.md` file; the SESSION-LOG entry is an index over that detail, not a replacement.
 
-SESSION-LOG.md is default-read surface per `specifications/read-contract.md` §1 and must satisfy the default-read per-file budget (currently 15,000 words hard ceiling, 10,000 words soft warning). A long-form per-session summary that would push SESSION-LOG.md over budget belongs in `03-close.md`, not in SESSION-LOG. This file is updated at the close of each session.
+SESSION-LOG.md is default-read surface per `specifications/read-contract.md` §1 and must satisfy the default-read per-file budget (currently 8,000 words hard ceiling, 6,000 words soft warning). A long-form per-session summary that would push SESSION-LOG.md over budget belongs in `03-close.md`, not in SESSION-LOG. This file is updated at the close of each session.
 
 The post-Session-022 thin-index form replaces the pre-Session-022 variable-length-summary form per Session 022 R8a; the pre-Session-022 SESSION-LOG content is preserved in `provenance/022-workspace-scaling-trajectory/archive/pre-R8a-SESSION-LOG/` as an archive-pack witness.
 
