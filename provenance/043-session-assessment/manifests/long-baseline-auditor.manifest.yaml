@@ -1,0 +1,31 @@
+perspective: long-baseline-auditor
+participant_kind: claude-subagent
+participant_identity: claude-subagent-via-anthropic-agent-tool-explore
+model_family: claude
+model_id: unknown
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator-043
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/043-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/043-session-assessment/01c-perspective-long-baseline-auditor.md
+transport_notes: Spawned via Claude Code Agent tool subagent_type=Explore (reading-specialized subagent variant); shared brief read from workspace path; role stance supplied in agent invocation prompt. Archive-surface reads performed for Sessions 021/027/028/036/041 close files + OI-004 retrospective. Subagent did not self-commit (correct subagent discipline).
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown
+independent_claim: "Empirical quantification across the engine's full 42-session history: Path-A concentration is an epoch-specific pattern (47% post-engine-v4 Sessions 024–042 vs 0% pre-engine-v4 Sessions 001–023). Six major vindication events occurred across Sessions 027–041. Cross-sectional drift patterns (SESSION-LOG accretion S022; OI-004 claimed-edit gap S035; aggregate growth curve S023–S027) are systematically invisible to single-session self-audits. Operator's framing is correct with one caveat (concentration emerged post-v4 and may be self-stabilizing after major deliberations rather than monotonically expanding) and one addition (cross-sectional drift requires multi-session or archive-surface reading to surface)."
+independent_claim_evidence_pointer: provenance/043-session-assessment/01c-perspective-long-baseline-auditor.md

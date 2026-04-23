@@ -1,0 +1,31 @@
+perspective: outsider
+participant_kind: claude-subagent
+participant_identity: claude-subagent-via-anthropic-agent-tool
+model_family: claude
+model_id: unknown
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator-043
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/043-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/043-session-assessment/01d-perspective-outsider.md
+transport_notes: Spawned via Claude Code Agent tool subagent_type=general-purpose; shared brief read from workspace path; role stance supplied in agent invocation prompt; Outsider-role historical pattern briefly described (S017 H4; S022 workspace-scaling; S028 laundering-the-activation; S036 MODE.md; S041 source-text-primacy). Subagent self-committed its perspective file at commit 3f829d3 during its run (WX-43-1 forward observation).
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown
+independent_claim: "Reframes the phenomenon from 'path-selection bias' to 'warrant-surface closure against operator-frame observations' — an asymmetry hidden by the 'sparse by design' framing. The engine's warrant surface is dense against engine-internal trajectories (section 5 firings, budget thresholds, retention windows) and sparse against operator-frame observations (which route via Case-Steward discretion as Path-PD-class per S036 precedent, not via spec). The engine has a recogniser for work-shapes but no generator. §5.3 diagnosis generalises beyond OI-004 to other extending-firing-condition warrants (WX-28-1, §10.4-M1/M2/M5, OI-002 accumulation); discharge-as-vindicated is complete for §5.3-as-OI-004-warrant, incomplete as methodology observation. Adds missing fifth output category: spec-level enlargement of warrant surface via a new operator-input class."
+independent_claim_evidence_pointer: provenance/043-session-assessment/01d-perspective-outsider.md

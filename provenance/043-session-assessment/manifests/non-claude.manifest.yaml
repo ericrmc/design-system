@@ -1,0 +1,31 @@
+perspective: non-claude
+participant_kind: non-anthropic-model
+participant_identity: google-gemini-via-gemini-cli
+model_family: gemini
+model_id: unknown
+model_version: gemini-cli-0.38.1-default
+provider: google
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: session-orchestrator-043
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/043-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/043-session-assessment/01e-perspective-non-claude.md
+transport_notes: "Invoked via `gemini --approval-mode yolo --prompt \"$(cat provenance/043-session-assessment/gemini-prompt.txt)\"` with role prompt delivered as stdin via command-line argument substitution. Gemini CLI version 0.38.1 (Homebrew). The `--approval-mode yolo` flag was used to permit the single output-file write; all other tool invocations during the run are not audited; the deliverable file is the perspective's output. Prompt file preserved at provenance/043-session-assessment/gemini-prompt.txt; raw output captured at provenance/043-session-assessment/gemini-raw-output.log. First non-GPT non-Claude lineage exercise in this workspace's history. §5.6 reopen-warrant (ii) cast as operational data point on vindication side (literal discharge at S043 close; spirit-level question of sustained exercise recorded as forward observation for S046 close re-examination)."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: google
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+independent_claim: "As the first non-Claude non-GPT lineage participant in this workspace, independently verified operator's numerical claim on Path-A concentration and diagnosed 'self-reinforcing loop' as a structural bias embedded in the engine's high-activation-energy triggers. Observational metrics are (d) both evidence of discipline working AND evidence of discipline deferring simultaneously, with a dangerous temporal skew — short-term stability reads as stasis in the long term. Proposes state-decay/pressure trigger on closable/articulated OI state after X sessions as a concrete forward-mechanism. Mere participation demonstrates that the engine's default reasoning fails to self-correct for lineage-blindness until an external observer (operator) surfaces the agenda — the §5.6 reopen-warrant (ii) vindication-side data point is delivered."

@@ -1,5 +1,8 @@
 ---
 session: 043
+title: Perspective 4 (Outsider) raw output — reframe path-selection bias to warrant-surface closure against operator-frame observations; engine has recogniser not generator; distribution-property-triggered cross-sectional audit; fifth missing output category spec-level enlargement of warrant surface
+date: 2026-04-24
+status: perspective-raw-output
 perspective: Outsider
 perspective_index: 4
 lineage: claude

@@ -1,0 +1,31 @@
+perspective: work-shape-proposer
+participant_kind: claude-subagent
+participant_identity: claude-subagent-via-anthropic-agent-tool
+model_family: claude
+model_id: unknown
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator-043
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/043-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/043-session-assessment/01a-perspective-work-shape-proposer.md
+transport_notes: Spawned via Claude Code Agent tool subagent_type=general-purpose; shared brief read from workspace path; role stance supplied in agent invocation prompt. Subagent self-committed its perspective file at commit eb345ae during its run (WX-43-1 forward observation).
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown
+independent_claim: "Distinguishes gate-sparsity (path-selection discipline) from channel-diversity (shapes that generate work); argues the engine's channels have quieted simultaneously, concentrating generative pressure into operator-surfaced agendas. Offers eight candidate work-shapes with defect/feature/indeterminate classification. Unique contribution: zero-event metrics are about the engine's metabolism, not output — 'a dead engine and a disciplined engine produce the same metric readings.' Proposes concrete Rejected-alternatives analog convention."
+independent_claim_evidence_pointer: provenance/043-session-assessment/01a-perspective-work-shape-proposer.md

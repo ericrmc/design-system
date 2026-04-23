@@ -1,5 +1,8 @@
 ---
 session: 043
+title: Perspective 1 (Work-Shape Proposer) raw output — gate-sparsity vs channel-diversity distinction; eight candidate work-shapes with defect/feature/indeterminate classification; explicit rejection of evolutionary-increments-without-warrant as feature
+date: 2026-04-24
+status: perspective-raw-output
 perspective: Work-Shape Proposer
 perspective_index: 1
 lineage: claude

@@ -1,0 +1,31 @@
+perspective: path-selection-defender
+participant_kind: claude-subagent
+participant_identity: claude-subagent-via-anthropic-agent-tool
+model_family: claude
+model_id: unknown
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator-043
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/043-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/043-session-assessment/01b-perspective-path-selection-defender.md
+transport_notes: Spawned via Claude Code Agent tool subagent_type=general-purpose; shared brief read from workspace path; role stance supplied in agent invocation prompt. Subagent did not self-commit (correct subagent discipline; orchestrator commits at session close).
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown
+independent_claim: "Sparsity of warrant-firing is not a defect but the load-bearing consequence of a preservation-as-default architecture; adopting any of the operator's four output shapes (periodic audit, required rejected-paths, spec-encoded work-shape recognition, mechanism revision) would convert a working discipline into a laundering surface. Pre-registration argument on metrics (WX-24-1 ex ante, WX-28-1 adversarial-to-§5.9, §10.4-M falsifiable windows) avoids the self-referential trap. None of the four seed shapes is grounded in operational evidence that the current mechanism has actually failed at something it was responsible for surfacing."
+independent_claim_evidence_pointer: provenance/043-session-assessment/01b-perspective-path-selection-defender.md
