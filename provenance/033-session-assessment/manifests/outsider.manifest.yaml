@@ -1,0 +1,32 @@
+perspective: Outsider
+participant_kind: non-anthropic-model
+participant_identity: OpenAI GPT-5.4 via codex-cli 0.121.0 `codex exec` (ChatGPT account; default-model routed to gpt-5.4 after first attempt with explicit --model gpt-5 rejected)
+model_family: gpt-5
+model_id: gpt-5.4
+model_version: gpt-5.4
+provider: openai
+endpoint: codex-cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+  reasoning_effort: xhigh
+  sandbox: read-only
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: ericrmc@gmail.com
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/033-session-assessment/01-brief-shared.md content (§1–§3, §5, §6 + §4d role-specific stance) delivered as stdin to codex exec via /tmp/outsider-brief-033.txt intermediate file
+delivered_at: 2026-04-23T00:00:00Z
+received_at: 2026-04-23T00:00:00Z
+raw_response_file: provenance/033-session-assessment/01d-perspective-outsider.md
+transport_notes: First codex invocation with explicit `--model gpt-5` rejected by ChatGPT-account routing with error "The 'gpt-5' model is not supported when using Codex with a ChatGPT account." Retry with default model succeeded; codex resolved default to gpt-5.4. Codex session id 019db932-2f2b-7b01-9471-02c5fd591dbb recorded in response metadata (preserved as HTML comment in 01d-perspective-outsider.md). Response body extracted from full codex output via `awk '/^codex$/{flag=1; next} flag'` to isolate response from echoed brief. No body edits post-submission.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: known-no
+training_lineage_evidence_pointer: "unknown-but-asserted"
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct

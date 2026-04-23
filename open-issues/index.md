@@ -20,7 +20,7 @@ This file is the default-read surface entry point per `specifications/read-contr
 | [OI-013](OI-013.md) | Non-file external artefacts | Session 009 | Open — monitor; no activation trigger fired |
 | [OI-014](OI-014.md) | Domain-actor receipt shape variance | Session 009 | Open — monitor; interdependent with OI-016 |
 | [OI-015](OI-015.md) | Laundering enforcement gap in domain reading | Session 011 | Open — Session 024 is positive exercise (6th) |
-| [OI-016](OI-016.md) | Domain-validation pathway under user unavailability | Session 013 | **Open — pending kernel §7 revision per §9 trigger 7 firing at Session 032 PD-A REJECT**; counter advanced 1-of-2 → 2-of-2 (Session 018 D2 + Session 032 PD-A); kernel §7 revision deliberation required Session 033 |
+| [OI-016](OI-016.md) | Domain-validation pathway under user unavailability | Session 013 | **Resolved — provisionally-v2** (Session 033 per D-106/D-107/D-108; kernel v5→v6 + reference-validation v2→v3 substantive; engine-v5→v6; re-opens on (a) §9 trigger 7 re-fire at n=3 / (b) label-discipline violation / (c) scope-reversal); counter at 2-of-3 (Session 018 + 032) |
 | [OI-018](OI-018.md) | Revisit engine-manifest.md §5 bump-trigger criteria | Session 023 | Open — deferred; §5.4 cadence minority activated Session 023 (activated-not-escalated; R9 window aged out Session 026; §5.4 not re-escalated by Session 028 engine-v5 bump per 3-of-4 convergence) |
 
 Active count: **13** (OI-016 is hybrid-state: in the resolved table and carrying active triggers; kept in active list for operational reachability).

@@ -1,0 +1,39 @@
+session: 033
+deliberation_purpose: Kernel §7 revision per reference-validation.md v2 §9 trigger 7 mandate; activates Session 014 §10.1 Skeptic "provisional substitute" framing minority as required revision direction.
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+oi004_qualifying_participants: [Outsider]
+
+participants:
+  - perspective: Outsider
+    manifest: manifests/outsider.manifest.yaml
+    raw_output: 01d-perspective-outsider.md
+    shape: perspective
+    role: non-Claude cross-family auditor per §4d stance
+  - perspective: Reviser
+    manifest: manifests/reviser.manifest.yaml
+    raw_output: 01a-perspective-reviser.md
+    shape: perspective
+    role: concrete-revision integrator per §4a stance
+  - perspective: Skeptic-preserver
+    manifest: manifests/skeptic.manifest.yaml
+    raw_output: 01b-perspective-skeptic.md
+    shape: perspective
+    role: adversarial (argue for minimal revision; defend v5 stability) per §4b stance
+  - perspective: Synthesiser
+    manifest: manifests/synthesiser.manifest.yaml
+    raw_output: 01c-perspective-synthesiser.md
+    shape: perspective
+    role: system-level coherence per §4c stance (perspective role, not the session's synthesis-writer)
+
+synthesis_file: 01-deliberation.md
+synthesis_order: alphabetical by role name (Outsider → Reviser → Skeptic-preserver → Synthesiser) per MAD v4 §Synthesis synthesis-order-anchoring rule
+
+brief:
+  shared_brief_file: 01-brief-shared.md
+  brief_immutability: committed before perspective invocation; not edited during deliberation
+  role_specific_diff: §4a / §4b / §4c / §4d blocks; shared sections §1 / §2 / §3 / §5 / §6 byte-identical across perspectives
+
+mechanical_cross_family_invocation: []
+# No mechanical cross-family invocation this session (no Cell 1 L1a/L1b saturation testing; this session is kernel-revision deliberation not reference-validation Cell 1 exercise).

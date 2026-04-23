@@ -1,11 +1,12 @@
 ---
 title: Methodology Kernel
-version: 6
-status: active
+version: 5
+status: superseded
 created: 2026-04-17
-last-updated: 2026-04-23
-updated-by-session: 033
-supersedes: methodology-kernel-v5.md
+last-updated: 2026-04-22
+updated-by-session: 022
+supersedes: methodology-kernel-v4.md
+superseded-by: methodology-kernel.md (v6)
 ---
 
 # Methodology Kernel
@@ -97,7 +98,7 @@ Artifacts should be produced to the standard defined in their respective specifi
 
 #### 7. Validate
 
-Validate the session's output at each level on which it makes claims. Three senses apply: two primary (Workspace, Domain) and one provisional substitute (Provisional reference substitute).
+Validate the session's output at each level on which it makes claims. Three senses apply.
 
 **Workspace validation** applies to every session. Check that:
 - New specifications don't contradict existing ones
@@ -107,11 +108,9 @@ Validate the session's output at each level on which it makes claims. Three sens
 
 **Domain validation** applies when a session produces or revises an artefact intended for use outside the workspace and a domain-actor is available. Obtain evidence from the domain-actor who holds the problem the artefact addresses — the user of a sequence, the reader of a specification, the participant in a process, or an equivalent — that the artefact functioned for its intended use. Record who performed the validation, what was tried, what happened, and whether modifications were requested. Domain validation may complete out-of-session; when it does, the receiving session records the report and decides whether it triggers revision.
 
-**Provisional reference substitute** (formerly "Reference validation" at v5 and earlier) applies when a session produces an external-intent artefact and no domain-actor is available. It is a *provisional substitute* for Domain validation, not an equal-but-distinct third sense of validation. A reference-validation exercise — the procedure by which the substitute is produced — pairs the methodology's Produce step (run blind against a staged constraint tranche set whose emergent constraints surface during the run) with comparison against a pre-selected documented proven solution the Produce agents do not see. The exercise runs across a small number of sessions in a sealed three-cell protocol (Curation, Produce, Validation) specified in `specifications/reference-validation.md`. The exercise records constraint-satisfaction, structural correspondence, cross-model divergence, and a contamination audit. Any citation of reference-provisional evidence as support for a methodology-level claim must accompany the citation with at least one named contamination or scope-limitation risk (per `reference-validation.md` §8 label discipline).
+**Reference validation** applies when a session produces an external-intent artefact and no domain-actor is available. A reference-validation exercise pairs the methodology's Produce step (run blind against a staged constraint tranche set whose emergent constraints surface during the run) with comparison against a pre-selected documented proven solution the Produce agents do not see. The exercise runs across a small number of sessions in a sealed three-cell protocol (Curation, Produce, Validation) specified in `specifications/reference-validation.md`. The exercise records constraint-satisfaction, structural correspondence, cross-model divergence, and a contamination audit.
 
-**Scope and citation discipline for Provisional reference substitute.** Reference-provisional evidence is qualified by the candidate's saturation profile. It supplies evidence about the methodology's capacity to derive an artefact under stated constraints **only to the extent that the reference is not recoverable from shared pretraining corpora across the Produce and judging families.** It does not establish that the artefact functioned in its intended use. It does not substitute for Domain validation when a domain-actor is available. A passing reference-provisional result in a domain where cross-family-symmetric reproduction was observed at any stage of `reference-validation.md` §1 C3 is not methodology-level evidence; it is at most methodology-consistent evidence. A reference-provisional artefact MAY be cited as methodology-capacity evidence. It MUST NOT be cited as evidence of domain function. It MUST carry the `validation: reference-provisional` label; label transition to `validation: domain-validated` occurs only upon subsequent Domain validation. When a domain-actor later becomes available, Domain validation supersedes and the artefact's label transitions.
-
-**Label grandfathering.** Artefacts produced under kernel v3/v4/v5 (Sessions 009–032) that carry `validation: reference-validated` in frontmatter are semantically-equivalent-to `validation: reference-provisional` for citation purposes; no retroactive rewriting of sealed session records. New artefacts produced from engine-v6 adoption onward use the `validation: reference-provisional` label.
+**Reference validation supplies evidence about the methodology's capacity to derive artefacts under stated constraints. It does not establish that the artefact functioned in its intended use. It does not substitute for Domain validation when a domain-actor is available.** Artefacts passing reference-validation carry the label `validation: reference-validated` in frontmatter and retain that scoping in any later citation.
 
 If any validation reveals problems, they are either fixed in this session (return to Produce) or recorded as open issues for subsequent sessions.
 

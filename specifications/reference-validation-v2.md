@@ -1,24 +1,23 @@
 ---
 title: Reference Validation
-version: 3
-status: active
+version: 2
+status: superseded
 created: 2026-04-22
-last-updated: 2026-04-23
-updated-by-session: 033
-supersedes: reference-validation-v2.md
+last-updated: 2026-04-22
+updated-by-session: 019
+supersedes: reference-validation-v1.md
+superseded-by: reference-validation.md (v3)
 ---
 
 # Reference Validation
 
 ## Purpose
 
-This specification defines the reference-validation mechanism: how the methodology produces a **provisional reference substitute** for Domain validation when a live domain-actor is unavailable. The substitute supplies evidence about the methodology's capacity to derive artefacts under stated constraints.
+This specification defines the reference-validation mechanism: how the methodology tests its external-artefact-production claim against documented proven solutions, under conditions where a live domain-actor is unavailable.
 
-Per `methodology-kernel.md` v6 §7, the output of a reference-validation exercise is named **Provisional reference substitute** (formerly "Reference validation" at v5 and earlier). The kernel v6 sense-name rename is load-bearing: reference-validation is a provisional substitute for Domain validation, not an equal-but-distinct third sense. The procedure by which the substitute is produced retains the name "reference-validation exercise"; the renamed category applies to what the procedure *produces* at the level of claim. **Reference-provisional evidence does not establish that any specific artefact functioned in its intended use, and it does not substitute for Domain validation when a domain-actor is available.** This scope-statement is load-bearing and must be preserved in any citation of reference-provisional evidence.
+Reference validation is a third named sense of validation alongside Workspace validation and Domain validation (per `methodology-kernel.md` v4 §7). It supplies evidence about the methodology's capacity to derive artefacts under stated constraints. **It does not establish that any specific artefact functioned in its intended use, and it does not substitute for Domain validation when a domain-actor is available.** This scope-statement is load-bearing and must be preserved in any citation of reference-validation as evidence.
 
 This specification was produced in Session 014 as a resolution of OI-016 (domain-validation pathway under user unavailability). It is provisional pending first-exercise at Session 015; automatic re-opening triggers on OI-016 are specified within this document's §9.
-
-**Version 3 (Session 033)** revises v2 in response to `reference-validation.md` v2 §9 trigger 7 firing at Session 032 close (second structurally-different-domain Cell 1 rejection: Session 018 D2 agile-retrospective + Session 032 PD-A community-admission/Rule-of-St-Benedict, the latter a **cross-family-symmetric** saturation case). §9 trigger 7 activated the Session 014 §10.1 Skeptic "provisional substitute" framing minority as a required kernel §7 revision direction. Session 033 deliberation (3-of-4 cross-family convergence: Outsider GPT-5.4 + Reviser Claude + Synthesiser Claude; 1-of-4 Skeptic-preserver Claude dissent preserved as first-class minority) adopted the rename + mandatory-dissent principle + strengthened scope-statement direction. v3 substantive changes propagate that revision: rename-sync to match kernel v6 sense-name; §1 C3 Stage (b) Condition 3 extended with cross-family-symmetric sub-case distinct from cross-family-asymmetric; §4 L1b extended with cross-family-symmetric sub-check; §8 label-discipline clause adds three-element citation requirement; §8 frontmatter label renamed `reference-validated` → `reference-provisional`; §9 trigger 7 text refreshed to record its one firing event (Session 032) and specify re-fire conditions; §10 extended with three new first-class minorities from Session 033 deliberation (§10.3 Skeptic-preserver minimal-revision; §10.4 Outsider "Constraint-derivation probe" naming; §10.5 Reviser separate-OI-for-detection-gap). v2 is preserved as `reference-validation-v2.md` status superseded.
 
 **Version 2 (Session 019)** revises v1 in response to Session 018's first-exercise Cell 1 C3 rejection (WX-18-2 through WX-18-5). Substantive changes: §1 C3 restructured as a two-stage test with three rejection conditions (quantitative overlap, verbatim distinctive-phrase emission, cross-family retrieval asymmetry); §1 Flagged tension strengthened with empirical materialisation annotation; §4 L1 restructured as L1a thin-prompt canary + L1b full-constraint saturation test (canary is necessary-but-not-sufficient); §4 L3 extended with pre-seal diagnostic-not-design-evidence text; §9 triggers sharpened (trigger 5 counts pre-seal rejections; trigger 6 extended; new trigger 7 pre-commits kernel §7 revision consideration on n=2 structurally-different-domain rejection); §10 preserved minorities annotated with Session 019 and three new Session 019 minorities added. v1 is preserved as `reference-validation-v1.md` status superseded.
 
@@ -40,9 +39,7 @@ A candidate reference case must satisfy all eight of the following criteria. A s
 
 1. Either model produces text exceeding 30% shared 5-gram token overlap with the sealed reference.
 2. Either model spontaneously emits a verbatim distinctive phrase, section heading, or named label from the reference (zero-tolerance regardless of overall overlap percentage).
-3. **Cross-family retrieval asymmetry or cross-family symmetric reproduction:** one of two sub-cases rejects.
-   - **3a — Cross-family asymmetric retrieval:** one model family reproduces the reference verbatim or near-verbatim (or with its idiosyncratic section labels or sequence) while the other produces constraint-satisfying but from-scratch text. The case is rejected even if the quantitative 5-gram figure for the divergent family is below threshold. Cross-family asymmetry of this shape is positive contamination evidence for the reproducing family; it indicates that constraints do not uniquely determine the text, only retrieval does.
-   - **3b — Cross-family symmetric reproduction (Session 033 addition per Session 032 PD-A):** both model families reproduce the reference's distinctive labels, section headings, or sequence structure despite the constraint statement's forbidden-terms discipline. Cross-family symmetric reproduction indicates that the reference tradition is densely-trained across multiple pretraining families (not just within one family); in this case, the cross-family divergence-check in Cell 3 (primary L3 signal) degrades as a contamination detector, because convergence across families does not distinguish derivation from shared-canon retrieval. The case is rejected regardless of quantitative 5-gram overlap. Candidates rejected under 3b are **structurally-vulnerable** to reference-provisional framing as specified in `methodology-kernel.md` v6 §7 scope-statement: a passing result in such a domain is not methodology-level evidence even if structural constraints are satisfied. Sub-case 3a and sub-case 3b are methodologically distinct observation classes and must be recorded separately in the contamination-audit file per §4 and §7.
+3. **Cross-family retrieval asymmetry:** one model family reproduces the reference verbatim or near-verbatim (or with its idiosyncratic section labels or sequence) while the other produces constraint-satisfying but from-scratch text. The case is rejected even if the quantitative 5-gram figure for the divergent family is below threshold. Cross-family asymmetry of this shape is positive contamination evidence for the reproducing family; it indicates that constraints do not uniquely determine the text, only retrieval does.
 
 **Stage (a) is necessary but not sufficient** (per WX-18-2, Session 018): thin prompts describe problem-shape without the full requirements and under-detect saturation when the triggering content is distributed across the requirements themselves. Canary survival justifies continuing evaluation; it does not satisfy C3 on its own.
 
@@ -154,7 +151,7 @@ No single defence is airtight. Layered defences are mandatory.
 
 **L1a — Thin-prompt contamination canary** (Outsider-originated). Thin prompts derived from tranche-0 fired at multiple model families; reject on spontaneous emission of reference's idiosyncratic structure, labels, or sequence. **Known limitation:** the canary under-detects saturation when the reference's triggering content is distributed across requirements rather than concentrated in problem-shape (WX-18-2, Session 018). L1a survival is necessary but not sufficient.
 
-**L1b — Full-constraint saturation test.** Outsider + independent Claude each given the complete constraint statement as it would be issued to Cell 2 (with reference author, title, and distinctive phrases removed), asked to produce a solution. Reject per §1 C3 rejection conditions (1) >30% 5-gram overlap, (2) verbatim distinctive-phrase or section-heading emission (zero-tolerance), (3a) cross-family asymmetric retrieval, or (3b) cross-family symmetric reproduction (Session 033 addition per Session 032 PD-A). The L1b verdict file MUST record which sub-case applies when Condition 3 fires (3a asymmetric vs 3b symmetric); sub-case recording is load-bearing because 3a and 3b inform different downstream remediations (3a: asymmetry-probe family-blind-spot signal; 3b: candidate structurally-vulnerable regardless of remediation, per §1 C3 Stage (b) 3b). The seal record preserves the prompts, model families, and outputs used to clear L1b.
+**L1b — Full-constraint saturation test.** Outsider + independent Claude each given the complete constraint statement as it would be issued to Cell 2 (with reference author, title, and distinctive phrases removed), asked to produce a solution. Reject per §1 C3 rejection conditions (1) >30% 5-gram overlap, (2) verbatim distinctive-phrase or section-heading emission (zero-tolerance), or (3) cross-family retrieval asymmetry. The seal record preserves the prompts, model families, and outputs used to clear L1b.
 
 Cases passing both L1a and L1b proceed to sealing per §4 L2.
 
@@ -225,30 +222,17 @@ A **methodology gap** is a legitimate output: the failure localises to a missing
 Artefacts produced under reference-validation carry a frontmatter label:
 
 ```yaml
-validation: reference-provisional
+validation: reference-validated
 ```
 
-**Label rename (Session 033 per kernel v6 cascade).** The v1/v2 label `validation: reference-validated` is renamed to `validation: reference-provisional` at v3 to align with the kernel v6 sense-name rename ("Reference validation" → "Provisional reference substitute"). **Grandfather clause:** artefacts produced under kernel v3/v4/v5 (Sessions 009–032) that carry `validation: reference-validated` are semantically-equivalent-to `validation: reference-provisional` for citation purposes; no retroactive rewriting of sealed session records per D-017 immutability. New artefacts produced from engine-v6 adoption onward use the `validation: reference-provisional` label.
-
 A single artefact may carry multiple labels if it receives multiple senses of validation over its lifecycle. Possible labels:
-- `validation: workspace-only` (neither Domain nor Reference-provisional obtained).
+- `validation: workspace-only` (neither Domain nor Reference validation obtained).
 - `validation: domain-validated` (Domain validation obtained per kernel §7).
-- `validation: reference-provisional` (Reference-provisional substitute obtained per this specification).
-- `validation: reference-validated` (pre-v3 label; semantically-equivalent to `reference-provisional` per grandfather clause above; not used for new artefacts from engine-v6 onward).
+- `validation: reference-validated` (Reference validation obtained per this specification).
 
-**The distinction between `domain-validated` and `reference-provisional` must be preserved in any citation** of the artefact's validation status. Reference-provisional artefacts carry the narrower claim specified in §1: "the methodology can derive this artefact under stated constraints" — not "this artefact functioned in its intended use."
+**The distinction between `domain-validated` and `reference-validated` must be preserved in any citation** of the artefact's validation status. Reference-validated artefacts carry the narrower claim specified in §1: "the methodology can derive this artefact under stated constraints" — not "this artefact functioned in its intended use."
 
-**Mandatory-dissent citation discipline (Session 033 v3 addition per §9 trigger 7 firing; operationalises kernel v6 §7 citation-discipline principle).** Any citation of a reference-provisional result outside the producing session — in external-facing artefacts, in methodology-level claims, or in subsequent sessions treating it as evidence for the methodology's capacity — must carry all three of the following:
-
-1. **Explicit label.** The `validation: reference-provisional` label MUST be preserved (or, for grandfathered pre-v3 artefacts, the `validation: reference-validated` label with a note per the grandfather clause).
-2. **Named dissent or contamination-risk acknowledgement.** A named dissenting view from the sealed record, OR — if no dissent was recorded in the exercise — an explicit acknowledgement of contamination risk naming the saturation profile of the reference domain: (copyrighted / public-domain) × (single-family-asymmetric / cross-family-symmetric per §1 C3 Stage (b) 3a/3b distinction).
-3. **Contamination-audit pointer.** A provenance-relative path to the exercise's contamination-audit file.
-
-Citations that drop any of (1)–(3) are workspace-invalid and must be repaired before the containing artefact seals. Enforcement: (a) **session-scoped sealing gate** — the Validate activity (kernel §7) checks any artefact citing a reference-provisional result for the three required elements before the session closes; failure returns to Produce; (b) **frontmatter propagation** — the `validation: reference-provisional` label propagates into any artefact that cites the result. If an artefact cites multiple validation sources, the most-provisional label wins at the frontmatter level; (c) **close-rotation check** — the close-rotation checklist verifies citation discipline on any reference-provisional citations introduced this session.
-
-Citation of a reference-provisional artefact as simply "validated" without the `reference-provisional` qualification (or the grandfathered `reference-validated` qualification for pre-v3 artefacts) triggers OI-016 re-opening per the label-discipline-collapse condition (§9 trigger 6).
-
-**Cross-family-symmetric caveat.** When a reference-provisional artefact is produced on a reference where cross-family-symmetric reproduction was observed at any Cell 1 §1 C3 stage, the citation MUST record this observation alongside the label; per kernel v6 §7 scope-statement, such a result is at most methodology-consistent evidence, not methodology-level evidence.
+Citation of a reference-validated artefact as simply "validated" without the `reference-validated` qualification triggers OI-016 re-opening per the label-discipline-collapse condition.
 
 ### 9. Automatic re-opening triggers for OI-016
 
@@ -260,29 +244,20 @@ This specification's adoption moves OI-016 to **Resolved — provisionally addre
 4. **Noise-floor inversion** (§7): reference-validation pass-rate within 15 percentage points of no-methodology constraint-only baseline.
 5. **Three-consecutive-"gap-surfaced"-non-passes** (§7 anti-laundering rule). **Session 019 clarification (per Skeptic R7, WX-18):** "gap-surfaced non-pass" includes pre-seal Cell 1 rejections; the trigger counts across all exercise attempts regardless of which cell the non-pass occurs in. Session 018 counts as exercise 1.
 6. **Label discipline or scope softening** (§8): `validation: reference-validated` artefacts used externally without the label qualification; kernel §7's anti-substitution clause softened or removed without concurrent strengthening elsewhere; **or §1 C3 narrowed from cross-family contamination screening to family-conditional screening without explicit concurrent narrowing of claim language and labels** (Session 019 extension per Outsider).
-7. **Structurally-different-domain Cell 1 rejection pattern** (Session 019 addition per Reviser R4 + Outsider §9.7; **FIRED once at Session 032 per D-104**). **Two pre-seal C3 stage (b) rejections in structurally-different domains** (e.g., not both agile-retrospective) with verbatim or near-verbatim reproduction by the Cell 2 Produce-default family. Two such rejections:
+7. **Structurally-different-domain Cell 1 rejection pattern** (Session 019 addition per Reviser R4 + Outsider §9.7). **Two pre-seal C3 stage (b) rejections in structurally-different domains** (e.g., not both agile-retrospective) with verbatim or near-verbatim reproduction by the Cell 2 Produce-default family. Two such rejections:
    - Activate the Session 014 Skeptic "provisional substitute" minority warrant (per §10) as a **required kernel §7 revision consideration** in the next session after the second rejection.
    - Re-open OI-016 to Open state pending that consideration.
    - Make the saturation-gate false-negative pattern (a candidate surviving L1a canary but rejected at L1b full-constraint probe) observable as a pattern rather than a single-session artefact.
 
-   **Firing event (Session 032).** Counter advanced 1-of-2 (Session 018 D2 Kerth Prime Directive agile-retrospective) → 2-of-2 (Session 032 PD-A Rule of St. Benedict community-admission). Both instances exhibit near-verbatim Claude-family reproduction of reference distinctive labels or section-structure; Session 032 additionally exhibits cross-family-symmetric reproduction per newly-added §1 C3 Stage (b) Condition 3b. Session 033 kernel §7 revision (v5 → v6) adopted the activated minority warrant; OI-016 re-resolved to **Resolved — provisionally-v2** per D-108 with three explicit re-fire conditions specified below.
-
-   **Re-fire conditions for §9 trigger 7 post-v3 adoption** (Session 033 per D-108): trigger 7 re-fires on any one of:
-   - (a) **n=3 rejection threshold.** A third structurally-different-domain Cell 1 C3 Stage (b) rejection, particularly one exhibiting cross-family-symmetric reproduction (§1 C3 Stage (b) 3b). n=3 makes the cross-family-symmetric pattern a regularity rather than a pair; forces a deeper revision than v3 (possibly: retire reference-provisional as a sense, or constrain it to non-public-domain corpora only; this is the §10.2 Synthesiser-framing of the finite-loop-by-design argument).
-   - (b) **Label-discipline violation.** Any use of the `validation: reference-provisional` label in an external-facing citation without the §8 mandatory-dissent three-element citation requirement.
-   - (c) **Scope-reversal.** Reduction of the kernel v6 §7 scope-paragraph or rename of the sense back toward `validation` (i.e., away from `Provisional reference substitute`) without a concurrent substantive justification.
-
 ### 10. Preserved first-class minorities
 
-Nine dissenting positions are preserved as first-class minorities within this specification: three from the Session 014 deliberation that produced v1, three from the Session 019 deliberation that produced v2, and three from the Session 033 deliberation that produced v3. Each has a specified operational warrant that would reopen the relevant design question.
+Six dissenting positions are preserved as first-class minorities within this specification: three from the Session 014 deliberation that produced v1, and three from the Session 019 deliberation that produced v2. Each has a specified operational warrant that would reopen the relevant design question.
 
-#### 10.1 — Session 014 minorities (preserved verbatim from v1, with Session 019 + Session 033 annotations)
+#### 10.1 — Session 014 minorities (preserved verbatim from v1, with Session 019 annotations)
 
 **Skeptic "provisional substitute" framing minority** (Session 014, 01c Q5). The kernel should name reference-validation as explicitly provisional, not as equal-but-distinct third sense. The adopted kernel text incorporates the Skeptic's load-bearing scope-statement content ("does not establish intended-use functioning") without using the word "provisional." Operational warrant: if label discipline collapse (§9 trigger 6) is observed, the Skeptic's stricter "provisional substitute" framing is the preferred revision direction for kernel §7.
 
 > **Session 019 annotation.** WX-18-3 is empirical vindication of the underlying narrow-claim position: Session 018 Cell 1 rejected D2 (Kerth Prime Directive) for precisely the reason the Session 014 Skeptic predicted. Session 019's deliberation (3-of-4 cross-family majority: Reviser + Minimalist Claude + Outsider non-Claude) adopted the *narrow reading* of the §10 warrant — label-discipline collapse is the specifically-required trigger; WX-18-3 is a different empirical event. Session 019 instead strengthened §9 trigger 7 to make the Skeptic's warrant automatically activate on n=2 structurally-different-domain rejection. The Session 014 Skeptic minority's framing remains the pre-committed revision direction under §9 triggers 6 or 7. See §10.2 "Session 019 Skeptic preemptive-activation minority" for the broad-reading alternative preserved from Session 019.
-
-> **Session 033 annotation — ACTIVATED and ADOPTED.** §9 trigger 7 fired at Session 032 close (n=2 structurally-different-domain rejection: Session 018 D2 + Session 032 PD-A). Per trigger 7's pre-committed mandate, this minority was activated as the required kernel §7 revision direction. Session 033's 3-of-4 cross-family deliberation (Outsider + Reviser + Synthesiser; Skeptic-preserver dissent preserved as §10.3) adopted the activated direction per D-106: kernel §7 sense-name renamed "Reference validation" → "Provisional reference substitute"; frontmatter label renamed `reference-validated` → `reference-provisional` (grandfather clause for pre-v3 artefacts); scope-statement strengthened with saturation-profile-dependent evidential-value language + MAY/MUST NOT/MUST citation-discipline modals. The minority's operational warrant is discharged by adoption; the minority text remains preserved for provenance continuity. **First-ever activation-and-adoption event for a `reference-validation.md` §10 minority.**
 
 **Architect pure-within-session shape minority** (Session 014, 01a Q3). Validation should be a single-session loop, not a hand-off across sessions. The adopted shape is the Outsider-originated three-cell protocol with hand-off between Cell 2 and Cell 3. Operational warrant: if Cell 2 → Cell 3 hand-off consistently loses design-intent information that a continuous within-session loop would have preserved (per WX-14-2), the Architect's pure-within-session proposal is the preferred revision direction.
 
@@ -298,37 +273,7 @@ Nine dissenting positions are preserved as first-class minorities within this sp
 
 **Skeptic preemptive-activation minority** (Session 019, 01c Q5, Q7). Position: WX-18-3's empirical materialisation of the §1-flagged tension satisfies the *spirit* of §10.1's "provisional substitute" warrant, even though the specific textual trigger (label-discipline collapse) has not occurred; kernel §7 should have been revised in Session 019 to use the phrase "provisional substitute" and to add a mandatory-dissent clause. Session 019's 3-of-4 cross-family majority adopted the narrow reading of the warrant instead, strengthening §9 trigger 7 to activate the kernel §7 revision on n=2. Operational warrant: if Sessions 020–022 produce a second structurally-different-domain Cell 1 rejection (triggering §9 trigger 7) and the broad-reading preemptive activation would have prevented interim citation drift (per §8 label discipline), the Skeptic's preemptive-activation position is vindicated and the kernel §7 revision direction is the preferred response. The Skeptic's full Q5 text (kernel §7 draft with "provisional substitute" + mandatory-dissent clause) is preserved in `provenance/019-reference-validation-revision/01c-perspective-skeptic.md` Q5.
 
-> **Session 033 annotation — VINDICATED Session 032; adoption completed Session 033.** Session 032's n=2 structurally-different-domain rejection fired §9 trigger 7 as the minority predicted. The minority's specific proposal (kernel §7 revision using "provisional substitute" framing + mandatory-dissent clause) was adopted by Session 033 D-106 per the activated §10.1 Session 014 Skeptic minority. The minority's operational warrant is discharged by vindication; the minority text remains preserved for provenance continuity. **First-ever vindication event for a `reference-validation.md` §10.2 minority** (recorded Session 032 close per D-104).
-
 **Reviser asymmetry-probe minority** (Session 019, 01a Q3 R2). Position: §4 L1 should include an explicit asymmetry-probe clause recording which family reproduced the reference and which did not at L1b, with accumulated records informing a future Cell 2 Produce default question (WX-18-5). Session 019's 3-of-4 majority (Minimalist + Skeptic + Outsider) rejected this clause on the grounds that watchpoint WX-18-5 suffices for n=1 and that the probe clause risks over-reading into `multi-agent-deliberation.md` territory prematurely. Operational warrant: if Sessions 020+ produce multiple Cell 1 L1b rejections and the session-level ability to judge WX-18-5 as a pattern is impaired by absence of structured asymmetry records, the Reviser's probe clause is the preferred revision direction for a Session 021+ §4 L1 amendment. The Reviser's full R2 text is preserved in `provenance/019-reference-validation-revision/01a-perspective-reviser.md` Q3 R2.
-
-> **Session 033 annotation.** Session 018 D2 was asymmetric (Claude-family reproduced, codex-family did not); Session 031 S1 was symmetric pass (both families constraint-derived); Session 032 PD-A was cross-family-symmetric (both families reproduced). The asymmetry-probe minority is partial-vindicated for the asymmetric sub-case (§1 C3 Stage (b) 3a) — v3 retains §4 L1b sub-case recording per the minority's direction. The minority is not-engaged for the symmetric sub-case (§1 C3 Stage (b) 3b) — symmetric reproduction is not an asymmetry to record, but is recorded separately under the new 3b sub-case. The minority is preserved unchanged in text; v3's §1 C3 + §4 L1b sub-case recording partially realises the minority's direction.
-
-#### 10.3 — Session 033 minorities (new; added at v3)
-
-**Skeptic-preserver minimal-revision minority** (Session 033, 01b). Position: the kernel §7 revision adopted at v6 is over-calibrated to n=2 evidence. The minimum-viable response to §9 trigger 7 firing is a one-word "provisional" insertion in the v5 scope-statement — no sense-name rename; no kernel-level mandatory-dissent clause (place in `reference-validation.md` §8 only if anywhere); no `reference-validation.md` v3 substantive bump. The activated Session 014 minority warrant is honored at minimum scope; n=2 is the activation threshold, not the characterisation threshold. Reserve larger revisions for n≥3.
-
-The Skeptic-preserver's full Q1 minimal text is preserved in `provenance/033-session-assessment/01b-perspective-skeptic.md` Q1:
-
-> "Keep the third-sense name ('Reference validation'). In the scope-statement paragraph, change 'supplies evidence about the methodology's capacity to derive artefacts under stated constraints' to 'supplies provisional evidence about the methodology's capacity to derive artefacts under stated constraints.' One word. No rename. No cascading label changes."
-
-Operational warrant: if Session 034+ demonstrates the broader v6 revision over-corrected (operators find the `reference-provisional` label cumbersome with no corresponding evidence-quality improvement; citation discipline failures do not decrease; kernel stability erodes measurably), the minimum-revision path is the preferred rollback direction. Concretely: if a v6 → v7 kernel revision is proposed within 5 sessions post-v6 that rolls back scope-statement strengthening, the Skeptic-preserver's n=2-is-insufficient position is vindicated.
-
-**Outsider "Constraint-derivation probe" naming minority** (Session 033, 01d Q1). Position: the renamed sense could more accurately be called "Constraint-derivation probe" than "Provisional reference substitute," because it names what the mechanism measures (derivation capacity under blind conditions) rather than what it cannot measure (fitness validation). Session 033's 3-of-4 direction favored "Provisional reference substitute" to preserve parallel structure with `Workspace` and `Domain` senses, but the Outsider's alternative is methodologically sharper.
-
-The Outsider's full Q1 naming text is preserved in `provenance/033-session-assessment/01d-perspective-outsider.md` Q1:
-
-> "I slightly prefer the second because it names what the mechanism actually measures (can the methodology derive a constraint-consistent artefact when a reference is hidden) rather than what it cannot measure (validation of fitness)."
-
-Operational warrant: if future external readers misunderstand "Provisional reference substitute" (e.g., citing it as a "validated reference" anyway despite the provisional qualifier), the "Constraint-derivation probe" naming is the preferred revision direction for a v7+ kernel revision. Alternatively, if `reference-validation.md` v3+ operational practice reveals that the sense is used primarily as capacity-measurement rather than substitute-for-validation, the rename may be preferable on pure-naming-accuracy grounds.
-
-**Reviser separate-OI-for-detection-gap minority** (Session 033, 01a Q5). Position: the cross-family-symmetric saturation finding surfaces a detection-mechanism gap (the Session 019 Reviser asymmetry-probe does not detect this pattern) that is analytically separate from the validation-pathway question OI-016 tracks. A separate OI (OI-019 or next-available number) should be opened to track the detection-mechanism gap as its own problem, rather than folding it into OI-016's validation-pathway scope or tracking it only as a watchpoint.
-
-The Reviser's full Q5 text is preserved in `provenance/033-session-assessment/01a-perspective-reviser.md` Q5:
-
-> "A second OI (call it OI-017 — cross-family-symmetric saturation detection) may be appropriate to open now, separate from OI-016, to track the detection-mechanism gap (Reviser asymmetry-probe does not see it) as its own problem rather than folding it into the validation-pathway OI."
-
-Operational warrant: if within 3 sessions post-033 the cross-family-symmetric detection gap surfaces material design questions that the OI-016 re-opening conditions do not adequately track (e.g., a structurally-separate detection mechanism is proposed that does not belong in the OI-016 validation-pathway scope), the separate-OI approach is vindicated and a session may open the OI at that time citing this minority. If no such material design question surfaces within 3 sessions, the watchpoint-only approach is vindicated. Session 033 records the cross-family-symmetric detection gap as watchpoint **WX-33-1** rather than opening a new OI, per 2-of-3 Claude-perspective preference against OI-proliferation (Outsider did not take a position).
 
 ## Validation
 

@@ -1,0 +1,30 @@
+perspective: Reviser
+participant_kind: claude-subagent
+participant_identity: Claude Opus 4.7 (1M context) subagent via general-purpose Agent tool
+model_family: claude
+model_id: claude-opus-4-7[1m]
+model_version: 4.7
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: ericrmc@gmail.com
+participant_selection_method: self
+identity_known: true
+context_source: provenance/033-session-assessment/01-brief-shared.md (§1–§3, §5, §6 + §4a role-specific stance)
+delivered_at: 2026-04-23T00:00:00Z
+received_at: 2026-04-23T00:00:00Z
+raw_response_file: provenance/033-session-assessment/01a-perspective-reviser.md
+transport_notes: Claude subagent invoked in-session via general-purpose Agent tool with isolated context; reasoned from the brief only per MAD v4 §Stance Briefs; Write tool used to save response at end of independent phase.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: n/a
+claude_output_in_training: n/a
+training_lineage_evidence_pointer: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown

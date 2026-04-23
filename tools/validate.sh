@@ -961,16 +961,39 @@ if [[ ! -d "${archive_dirs[0]}" ]]; then
   echo ""
 else
   # Find archive references in all .md files under workspace (excluding .git)
+  # Session 033 D-108 Path L: iterate per-match via grep -HoE rather than
+  # per-line of grep -rn with inner grep -oE. The per-line approach
+  # concatenated multiple [archive:] tokens on a single source line into one
+  # invalid path (WX-27-1 greedy-regex sub-pattern observed Sessions 031-032;
+  # fired as validator FAIL at Session 033 open on the Session 032 close file's
+  # own §4b WX-27-1 meta-commentary line). The per-match loop correctly
+  # processes each [archive:] token independently regardless of how many
+  # appear on one source line.
   any_refs=false
   broken_refs=0
   while IFS= read -r line; do
-    file=$(echo "$line" | cut -d: -f1)
-    ref=$(echo "$line" | grep -oE '\[archive: [^]]+\]')
+    # grep -H output format: <path>:<match>. Split on FIRST colon only.
+    file="${line%%:*}"
+    ref="${line#*:}"
     path=$(echo "$ref" | sed -E 's/\[archive: ([^#]+)(#[^]]+)?\]/\1/' | tr -d '[:space:]')
-    # Skip placeholder references (documentation examples with angle brackets or
-    # the literal tokens "path" and "slug" used as generic placeholder text).
-    # These are spec-text illustrations, not real references.
-    if [[ "$path" == *"<"*">"* ]] || [[ "$path" == "path" ]]; then
+    # Skip placeholder references and meta-commentary illustrations.
+    # Real archive references resolve to paths starting with `provenance/`
+    # per read-contract.md v3 §2c and §6 citation convention. Any other
+    # shape (angle-bracket placeholders, literal "path"/"slug", ellipses,
+    # regex-character fragments like `[^`, truncated session-illustration
+    # paths like `018-/03-close.md`) is spec-text illustration or
+    # meta-commentary, not a real reference.
+    # Session 033 D-108 Path L: extended placeholder skip beyond the original
+    # angle-bracket + literal-"path" cases to cover the new failure modes
+    # surfaced when the per-match loop (vs per-line-of-grep-rn loop) began
+    # picking up previously-concatenated strings as individual tokens.
+    if [[ "$path" == *"<"*">"* ]] || [[ "$path" == "path" ]] || [[ "$path" == "slug" ]]; then
+      continue
+    fi
+    # Skip anything that is not provenance-rooted (real refs start with
+    # `provenance/`). Illustrative short forms like `018-/03-close.md` and
+    # regex-character fragments like `[^` are filtered out here.
+    if [[ "$path" != provenance/* ]]; then
       continue
     fi
     any_refs=true
@@ -991,7 +1014,7 @@ else
       fail "$rel_file — archive reference does not resolve: $path (tried $resolved_dir and $resolved_file)"
       broken_refs=$((broken_refs + 1))
     fi
-  done < <(grep -rn --include="*.md" --exclude-dir=".git" --exclude-dir=".claude" --exclude-dir=".serena" -E '\[archive: [^]]+\]' "$WORKSPACE_ROOT" 2>/dev/null || true)
+  done < <(grep -rHoE --include="*.md" --exclude-dir=".git" --exclude-dir=".claude" --exclude-dir=".serena" '\[archive: [^]]+\]' "$WORKSPACE_ROOT" 2>/dev/null || true)
 
   if ! $any_refs; then
     echo "  (no [archive: ...] references found in default-read files; check 22 in-scope but no references to validate)"
