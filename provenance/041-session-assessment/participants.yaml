@@ -1,0 +1,25 @@
+session: 041
+title: Session 041 OI-004 Closure-Retrospective Deliberation participants index
+deliberation_shape: single-deliberation-flat-layout
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+oi004_qualifying_participants: [outsider]
+
+participants:
+  - perspective: closure-advocate
+    manifest: manifests/closure-advocate.manifest.yaml
+    raw_output: 01A-perspective-closure-advocate.md
+  - perspective: closure-skeptic
+    manifest: manifests/closure-skeptic.manifest.yaml
+    raw_output: 01B-perspective-closure-skeptic.md
+  - perspective: retrospective-auditor
+    manifest: manifests/retrospective-auditor.manifest.yaml
+    raw_output: 01C-perspective-retrospective-auditor.md
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+    raw_output: 01D-perspective-outsider.md
+
+synthesizer: claude-opus-4-7-orchestrator
+synthesizer_kind: claude-orchestrator-not-perspective
+synthesis_file: 01-deliberation.md

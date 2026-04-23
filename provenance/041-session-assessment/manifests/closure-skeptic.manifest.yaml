@@ -1,0 +1,29 @@
+perspective: closure-skeptic
+participant_kind: claude-subagent
+participant_identity: claude-subagent-via-anthropic-agent-tool
+model_family: claude
+model_id: unknown
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator-041
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/041-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/041-session-assessment/01B-perspective-closure-skeptic.md
+transport_notes: Spawned via Claude Code Agent tool subagent_type=general-purpose; shared brief read from workspace path; role stance supplied in agent invocation prompt; adversarial stance preserves MAD §Perspectives adversarial-requirement.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown

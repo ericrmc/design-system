@@ -8,8 +8,7 @@ This file is the default-read surface entry point per `specifications/read-contr
 
 | OI | Title | Surfaced | Status |
 |----|-------|----------|--------|
-| [OI-002](OI-002.md) | Threshold for substantive revision vs. minor correction | Session 001 | Open — heuristic stable; 13th data point Session 028 |
-| [OI-004](OI-004.md) | Incorporating genuinely independent perspectives | Session 001 | **Articulated; awaiting closure-retrospective** (state 3/4 per MAD v4); tally 8-of-3; voluntary:required 12:9; criterion-3 cumulative 74 (Session 036 added five Outsider cross-lineage contributions) |
+| [OI-002](OI-002.md) | Threshold for substantive revision vs. minor correction | Session 001 | Open — heuristic stable; 16th data point Session 041 |
 | [OI-005](OI-005.md) | Sub-activities and work-type variants | Session 001 | Unblocked; W1 addressed Session 011; W4 addressed Session 009 |
 | [OI-006](OI-006.md) | Cross-references between specifications | Session 001 | Open — deferred until need arises |
 | [OI-007](OI-007.md) | Scaling the open issues format | Session 001 | Open — count 13; directory split adopted Session 022 per D-084 R8b |
@@ -23,7 +22,7 @@ This file is the default-read surface entry point per `specifications/read-contr
 | [OI-016](OI-016.md) | Domain-validation pathway under user unavailability | Session 013 | **Resolved — provisionally-v2** (Session 033 per D-106/D-107/D-108; kernel v5→v6 + reference-validation v2→v3 substantive; engine-v5→v6; re-opens on (a) §9 trigger 7 re-fire at n=3 / (b) label-discipline violation / (c) scope-reversal); counter at 2-of-3 (Session 018 + 032) |
 | [OI-018](OI-018.md) | Revisit engine-manifest.md §5 bump-trigger criteria | Session 023 | Open — deferred; §5.4 cadence minority activated Session 023 (activated-not-escalated; R9 window aged out Session 026; §5.4 not re-escalated by Session 028 engine-v5 bump per 3-of-4 convergence) |
 
-Active count: **13** (OI-016 is hybrid-state: in the resolved table and carrying active triggers; kept in active list for operational reachability).
+Active count: **12** (OI-016 is hybrid-state: in the resolved table and carrying active triggers; kept in active list for operational reachability).
 
 ## Resolved issues
 
@@ -31,6 +30,7 @@ Active count: **13** (OI-016 is hybrid-state: in the resolved table and carrying
 |----|-------|----------|---------|
 | [OI-001](resolved/OI-001.md) | Naming the methodology (Selvedge) | 2026-04-20 | 012 |
 | [OI-003](resolved/OI-003.md) | Automated validation | 2026-04-17 | 002 |
+| [OI-004](resolved/OI-004.md) | Incorporating genuinely independent perspectives | 2026-04-24 | 041 |
 | [OI-010](resolved/OI-010.md) | Cross-model or human participation mechanism | 2026-04-18 | 005 |
 | [OI-017](resolved/OI-017.md) | Engine-vs-methodology reframing | 2026-04-22 | 017 |
 

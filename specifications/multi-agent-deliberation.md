@@ -334,7 +334,7 @@ OI-004 may be considered for closure when all of the following hold:
 3. **Recorded impact.** The synthesis or decision records show that non-Claude input shaped at least one outcome — the cross-lineage-influence ratio (see Open Extensions) is non-zero.
 4. **Articulation.** A successor decision defines what "substantively different training provenance" means and enumerates acceptable participant kinds. Articulated Session 021 per D-082; see §Criterion-4 Articulation for OI-004 below.
 
-OI-004 is not automatically closed on meeting these criteria; a future session must deliberate and decide. "Closable" and "closed" are distinct states. The OI now has a four-state lifecycle (added v4); see §Closure Procedure for OI-004 below.
+OI-004 is not automatically closed on meeting these criteria; a future session must deliberate and decide. "Closable" and "closed" are distinct states. The OI now has a four-state lifecycle (added v4); see §Closure Procedure for OI-004 below. **OI-004 reached state 4 (Closed) at Session 041 per D-125** via the closure procedure below; see `open-issues/resolved/OI-004.md` for the closure record and `provenance/041-session-assessment/oi-004-retrospective.md` for the closure-retrospective artefact. Forward semantics of `d023_4` + clause 4 in the closed state are specified at the end of §Closure Procedure for OI-004 below.
 
 ### Criterion-4 Articulation for OI-004
 
@@ -425,7 +425,14 @@ The P4 Assertion explicitly cites at least one cross-lineage divergence-from-Cla
 
 (iv) **Sustained-practice forward commitment**: voluntary:required ratio (counted across non-Claude participation history) remains ≥1.0 at successor-session adjudication time. Drift below would be evidence the discipline weakened post-articulation.
 
-The Articulator's [01a, Q6] and Outsider's [01d, Q6] sub-option-(a) "close-on-articulation" positions are preserved as first-class minorities §5.2 and §5.3 in `provenance/021-oi004-criterion4-articulation/01-deliberation.md` with operational activation triggers including the Outsider's "indefinitely movable finish line" warrant.
+The Articulator's [01a, Q6] and Outsider's [01d, Q6] sub-option-(a) "close-on-articulation" positions are preserved as first-class minorities §5.2 and §5.3 in `provenance/021-oi004-criterion4-articulation/01-deliberation.md` with operational activation triggers including the Outsider's "indefinitely movable finish line" warrant. **Both §5.2 and §5.3 were discharged at Session 041 closure (D-125): §5.3 strongly vindicated; §5.2 partially vindicated.** See `open-issues/resolved/OI-004.md` Session 041 closure entry for disposition detail. **Session 041 closure preserved §5.6 (Skeptic + Outsider GPT-family-concentration joint minority)** as the new live minority with reopen warrants (i) external-review-cites-narrow-record and (ii) six-session-window-without-non-GPT-non-Claude-participation; see `provenance/041-session-assessment/01-deliberation.md §5.6` for detail.
+
+**Forward semantics of `d023_4` and `§When Non-Claude Participation Is Required` clause 4 after state 4 (Closed).** Per Session 041 D-125/D-126 and 4-of-4 cross-family convergence on the substantive reading (synthesis §2.6 + §3.4):
+
+- `d023_4` ("Asserts a change in the state of OI-004") in closed-state fires only on proposed state-changes to OI-004 — reopen, revise articulation, weaken or strengthen closure conditions. It does not fire on ongoing workspace monitoring, cross-model participation records, or tally observations after closure.
+- `§When Non-Claude Participation Is Required` clause 4 continues to apply in its narrowed closed-state form: non-Claude participation remains required for future attempts to reopen or materially revise the OI-004 settlement.
+- The criterion-4 articulation, acceptable-participant-kinds enumeration, and manifest schema additions remain active specification for all deliberations — not only for OI-004 tally advancement.
+- The §Limitations note remains load-bearing; specifically the clauses about shared Claude training distribution and single-non-Claude-participant narrowing.
 
 ### Interaction with Existing Decisions
 

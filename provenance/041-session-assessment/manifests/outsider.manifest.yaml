@@ -1,0 +1,30 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: openai-gpt-5.4-via-codex-exec
+model_family: gpt-5
+model_id: gpt-5.4
+model_version: codex-cli-0.121.0-default
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: session-orchestrator-041
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/041-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:25:34Z
+raw_response_file: provenance/041-session-assessment/01D-perspective-outsider.md
+transport_notes: Invoked via `codex exec --config model_reasoning_effort=high --skip-git-repo-check` with role prompt delivered as command-line argument. Codex CLI assigned model gpt-5.4 as the default (gpt-5 / gpt-5.1 rejected as unsupported for ChatGPT-account authentication). Reasoning effort high. Session id 019dbc04-102e-73f3-ae02-d784ef73bd98. Outsider performed pre-response workspace reads on the four synthesis files listed in the brief's Q2 instructions plus the shared brief; reads flagged with [workspace-read:] annotations in the response body per the Session 021 Outsider pattern. The raw response was captured via tee to /tmp/outsider-raw.txt and extracted from lines 1682-1766 (the codex CLI prints the response twice in its output stream; one verbatim copy preserved). Response body committed byte-identically to raw_response_file; no post-submission edits.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
