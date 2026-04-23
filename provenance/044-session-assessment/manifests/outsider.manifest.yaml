@@ -2,7 +2,7 @@ perspective: outsider
 participant_kind: non-anthropic-model
 participant_identity: openai-gpt-via-codex-exec-cli
 model_family: gpt
-model_id: gpt-5.4
+model_id: gpt-5.5
 model_version: unknown
 provider: openai
 endpoint: codex-exec-cli
@@ -19,7 +19,7 @@ context_source: provenance/044-session-assessment/01-brief-shared.md
 delivered_at: 2026-04-24T00:00:00Z
 received_at: 2026-04-24T00:00:00Z
 raw_response_file: provenance/044-session-assessment/01c-perspective-outsider.md
-transport_notes: "Invoked via `codex exec --sandbox read-only \"$(cat provenance/044-session-assessment/codex-outsider-prompt.txt)\" 2>&1 | tee provenance/044-session-assessment/codex-outsider-raw-output.log`. Raw-output log preserved at `codex-outsider-raw-output.log` (1407 lines); final markdown response extracted from lines 1212-1309 to 01c perspective file verbatim (no post-submission edit). Codex performed multiple intermediate file reads before producing final response. Codex reported 45,627 tokens used. Operator chose Codex over Gemini for P3 Outsider seat because Gemini is operationally weaker at substantive reasoning at present (operator R2 ratification); this is a two-family shape not the three-family shape originally proposed in the assessment."
+transport_notes: "Invoked via `codex exec --sandbox read-only \"$(cat provenance/044-session-assessment/codex-outsider-prompt.txt)\" 2>&1 | tee provenance/044-session-assessment/codex-outsider-raw-output.log`. Raw-output log preserved at `codex-outsider-raw-output.log` (1407 lines); final markdown response extracted from lines 1212-1309 to 01c perspective file verbatim (no post-submission edit). Codex performed multiple intermediate file reads before producing final response. Codex reported 45,627 tokens used. MODEL ID CORRECTION (operator-flagged mid-session after initial commit): codex exec CLI reports `model: gpt-5.5` in its startup metadata line in the raw-output log; earlier sessions' manifests (S005-S041) recorded `model_id: gpt-5.4` per the codex CLI output at their respective times; S028 recorded `gpt-5`. This is a model-version rolling upgrade in the codex CLI between S041 (2026-04-24 morning) and S044 (2026-04-24 afternoon), NOT an error in prior manifests. The S043 Path PSD assessment was authored with the historical pattern in mind and did not re-check codex CLI version at convening time. Forward observation for a future session: establish a convention that codex CLI model-version is verified at convening time (not copied forward from prior manifests); possibly extend the role/lineage matrix (M2 D-133) to include model-version refresh per convening. Initial commit 5e4e9df incorrectly carried model_id: gpt-5.4; corrected to gpt-5.5 in a post-initial-commit edit during this session per operator mid-session correction message. Operator chose Codex over Gemini for P3 Outsider seat because Gemini is operationally weaker at substantive reasoning at present (operator R2 ratification); this is a two-family shape not the three-family shape originally proposed in the assessment."
 output_edited_after_submission: false
 participation_shape: perspective
 participant_organisation: openai
