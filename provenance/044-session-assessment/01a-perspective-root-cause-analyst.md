@@ -1,5 +1,8 @@
 ---
 session: 044
+title: Perspective 1 (Root-Cause Analyst) raw output — Claude subagent; diagnostic causal-graph analysis; load-bearing deep causes Cause 6 (Outsider function implicitly articulated as role-stance-only not role-stance-plus-lineage) and Cause 7 (Case Steward single-agent at session-open with no adversarial voice at convening); operator's Causes 1/2/3 downstream manifestations; Causes 4/5 epiphenomenal to S043 split
+date: 2026-04-24
+status: perspective-raw-output
 perspective: Root-Cause Analyst
 perspective_index: 1
 lineage: claude

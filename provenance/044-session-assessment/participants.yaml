@@ -1,0 +1,35 @@
+session: 044
+title: Session 044 Path OC (Operator-Corrective) participants index — four-perspective two-family deliberation (2 Claude subagents + 2 Codex/GPT; Outsider seat = Codex per operator declared-position-not-for-deliberation "Claude is not an Outsider")
+deliberation_shape: single-deliberation-flat-layout
+participants_family: cross-family-two-lineages
+cross_model: true
+non_claude_participants: 2
+non_gpt_non_claude_participants: 0
+oi004_qualifying_participants: []
+
+participants:
+  - perspective: root-cause-analyst
+    manifest: manifests/root-cause-analyst.manifest.yaml
+    raw_output: 01a-perspective-root-cause-analyst.md
+  - perspective: mitigation-designer
+    manifest: manifests/mitigation-designer.manifest.yaml
+    raw_output: 01b-perspective-mitigation-designer.md
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+    raw_output: 01c-perspective-outsider.md
+  - perspective: cross-family-reviewer
+    manifest: manifests/cross-family-reviewer.manifest.yaml
+    raw_output: 01d-perspective-cross-family-reviewer.md
+
+synthesizer: claude-opus-4-7-case-steward
+synthesizer_kind: claude-orchestrator-not-perspective
+synthesis_file: 01-deliberation.md
+
+notes:
+  - "Operator-Corrective deliberation class (Path OC) — new sub-class within operator-surfaced-agenda super-class; declared-position-not-for-deliberation 'A Claude is not an Outsider; filling the Outsider role from inside the Claude family negates the role's function regardless of how the brief reads' respected as constraint on problem space; two deliberation questions (why did S043 split happen; what mitigations) addressed."
+  - "Outsider seat filled by non-Claude lineage per operator declared-position (first session since S043 to correct the convention; 21-for-21 prior pattern restored, now with Codex/GPT-5.5 in the seat)."
+  - "Two-family not three-family: operator R2 revised the assessment's Option-A/B three-family proposal to both-non-Claude-perspectives-as-Codex because Gemini is operationally weaker at substantive reasoning at present; Gemini usable for minor deliberations only. §5.6 GPT-family-concentration data point lands on worst-case side this session; recorded transparently (shared brief §0; synthesis §1; close §2)."
+  - "P2 Mitigation Designer preserved as §5.13 first-class minority (#30 engine-wide; Claude-only narrower-scope-trigger-conditional position on Q2); D-135 records preservation with three operational reopen warrants."
+  - "Minor independence-phase breach: P4 Cross-Family Reviewer inadvertently read first 120 lines of P3 raw-output log during its file exploration; those lines contained P3 invocation/prompt material only, not P3's substantive response (which begins at log line 1212). Recorded in P4 manifest transport_notes and P4 Confidence-and-limits; WX-44-1 forward observation candidate for convene-time briefing improvement."
+  - "Model-ID correction mid-session: initial post-perspective commit 5e4e9df carried model_id:gpt-5.4 (pattern-carried-forward from S005-S041 manifests); operator flagged that codex CLI raw-output log reports model:gpt-5.5; post-commit correction applied to both outsider.manifest.yaml and cross-family-reviewer.manifest.yaml. WX-44-2 forward observation: codex CLI model-version rolling-upgrade between S041 morning and S044 afternoon; D-133 M2 role/lineage matrix extension candidate for model-version verification sub-step at S047+."
+  - "OI-004 closed at S041; d023_4 narrowed semantics do not fire at S044 (no proposed state change to OI-004); S044 is NOT an OI-004-qualifying deliberation."

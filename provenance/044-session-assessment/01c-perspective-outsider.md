@@ -1,5 +1,8 @@
 ---
 session: 044
+title: Perspective 3 (Outsider) raw output — Codex/GPT-5.5 via codex exec; non-Claude lineage restoring 21-for-21 Outsider-role convention; independent claim role-function-integrity; MAD v4 Shape A role-fungibility-phrase surfaced as additional cause; Q4 preferred formulation MAD v4 defines Outsider as lineage-constrained role with rename-if-unavailable escape hatch
+date: 2026-04-24
+status: perspective-raw-output
 perspective: Outsider
 perspective_index: 3
 lineage: gpt

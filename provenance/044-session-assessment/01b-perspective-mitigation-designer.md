@@ -1,5 +1,8 @@
 ---
 session: 044
+title: Perspective 2 (Mitigation Designer) raw output — Claude subagent; top-ranked mitigation M2 Convene-checklist amendment (spec-level candidate, minor-convention-first with 3-session verification); defer M3 stance-level MUST-be-non-Claude to S047+; reject M4 multi-family-panel-as-default; add M5+M6 prompt-level drafting + ratification discipline as minor conventions; keep separate from OI-019 via M7 cross-link annotation
+date: 2026-04-24
+status: perspective-raw-output
 perspective: Mitigation Designer
 perspective_index: 2
 lineage: claude
