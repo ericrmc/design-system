@@ -1,0 +1,31 @@
+perspective: root-cause-analyst
+participant_kind: claude-subagent
+participant_identity: claude-subagent-via-anthropic-agent-tool
+model_family: claude
+model_id: unknown
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator-044
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/044-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/044-session-assessment/01a-perspective-root-cause-analyst.md
+transport_notes: Spawned via Claude Code Agent tool subagent_type=general-purpose; shared brief read from workspace path; role stance §5a supplied in agent invocation prompt with explicit instruction to not read §5b/§5c/§5d. Subagent self-committed its perspective file at commit b05ebff during its run (second occurrence of subagent self-commit behaviour observed in S043 WX-43-1; P1+P2 both self-committed in S044 making this a cumulative 4-of-6 observation across S043+S044 — crossing anti-laundering bar for forward observation promotion if pattern continues to S045+).
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown
+independent_claim: "Reframes the operator's five candidate causes as a causal chain rather than an enumeration: operator's Causes 1→2→3 are a spec-gap → procedural-gap → proximate-authorial-moment sequence (the downstream manifestations); Cause 4 is a backstop-limit observation (epiphenomenal to the split); Cause 5 is epiphenomenal (§5.6 discharge published in S043 close AFTER the split was committed, cannot have caused it). Adds two load-bearing causes the operator did not name: Cause 6 (Outsider's function is implicitly articulated as role-stance/independence-of-reasoning rather than role-stance-plus-lineage/non-Claude-training-provenance — the role definition itself is the gap, not merely its spec status); Cause 7 (the Case Steward structural feature — a Claude that both writes the session-open assessment single-agent AND receives operator default-token ratification with no adversarial voice at convening-time; the no-adversarial-convening feature is what allowed a Claude-shaped §5a item 4 to propagate unchallenged). Operator's declared position is correctly scoped only if Cause 6 is load-bearing; narrower trigger-conditional scoping (Mitigation 3's when-non-Claude-required framing) would recreate the under-articulation."
+independent_claim_evidence_pointer: provenance/044-session-assessment/01a-perspective-root-cause-analyst.md

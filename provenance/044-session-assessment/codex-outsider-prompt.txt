@@ -1,0 +1,55 @@
+You are Perspective 3 — Outsider — in Session 044 of the Selvedge engine's self-development application. You are a non-Claude participant invoked via `codex exec` per the engine's Multi-Agent Deliberation v4 Non-Claude Participation Mechanism.
+
+## Your first task: read the brief
+
+Read these files in the workspace (you are at the repository root `/Users/ericmccowan/Development/complex-systems-engine/`):
+
+- `provenance/044-session-assessment/01-brief-shared.md` — the shared brief. Read §1 (what-this-deliberation-is), §2 (question set Q1/Q2/Q3/Q4/Q6/Q7), §3 (reading guidance), §4 (required output format), §5c (YOUR role-specific stance — Perspective 3 Outsider), §6 (constraint on external imports), §7 (anti-laundering reminders), §8 (convergence threshold), §9 (non-Claude operational notes). **Do NOT read §5a, §5b, §5d** — those are the other perspectives' stances and reading them would compromise independent-phase framing.
+- `provenance/044-session-assessment/00-assessment.md` — this session's assessment. §2 carries the operator's agenda verbatim; §3 carries the Case Steward's factual checks verifying the empirical 21-for-21 Outsider-non-Claude pattern and the MAD v4 normative state.
+- `provenance/043-session-assessment/00-assessment.md` — §5 in particular (the object-of-analysis: the S043 shape proposal that split role from lineage).
+- `provenance/043-session-assessment/01-deliberation.md` — the S043 synthesis (contextualises the deliberation shape the operator is now responding to).
+- `provenance/043-session-assessment/participants.yaml` and `provenance/043-session-assessment/manifests/outsider.manifest.yaml` and `manifests/non-claude.manifest.yaml` — committed artefacts of the role/lineage split.
+- `specifications/multi-agent-deliberation.md` (v4) — especially §Perspectives, §When Non-Claude Participation Is Required, §Heterogeneous-Participant Recording Schema.
+- `specifications/methodology-kernel.md` (v6) — especially the §Convene activity text.
+- `open-issues/OI-019.md` — for Q6 joint-treatment evaluation.
+
+Read what you need; your output should cite what you actually read.
+
+## Your role — Outsider (non-Claude lineage per operator constraint)
+
+Your stance is **§5c of the shared brief**. In summary: frame the question independently of how it has been presented inside the Claude workspace; respect the operator's declared position ("Claude is not an Outsider") as a constraint on the problem space (you may argue its SCOPE is different than stated but not that the position is wrong); produce independent analysis on Q1/Q2/Q3/Q4/Q6/Q7 per the shared brief; pay particular attention to the five sub-tasks enumerated in §5c (scope evaluation; framing evaluation; Claude-blindness inventory; residual gap; Q6 coupling evaluation).
+
+## Independent phase discipline
+
+You do NOT see other perspectives' outputs during your independent phase. You reason from the brief + your own reading. Your output will be one of four that the synthesis integrates.
+
+## Your output format
+
+Produce a single markdown document following the structure in §4 of the shared brief:
+
+```
+---
+session: 044
+perspective: Outsider
+perspective_index: 3
+lineage: gpt
+---
+
+# Perspective 3: Outsider
+
+## Reading performed
+<list of files actually read>
+
+## Q1 through Q7 (Q5 skipped per operator R3)
+<one subsection per question: Q1, Q2, Q3, Q4, Q6, Q7 — you may decline a question if outside your role>
+
+## Independent claim
+<one or two sentences: what this perspective contributes that the other three cannot>
+
+## Confidence and limits
+<what you are confident in; what you are not confident in; anything you could not resolve>
+```
+
+Target length 1,000–2,000 words. Be sharp, not exhaustive. Cite specific sections of the S043 provenance and MAD v4 where relevant.
+
+Output the markdown document. Do not include any preamble or explanation before the frontmatter — the raw output will be saved verbatim as `01c-perspective-outsider.md`.

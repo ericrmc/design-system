@@ -1,0 +1,31 @@
+perspective: mitigation-designer
+participant_kind: claude-subagent
+participant_identity: claude-subagent-via-anthropic-agent-tool
+model_family: claude
+model_id: unknown
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator-044
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/044-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/044-session-assessment/01b-perspective-mitigation-designer.md
+transport_notes: Spawned via Claude Code Agent tool subagent_type=general-purpose; shared brief read from workspace path; role stance §5b supplied in agent invocation prompt with explicit instruction to not read §5a/§5c/§5d. Subagent self-committed its perspective file at commit 3d9998c during its run (see P1 manifest note on cumulative subagent self-commit pattern).
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown
+independent_claim: "Proposes a specific mitigation package ranked and with text-level specificity. Top-ranked mitigation M2: Convene-checklist amendment to methodology-kernel.md §Convene AND multi-agent-deliberation.md §Perspectives requiring per-perspective lineage recording at convening time, with Claude-as-Outsider framed as a 'declared departure, not a default' rather than stance-level prohibition — procedural disclosure sequences anti-laundering correctly (disclose now; codify substantive stance-level rule only after procedural evidence accumulates). Package: M2 spec-level (engine-v7→v8 candidate pending classification) + M5 prompt-drafting discipline + M6 ratification-surface discipline (latter two minor conventions with 3-session verification window). Defer M3 stance-level MUST-be-non-Claude clause to S047+ post-verification. Rejects operator M4 (multi-family-panel-as-default) as laundering surface that concentrates §5.6 GPT-family record against its own warrant and hardcodes temporary Gemini capability weakness into spec. Keeps convene-time-discipline issue separate from OI-019 via cross-link rather than bundle. Acknowledges Claude-family bias risk around preferring procedural-over-stance-level solutions; this bias deserves P3/P4 adversarial testing."
+independent_claim_evidence_pointer: provenance/044-session-assessment/01b-perspective-mitigation-designer.md
