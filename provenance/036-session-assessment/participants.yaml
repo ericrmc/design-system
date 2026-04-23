@@ -1,0 +1,19 @@
+session: 036
+deliberation: Path PD — PROMPT.md §Dispatch revision + external-application feedback pathway
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+oi004_qualifying_participants: [Outsider]
+participants:
+  - perspective: Reviser
+    manifest: manifests/reviser.manifest.yaml
+    raw_response: 01A-perspective-reviser.md
+  - perspective: Skeptic-preserver
+    manifest: manifests/skeptic-preserver.manifest.yaml
+    raw_response: 01B-perspective-skeptic-preserver.md
+  - perspective: Synthesiser
+    manifest: manifests/synthesiser.manifest.yaml
+    raw_response: 01C-perspective-synthesiser.md
+  - perspective: Outsider
+    manifest: manifests/outsider.manifest.yaml
+    raw_response: 01D-perspective-outsider.md

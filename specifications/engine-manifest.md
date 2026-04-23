@@ -4,7 +4,7 @@ version: 1
 status: active
 created: 2026-04-22
 last-updated: 2026-04-23
-updated-by-session: 033
+updated-by-session: 036
 supersedes: none
 ---
 
@@ -29,11 +29,11 @@ The engine is distinct from:
 
 ### 2. Current engine version
 
-**`engine-v6`** (established Session 033 per D-107).
+**`engine-v7`** (established Session 036 per D-114).
 
-Subsequent engine versions (`engine-v7`, `engine-v8`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
+Subsequent engine versions (`engine-v8`, `engine-v9`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
 
-### 3. Engine-definition files at `engine-v6`
+### 3. Engine-definition files at `engine-v7`
 
 The following files constitute the engine at the current version:
 
@@ -54,15 +54,31 @@ The following files constitute the engine at the current version:
 
 An external-application workspace that clones the engine should copy (or reference) these files and nothing else from the source workspace.
 
+### 3a. Workspace-identity files (added engine-v7)
+
+Workspace-identity files are per-workspace identity declarations distinct from engine-definition files. They are **required by the engine** (the dispatcher consults them) but are **not copied byte-identically** across workspaces — each workspace writes its own content at initialisation.
+
+At `engine-v7`:
+
+| File | Role |
+|------|------|
+| `MODE.md` | Workspace mode marker declaring `mode: self-development | external-problem` and workspace identity metadata. Consulted by `PROMPT.md` §Dispatch as authoritative signal (with structural-signature fallback). Created at Session 001 of any new workspace per `PROMPT.md` §Session-001 obligation. See `specifications/workspace-structure.md` §MODE.md for schema. |
+
+The workspace-identity-file class is the Outsider's frame-completion contribution at Session 036 Path PD per `provenance/036-session-assessment/01D-perspective-outsider.md` Q4, recorded as an OI-004 criterion-3 data point.
+
+External application workspaces create their own `MODE.md` during Session 001 initialisation per §6 bootstrap contract below.
+
 ### 4. What is explicitly NOT part of the engine
 
-The following are development-provenance or application-scope; they are **not** loaded when an external application initialises:
+The following are development-provenance, application-scope, or workspace-identity; they are **not** copied byte-identically when an external application initialises the engine, though some (notably `MODE.md`) are required to exist:
 
+- `MODE.md` (workspace-identity; each workspace writes its own content per §3a)
 - `SESSION-LOG.md` (development-provenance)
-- `open-issues.md` (development-provenance)
+- `open-issues/` (development-provenance)
 - `provenance/` (development-provenance: all session records)
 - `applications/NNN-*/` (application-scope: prior application outputs, not reusable as engine load)
-- `specifications/*-v1.md`, `*-v2.md`, `*-v3.md` (superseded spec versions: preserved in the workspace but not active engine definition)
+- `engine-feedback/` (non-engine operator-managed; optional; see `workspace-structure.md` v5 §engine-feedback)
+- `specifications/*-v1.md`, `*-v2.md`, `*-v3.md`, `*-v4.md` (superseded spec versions: preserved in the workspace but not active engine definition)
 
 This manifest's own version history is also not part of the engine load; the current `engine-manifest.md` is what counts.
 
@@ -89,18 +105,22 @@ An external application workspace is initialised by:
 1. **Copy the engine-definition file set** (§3) into a fresh directory (or reference them from a canonical engine repository). The copy is flat: maintain the same paths (`PROMPT.md`, `prompts/`, `specifications/`, `tools/`).
 2. **Create fresh development-provenance files** in the new workspace:
    - Empty `SESSION-LOG.md` (header only).
-   - Empty `open-issues.md` (header only).
+   - Empty `open-issues/index.md` (header only) and `open-issues/` directory.
    - Empty `provenance/` directory.
 3. **Create the first application directory** `applications/001-<slug>/` containing at minimum a `brief.md` carrying:
    - The problem statement.
    - Constraints (domain constraints; time constraints; stakeholder constraints).
    - Stakeholders (who holds the problem; who will receive the artefact; who validates).
    - Success condition (what the artefact must do for the application to be considered successful).
-4. **Select the execution prompt.** For an external-problem application, copy `prompts/application.md` to the workspace's `PROMPT.md` (or reference it), then fill in the template slots with the application-specific content from `brief.md`. For a self-development application (like this workspace), use `prompts/development.md`.
-5. **Record the engine version loaded.** The first session's provenance (e.g., `provenance/001-*/00-assessment.md`) should name the engine version (`engine-v1` or later) the workspace was initialised from.
-6. **Run Session 001** per the loaded execution prompt. The session Reads the application's initial state (the `brief.md` + the engine specifications), Assesses what the application's first increment should be, Convenes perspectives, Deliberates, Decides, Produces the first artefact or design fragment, Validates, Records, and Closes.
+4. **Create the workspace-identity file `MODE.md`** at workspace root per `workspace-structure.md` v5 §MODE.md and `PROMPT.md` §Session-001 obligation. For external-problem applications the frontmatter carries `mode: external-problem` + `workspace_id` + `created_session: 001` + `engine_version_at_creation` + `application_brief: applications/001-<slug>/brief.md`.
+5. **Optionally create `engine-feedback/`** at workspace root for outbox-mode feedback accumulation during the application's lifetime. The directory is optional at Session 001 and may be created later when the first feedback record is written.
+6. **The execution prompt is selected by the dispatcher** per `PROMPT.md` §Dispatch. With `MODE.md` present and `mode: external-problem`, the dispatcher loads `prompts/application.md` automatically; no manual prompt-selection copy is required.
+7. **Record the engine version loaded.** The first session's provenance (e.g., `provenance/001-*/00-assessment.md`) should name the engine version (`engine-v7` or later) the workspace was initialised from. This record complements the `engine_version_at_creation` value in `MODE.md`.
+8. **Run Session 001** per the loaded execution prompt. The session Reads the application's initial state (the `brief.md` + the engine specifications), Assesses what the application's first increment should be, Convenes perspectives, Deliberates, Decides, Produces the first artefact or design fragment, Validates, Records, and Closes.
 
 The critical rule per Outsider [Session 017 01d Q6]: **external application workspaces inherit the engine, not the engine's autobiography.** The development-provenance of the Selvedge engine's own development is preserved in this source workspace; it does not travel with the engine to an external application.
+
+Engine-feedback flows in the **reverse direction** from this bootstrap: an external application may produce feedback about the engine/methodology during its execution; such feedback flows operator-mediated from the external workspace's `engine-feedback/` (outbox role) back into the self-development source workspace's `engine-feedback/inbox/` for triage. This reverse flow is specified in `specifications/workspace-structure.md` v5 §engine-feedback. It is distinct from the forward bootstrap above.
 
 ### 7. Engine version history
 
@@ -121,6 +141,27 @@ Engine-v5 is the fourth engine-v-bump overall (v2 Session 021; v3 Session 022; v
 Engine-v6 is the fifth engine-v-bump overall (v2 Session 021; v3 Session 022; v4 Session 023; v5 Session 028; v6 Session 033) and the second post-cadence-maturation content-driven bump (v5 was first). The bump is content-driven: `reference-validation.md` v2 §9 trigger 7 fired at Session 032 close, and Session 033 deliberation (3-of-4 cross-family convergence: Outsider GPT-5.4 + Reviser Claude + Synthesiser Claude; Skeptic-preserver Claude dissent preserved as §10.3) adopted the activated minority's direction per D-106 + D-107. §5.4 Session 022 cadence minority does not re-escalate at this bump — five-session preservation window (029/030/031/032 non-bumps; v6 at 033), content-driven rather than cadence-driven, and Session 028 D-096 3-of-4 convergence precedent holds (cadence question separate from substantive bump). OI-018 remains open; Session 033 does not engage engine-manifest §5 revision, per explicit preservation of the Session 028 precedent. This is the first engine-v-bump to execute a preserved-minority's pre-committed revision direction end-to-end (activation Session 032 → adoption Session 033); cf. Session 028 §5.3 conversion (preserved Session 023 → converted-to-active-spec Session 028) which was a threshold-adoption pattern rather than a minority-activation-adoption pattern.
 
 **Key consequence at v6 adoption:** aggregate default-read surface is unchanged in direction (no new close-rotation event at v6; Session 033 close enters the 6-session retention window at close per §2c standard rotation). Projected post-close aggregate ~68–72K (Session 027 close rotates out; Session 033 substantive close enters). Well within §2b soft 90K / hard 100K ceilings.
+
+- **`engine-v7`** — established Session 036 via D-114. **First engine-v-bump driven by an operator-surfaced agenda item** (as distinct from prior bumps driven by preserved-minority activation warrants or watchpoint firings). The operator surfaced at Session 036 open that `PROMPT.md` §Dispatch had a criterion-gap for external-problem Session-002+ workspaces (the "fresh / empty / near-empty" criterion is a Session-001-only signature), and additionally surfaced a second scope — the absence of a clearly identified operator-mediated feedback pathway from completed external applications back to self-development. Both scopes were addressed in a single Path PD four-perspective cross-family deliberation (Reviser + Skeptic-preserver + Synthesiser Claude-subagents; Outsider via OpenAI GPT-5.4 through `codex exec`). 3-of-4 cross-family convergence on revision-warranted for both Q1 (dispatcher) and Q2 (feedback pathway); 1-of-4 Skeptic-preserver dissent preserved as §10.4-M1 + §10.4-M2 first-class minority in `workspace-structure.md` v5. 4-of-4 convergence on "independent mechanisms, same session" for Q3 (Q1/Q2 relationship). Substantive revisions to four engine-definition files and two prompts:
+
+  - `PROMPT.md` — §Dispatch rewritten to consult `MODE.md` as authoritative signal with structural-signature fallback; §Session-001 obligation added for new workspaces; §Engine-feedback pathway cross-reference added. (Pre-v7 content preserved in git history at commits prior to the v7 adoption commit; no PROMPT-v6.md physical file created per Session 017 precedent.)
+  - `specifications/workspace-structure.md` v4 → v5 — adds `MODE.md` workspace-identity-file class and §MODE.md normative section; adds `engine-feedback/` directory with mode-dependent outbox/inbox/triage semantics and §engine-feedback normative section; adds §10.4 first-class-minority block preserving six Session 036 Path PD minorities. v4 preserved as `workspace-structure-v4.md` with `status: superseded`.
+  - `specifications/read-contract.md` v3 → v4 — adds `MODE.md` to §1 default-read enumeration at new item 0; adds conditional `engine-feedback/INDEX.md` default-read clause at §1 item 9 (self-development mode, when file exists). No change to §2 per-file budget, §2b aggregate budget, §2c close-rotation, §4–§7 archive-pack mechanism. v3 preserved as `read-contract-v3.md` with `status: superseded`.
+  - `specifications/engine-manifest.md` (this file) — §3 heading updated to `engine-v7`; §3a workspace-identity files subsection added naming `MODE.md`; §4 exclusion list updated; §6 bootstrap contract extended with MODE.md creation step and engine-feedback reverse-flow note.
+  - `prompts/application.md` — adds §Engine-feedback clause instructing external-application agents to file feedback to `engine-feedback/` when methodology-level friction is observed.
+  - `prompts/development.md` — adds read obligation for `engine-feedback/INDEX.md` at session open when the file exists; adds git-log-verification convention for claimed OI-file edits per WX-35-1 forward discipline (see §Close).
+
+  Minor updates (non-engine-v-bumping on their own but bundled into the v7 adoption): `tools/validate.sh` gains **check 23** verifying `MODE.md` presence at workspace root with recognised `mode:` value (self-development enforcement only at this session; external-workspace validation extensions deferred to Session 037+); `open-issues/OI-004.md` receives a minimal catch-up note per WX-35-1 Q6 disposition (b+c hybrid) recording the Session 022 → Session 036 unrecorded-edits gap + adoption of SESSION-LOG-row-canonical-with-forward-git-log-verification convention, without retroactive 13-session reconstruction.
+
+  Workspace-identity file `MODE.md` created at workspace root for this self-development workspace (one-time post-hoc adoption per `PROMPT.md` §Session-001 obligation — `marker_adopted_session: 036` in frontmatter distinguishing retroactive from at-init creation).
+
+  All other engine-definition files unchanged at engine-v7 boundary: `methodology-kernel.md` v6; `multi-agent-deliberation.md` v4; `validation-approach.md` v5; `identity.md` v2; `reference-validation.md` v3.
+
+Engine-v7 is the sixth engine-v-bump overall (v2 Session 021; v3 Session 022; v4 Session 023; v5 Session 028; v6 Session 033; v7 Session 036). It is the third post-cadence-maturation content-driven bump (v5 + v6 + v7). §5.4 Session 022 engine-v-cadence minority (activated-not-escalated) does NOT re-escalate at this bump per Session 028 D-096 / Session 033 D-107 content-driven-bump precedent chain (cadence concern separates from substantive-bump classification). OI-018 remains open; Session 036 does not engage `engine-manifest.md` §5 revision.
+
+Engine-v7 is the first engine-v-bump **driven by an operator-surfaced agenda item** rather than by preserved-minority activation warrant (v5 was §5.3 activation; v6 was §9 trigger 7 firing) or watchpoint firing. This represents a new class of substantive-revision provenance that the engine's discipline accommodates: operator-directed substantive revision co-deliberated through the multi-agent deliberation schema without bypassing the preservation and dissent-recording machinery. The Skeptic-preserver's no-revision dissent on both Q1 and Q2 is preserved as §10.4-M1 and §10.4-M2 with activation warrants that will retroactively vindicate premature-formalisation if the new mechanisms go unexercised for 10 sessions.
+
+**Key consequence at v7 adoption:** aggregate default-read surface gains `MODE.md` (~200 words) and conditionally `engine-feedback/INDEX.md` (~100 words at adoption, thin-header). Close-rotation continues standard per §2c. Projected post-close aggregate well under §2b soft 90K. No close rotates out specifically for v7 adoption; Session 030 close rotates out at Session 036 close per standard rotation mechanics.
 
 **Key consequence at v5 adoption:** aggregate default-read surface is reduced from 105,399 (pre-session) to approximately 55,000 (post-rotation) via Session 028 close-rotation first exercise. Sessions 002–022 `03-close.md` files (20 files, ~56,180 words) rotate to archive-surface by exclusion per revised §1 item 7. Files remain physically at their paths; the access-discipline category changes. Sessions 023–028 close files plus Session 028's own close (6 total) remain default-read per §2c 6-session retention window. Post-rotation aggregate well below both §2b soft (90K) and hard (100K) ceilings — comfortable forward headroom.
 

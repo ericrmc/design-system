@@ -1,11 +1,12 @@
 ---
 title: Read Contract
-version: 4
-status: active
+version: 3
+status: superseded
 created: 2026-04-22
 last-updated: 2026-04-23
-updated-by-session: 036
-supersedes: read-contract-v3.md
+updated-by-session: 028
+supersedes: read-contract-v2.md
+superseded-by: read-contract.md v4
 ---
 
 # Read Contract
@@ -26,9 +27,8 @@ This specification applies equally to the self-development application and to ex
 
 The default-read surface is the bounded set of files read in full at every session open. Every session's Read activity must read every file enumerated below in full before any substantive work proceeds.
 
-**The default-read surface enumeration at engine-v4 (of this spec; engine-v7 of the manifest):**
+**The default-read surface enumeration at engine-v3:**
 
-0. (Added v4) `MODE.md` at workspace root — the workspace-identity marker declaring `mode: self-development | external-problem`. See `specifications/workspace-structure.md` §MODE.md for schema. Required in workspace-identity file class per `workspace-structure.md` v5.
 1. Every active-status `.md` file in `specifications/`. "Active-status" means frontmatter `status: active`. Superseded-status files (`*-v1.md`, `*-v2.md`, etc., carrying `status: superseded`) are archive surface by exclusion (§3).
 2. `PROMPT.md` (top-level dispatcher).
 3. `prompts/development.md` (self-development executable prompt).
@@ -37,7 +37,6 @@ The default-read surface is the bounded set of files read in full at every sessi
 6. `open-issues/index.md` (thin overview; full per-OI detail lives in `open-issues/OI-NNN.md` files).
 7. The `03-close.md` file of each of the **most recent 6 session closes** (where "session" is determined by the numeric prefix on `provenance/NNN-title/` directories, sorted descending, top 6). Older closes are archive surface by exclusion (§3); they remain at their original `provenance/NNN-title/03-close.md` paths preserved verbatim but are not loaded by default. The 6-session retention window was adopted Session 028 per D-096 (supersedes v2's "every `03-close.md`" rule). See §2c close-rotation rule for mechanics.
 8. Every file in the currently-active session's provenance directory (`provenance/NNN-title/` where NNN is the current session). While the session is open, current-session provenance is default-read; on close, it becomes archive surface by exclusion (§3) unless it is a `03-close.md` that falls within the §7 retention window (which stays default-read by §7 above).
-9. (Added v4, conditional) `engine-feedback/INDEX.md` when the file exists AND the workspace is in self-development mode per `MODE.md`. In external-problem mode, `engine-feedback/` is outbox-role and `INDEX.md` (if present) is not default-read by this rule. In the absence of the file, this item does not contribute to the default-read surface.
 
 The enumeration is closed. A file not enumerated here is archive surface by §3.
 
@@ -265,8 +264,6 @@ The SESSION-LOG entry for the session records archive-pack presence with a one-p
 Version 1 established Session 022 per D-084. Version 2 established Session 023 per D-086 (§2 budget-value recalibration from 15K/10K to 8K/6K; §2 Rationale corrected for empirical 3.0× tokens-per-word ratio; §2a aggregate report added; §5.1/§5.2/§5.3/§5.5 minorities added). v1 preserved as `read-contract-v1.md` with `status: superseded`.
 
 Version 3 established Session 028 per D-096 in response to §5.3 minority activation warrant firing at Session 027 close (aggregate crossed 100,000 words). Substantive additions: §2b aggregate hard budget (100K hard / 90K soft, pass/fail/warn); §2c close-rotation rule (most recent 6 sessions' closes retained in default-read; older closes archive-surface by exclusion; retention-exception mechanism); §1 item 7 revised from "every close" to "6 most recent closes"; §2a role clarified as informational sensor layer supplementing §2b budget enforcement; six new first-class minorities §5.6–§5.11 preserved with activation warrants. v2 preserved as `read-contract-v2.md` with `status: superseded`.
-
-Version 4 established Session 036 per D-113 + D-116. Substantive additions: §1 item 0 adds `MODE.md` at workspace root as default-read (workspace-identity marker per `workspace-structure.md` v5 §MODE.md); §1 item 9 adds conditional `engine-feedback/INDEX.md` default-read clause in self-development mode. No change to §2 per-file budget values, §2b aggregate budget, §2c close-rotation mechanics, §4 archive-pack structure, §5 manifest fields, §6 reference convention, or §7 integrity mechanism. Aggregate budget headroom impact: `MODE.md` is approximately 200 words at adoption (negligible against 68,689 aggregate); `engine-feedback/INDEX.md` at adoption is thin-index header-only (under 100 words). v3 preserved as `read-contract-v3.md` with `status: superseded`.
 
 Subsequent revisions to this specification follow OI-002 substantive-vs-minor heuristic (`open-issues/OI-002.md`):
 - **Substantive:** any change to the §1 enumeration, §2 budget values, §2a aggregate thresholds, §2b budget values, §2c retention-window values, §4 archive-pack structure, §5 manifest fields, §6 reference convention, or §7 integrity mechanism. Engine-version bump per `engine-manifest.md` §5.

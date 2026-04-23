@@ -9,7 +9,7 @@ This file is the default-read surface entry point per `specifications/read-contr
 | OI | Title | Surfaced | Status |
 |----|-------|----------|--------|
 | [OI-002](OI-002.md) | Threshold for substantive revision vs. minor correction | Session 001 | Open — heuristic stable; 13th data point Session 028 |
-| [OI-004](OI-004.md) | Incorporating genuinely independent perspectives | Session 001 | **Articulated; awaiting closure-retrospective** (state 3/4 per MAD v4); tally 8-of-3; voluntary:required 10:8; criterion-3 cumulative 68 |
+| [OI-004](OI-004.md) | Incorporating genuinely independent perspectives | Session 001 | **Articulated; awaiting closure-retrospective** (state 3/4 per MAD v4); tally 8-of-3; voluntary:required 12:9; criterion-3 cumulative 74 (Session 036 added five Outsider cross-lineage contributions) |
 | [OI-005](OI-005.md) | Sub-activities and work-type variants | Session 001 | Unblocked; W1 addressed Session 011; W4 addressed Session 009 |
 | [OI-006](OI-006.md) | Cross-references between specifications | Session 001 | Open — deferred until need arises |
 | [OI-007](OI-007.md) | Scaling the open issues format | Session 001 | Open — count 13; directory split adopted Session 022 per D-084 R8b |

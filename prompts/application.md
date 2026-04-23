@@ -66,6 +66,14 @@ External artefacts live in `applications/NNN-<slug>/` per `specifications/worksp
 
 Provenance accumulates in `provenance/NNN-<slug>/` as in the self-development application. `SESSION-LOG.md` is a thin one-line-per-session index per `workspace-structure.md` v4 §SESSION-LOG.md. `open-issues/` is a directory with per-OI files (`OI-NNN.md`) plus `index.md` per `workspace-structure.md` v4 §open-issues. At session close, the orchestrator verifies the default-read budget (`read-contract.md` §8); any current-session raw exceeding the per-file ceiling is archive-packed per `read-contract.md` §9.
 
+## Engine-feedback pathway
+
+When an external application encounters methodology-level friction — an unclear spec, a kernel §7 gap, a dispatcher ambiguity, a MAD v4 field awkward in domain-X practice, a reference-validation exercise gap, or equivalent — the observation is **out-of-scope for the external application's own deliberation** (whose work is the domain artefact) but **in-scope for engine/methodology improvement**. Record such observations as feedback files in this workspace's `engine-feedback/` directory (outbox role; per `specifications/workspace-structure.md` v5 §engine-feedback).
+
+Feedback files use the naming convention `engine-feedback/EF-<session-number>-<short-slug>.md` with frontmatter per the workspace-structure.md schema. Keep the record descriptive, specific, and verbatim in quoted content. The external application does not attempt to modify the engine in-place; it records what was observed and why it matters for the methodology.
+
+Feedback return to self-development is **operator-mediated**: at the operator's discretion, the feedback file is copied verbatim into the self-development source workspace's `engine-feedback/inbox/` for triage. The engine does not specify automated cross-workspace transport. The operator is the transport.
+
 ## Anti-silent-import and anti-laundering
 
 The PROMPT.md anti-silent-import rule (no ideas from outside the process without an explicit surveying/hypothesising step) applies in full. Per OI-015's laundering-enforcement concern, domain inputs must not be absorbed as given context and re-examined as choices — they must be surveyed as options competing with alternatives at Deliberate or Decide.

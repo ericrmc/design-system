@@ -1022,6 +1022,46 @@ else
   echo ""
 fi
 
+# [23] Workspace-identity marker MODE.md (D-113, Session 036)
+#
+# Engine-v7 (Session 036 D-113 + D-116) adds `MODE.md` at workspace root as a
+# workspace-identity file distinct from engine-definition. `PROMPT.md` §Dispatch
+# consults MODE.md as authoritative signal (with structural-signature fallback).
+# This check verifies:
+#   (a) MODE.md exists at workspace root
+#   (b) MODE.md frontmatter carries a recognised `mode:` value
+#       (self-development | external-problem)
+# For the self-development source workspace (this workspace), the expected value
+# is `mode: self-development`. External-workspace validation extensions (e.g.,
+# verifying that application_brief path resolves for external-problem mode) are
+# deferred to Session 037+ per D-113 scope-bounding.
+#
+# Gate: engine-v7 adoption session is 036; check 23 applies to session >= 036.
+MODE_MD_ADOPTION_SESSION=36
+echo "[23] Workspace-identity marker (MODE.md)"
+current_session_dir=$(ls -d "$WORKSPACE_ROOT"/provenance/[0-9]*/ 2>/dev/null | sort | tail -1)
+current_session_num=$(basename "$current_session_dir" 2>/dev/null | sed -E 's/^0*([0-9]+).*/\1/')
+if [[ -z "$current_session_num" ]] || [[ "$current_session_num" -lt "$MODE_MD_ADOPTION_SESSION" ]]; then
+  echo "  (session $current_session_num < $MODE_MD_ADOPTION_SESSION; check 23 out-of-scope pre-adoption)"
+else
+  mode_md="$WORKSPACE_ROOT/MODE.md"
+  if [[ ! -f "$mode_md" ]]; then
+    fail "MODE.md missing at workspace root (required at engine-v7+; see PROMPT.md §Session-001 obligation)"
+  else
+    # Extract `mode:` frontmatter value. Look within first 20 lines for the
+    # frontmatter block and the mode line.
+    mode_val=$(awk '/^---$/{f=!f; next} f && /^mode:/{print $2; exit}' "$mode_md" | tr -d '[:space:]')
+    if [[ -z "$mode_val" ]]; then
+      fail "MODE.md missing `mode:` frontmatter value"
+    elif [[ "$mode_val" != "self-development" ]] && [[ "$mode_val" != "external-problem" ]]; then
+      fail "MODE.md has unrecognised mode value: '$mode_val' (expected 'self-development' or 'external-problem')"
+    else
+      pass "MODE.md present with recognised mode: $mode_val"
+    fi
+  fi
+fi
+echo ""
+
 # --- Summary ---
 echo "--- Tier 1 Summary ---"
 echo "Passed: $PASS  |  Failed: $FAIL  |  Warnings: $WARN"

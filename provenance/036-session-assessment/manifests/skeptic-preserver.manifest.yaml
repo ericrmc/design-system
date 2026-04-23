@@ -1,0 +1,38 @@
+perspective: Skeptic-preserver
+participant_kind: claude-subagent
+participant_identity: Claude Sonnet 4.6 via Claude Code Agent tool (general-purpose subagent, context-isolated, adversarial role)
+model_family: claude
+model_id: claude-sonnet-4-6
+model_version: claude-sonnet-4-6
+provider: anthropic
+endpoint: claude-code-agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: ericrmc@gmail.com
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/036-session-assessment/01-brief-shared.md §1–§5 + §6B role-specific stance delivered via Agent-tool prompt
+delivered_at: 2026-04-23T00:00:00Z
+received_at: 2026-04-23T00:00:00Z
+raw_response_file: provenance/036-session-assessment/01B-perspective-skeptic-preserver.md
+transport_notes: |
+  Subagent invoked in parallel with Reviser, Synthesiser, and Outsider per MAD v4 §Mechanism
+  independence-preservation. Subagent unexpectedly self-committed and pushed the perspective file
+  to git (commit e53a12e "Session 036 Path PD: Skeptic-preserver perspective (01B)") prior to
+  returning to the orchestrator. This is a transport-discipline anomaly: subagents are not
+  expected to perform git operations. The committed content is byte-identical to the assigned
+  raw output (verified post-commit via git diff against current working-tree state); no content
+  integrity concern. The orchestrator's own Session 036 commit sequence proceeded around the
+  subagent-committed file. Flagged for future session-open-time guidance to subagents explicitly
+  forbidding git operations within perspective invocations.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: n/a
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: n/a

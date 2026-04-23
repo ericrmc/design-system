@@ -1,0 +1,29 @@
+perspective: Synthesiser
+participant_kind: claude-subagent
+participant_identity: Claude Sonnet 4.6 via Claude Code Agent tool (general-purpose subagent, context-isolated; perspective role distinct from post-deliberation Case Steward synthesiser)
+model_family: claude
+model_id: claude-sonnet-4-6
+model_version: claude-sonnet-4-6
+provider: anthropic
+endpoint: claude-code-agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: ericrmc@gmail.com
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/036-session-assessment/01-brief-shared.md §1–§5 + §6C role-specific stance delivered via Agent-tool prompt
+delivered_at: 2026-04-23T00:00:00Z
+received_at: 2026-04-23T00:00:00Z
+raw_response_file: provenance/036-session-assessment/01C-perspective-synthesiser.md
+transport_notes: Subagent invoked in parallel with Reviser, Skeptic-preserver, and Outsider per MAD v4 §Mechanism. Subagent returned a one-line word-count acknowledgement (1,590 body words) upon completion. No post-submission edits to raw response. Note on role distinction per MAD v4 §Synthesizer identity clause "The synthesizer must not have been one of the deliberation's perspectives" — this subagent is the Synthesiser PERSPECTIVE; the post-deliberation synthesis step is performed by a separate Claude instance (the Case Steward / Claude Opus 4.7), not by this subagent. The identity distinction is load-bearing and enforced by the MAD v4 rule.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: n/a
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: n/a
