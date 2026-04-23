@@ -1,0 +1,32 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: openai-gpt-via-codex-exec-cli
+model_family: gpt
+model_id: gpt-5.4
+model_version: unknown
+provider: openai
+endpoint: codex-exec-cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: operator-044
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/044-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/044-session-assessment/01c-perspective-outsider.md
+transport_notes: "Invoked via `codex exec --sandbox read-only \"$(cat provenance/044-session-assessment/codex-outsider-prompt.txt)\" 2>&1 | tee provenance/044-session-assessment/codex-outsider-raw-output.log`. Raw-output log preserved at `codex-outsider-raw-output.log` (1407 lines); final markdown response extracted from lines 1212-1309 to 01c perspective file verbatim (no post-submission edit). Codex performed multiple intermediate file reads before producing final response. Codex reported 45,627 tokens used. Operator chose Codex over Gemini for P3 Outsider seat because Gemini is operationally weaker at substantive reasoning at present (operator R2 ratification); this is a two-family shape not the three-family shape originally proposed in the assessment."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+independent_claim: "The missing concept is not 'non-Claude participation' but ROLE-FUNCTION INTEGRITY. A role whose purpose is to stand outside the Claude workspace cannot be instantiated by a Claude subagent, even with a perfect stance brief, because the structural relation is part of the role. Operator's position is scoped to any deliberation where the engine USES THE ROLE NAME 'Outsider' — not to every deliberation. If the engine invokes 'Outsider' as a role, non-Claude lineage is part of the role's function, not an optional transport detail. If no non-Claude participant is available, the engine may convene an 'Internal Frame Challenger' or 'Adversarial Reviewer' but should not call it Outsider. Also surfaces an additional cause operator did not name: MAD v4 Shape A's phrase 'indistinguishable in role from the Claude perspectives' encouraged role-fungibility thinking — made 'add a non-Claude perspective' look equivalent to 'preserve the Outsider function,' which it is not. Residual gap warning: broader role/lineage discipline — engine must ask for each named perspective whether its function depends on structural position, training lineage, operator relation, or synthesis timing. Preferred Q4 formulation: MAD v4 defines Outsider as a lineage-constrained role in Claude-hosted deliberations."
+independent_claim_evidence_pointer: provenance/044-session-assessment/01c-perspective-outsider.md

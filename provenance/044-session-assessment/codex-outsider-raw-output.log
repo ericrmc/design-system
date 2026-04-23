@@ -1,0 +1,1407 @@
+Reading additional input from stdin...
+OpenAI Codex v0.124.0 (research preview)
+--------
+workdir: /Users/ericmccowan/Development/complex-systems-engine
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 019dbcb2-2b90-7a53-a0b2-8b3b4f22d32e
+--------
+user
+You are Perspective 3 — Outsider — in Session 044 of the Selvedge engine's self-development application. You are a non-Claude participant invoked via `codex exec` per the engine's Multi-Agent Deliberation v4 Non-Claude Participation Mechanism.
+
+## Your first task: read the brief
+
+Read these files in the workspace (you are at the repository root `/Users/ericmccowan/Development/complex-systems-engine/`):
+
+- `provenance/044-session-assessment/01-brief-shared.md` — the shared brief. Read §1 (what-this-deliberation-is), §2 (question set Q1/Q2/Q3/Q4/Q6/Q7), §3 (reading guidance), §4 (required output format), §5c (YOUR role-specific stance — Perspective 3 Outsider), §6 (constraint on external imports), §7 (anti-laundering reminders), §8 (convergence threshold), §9 (non-Claude operational notes). **Do NOT read §5a, §5b, §5d** — those are the other perspectives' stances and reading them would compromise independent-phase framing.
+- `provenance/044-session-assessment/00-assessment.md` — this session's assessment. §2 carries the operator's agenda verbatim; §3 carries the Case Steward's factual checks verifying the empirical 21-for-21 Outsider-non-Claude pattern and the MAD v4 normative state.
+- `provenance/043-session-assessment/00-assessment.md` — §5 in particular (the object-of-analysis: the S043 shape proposal that split role from lineage).
+- `provenance/043-session-assessment/01-deliberation.md` — the S043 synthesis (contextualises the deliberation shape the operator is now responding to).
+- `provenance/043-session-assessment/participants.yaml` and `provenance/043-session-assessment/manifests/outsider.manifest.yaml` and `manifests/non-claude.manifest.yaml` — committed artefacts of the role/lineage split.
+- `specifications/multi-agent-deliberation.md` (v4) — especially §Perspectives, §When Non-Claude Participation Is Required, §Heterogeneous-Participant Recording Schema.
+- `specifications/methodology-kernel.md` (v6) — especially the §Convene activity text.
+- `open-issues/OI-019.md` — for Q6 joint-treatment evaluation.
+
+Read what you need; your output should cite what you actually read.
+
+## Your role — Outsider (non-Claude lineage per operator constraint)
+
+Your stance is **§5c of the shared brief**. In summary: frame the question independently of how it has been presented inside the Claude workspace; respect the operator's declared position ("Claude is not an Outsider") as a constraint on the problem space (you may argue its SCOPE is different than stated but not that the position is wrong); produce independent analysis on Q1/Q2/Q3/Q4/Q6/Q7 per the shared brief; pay particular attention to the five sub-tasks enumerated in §5c (scope evaluation; framing evaluation; Claude-blindness inventory; residual gap; Q6 coupling evaluation).
+
+## Independent phase discipline
+
+You do NOT see other perspectives' outputs during your independent phase. You reason from the brief + your own reading. Your output will be one of four that the synthesis integrates.
+
+## Your output format
+
+Produce a single markdown document following the structure in §4 of the shared brief:
+
+```
+---
+session: 044
+perspective: Outsider
+perspective_index: 3
+lineage: gpt
+---
+
+# Perspective 3: Outsider
+
+## Reading performed
+<list of files actually read>
+
+## Q1 through Q7 (Q5 skipped per operator R3)
+<one subsection per question: Q1, Q2, Q3, Q4, Q6, Q7 — you may decline a question if outside your role>
+
+## Independent claim
+<one or two sentences: what this perspective contributes that the other three cannot>
+
+## Confidence and limits
+<what you are confident in; what you are not confident in; anything you could not resolve>
+```
+
+Target length 1,000–2,000 words. Be sharp, not exhaustive. Cite specific sections of the S043 provenance and MAD v4 where relevant.
+
+Output the markdown document. Do not include any preamble or explanation before the frontmatter — the raw output will be saved verbatim as `01c-perspective-outsider.md`.
+codex
+I’ll read the required materials with the brief section bounds intact, using heading scans first so I can avoid the other perspectives’ stance text.
+exec
+/bin/zsh -lc 'rg -n "''^(#{1,4})'"\\s\" provenance/044-session-assessment/01-brief-shared.md" in /Users/ericmccowan/Development/complex-systems-engine
+ succeeded in 0ms:
+8:# Shared Brief — Session 044 Path OC Deliberation
+12:## 0. Operator ratification (recorded verbatim)
+26:## 1. What this deliberation is
+39:## 2. The question set (Q1/Q2/Q3/Q4/Q6/Q7)
+57:## 3. Reading guidance
+74:## 4. Required output format
+86:# Perspective <n>: <role name>
+88:## Reading performed
+91:## Q1 through Q7 (Q5 skipped per operator R3)
+94:## Independent claim
+97:## Confidence and limits
+103:## 5. Role-specific stances
+107:### 5a. Perspective 1 — Root-Cause Analyst (Claude subagent)
+117:### 5b. Perspective 2 — Mitigation Designer (Claude subagent)
+132:### 5c. Perspective 3 — Outsider (Codex/GPT via codex exec; non-Claude lineage per operator constraint)
+150:### 5d. Perspective 4 — Cross-Family Reviewer (Codex/GPT via codex exec; non-Claude lineage; adversarial stance)
+172:## 6. Constraint on external imports
+176:## 7. Anti-laundering reminders specific to this session
+183:## 8. Cross-family convergence threshold and minority preservation
+191:## 9. Non-Claude operational notes (P3 and P4 only; P1/P2 skip)
+
+exec
+/bin/zsh -lc 'rg -n "''^(#{1,4})'"\\s\" provenance/044-session-assessment/00-assessment.md provenance/043-session-assessment/00-assessment.md provenance/043-session-assessment/01-deliberation.md specifications/multi-agent-deliberation.md specifications/methodology-kernel.md open-issues/OI-019.md" in /Users/ericmccowan/Development/complex-systems-engine
+ succeeded in 0ms:
+open-issues/OI-019.md:7:### OI-019: Path-selection work-channel and warrant-surface diversity
+open-issues/OI-019.md:13:## Problem statement
+open-issues/OI-019.md:25:## Unresolved sub-questions
+open-issues/OI-019.md:47:## Provisional closure criteria
+open-issues/OI-019.md:59:## Seed material
+open-issues/OI-019.md:70:## Cross-linkage
+open-issues/OI-019.md:79:## Session 043+ activation triggers
+open-issues/OI-019.md:88:## Until activation trigger fires
+open-issues/OI-019.md:97:## Honest note
+provenance/044-session-assessment/00-assessment.md:14:# Session 044 Assessment — Operator-Corrective Deliberation (Path OC)
+provenance/044-session-assessment/00-assessment.md:16:## §1 State at open
+provenance/044-session-assessment/00-assessment.md:18:### 1a Read-contract exercise
+provenance/044-session-assessment/00-assessment.md:28:### 1b Validator state at open
+provenance/044-session-assessment/00-assessment.md:32:### 1c Aggregate budget
+provenance/044-session-assessment/00-assessment.md:36:### 1d Default-agent path recommendation (what S044 would have been without operator input)
+provenance/044-session-assessment/00-assessment.md:40:### 1e Operator-direction class
+provenance/044-session-assessment/00-assessment.md:44:## §2 Operator-surfaced agenda (verbatim, non-redacted)
+provenance/044-session-assessment/00-assessment.md:61:## §3 Case Steward factual checks
+provenance/044-session-assessment/00-assessment.md:65:### 3a Verification of the S043 role/lineage split
+provenance/044-session-assessment/00-assessment.md:72:### 3b Verification of the historical Outsider-lineage pattern (operator's precedent claim)
+provenance/044-session-assessment/00-assessment.md:80:### 3c Verification of the MAD v4 normative state
+provenance/044-session-assessment/00-assessment.md:88:### 3d Verification of the S043 assessment §5 framing (departure-not-flagged)
+provenance/044-session-assessment/00-assessment.md:92:### 3e Verification of the §5.6 reopen-warrant (ii) discharge disposition
+provenance/044-session-assessment/00-assessment.md:96:### 3f S043 D-129 convention 3-session verification window status
+provenance/044-session-assessment/00-assessment.md:100:## §4 Path identification
+provenance/044-session-assessment/00-assessment.md:115:## §5 Proposed deliberation shape (offered for operator ratification)
+provenance/044-session-assessment/00-assessment.md:119:### 5a Perspectives (four-perspective, three-family)
+provenance/044-session-assessment/00-assessment.md:134:### 5b Reading scope
+provenance/044-session-assessment/00-assessment.md:145:### 5c Cross-perspective question set (preliminary)
+provenance/044-session-assessment/00-assessment.md:156:### 5d Synthesis and decision expectations
+provenance/044-session-assessment/00-assessment.md:166:### 5e Non-Claude invocation mechanics
+provenance/044-session-assessment/00-assessment.md:172:## §6 Rejected alternatives (for this assessment's proposed shape)
+provenance/044-session-assessment/00-assessment.md:188:## §7 D-129 convention exercise (first of 3-session verification window)
+provenance/044-session-assessment/00-assessment.md:206:## §8 Honest limits
+provenance/044-session-assessment/00-assessment.md:216:## §9 Halt for operator ratification of shape
+specifications/methodology-kernel.md:11:# Methodology Kernel
+specifications/methodology-kernel.md:13:## Purpose
+specifications/methodology-kernel.md:19:## Specification
+specifications/methodology-kernel.md:21:### Application Model
+specifications/methodology-kernel.md:27:### The Nine Activities
+specifications/methodology-kernel.md:31:#### 1. Read
+specifications/methodology-kernel.md:43:#### 2. Assess
+specifications/methodology-kernel.md:56:#### 3. Convene
+specifications/methodology-kernel.md:66:#### 4. Deliberate
+specifications/methodology-kernel.md:78:#### 5. Decide
+specifications/methodology-kernel.md:88:#### 6. Produce
+specifications/methodology-kernel.md:98:#### 7. Validate
+specifications/methodology-kernel.md:118:#### 8. Record
+specifications/methodology-kernel.md:124:#### 9. Close
+specifications/methodology-kernel.md:132:### Continuity Rules
+specifications/methodology-kernel.md:139:### Self-Hosting
+specifications/methodology-kernel.md:147:## Validation
+provenance/043-session-assessment/00-assessment.md:14:# Session 043 Assessment — Path-Selection Discipline (Operator-Surfaced Agenda)
+provenance/043-session-assessment/00-assessment.md:16:## §1 State at open
+provenance/043-session-assessment/00-assessment.md:18:### 1a Read-contract exercise
+provenance/043-session-assessment/00-assessment.md:28:### 1b Validator state at open
+provenance/043-session-assessment/00-assessment.md:32:### 1c Aggregate budget
+provenance/043-session-assessment/00-assessment.md:36:### 1d Default-agent path recommendation (what Session 043 would have been without operator input)
+provenance/043-session-assessment/00-assessment.md:40:### 1e Operator-direction class
+provenance/043-session-assessment/00-assessment.md:44:## §2 Operator-surfaced agenda (verbatim, non-redacted)
+provenance/043-session-assessment/00-assessment.md:61:## §3 Case Steward factual check of operator's observation
+provenance/043-session-assessment/00-assessment.md:65:### 3a Path-A count in last 10 sessions (S033–S042)
+provenance/043-session-assessment/00-assessment.md:83:### 3b Path-A count across the engine's full 42-session history
+provenance/043-session-assessment/00-assessment.md:87:### 3c §5.3 vindication at S041 — operator's citation verified
+provenance/043-session-assessment/00-assessment.md:91:### 3d §5.6 preserved-minority status
+provenance/043-session-assessment/00-assessment.md:95:## §4 Path identification
+provenance/043-session-assessment/00-assessment.md:108:## §5 Proposed deliberation shape (offered for operator ratification)
+provenance/043-session-assessment/00-assessment.md:112:### 5a Perspectives
+provenance/043-session-assessment/00-assessment.md:128:### 5b Reading scope
+provenance/043-session-assessment/00-assessment.md:138:### 5c Cross-perspective question set (preliminary)
+provenance/043-session-assessment/00-assessment.md:149:### 5d Synthesis and decision expectations
+provenance/043-session-assessment/00-assessment.md:155:### 5e Non-Claude invocation mechanics (proposed)
+provenance/043-session-assessment/00-assessment.md:159:## §6 Rejected alternatives (for this assessment's proposed shape)
+provenance/043-session-assessment/00-assessment.md:177:## §7 Honest limits
+provenance/043-session-assessment/00-assessment.md:185:## §8 Halt for operator ratification of shape
+provenance/043-session-assessment/01-deliberation.md:8:# Session 043 Deliberation Synthesis — Path PSD
+provenance/043-session-assessment/01-deliberation.md:10:## §1 Perspectives convened
+provenance/043-session-assessment/01-deliberation.md:26:## §2 Convergence and divergence by question
+provenance/043-session-assessment/01-deliberation.md:28:### Q1 — Is warrant-firing sparse by design or under-articulated?
+provenance/043-session-assessment/01-deliberation.md:40:### Q2 — Do observational metrics evidence discipline working, deferring, neither, or both?
+provenance/043-session-assessment/01-deliberation.md:52:### Q3 — Are there engine-internal work-shapes the default reasoning doesn't generate?
+provenance/043-session-assessment/01-deliberation.md:64:### Q4 — Required non-Path-A alternatives with evidence in default-agent recommendation?
+provenance/043-session-assessment/01-deliberation.md:78:### Q5 — Periodic self-audit reading beyond §2c 6-session window: net-positive or laundering?
+provenance/043-session-assessment/01-deliberation.md:90:### Q6 — Does §5.3 S041 vindication imply path-selection revision beyond discharge?
+provenance/043-session-assessment/01-deliberation.md:104:### Q7 — Overall verdict on operator's framing
+provenance/043-session-assessment/01-deliberation.md:116:## §3 Synthesis
+provenance/043-session-assessment/01-deliberation.md:118:### 3a Cross-family convergence (substantive-move thresholds)
+provenance/043-session-assessment/01-deliberation.md:125:### 3b What this deliberation can decide this session
+provenance/043-session-assessment/01-deliberation.md:135:### 3c What this deliberation cannot decide this session
+provenance/043-session-assessment/01-deliberation.md:143:### 3d Anti-laundering checks
+provenance/043-session-assessment/01-deliberation.md:151:## §4 Decisions summary
+provenance/043-session-assessment/01-deliberation.md:160:## §5 First-class minority preservation (§5.12)
+provenance/043-session-assessment/01-deliberation.md:182:## §6 Forward observations (non-OI-promoting)
+provenance/043-session-assessment/01-deliberation.md:190:## §7 Honest limits
+specifications/multi-agent-deliberation.md:11:# Multi-Agent Deliberation
+specifications/multi-agent-deliberation.md:13:## Purpose
+specifications/multi-agent-deliberation.md:27:## Specification
+specifications/multi-agent-deliberation.md:29:### When Multi-Agent Deliberation Is Required
+specifications/multi-agent-deliberation.md:42:### When Non-Claude Participation Is Required
+specifications/multi-agent-deliberation.md:67:### Trigger-Coverage Annotation Schema
+specifications/multi-agent-deliberation.md:87:## D-NNN: [Title]
+specifications/multi-agent-deliberation.md:109:### Perspectives
+specifications/multi-agent-deliberation.md:116:### Stance Briefs
+specifications/multi-agent-deliberation.md:133:### Non-Claude Participation Mechanism
+specifications/multi-agent-deliberation.md:155:### Heterogeneous-Participant Recording Schema
+specifications/multi-agent-deliberation.md:234:### Mechanism
+specifications/multi-agent-deliberation.md:242:### Synthesis
+specifications/multi-agent-deliberation.md:257:### Provenance Layout
+specifications/multi-agent-deliberation.md:307:### Graceful Degradation
+specifications/multi-agent-deliberation.md:314:### Limitations
+specifications/multi-agent-deliberation.md:328:### Closure Criteria for OI-004
+specifications/multi-agent-deliberation.md:339:### Criterion-4 Articulation for OI-004
+specifications/multi-agent-deliberation.md:367:### Acceptable Participant Kinds for OI-004
+specifications/multi-agent-deliberation.md:401:### Closure Procedure for OI-004
+specifications/multi-agent-deliberation.md:437:### Interaction with Existing Decisions
+specifications/multi-agent-deliberation.md:448:### Open Extensions
+specifications/multi-agent-deliberation.md:463:## Validation
+
+codex
+I have the section boundaries now. Next I’m pulling the shared brief’s allowed ranges plus the session facts and the prior-session artifacts the questions depend on.
+exec
+/bin/zsh -lc "sed -n '26,102p;132,149p;172,220p' provenance/044-session-assessment/01-brief-shared.md" in /Users/ericmccowan/Development/complex-systems-engine
+exec
+/bin/zsh -lc "sed -n '108,158p' provenance/043-session-assessment/00-assessment.md" in /Users/ericmccowan/Development/complex-systems-engine
+exec
+/bin/zsh -lc "sed -n '44,99p' provenance/044-session-assessment/00-assessment.md" in /Users/ericmccowan/Development/complex-systems-engine
+exec
+/bin/zsh -lc "sed -n '1,210p' provenance/043-session-assessment/01-deliberation.md" in /Users/ericmccowan/Development/complex-systems-engine
+ succeeded in 0ms:
+## §5 Proposed deliberation shape (offered for operator ratification)
+
+The operator's framing includes explicit guidance on perspectives and reading scope. The shape below translates that guidance into the engine's deliberation conventions and proposes specifics for ratification.
+
+### 5a Perspectives
+
+Five perspectives proposed. Each perspective's role is stated in one line; the deliberation brief (to be authored post-ratification) will give each perspective independent access to the workspace and pose a common question set.
+
+1. **Work-Shape Proposer** (Claude subagent). Explicit role: enumerate and argue for work-shapes the current default-agent reasoning does not generate. The operator's prompt names three candidates (evolutionary increments without warrants; under-tested-machinery exercise; multi-session investigations with emerging constraints); this perspective treats those as seed candidates, not an exhaustive list, and is expected to propose additional candidates. This is the perspective whose existence the operator explicitly requested.
+
+2. **Path-Selection Defender** (Claude subagent). Explicit role: argue that the current discipline of warrant-gated path selection is correct and that the operator's framing is wrong. Specifically expected to argue from (i) anti-laundering grounds (retrofitting paths to generate activity is the drift §5.3 warned against in reverse), (ii) the engine's demonstrated ability to surface substantive work when it is genuinely warranted (S033 / S036 / S041 all executed substantively when warrants fired or operator surfaced agenda), and (iii) the risk that a periodic-self-audit cadence becomes itself a laundering mechanism. If this perspective prevails, its position is preserved as a first-class minority per the operator's explicit request ("preserve that as a first-class minority if the deliberation lands there").
+
+3. **Long-Baseline Auditor** (Claude subagent). Explicit role: read the engine's full 42-session history via `SESSION-LOG.md` thin-index and archive-surface closes selectively, then report on the warrant-firing rate, the distribution of Path-A sessions over time, the pattern of vindication events across §5-series and §10-series minorities, and any cross-sectional drift patterns that single-session self-audits cannot catch (the Session 027 §C minority vector). Explicitly scoped to read further back than the §2c 6-session retention window via archive-surface access.
+
+4. **Outsider** (Claude subagent). Explicit role per the engine's established Outsider pattern (Sessions 017 / 022 / 028 / 036 / 041): frame the question independently of its in-workspace presentation; consider naming, categorisation, and what the question is really about; surface considerations the specialists will not. Specifically asked whether "path-selection bias" is the right frame, whether "self-reinforcing loop" is accurate, and whether the output categories the operator listed are the right categories.
+
+5. **Non-Claude, non-GPT lineage** (Google `gemini` CLI preferred; operator-ratifiable). Explicit role: independent finding-of-fact on the operator's claim about warrant-firing sparsity; independent judgement on whether the proposed output shapes (self-audit cadence / work-shape recognition / discipline requiring alternatives / reasoned rejection) are well-formed relative to the engine's architecture; explicit §5.6 observational data point on the vindication side. Per `CLAUDE.md` Tools §Multi-agent work: "Codex is preferred for any thinking or reasoning tasks" but the §5.6 reopen-warrant (ii) text specifically calls out "non-GPT non-Claude" as the vindication-side condition; operator to ratify which lineage fires.
+
+Alternative shapes considered and rejected for this assessment (see §6 Rejected alternatives).
+
+### 5b Reading scope
+
+Beyond default-read surface:
+- Full `SESSION-LOG.md` thin-index (42 rows) consulted by all perspectives.
+- Archive-surface consultation of Sessions 021 / 027 / 028 / 041 closes (these are the closes where §5.3-origin articulation, §5.2 vindication, §5.3 aggregate-hard-budget activation, and §5.3 discharge-as-vindicated events occurred).
+- Archive-surface consultation of Session 036 close (operator-surfaced-agenda class precedent; the one non-Path-A operator-agenda session in the engine-v6+ window).
+- `specifications/read-contract.md` v4 §2c (close-rotation rule) and §5.3 (aggregate-hard-budget conversion minority) — already default-read.
+- `specifications/multi-agent-deliberation.md` v4 §Acceptable Participant Kinds and §When Non-Claude Participation Is Required — already default-read.
+- The complete list of archive-surface targets per perspective will be declared in each perspective's individual brief once the shape is ratified.
+
+### 5c Cross-perspective question set (preliminary)
+
+Proposed common questions (subject to refinement after ratification):
+- Q1. Is warrant-firing genuinely sparse by design, or is it under-articulated?
+- Q2. Do observational-session metrics (no-growth streaks; preservation depths; zero-event windows) constitute evidence of discipline working, evidence of discipline deferring, or neither?
+- Q3. Are there engine-internal work-shapes the current default-agent reasoning does not generate, and if so, is that absence a defect or a feature?
+- Q4. Should default-agent path recommendation be required to surface non-Path-A alternatives with evidence (analogous to Rejected-alternatives in decision records)?
+- Q5. Is a periodic self-audit at some cadence, reading further back than §2c 6-session window, a net-positive mechanism or a laundering risk?
+- Q6. Does the §5.3 S041 vindication imply any revision to the path-selection mechanism specifically, beyond the discharge already recorded?
+- Q7. Is the operator's framing correct, partially correct with caveats, or wrong?
+
+### 5d Synthesis and decision expectations
+
+Deliberation will produce a synthesis (`01-deliberation.md`) integrating perspectives; per MAD v4 the synthesis must identify points of convergence and points of dissent, and must preserve any first-class minority that emerges (including the Path-Selection Defender's position if it does not prevail, per operator's explicit instruction).
+
+Decision(s) will be drafted in `02-decisions.md` per OI-002 substantive-vs-minor classification. If decisions land on specification revision, the decision is substantive and triggers engine-v bump consideration per engine-manifest.md §5. If decisions land on a new convention or a new OI without specification change, the decision may be minor. If decisions land on reasoned rejection of the framing, the session closes with a decision recording the rejection reasoning and preserving the operator's framing as a first-class minority (inversion of the standard preserved-minority pattern).
+
+### 5e Non-Claude invocation mechanics (proposed)
+
+Per `reference_workspace.md` memory: `codex exec --sandbox read-only "$(cat prompt.txt)" 2>&1 | tee output.txt` is the mechanical invocation for OpenAI GPT-5 via codex CLI. For non-GPT non-Claude, the analogous invocation via `gemini` CLI is proposed; exact CLI invocation to be confirmed at ratification time. Manifest schema per MAD v4 §16 applies (independent_claim evidence pointer; claude_output_in_training field; participant_organisation in closed set).
+
+
+ succeeded in 0ms:
+## 1. What this deliberation is
+
+The operator has surfaced a question at Session 044 open. The question is verbatim in `00-assessment.md` §2 of this session's provenance folder. In short:
+
+At Session 043 (Path PSD), the Outsider perspective was filled by a Claude subagent; a separate fifth perspective was Google Gemini. The split between Outsider-as-role and non-Claude-as-lineage — historically fused across 21 consecutive sessions (S005 through S041, verified via mechanical manifest inspection in the assessment §3b) — happened without deliberation, was not flagged in the S043 assessment §5 shape proposal as a departure from precedent, and was ratified by the operator's "Proceed" default token without the implication being visible. The operator has declared a position **not for deliberation** — "A Claude is not an Outsider. Filling the Outsider role from inside the Claude family negates the role's function regardless of how the brief reads. This was an error and should not recur." — and has opened two questions **for deliberation**:
+
+- **Why did this happen?**
+- **What mitigations?**
+
+The output shapes the operator will consider: substantive MAD v4 revision (engine-v bump candidate); minor documentary clarification + Convene checklist; new OI; combined treatment with OI-019 (since both concern convene-time discipline); partial rejection if the engine identifies a wrong premise in the operator's framing.
+
+The assessment has identified this session as a substantive-revision candidate requiring multi-perspective deliberation per `multi-agent-deliberation.md` v4 §When Multi-Agent Deliberation Is Required (clauses 2 and 3), with non-Claude participation required per §When Non-Claude Participation Is Required clause 2 (output may substantively revise `multi-agent-deliberation.md`). Closed-state OI-004 means `d023_4` does not fire.
+
+## 2. The question set (Q1/Q2/Q3/Q4/Q6/Q7)
+
+Each perspective is asked to answer all six questions to the extent its role allows. A perspective MAY decline to answer a question if it is outside its role — declining explicitly is acceptable and preferable to answering out-of-role. Q5 is deliberately absent per operator R3 — the number is skipped to preserve provenance of the drop.
+
+- **Q1.** Why did the S043 role/lineage split happen? The operator has named five candidate causes: (1) MAD v4 has no normative requirement that Outsider be non-Claude; (2) Convene activity has no lineage-check at convening time; (3) S043 assessment §5 split the historically-fused roles without naming the split as substantive; (4) operator default-token ratification did not surface the implication; (5) §5.6 reopen-warrant (ii) was treated as discharged on lineage-presence grounds without verifying the Outsider specifically. Treat these as seeds, not an exhaustive set. For each candidate, argue load-bearing vs epiphenomenal and name the evidence. If additional causes exist, surface them. Do not stop at obvious explanations.
+
+- **Q2.** Is the operator's declared position ("Claude is not an Outsider; filling the Outsider role from inside the Claude family negates the role's function") correctly scoped? Does it apply symmetrically to every multi-perspective deliberation, or only to deliberations where non-Claude participation is independently required by MAD v4 triggers, or is there some narrower / broader scope that is actually load-bearing? The operator has committed to the position; perspectives may argue its scope is different than stated (narrower, broader, conditioned-differently) but NOT that the position itself is wrong. "The position is correct at a different scope than the operator stated" is a legitimate output; "Claude as Outsider is defensible" is not — that is exactly what the operator has removed from the deliberation.
+
+- **Q3.** What mitigations are warranted? The operator has named four candidates: (1) increase default-read surface so historical Outsider-lineage pattern is visible at session-open; (2) Convene checklist that names lineage per perspective and blocks Claude-as-Outsider absent explicit override; (3) MAD v4 normative addition that Outsider MUST be non-Claude when non-Claude participation is required; (4) multi-family panel discipline as the new default for substantive deliberations. Treat these as seeds, not an exhaustive set. For each proposal, state: (i) mechanism (concrete: what file / what text / what procedure); (ii) anti-laundering risks (what laundering-surface does it open; what is the retrofit risk per OI-019 §5.12 reopen warrant (b) class of concern); (iii) spec-level vs convention-level codification (minor convention with verification window, vs substantive spec amendment); (iv) engine-v bump class if spec-level; (v) interaction with OI-019 (advance / constrain / conflict / neutral). Mitigation 4 should be considered in light of the operator's operational-constraint disclosure — three-family convening is not operationally available for substantive deliberations at present.
+
+- **Q4.** Should MAD v4 gain a normative clause on Outsider lineage? Candidates: (a) "Outsider MUST be non-Claude when non-Claude participation is required" (scope-conditional); (b) "Outsider MUST be non-Claude in all multi-perspective deliberations" (unconditional); (c) "Convene activity MUST enumerate lineage per perspective and halt if Outsider = Claude without explicit override" (procedural, not stance-level); (d) other formulation. For each candidate, argue whether it is correctly scoped, what it would fail to cover, and whether it creates new surfaces for the problem the operator has identified.
+
+- **[Q5 DROPPED per operator R3]** — the premise (three-family panel as new default) was removed by the operator's operational-constraint disclosure in the ratification response. Number preserved to keep the drop audit-visible.
+
+- **Q6.** Is there a combined treatment with OI-019 ("Path-selection work-channel and warrant-surface diversity") that makes operational sense? Both concern convene-time discipline. Candidates: joint deliberation in a future session; shared reopen warrants across OI-019 and any new OI opened here; bundled spec-revision; or coupling-dilution rejection (keep separate). Argue which.
+
+- **Q7.** Is any part of the operator's framing wrong in a way that partial rejection is warranted? The operator has explicitly offered "partial rejection if engine identifies a wrong premise in my framing" as an output shape. Candidates to examine: (a) the "error" characterisation (was the S043 split an error, or a one-time lapse in robust convention, or a symptom of deeper under-specification?); (b) the five candidate causes (is any of them epiphenomenal or wrongly-identified?); (c) the four candidate mitigations (is any of them addressing the wrong root cause?). If you find a wrong premise, name it specifically and state what correct formulation you propose.
+
+## 3. Reading guidance
+
+All perspectives are expected to read:
+
+- `provenance/044-session-assessment/00-assessment.md` — this session's assessment including §2 operator framing verbatim and §3 factual checks.
+- `provenance/043-session-assessment/00-assessment.md` §5 in particular (the object-of-analysis: the shape proposal that split role from lineage).
+- `provenance/043-session-assessment/01-deliberation.md` — the S043 synthesis output (contextualises the S043 deliberation shape that the operator is responding to).
+- `provenance/043-session-assessment/participants.yaml` + `provenance/043-session-assessment/manifests/outsider.manifest.yaml` + `manifests/non-claude.manifest.yaml` — committed artefacts of the role/lineage split.
+- `specifications/multi-agent-deliberation.md` v4 — especially §Perspectives (establishing the role-specification baseline), §When Non-Claude Participation Is Required (establishing the participant-presence rules without role constraints), §Heterogeneous-Participant Recording Schema.
+- `specifications/methodology-kernel.md` v6 — especially the §Convene activity text (for Convene-checklist proposal analysis).
+- `open-issues/OI-019.md` — the operator has named "combined treatment with OI-019" as an output shape; Q6 asks you to evaluate it.
+
+Optional (perspective-specific):
+
+- Mechanical manifest inspection of historical Outsider manifests is done in the assessment §3b; perspectives do not need to re-verify the 21-for-21 count mechanically. If a perspective's analysis turns on specific historical Outsider content, it may consult the relevant raw-output file.
+- `provenance/041-session-assessment/01-deliberation.md` §5.6 — for perspectives evaluating whether §5.6 reopen-warrant (ii) wording captured intent.
+
+## 4. Required output format
+
+Each perspective produces one markdown file at `provenance/044-session-assessment/01X-perspective-<role>.md` (X = a/b/c/d matching perspective 1..4). Required structure:
+
+```markdown
+---
+session: 044
+perspective: <role name>
+perspective_index: <1-4>
+lineage: <claude / gpt / other>
+---
+
+# Perspective <n>: <role name>
+
+## Reading performed
+<list of files actually read during this perspective's work>
+
+## Q1 through Q7 (Q5 skipped per operator R3)
+<one subsection per question; the perspective may decline explicitly>
+
+## Independent claim
+<one or two sentences: what this perspective contributes that the other three cannot — this is the MAD v4 §16 manifest-schema "independent_claim" field substance>
+
+## Confidence and limits
+<what the perspective is confident in; what it is NOT confident in; anything it could not resolve given its scope>
+```
+
+Length guidance: perspectives should aim for 1,000–2,000 words total. Compress where possible. The synthesis is more useful than any individual perspective; contribute a sharp position, not an exhaustive treatise.
+
+### 5c. Perspective 3 — Outsider (Codex/GPT via codex exec; non-Claude lineage per operator constraint)
+
+Your role is to frame the question independently of how it has been presented inside the Claude workspace. The operator has declared a position ("Claude is not an Outsider; filling the Outsider role from inside the Claude family negates the role's function") explicitly **not for deliberation** — it is a constraint on the problem space, not a claim the perspectives may re-open. You must respect this constraint. You may argue the position's SCOPE is different than stated (narrower / broader / conditioned-differently); you may not argue Claude-as-Outsider is defensible.
+
+Your specific tasks:
+
+(a) **Q2 scope evaluation**: is "Claude is not an Outsider" correctly scoped? Does it apply symmetrically to every multi-perspective deliberation, or only to deliberations where non-Claude participation is independently required by MAD v4 triggers (clauses 1/2/3/4), or is there some narrower or broader scope that actually carries the load?
+
+(b) **Framing evaluation** (Q7-adjacent): is the operator's "split-as-error" framing the right framing? Alternative framings to consider: was it a one-time lapse in otherwise-robust convention? A symptom of deeper asymmetry between role conventions and lineage conventions? A signal that the "Outsider" role itself is under-specified and its function implicit rather than articulated? Any of these framings changes what mitigations actually work.
+
+(c) **Claude-blindness inventory** (cross-cutting): what causes (Q1) and mitigations (Q3) would be systematically missed by Claude-family perspectives because of Claude-family priors on this specific question? P1 (Root-Cause Analyst) and P2 (Mitigation Designer) are both Claude and will reason from inside the frame that produced the S043 lapse. What are they likely to miss? Name specific blind spots.
+
+(d) **Residual gap evaluation**: assume the operator's likely mitigation package is adopted (some combination of items from Q3(2), (3), and a form of Q3(1)). Is there a residual convene-time-discipline gap that the package does not address? If yes, what is it?
+
+(e) **Q6 coupling evaluation**: you are positioned to judge whether OI-019 and this session's issue should be jointly treated or kept separate — you do not have the Claude-family bias toward "bundling is neat". Is coupling a good idea operationally, or does it dilute each issue?
+
+You are free to read any file in the workspace. You reason independently without seeing the other perspectives' outputs during your independent phase.
+
+## 6. Constraint on external imports
+
+Reason from this brief and the workspace files. Flag pretrained ideas (e.g., patterns you know from outside this project) as external inputs rather than committing them directly. If you introduce a concept that is not in the workspace, name it explicitly as "external import" and cite the domain it comes from. This is the PROMPT.md / `prompts/development.md` standing rule.
+
+## 7. Anti-laundering reminders specific to this session
+
+- **Do not retrofit MAD v4 in the same session that surfaces the motivating lapse without cross-family convergence.** The MAD v4 §Limitations warning applies directly. If perspectives converge on spec change, the convergence must be genuine (3-of-4 cross-family including at least one non-Claude on the prevailing side), not manufactured.
+- **Do not paper over the operator's declared position.** "Claude is not an Outsider" is out of the deliberation space per operator. Perspectives that disagree with the position should frame disagreement as scope-disagreement (Q2), not as re-opening the position.
+- **Do not conflate the Outsider-role question with the three-family-panel question.** The operator has separated them: the former is a declared constraint; the latter has been withdrawn to operational-constraint-acknowledged status. Q4 (normative clause on Outsider lineage) and Q3 item 4 (multi-family panel discipline) are now distinct in scope.
+- **Do not use the §5.6 literal-discharge at S043 as evidence the convene-time discipline is sufficient.** The literal discharge operated at participant-presence level; the Outsider-role-assignment level is exactly what the operator has surfaced as the remaining gap.
+
+## 8. Cross-family convergence threshold and minority preservation
+
+Convergence threshold: for substantive moves (MAD v4 spec amendment; new normative clause; engine-v bump), 3-of-4 cross-family convergence suffices IF at least one non-Claude perspective (P3 or P4) is on the prevailing side. If both non-Claude perspectives dissent, the prevailing Claude-only position must be downgraded to non-substantive OR deferred to a future session.
+
+For minor moves (convention adoption with verification window; OI annotation; documentary clarification), 2-of-4 convergence with at least one non-Claude on the prevailing side may suffice at Case Steward discretion.
+
+Minority preservation: any perspective that does not prevail and whose position has distinctive operational content is preserved as a first-class §5-series minority in this session's provenance, with reopen warrants stated. §5.12 (Path-Selection Defender from S043) precedent applies.
+
+## 9. Non-Claude operational notes (P3 and P4 only; P1/P2 skip)
+
+P3 and P4 are both invoked via `codex exec` CLI with `--sandbox read-only`. Invocation pattern:
+
+```
+codex exec --sandbox read-only "$(cat codex-<role>-prompt.txt)" 2>&1 | tee codex-<role>-raw-output.log
+```
+
+Each Codex perspective receives: (i) the shared brief §1, §2, §3, §4, §6, §7, §8 (all byte-identical), (ii) its own §5 role-specific stance (§5c for Outsider; §5d for Cross-Family Reviewer), (iii) no access to other perspectives' outputs during the independent phase.
+
+Both P3 and P4 produce §5.6 data points on the worst-case side (GPT-family-concentrated non-Claude record; no non-GPT non-Claude participation this session per operator's operational-constraint disclosure). This is recorded transparently at close. It is not an engine-discipline lapse; it is an operator-informed tradeoff.
+
+ succeeded in 0ms:
+## §2 Operator-surfaced agenda (verbatim, non-redacted)
+
+> **What I want surfaced.** In Session 043 (Path PSD), the Outsider perspective was filled by a Claude subagent; a separate fifth perspective was Google Gemini. The split between Outsider-as-role and non-Claude-as-lineage — historically fused (S005, S021, S028, S033, S036, S041 all had Outsider = non-Claude) — happened without deliberation, was not flagged in the S043 assessment §5 shape proposal as a departure from precedent, and was ratified by my "Proceed" default token without the implication being visible to me.
+>
+> **My position, not for deliberation.** A Claude is not an Outsider. Filling the Outsider role from inside the Claude family negates the role's function regardless of how the brief reads. This was an error and should not recur. Going forward I am open to and prefer multi-family panels — Claude + Gemini + Codex together — but the Outsider seat must be a non-Claude lineage.
+>
+> **For deliberation, two questions treated as one agenda:**
+>
+> 1. **Why did this happen?** Examine root cause without deferring to obvious explanations. Candidates I can name (engine should add or reject): MAD v4 has no normative requirement that Outsider be non-Claude; Convene activity has no lineage-check at convening time; S043 assessment §5 split the historically-fused roles without naming the split as substantive; operator default-token ratification did not surface the implication; §5.6 reopen-warrant (ii) was treated as discharged on lineage-presence grounds without verifying the Outsider specifically.
+> 2. **What mitigations?** Examples I can name (engine should add or reject): increase the default-read surface so historical Outsider-lineage pattern is visible at session-open; Convene checklist that names lineage per perspective and blocks Claude-as-Outsider absent explicit override; MAD v4 normative addition that Outsider MUST be non-Claude when non-Claude participation is required; multi-family panel discipline as the new default for substantive deliberations (addressing §5.6 GPT-family-concentration at the same time).
+>
+> **Output shapes engine may consider.** Substantive MAD v4 revision (engine-v bump candidate); minor documentary clarification + Convene checklist; new OI; combined treatment with OI-019 since both concern convene-time discipline; partial rejection if engine identifies a wrong premise in my framing.
+>
+> **Convening preference for this session.** At least one Claude + at least one Gemini + at least one Codex/GPT, with the Outsider seat assigned to a non-Claude lineage. First session where I am explicitly requesting three-family convening as the shape, not a single-non-Claude addition.
+>
+> **Halt for engine shape proposal before convening.**
+
+## §3 Case Steward factual checks
+
+This section verifies the operator's factual claims independently; the question-framing (why + mitigations) is not verified — it is the operator's and is offered for deliberation. The declared position ("Claude is not an Outsider") is noted but not evaluated here — it is out-of-scope per the operator's explicit framing.
+
+### 3a Verification of the S043 role/lineage split
+
+**Verified.** S043 `participants.yaml` records five perspectives. Manifest inspection:
+- `provenance/043-session-assessment/manifests/outsider.manifest.yaml`: `participant_kind: claude-subagent`; `provider: anthropic`; `model_id: unknown`. Perspective index 4.
+- `provenance/043-session-assessment/manifests/non-claude.manifest.yaml`: `participant_kind: non-anthropic-model`; `provider: google`; `model_id: gemini` (exact version recorded per close narrative as `gemini` CLI 0.38.1). Perspective index 5.
+- The raw-output files corroborate: `01d-perspective-outsider.md` frontmatter `lineage: claude`; `01e-perspective-non-claude.md` frontmatter `lineage: gemini`.
+
+### 3b Verification of the historical Outsider-lineage pattern (operator's precedent claim)
+
+**Verified and strengthened.** Mechanical inspection of every `provenance/<NNN-*>/manifests/outsider.manifest.yaml` across the full session history yields:
+- Sessions **S005 / S006 / S007 / S008 / S009 / S010 / S011 / S012 / S013 / S014 / S017 / S019 / S020 / S021 / S022 / S023 / S024 / S028 / S033 / S036 / S041** — every one records `participant_kind: non-anthropic-model`, `provider: openai`, `model_id: gpt-5.4` (S028 records `gpt-5`). **21 consecutive Outsider exercises, 21 non-Claude assignments.**
+- Session **S043** — the 22nd Outsider exercise, and the first-ever `participant_kind: claude-subagent` / `provider: anthropic` assignment.
+
+The operator named "S005, S021, S028, S033, S036, S041"; the true history is substantially broader (21 sessions not 6). The pattern is even more load-bearing than the operator's phrasing suggests: Outsider-as-non-Claude is empirically 21-for-21 prior to S043.
+
+### 3c Verification of the MAD v4 normative state
+
+**Verified.** Mechanical search of `specifications/multi-agent-deliberation.md` v4 for "Outsider" finds only historical citations (Session 021 Outsider frame-completion contribution to criterion-4 articulation; Session 021 Outsider closure-minority preservation). **No normative requirement that Outsider be non-Claude exists in MAD v4.** Mechanical search of `specifications/methodology-kernel.md` v6 for "Outsider" finds zero hits. The role is engine convention maintained by precedent citation in per-session §5 shape proposals, not by specification.
+
+§Perspectives (MAD v4) names number (default three, up to five), selection-for-disagreement, an adversarial requirement, and naming discipline. Outsider is not enumerated as a required role, nor is its lineage constrained.
+
+§When Non-Claude Participation Is Required governs **participant presence** across the whole deliberation, not **role assignment**. A deliberation may satisfy clause 1/2/3/4 by including a non-Claude participant in any role (or as a reviewer per Shape B); the specification does not require that role be Outsider.
+
+### 3d Verification of the S043 assessment §5 framing (departure-not-flagged)
+
+**Verified.** `provenance/043-session-assessment/00-assessment.md` §5a item 4 reads: *"Outsider (Claude subagent). Explicit role per the engine's established Outsider pattern (Sessions 017 / 022 / 028 / 036 / 041)."* The parenthetical cites the established Outsider **role pattern** and then assigns a **Claude-subagent** participant to that role. The 21-for-21 non-Claude lineage history that actually constitutes the cited pattern is not mentioned. Item 4 therefore fuses "established Outsider pattern" with "Claude subagent" without examining whether the lineage component of the pattern could be cleanly severed from the role component. The assessment's own §6 Rejected alternatives does not surface "Outsider-as-non-Claude precedent would be broken" as a consideration for this session.
+
+### 3e Verification of the §5.6 reopen-warrant (ii) discharge disposition
+
+**Partially verified; operator's framing is accurate.** S043 close §5.6 records literal discharge of reopen-warrant (ii) on the grounds that non-GPT non-Claude participation (Gemini as P5) existed before S047. The close also records that the literal-vs-spirit question ("is one data point sufficient or is sustained exercise needed?") was recorded as forward observation for S046 re-examination. The discharge operated at the **participant-presence** level (there was a Gemini perspective) not at the **Outsider-role-assignment** level (was the Gemini perspective specifically the Outsider?). The operator's framing — "warrant (ii) was treated as discharged on lineage-presence grounds without verifying the Outsider specifically" — is factually correct. The §5.6 warrant's precise wording ("six-session-window-without-non-GPT-non-Claude-participation") does not reference the Outsider role, so on a strict reading the literal discharge is defensible; but the operator's deeper point is that §5.6 was created in a context where Outsider-as-non-Claude was 21-for-21 empirical fact, and the warrant's intent may have presumed that structural continuity.
+
+### 3f S043 D-129 convention 3-session verification window status
+
+S044 is the **first-of-3** D-129 verification session. D-129 requires session-open assessments to surface ≥1 considered-and-rejected non-Path-A alternative with one-sentence rationale. See §7 below for the D-129 exercise record.
+
+
+ succeeded in 0ms:
+---
+session: 043
+title: Synthesis — five-perspective cross-family deliberation on Path-Selection Discipline (Path PSD); 4-of-5 convergence (including non-Claude) that operator's framing is at least partially correct and something forward should change; divergence on exact shape; Path-Selection Defender position preserved as §5.12 first-class minority (#29) per operator's explicit request; minor forward convention adopted (record ≥1 non-Path-A alternative in default-agent session-open recommendation) with 3-session verification window S044-S046; new OI-019 opened for unresolved substantive questions
+date: 2026-04-24
+status: deliberation-complete
+---
+
+# Session 043 Deliberation Synthesis — Path PSD
+
+## §1 Perspectives convened
+
+Five perspectives were convened per the shape ratified at §5 of `00-assessment.md`.
+
+| # | Role | Lineage | File | Committed? |
+|---|------|---------|------|------------|
+| 1 | Work-Shape Proposer | Claude (Anthropic) | `01a-perspective-work-shape-proposer.md` | Self-committed eb345ae |
+| 2 | Path-Selection Defender | Claude (Anthropic) | `01b-perspective-path-selection-defender.md` | Pending close commit |
+| 3 | Long-Baseline Auditor | Claude (Anthropic) | `01c-perspective-long-baseline-auditor.md` | Pending close commit |
+| 4 | Outsider | Claude (Anthropic) | `01d-perspective-outsider.md` | Self-committed 3f829d3 |
+| 5 | Non-Claude non-GPT | Gemini (Google) | `01e-perspective-non-claude.md` | Pending close commit |
+
+All five produced structured outputs per the shared brief §4 format. Word counts: P1 ~1770; P2 ~1950; P3 ~2525 (within extended-role ceiling); P4 ~1980; P5 ~1200.
+
+Subagent self-commit inconsistency (P1 + P4 committed; P2, P3, P5 did not) is recorded as a forward observation — see §6 — without OI promotion per anti-laundering.
+
+## §2 Convergence and divergence by question
+
+### Q1 — Is warrant-firing sparse by design or under-articulated?
+
+| Perspective | Position |
+|-------------|----------|
+| P1 | By design; but "work-channel diversity" is weak (distinct from gate-sparsity) |
+| P2 | By design — "preserve-restraint" architecture; grounded in kernel Continuity Rules + MAD §Limitations + read-contract §5.3 + §10.4-M1/M2 |
+| P3 | By design (deliberated and preserved across Sessions 023+); under-articulated only on whether metrics systematically self-confirm |
+| P4 | **Disagrees on framing** — dense against engine-internal trajectories, sparse against operator-frame observations; the asymmetry is hidden by "sparse by design" |
+| P5 | By design — but **defensive, not generative**; built to prevent errors, not drive evolution |
+
+**Convergence: 4-of-5 that warrant-firing is sparse by design**; non-Claude (P5) on majority side. P4 dissents on the framing (not the fact): accepts the observation but argues "sparse by design" hides an asymmetry. P4's dissent is compatible with P1/P3/P5 additions: it names *where* the sparsity lives that others attribute to design neutrality.
+
+### Q2 — Do observational metrics evidence discipline working, deferring, neither, or both?
+
+| Perspective | Position |
+|-------------|----------|
+| P1 | Metrics track engine **metabolism, not output**: "a dead engine and a disciplined engine produce the same metric readings" |
+| P2 | (a) Working, grounded in **pre-registration**: metrics track commitments specified before outcomes known (WX-24-1 ex ante; WX-28-1 adversarial-to-§5.9; §10.4-M falsifiable windows) |
+| P3 | (d) Both simultaneously; loop is real and documented (S027 Q6 finding) |
+| P4 | Asymmetric: restraint-metrics (exist) vs non-restraint-metrics (don't exist) — the asymmetry operationalises the self-referential trap |
+| P5 | (d) Both with dangerous temporal skew — short-term working, long-term deferring |
+
+**Convergence: 4-of-5 identify some form of asymmetry or self-reference; P2 alone holds "working" via pre-registration defence.** Non-Claude (P5) on majority side. P2's pre-registration argument is strong within its frame but does not engage with the specific asymmetry P4 names: the engine has metrics for *whether restraint was maintained* but not for *whether restraint was correct*. P1's metabolism framing and P4's asymmetry framing are complementary. P3's "(d) both" with temporal reading matches P5's "temporal skew."
+
+### Q3 — Are there engine-internal work-shapes the default reasoning doesn't generate?
+
+| Perspective | Position |
+|-------------|----------|
+| P1 | Yes — 8 candidates examined; several probable defects; **rejects operator seed "evolutionary increments without warrant" as feature** (engine correct to refuse); under-tested-machinery subsumed under P1's candidate (c) |
+| P2 | Probably yes — but not itself a defect; concedes narrow multi-session-emergent-constraint gap; explicitly rejects "evolutionary increments" (agrees with P1 here) |
+| P3 | Yes — operator's 3 + cross-sectional audit as 4th; all defects in default-agent reasoning |
+| P4 | Engine has a **recogniser** for work-shapes but no **generator** (distinctive frame) |
+| P5 | Yes — machinery-exercise (diagnostic) / refactoring (architectural) / investigative (epistemic) / baseline-shift (audit); defects under "evolving methodology" framing, features under "stable engine" framing |
+
+**Convergence: 5-of-5 identify some absent work-shapes**; divergence on whether the absence is a defect, feature, or structural mismatch. **Notable unanimous agreement** (P1 + P2): "evolutionary increments without activation warrant" is the one seed shape to **reject** as a general pattern — this protects the engine's load-bearing "earned change" discipline. This is an important convergence: the operator's seed #1 is rejected by both the Work-Shape Proposer AND the Path-Selection Defender for the same reason (laundering risk).
+
+### Q4 — Required non-Path-A alternatives with evidence in default-agent recommendation?
+
+| Perspective | Position |
+|-------------|----------|
+| P1 | **YES** — concrete convention: ≥2 non-Path-A shapes considered with one-line why-rejected per shape |
+| P2 | **NO** — voluntary practice already operational (S042/S043 openings already surface rejected alternatives); mandate creates forced-template laundering surface |
+| P3 | **YES** — "Path-A justification section": one-line warrant check + one-line alternatives-considered + one-line metrics-that-would-have-triggered |
+| P4 | Doesn't address Q4 directly; compatible (warrant-surface framing implies expanded input categories, of which Q4 is one form) |
+| P5 | **YES** — "If Path A were forbidden this session, what would be most valuable?" as single alternative framing |
+
+**Convergence: 3-of-5 explicit YES + P4 compatible = 4-of-5 supporting some form of required alternatives surfacing; P2 is lone NO.** Non-Claude (P5) on majority side. **Meets 3-of-5 cross-family threshold for substantive move** per MAD v4 §Convergence.
+
+**Divergence on exact count**: P1 says ≥2; P5 says 1; P3 says "alternatives plural." This divergence is operationally real and is reflected in this session's decision record: the convention adopted at D-129 is MINIMUM 1 (matching P5's floor); MAXIMUM (and P1's preferred shape with ≥2) deferred to OI-019 for verification-window evaluation.
+
+### Q5 — Periodic self-audit reading beyond §2c 6-session window: net-positive or laundering?
+
+| Perspective | Position |
+|-------------|----------|
+| P1 | Indeterminate-leaning-defect; candidate (b) long-baseline archive-re-reading has operational value but could become ritual |
+| P2 | **Laundering risk by wide margin**; three reasons (scheduled "look harder" manufactures findings; cadence becomes ritual; §6.2 post-v-bump pattern already handles this); **concedes** narrower targeted-read-further-back convention IF P3 produces evidence |
+| P3 | **Net-positive** with constraints: read-only observational; once per 6-session window; finds preserved as forward-observation or minority not spec change; **produces the evidence P2's concession was conditional on** (S035 WX-35-1 13-session gap; S027 Q6 single-session audits cannot catch cross-sectional drift) |
+| P4 | **Rejects "periodic"** per se; proposes cross-sectional audit with distribution-property trigger (e.g., "Path-A > 60% of last 10 sessions without operator-surfaced-agenda") — triggered-not-scheduled |
+| P5 | Net-positive with diagnostic (not generative) scope; cadence ~10 sessions synchronized with §10.4 monitoring |
+
+**Convergence: messy.** Reframe: 4-of-5 support **some form of extended-baseline mechanism** (P1 leaning; P3 periodic-with-constraints; P4 triggered; P5 periodic). P2's narrower concession triggered by P3's evidence. Only P2 unconditionally rejects. Shape divergence: periodic (P3, P5) vs triggered (P4) vs "narrower targeted" (P2 concession) vs indeterminate (P1). **No 3-of-5 convergence on a specific shape.** This is deferred to OI-019.
+
+### Q6 — Does §5.3 S041 vindication imply path-selection revision beyond discharge?
+
+| Perspective | Position |
+|-------------|----------|
+| P1 | Does not directly address; compatible (silent) |
+| P2 | **NO** — discharge complete; §5.3 content was OI-004 closure-condition drift, not path-selection generally; operator's extrapolation is a new proposal requiring its own evidence |
+| P3 | **YES** — minority activation warrants should themselves have expiration windows; warrant-firing should trigger immediate deliberation not conversion-to-spec |
+| P4 | **YES** — §5.3 generalises beyond OI-004 to other extending-firing-condition warrants (WX-28-1, §10.4-M1/M2/M5, OI-002 accumulation); discharge complete for §5.3-as-OI-004-warrant, incomplete as methodology observation |
+| P5 | **YES** — revision implied: state-decay/pressure trigger for closable/articulated OI state after X sessions |
+
+**Convergence: 3-of-5 YES + P1 compatible = 3 or 4 of 5 for forward-implication; P2 alone NO.** Non-Claude (P5) on YES side. **Meets 3-of-5 cross-family threshold for substantive move.**
+
+**Divergence on exact mechanism**: warrant-expiration-windows (P3) vs generalised-to-other-warrants (P4) vs state-decay-trigger-on-OI-state (P5). Three distinct operational mechanisms, each coherent. **No 3-of-5 convergence on specific mechanism.** Deferred to OI-019.
+
+### Q7 — Overall verdict on operator's framing
+
+| Perspective | Position |
+|-------------|----------|
+| P1 | Partially correct; discipline sound, **channel diversity weak** (distinct reframe) |
+| P2 | **Partially correct on facts, wrong on conclusions**; preserve framing as first-class minority |
+| P3 | Correct; caveat (concentration emerged post-v4, 47% vs 0% pre-v4, may be self-stabilizing) + addition (cross-sectional drift systematically invisible) |
+| P4 | Observation correct, frame wrong; rename: **"warrant-surface closure against operator-frame observations"** (distinctive reframe); adds missing fifth output category: spec-level enlargement of warrant surface |
+| P5 | Correct; engine optimized for avoiding mistakes at expense of progress |
+
+**Convergence: 4-of-5 accept operator's framing at least partially; P2 accepts facts but rejects conclusions.** Non-Claude (P5) on majority side. Two distinctive reframes emerge (not competing; complementary): P1's channel-diversity and P4's warrant-surface-closure. Both name the same phenomenon from different axes.
+
+## §3 Synthesis
+
+### 3a Cross-family convergence (substantive-move thresholds)
+
+- **3-of-5 threshold met on Q4** (required non-Path-A alternatives surfacing; non-Claude on majority side) → supports a substantive move on this specific convention.
+- **3-of-5 threshold met on Q6** (some forward-implication from §5.3 vindication; non-Claude on majority side) → supports that *something* follows from the discharge, but NOT with agreement on the specific mechanism.
+- **4-of-5 threshold met on Q7** (operator's framing at least partially correct; non-Claude on majority side) → supports that the framing itself is operationally load-bearing, not dismissable.
+- **Fails 3-of-5 threshold on Q5 specific shape** (periodic vs triggered vs narrow-targeted) → supports that an extended-baseline mechanism is warranted but does not support adoption of one specific shape this session.
+
+### 3b What this deliberation can decide this session
+
+Given convergence + divergence:
+
+1. **Adopt a minor forward convention on Q4** — the tightest convergence point. Minimum shape (≥1 alternative) matching P5's floor; maximum shape (≥2 per P1; "Path-A justification section" per P3) deferred to OI-019 for verification-window evaluation.
+
+2. **Open an OI** for the unresolved substantive questions on Q5 + Q6 + the distinctive P1/P4 reframes.
+
+3. **Preserve P2's position as a first-class minority** per the operator's explicit request. Operational reopen warrants tied to convention degradation, OI-019 laundering-adjacent outcomes, and §5.3-analog vindication recurrence.
+
+### 3c What this deliberation cannot decide this session
+
+1. **The exact mechanism for extended-baseline visibility.** P3, P4, and P5 each propose distinct mechanisms (periodic-with-constraints; distribution-property-triggered; state-decay). None commanded 3-of-5 convergence. Anti-laundering bars retrofitting one proposal without convergence.
+
+2. **Whether "work-channel diversity" (P1) or "warrant-surface closure" (P4) is the better reframe** — both are operationally coherent, neither is falsified by the other, and the engine does not have enough data points to choose. Preserved in OI-019 as parallel frames.
+
+3. **Whether minority activation warrants should have expiration windows** (P3) or the engine should have state-decay triggers on OI closeability (P5) or the warrant surface should be enlarged at spec level (P4). Three competing mechanisms; deferred to OI-019 with more session data.
+
+### 3d Anti-laundering checks
+
+- **No spec file is amended this session.** D-129 is a convention-level adoption analog of WX-35-1 Session 036 (convention adopted with 3-session verification window before potential spec-level codification).
+- **OI-019 is issue-opening, not decision-adopting.** Standard forward mechanism for substantive questions lacking convergence.
+- **P2's preservation carries operational (not ceremonial) reopen warrants.** If the convention degrades, P2 reactivates; if OI-019 produces a mechanism lacking evidence, P2 reactivates; if an §5.3-analog vindication repeats, P2 reactivates.
+- **No engine-v bump.** Engine-v7 preservation window advances to 7 (continues new-longest run).
+- **§5.6 reopen-warrant (ii) literally discharges** (this session exercises non-GPT non-Claude participation before S047 close). §5.6 continues with warrant (i) active only. **NB**: the spirit of §5.6 (sustained cross-family exercise) is distinct from the letter (at-least-one-data-point); whether the literal discharge fully discharges the spirit is recorded as forward observation rather than adjudicated this session.
+
+## §4 Decisions summary
+
+Detailed in `02-decisions.md`:
+
+- **D-129** — Adopt standing forward convention (minor): default-agent session-open assessment MUST surface at least one considered-and-rejected non-Path-A shape with brief one-sentence rationale. Starts S044. 3-session verification window S044/S045/S046. `[d008_2_convention_forward_discipline]` analog of WX-35-1.
+- **D-130** — Open OI-019 "Path-selection work-channel and warrant-surface diversity" capturing Q5 + Q6 + P1/P4 reframes + state-decay variants. `[d009_1]`.
+- **D-131** — Preserve Path-Selection Defender position as §5.12 first-class minority (#29 in engine-wide count). `[d004_3_minority_preservation]`.
+- **D-132** — Housekeeping: OI metric updates; minority count 28→29; SESSION-LOG row; §5.6 reopen-warrant (ii) disposition; close-rotation fifteenth; engine-v7 preservation window count 6→7; WX observations (P1/P4 subagent self-commit inconsistency; §5.6 literal-vs-spirit discharge). `[none]`.
+
+## §5 First-class minority preservation (§5.12)
+
+**Position name**: Path-Selection Defender: warrant-gated sparsity is load-bearing; preserve-restraint is the architecture; any change proposed without operational evidence of mechanism failure is laundering surface.
+
+**Content** (summarised from `01b-perspective-path-selection-defender.md`):
+
+1. The engine's sparsity of warrant-firing is by design (not under-articulated), grounded in kernel Continuity Rules + MAD §Limitations + read-contract §5.3 + §10.4-M1/M2 Skeptic-preserver.
+2. Observational metrics are valid because pre-registered (tracking commitments specified before outcomes known), not self-confirming ritual.
+3. The "self-reinforcing loop" frame conflates two things: (a) did observational sessions produce valid metrics (yes, they track what they were designed to track), and (b) should the absence of warrant-firing be itself a warrant (no — reverse-laundering).
+4. Adopting any of the operator's four seed shapes converts working discipline into laundering surface.
+5. The engine already has a mechanism for importing judgements the default reasoning does not surface: **operator-surfaced agenda** (S036 Path PD demonstrates this; S043 itself is a further demonstration). The mechanism works as specified.
+
+**Why preserved**: Per operator's explicit instruction at `00-assessment.md` §2: "The reasoned conclusion that the current discipline is correct and my framing is wrong — preserve that as a first-class minority if the deliberation lands there."
+
+**Operational reopen warrants**:
+
+(a) **Convention-D-129 degradation.** If in the S044–S046 verification window the convention-surfaced alternatives become ritual template (alternatives identified but never actually adopted; or alternatives surfaced with vacuous "no alternative warranted this session" becoming the stock response), the minority reactivates. This tests P2's specific prediction that a mandate creates forced-template laundering.
+
+(b) **OI-019 evidence-free convergence.** If OI-019 deliberation produces a spec change or new mechanism without specific operational evidence that the current path-selection mechanism *demonstrably failed* at something it was responsible for surfacing, the minority reactivates. This tests P2's load-bearing argument that operational evidence — not framing argument — is the bar for mechanism change.
+
+(c) **§5.3-analog vindication recurrence.** If a preserved minority outside the §5.12 itself is vindicated after a long deferral window AND the vindication is used as *retroactive* justification for path-selection change rather than prospective OI-opening, the minority reactivates. This tests P2's argument that vindications close out minorities; they do not automatically become new mechanisms.
+
+## §6 Forward observations (non-OI-promoting)
+
+**Observation 1 — subagent self-commit inconsistency.** P1 (Work-Shape Proposer) and P4 (Outsider) committed their individual perspective files during their runs (commits eb345ae and 3f829d3); P2, P3, P5 did not. Per standard subagent discipline in multi-perspective deliberations (cf. S036 Honest Note on the Skeptic-preserver self-commit anomaly) subagents should not commit in-progress deliberation provenance — commit is the Case Steward's to perform at session close. Single-session observation; recorded as forward observation (WX-43-1 if needed for tracking; not opened as OI per anti-laundering). Bundling candidate for a future Path-L subagent-instruction-clarification if recurs.
+
+**Observation 2 — §5.6 literal-vs-spirit disposition.** §5.6 reopen-warrant (ii) literally states "Session 047 close without non-GPT non-Claude participation" fires reopen. Session 043 exercises Gemini (non-GPT non-Claude) → warrant (ii) literally cannot fire at S047 (participation now exists). But §5.6's underlying concern was *sustained* cross-family exercise, not one-off data point. The literal discharge at S043 close is recorded; the spirit-level question (is one data point sufficient, or is sustained exercise needed?) is recorded as forward observation and re-examined at §10.4-M1/M2/M5 tenth-of-10 evaluation (Session 046 close).
+
+**Observation 3 — post-engine-v4 Path-A concentration as epoch-specific pattern.** Per P3's long-baseline quantification: post-engine-v4 Path-A rate 47% (Sessions 024–042 = 9 pure + 1 bundled of 19 sessions); pre-engine-v4 Path-A rate 0% (Sessions 001–023). This is an epoch-specific pattern, not a full-history constant. Recorded as forward observation; becomes load-bearing seed material for OI-019.
+
+## §7 Honest limits
+
+- The deliberation did not resolve the Q5 mechanism shape or the Q6 mechanism shape or the P1/P4 reframe choice. These are genuinely deferred to OI-019, not papered over.
+- The synthesis does not claim that adopting D-129 will resolve the operator's concern. It claims that D-129 is the cheapest convergence-backed response and that OI-019 is the appropriate forum for the larger unresolved questions.
+- The non-Claude perspective (Gemini) participated via `gemini --approval-mode yolo` to permit the single output-file write. Other tool invocations during that run are not audited; the deliverable file is the perspective's output.
+- The synthesis integrates five raw outputs. It is authored by the Case Steward (Claude), which introduces Claude-family framing into the integration. This is unavoidable under current MAD v4 mechanics. §5.12 preservation is the structural check against synthesis-bias toward change; the non-Claude perspective is the structural check against Claude-family concentration in convergence-claims.
+
+codex
+The core facts are clear: S043 made the role/lineage split explicitly in the shape proposal, while S044’s assessment verifies that MAD v4 only controlled participant presence, not assignment of the Outsider role. I’m reading the normative text and the recorded manifests now to ground the recommendations.
+exec
+/bin/zsh -lc "sed -n '1,220p' provenance/043-session-assessment/participants.yaml" in /Users/ericmccowan/Development/complex-systems-engine
+exec
+/bin/zsh -lc "sed -n '1,220p' provenance/043-session-assessment/manifests/outsider.manifest.yaml" in /Users/ericmccowan/Development/complex-systems-engine
+ succeeded in 0ms:
+session: 043
+title: Session 043 Path-Selection Discipline Deliberation (Path PSD) participants index
+deliberation_shape: single-deliberation-flat-layout
+participants_family: cross-family-three-lineages
+cross_model: true
+non_claude_participants: 1
+non_gpt_non_claude_participants: 1
+oi004_qualifying_participants: []
+
+participants:
+  - perspective: work-shape-proposer
+    manifest: manifests/work-shape-proposer.manifest.yaml
+    raw_output: 01a-perspective-work-shape-proposer.md
+  - perspective: path-selection-defender
+    manifest: manifests/path-selection-defender.manifest.yaml
+    raw_output: 01b-perspective-path-selection-defender.md
+  - perspective: long-baseline-auditor
+    manifest: manifests/long-baseline-auditor.manifest.yaml
+    raw_output: 01c-perspective-long-baseline-auditor.md
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+    raw_output: 01d-perspective-outsider.md
+  - perspective: non-claude
+    manifest: manifests/non-claude.manifest.yaml
+    raw_output: 01e-perspective-non-claude.md
+
+synthesizer: claude-opus-4-7-orchestrator
+synthesizer_kind: claude-orchestrator-not-perspective
+synthesis_file: 01-deliberation.md
+
+notes:
+  - "First non-GPT non-Claude lineage operational exercise in this workspace (Google Gemini via gemini CLI)."
+  - "Cast as §5.6 reopen-warrant (ii) vindication-side data point; literal discharge of warrant (ii) at S043 close; spirit-level sustained-exercise question recorded as forward observation for S046 evaluation."
+  - "Three-family participation: Anthropic (Claude, 4 perspectives), Google (Gemini, 1 perspective). Zero OpenAI (GPT) perspectives this session — S041 was the most recent GPT exercise."
+  - "OI-004 closed at S041; d023_4 narrowed semantics do not fire at S043 (no proposed state change to OI-004); S043 is NOT an OI-004-qualifying deliberation."
+
+ succeeded in 0ms:
+perspective: outsider
+participant_kind: claude-subagent
+participant_identity: claude-subagent-via-anthropic-agent-tool
+model_family: claude
+model_id: unknown
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator-043
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/043-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/043-session-assessment/01d-perspective-outsider.md
+transport_notes: Spawned via Claude Code Agent tool subagent_type=general-purpose; shared brief read from workspace path; role stance supplied in agent invocation prompt; Outsider-role historical pattern briefly described (S017 H4; S022 workspace-scaling; S028 laundering-the-activation; S036 MODE.md; S041 source-text-primacy). Subagent self-committed its perspective file at commit 3f829d3 during its run (WX-43-1 forward observation).
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown
+independent_claim: "Reframes the phenomenon from 'path-selection bias' to 'warrant-surface closure against operator-frame observations' — an asymmetry hidden by the 'sparse by design' framing. The engine's warrant surface is dense against engine-internal trajectories (section 5 firings, budget thresholds, retention windows) and sparse against operator-frame observations (which route via Case-Steward discretion as Path-PD-class per S036 precedent, not via spec). The engine has a recogniser for work-shapes but no generator. §5.3 diagnosis generalises beyond OI-004 to other extending-firing-condition warrants (WX-28-1, §10.4-M1/M2/M5, OI-002 accumulation); discharge-as-vindicated is complete for §5.3-as-OI-004-warrant, incomplete as methodology observation. Adds missing fifth output category: spec-level enlargement of warrant surface via a new operator-input class."
+independent_claim_evidence_pointer: provenance/043-session-assessment/01d-perspective-outsider.md
+
+exec
+/bin/zsh -lc "sed -n '1,220p' manifests/non-claude.manifest.yaml" in /Users/ericmccowan/Development/complex-systems-engine
+exec
+/bin/zsh -lc "sed -n '1,220p' provenance/043-session-assessment/manifests/non-claude.manifest.yaml" in /Users/ericmccowan/Development/complex-systems-engine
+ exited 1 in 0ms:
+sed: manifests/non-claude.manifest.yaml: No such file or directory
+
+ succeeded in 0ms:
+perspective: non-claude
+participant_kind: non-anthropic-model
+participant_identity: google-gemini-via-gemini-cli
+model_family: gemini
+model_id: unknown
+model_version: gemini-cli-0.38.1-default
+provider: google
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: session-orchestrator-043
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/043-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/043-session-assessment/01e-perspective-non-claude.md
+transport_notes: "Invoked via `gemini --approval-mode yolo --prompt \"$(cat provenance/043-session-assessment/gemini-prompt.txt)\"` with role prompt delivered as stdin via command-line argument substitution. Gemini CLI version 0.38.1 (Homebrew). The `--approval-mode yolo` flag was used to permit the single output-file write; all other tool invocations during the run are not audited; the deliverable file is the perspective's output. Prompt file preserved at provenance/043-session-assessment/gemini-prompt.txt; raw output captured at provenance/043-session-assessment/gemini-raw-output.log. First non-GPT non-Claude lineage exercise in this workspace's history. §5.6 reopen-warrant (ii) cast as operational data point on vindication side (literal discharge at S043 close; spirit-level question of sustained exercise recorded as forward observation for S046 close re-examination)."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: google
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+independent_claim: "As the first non-Claude non-GPT lineage participant in this workspace, independently verified operator's numerical claim on Path-A concentration and diagnosed 'self-reinforcing loop' as a structural bias embedded in the engine's high-activation-energy triggers. Observational metrics are (d) both evidence of discipline working AND evidence of discipline deferring simultaneously, with a dangerous temporal skew — short-term stability reads as stasis in the long term. Proposes state-decay/pressure trigger on closable/articulated OI state after X sessions as a concrete forward-mechanism. Mere participation demonstrates that the engine's default reasoning fails to self-correct for lineage-blindness until an external observer (operator) surfaces the agenda — the §5.6 reopen-warrant (ii) vindication-side data point is delivered."
+
+exec
+/bin/zsh -lc "rg --files | rg '("'^|/)non-claude'"\\.manifest\\.yaml"'$|(''^|/)manifests/'"'" in /Users/ericmccowan/Development/complex-systems-engine
+ succeeded in 0ms:
+provenance/010-household-decision-protocol/manifests/skeptic.manifest.yaml
+provenance/010-household-decision-protocol/manifests/mediator.manifest.yaml
+provenance/010-household-decision-protocol/manifests/drafter.manifest.yaml
+provenance/010-household-decision-protocol/manifests/outsider.manifest.yaml
+provenance/012-methodology-naming/manifests/namer.manifest.yaml
+provenance/012-methodology-naming/manifests/skeptic.manifest.yaml
+provenance/012-methodology-naming/manifests/steward.manifest.yaml
+provenance/012-methodology-naming/manifests/outsider.manifest.yaml
+provenance/033-session-assessment/manifests/reviser.manifest.yaml
+provenance/033-session-assessment/manifests/synthesiser.manifest.yaml
+provenance/033-session-assessment/manifests/skeptic.manifest.yaml
+provenance/033-session-assessment/manifests/outsider.manifest.yaml
+provenance/023-session-assessment/manifests/skeptic.manifest.yaml
+provenance/023-session-assessment/manifests/pacer.manifest.yaml
+provenance/023-session-assessment/manifests/calibrator.manifest.yaml
+provenance/023-session-assessment/manifests/outsider.manifest.yaml
+provenance/008-first-external-application/manifests/explorer.manifest.yaml
+provenance/008-first-external-application/manifests/skeptic.manifest.yaml
+provenance/008-first-external-application/manifests/pragmatist.manifest.yaml
+provenance/008-first-external-application/manifests/outsider.manifest.yaml
+provenance/043-session-assessment/manifests/path-selection-defender.manifest.yaml
+provenance/043-session-assessment/manifests/non-claude.manifest.yaml
+provenance/043-session-assessment/manifests/long-baseline-auditor.manifest.yaml
+provenance/043-session-assessment/manifests/work-shape-proposer.manifest.yaml
+provenance/043-session-assessment/manifests/outsider.manifest.yaml
+provenance/021-oi004-criterion4-articulation/manifests/articulator.manifest.yaml
+provenance/021-oi004-criterion4-articulation/manifests/skeptic.manifest.yaml
+provenance/021-oi004-criterion4-articulation/manifests/outsider.manifest.yaml
+provenance/021-oi004-criterion4-articulation/manifests/operationaliser.manifest.yaml
+provenance/005-schema-enforcement/manifests/archivist.manifest.yaml
+provenance/005-schema-enforcement/manifests/skeptic.manifest.yaml
+provenance/005-schema-enforcement/manifests/implementer.manifest.yaml
+provenance/005-schema-enforcement/manifests/outsider.manifest.yaml
+provenance/017-oi017-reframing-deliberation/manifests/operationalist.manifest.yaml
+provenance/017-oi017-reframing-deliberation/manifests/skeptic.manifest.yaml
+provenance/017-oi017-reframing-deliberation/manifests/architect.manifest.yaml
+provenance/017-oi017-reframing-deliberation/manifests/outsider.manifest.yaml
+provenance/019-reference-validation-revision/manifests/reviser.manifest.yaml
+provenance/019-reference-validation-revision/manifests/skeptic.manifest.yaml
+provenance/019-reference-validation-revision/manifests/minimalist.manifest.yaml
+provenance/019-reference-validation-revision/manifests/outsider.manifest.yaml
+provenance/028-session-assessment/manifests/pacer-advocate.manifest.yaml
+provenance/028-session-assessment/manifests/skeptic-preserver.manifest.yaml
+provenance/028-session-assessment/manifests/outsider.manifest.yaml
+provenance/028-session-assessment/manifests/synthesiser-integrator.manifest.yaml
+provenance/013-artefact-revision/manifests/reviser.manifest.yaml
+provenance/013-artefact-revision/manifests/skeptic.manifest.yaml
+provenance/013-artefact-revision/manifests/householder.manifest.yaml
+provenance/013-artefact-revision/manifests/outsider.manifest.yaml
+provenance/036-session-assessment/manifests/reviser.manifest.yaml
+provenance/036-session-assessment/manifests/synthesiser.manifest.yaml
+provenance/036-session-assessment/manifests/skeptic-preserver.manifest.yaml
+provenance/036-session-assessment/manifests/outsider.manifest.yaml
+provenance/041-session-assessment/manifests/closure-skeptic.manifest.yaml
+provenance/041-session-assessment/manifests/retrospective-auditor.manifest.yaml
+provenance/041-session-assessment/manifests/closure-advocate.manifest.yaml
+provenance/041-session-assessment/manifests/outsider.manifest.yaml
+provenance/011-w1-kernel-read-revision/manifests/reviser.manifest.yaml
+provenance/011-w1-kernel-read-revision/manifests/skeptic.manifest.yaml
+provenance/011-w1-kernel-read-revision/manifests/minimalist.manifest.yaml
+provenance/011-w1-kernel-read-revision/manifests/outsider.manifest.yaml
+provenance/006-triggers-met-schema/manifests/archivist.manifest.yaml
+provenance/006-triggers-met-schema/manifests/skeptic.manifest.yaml
+provenance/006-triggers-met-schema/manifests/implementer.manifest.yaml
+provenance/006-triggers-met-schema/manifests/outsider.manifest.yaml
+provenance/007-external-application-examination/manifests/skeptic.manifest.yaml
+provenance/007-external-application-examination/manifests/steward.manifest.yaml
+provenance/007-external-application-examination/manifests/generalist.manifest.yaml
+provenance/007-external-application-examination/manifests/outsider.manifest.yaml
+provenance/027-session-assessment/manifests/archivist.manifest.yaml
+provenance/027-session-assessment/manifests/discoverer.manifest.yaml
+provenance/027-session-assessment/manifests/minimalist.manifest.yaml
+provenance/014-oi016-resolution/manifests/operationalist.manifest.yaml
+provenance/014-oi016-resolution/manifests/skeptic.manifest.yaml
+provenance/014-oi016-resolution/manifests/architect.manifest.yaml
+provenance/014-oi016-resolution/manifests/outsider.manifest.yaml
+provenance/020-workspace-scaling-deliberation/manifests/skeptic.manifest.yaml
+provenance/020-workspace-scaling-deliberation/manifests/tooler.manifest.yaml
+provenance/020-workspace-scaling-deliberation/manifests/splitter.manifest.yaml
+provenance/020-workspace-scaling-deliberation/manifests/outsider.manifest.yaml
+provenance/009-external-validate-receipt/manifests/reviser.manifest.yaml
+provenance/009-external-validate-receipt/manifests/skeptic.manifest.yaml
+provenance/009-external-validate-receipt/manifests/minimalist.manifest.yaml
+provenance/009-external-validate-receipt/manifests/outsider.manifest.yaml
+provenance/022-workspace-scaling-trajectory/manifests/conservator.manifest.yaml
+provenance/022-workspace-scaling-trajectory/manifests/skeptic.manifest.yaml
+provenance/022-workspace-scaling-trajectory/manifests/architect.manifest.yaml
+provenance/022-workspace-scaling-trajectory/manifests/outsider.manifest.yaml
+provenance/024-session-assessment/manifests/archivist.manifest.yaml
+provenance/024-session-assessment/manifests/skeptic.manifest.yaml
+provenance/024-session-assessment/manifests/splitter.manifest.yaml
+provenance/024-session-assessment/manifests/outsider.manifest.yaml
+
+exec
+/bin/zsh -lc "sed -n '42,66p;109,232p;242,256p;314,327p' specifications/multi-agent-deliberation.md" in /Users/ericmccowan/Development/complex-systems-engine
+exec
+/bin/zsh -lc "sed -n '56,65p' specifications/methodology-kernel.md" in /Users/ericmccowan/Development/complex-systems-engine
+exec
+/bin/zsh -lc "sed -n '159,176p' provenance/043-session-assessment/00-assessment.md" in /Users/ericmccowan/Development/complex-systems-engine
+exec
+/bin/zsh -lc "sed -n '1,140p' open-issues/OI-019.md" in /Users/ericmccowan/Development/complex-systems-engine
+ succeeded in 0ms:
+#### 3. Convene
+
+Assemble perspectives suited to the work at hand. Name each perspective, describe its stance, and record why it was chosen.
+
+For deliberative work (where decisions will be made), at least one perspective must be **adversarial** — its role is to challenge the emerging consensus, identify unstated assumptions, and argue for alternatives.
+
+The choice of perspectives shapes outcomes and should be treated as a design decision, not an afterthought.
+
+When a decision meets the triggers defined in `specifications/multi-agent-deliberation.md`, perspectives must be instantiated as independent agents whose outputs are synthesised rather than as multiple voices produced within a single context. Decisions that meet those triggers but are made single-perspective anyway must record the reason.
+
+
+ succeeded in 0ms:
+---
+id: OI-019
+status: Open
+surfaced-in-session: 043
+---
+
+### OI-019: Path-selection work-channel and warrant-surface diversity
+**Surfaced:** Session 043
+**Status:** Open — substantive questions lacking 3-of-5 mechanism convergence; held pending operational evidence + further cross-family deliberation
+
+**Opened:** Session 043 D-130 per operator-surfaced-agenda Path PSD five-perspective cross-family deliberation (3 Claude subagents + Gemini non-Claude non-GPT + Outsider; Work-Shape Proposer + Path-Selection Defender + Long-Baseline Auditor + Outsider + non-Claude roles).
+
+## Problem statement
+
+The engine's path-selection mechanism is warrant-gated and sparse-by-design per `methodology-kernel.md` §1 Read + `multi-agent-deliberation.md` v4 §Limitations + `read-contract.md` v4 §5.3. The default-agent path recommendation produces Path A (Watch) whenever no activation warrant fires at session open. This is the intended architecture.
+
+Operator observation at Session 043 open: **six of the last ten sessions (S033–S042) have been pure Path A (Watch); default-agent reasoning produces Path A whenever no activation warrant fires at session open; warrant-firing mechanisms are sparse by design; the resulting observational sessions generate metrics (no-growth streaks, preservation depths, zero-event watchpoint windows) that read as positive outcomes and confirm restraint as the right discipline.** The Session 021 Outsider §5.3 "indefinitely movable finish line" minority warned about this dynamic and was strongly vindicated at Session 041 after twenty successor sessions; that vindication should have informed Session 042 path selection but did not.
+
+Perspective 3 (Long-Baseline Auditor) quantified the pattern: Path-A rate is 47% post-engine-v4 (Sessions 024–042) versus 0% pre-engine-v4 (Sessions 001–023). The Path-A concentration is epoch-specific, not a full-history constant.
+
+Four of five perspectives (including the non-Claude lineage) concluded that something forward should change in response to this pattern. The fifth perspective (Path-Selection Defender) concluded the operator's framing is partially correct on facts but wrong on conclusions, and that any of the proposed mechanism changes converts working discipline into laundering surface; that position is preserved as §5.12 first-class minority with operational reopen warrants (see `provenance/043-session-assessment/01-deliberation.md` §5).
+
+**No 3-of-5 convergence on the specific mechanism to address this was reached at Session 043.** Hence this OI.
+
+## Unresolved sub-questions
+
+Each sub-question below carries the proposing perspective and the alternative frame if one was articulated.
+
+(a) **Reframe choice: "work-channel diversity" (P1) or "warrant-surface closure against operator-frame observations" (P4)?**
+Both are operationally coherent; neither is falsified by the other. P1 argues the path-selection gating is sound but the engine's *channels* for generating work have quieted simultaneously (OI-advancement post-OI-004; §9 trigger 7; §5-series firings). P4 argues the warrant surface is dense against engine-internal trajectories but sparse against operator-frame observations, and that operator-frame observations route via Case-Steward discretion (Path-PD-class per S036 precedent) rather than spec. These are two different axes of the same asymmetry. Choosing one may foreclose the other; preserving both as parallel frames may be the right disposition.
+
+(b) **Should preserved-minority activation warrants themselves have expiration windows (P3)?**
+Per Long-Baseline Auditor: §5.3 fired at Session 027 but conversion-to-spec happened only at Session 028; vindication at Session 041 showed the "indefinitely deferrable" pattern operationally. P3 proposes: when a preserved-minority activation warrant fires, the session should deliberate within three sessions or the minority graduates to "preserved but no longer monitored" status. This would add deadline enforcement to the minority-tracking system.
+
+(c) **Should the engine have state-decay or pressure triggers on closable/articulated OI state after X sessions (P5)?**
+Per Gemini: if an OI is in a "Closable" or "Articulated" state for more than X sessions (~6 per rotation window), a Priority-Review warrant should fire, elevating the issue to the agenda. This is different from (b) — (b) concerns minority warrants; (c) concerns OI state. Both would operate on similar mechanics (time-in-state triggers).
+
+(d) **Should the warrant surface be enlarged at spec level with a new "operator-frame observation" input class (P4)?**
+Per Outsider: currently the warrant surface accepts operator input as directive (ratification), agenda-surfacer (Path-PD-class), and reference-text-provider (Path-C-class). There is no spec-level category for "the operator has noticed a frame-level property the engine has not represented to itself." Such observations route via Case-Steward discretion, not through a spec-level warrant. The proposal is to add an explicit input class. Risk: this may itself become a laundering surface (operator can generate work at any time by labelling an observation "frame-level").
+
+(e) **Should the default-agent convention (D-129) be codified at spec level with a specific shape?**
+D-129 adopts the convention at minor level (convention without spec amendment). The full shape (≥1 vs ≥2 alternatives; short vs long form; Path-A-justification-section vs single bullet) is deferred to S046 evaluation. OI-019 captures the spec-codification question for whichever shape survives the 3-session verification window.
+
+(f) **What extended-baseline visibility mechanism, if any, is warranted?**
+Perspectives divided: P3 favors periodic (once per 6-session window, read-only observational, diagnostic not generative); P4 favors distribution-property-triggered ("Path-A > 60% of last 10 sessions without operator-surfaced-agenda"); P5 favors periodic (every 10 sessions, synchronized with §10.4 monitoring); P2 rejects "periodic" but concedes narrower targeted-read-further-back convention if P3 produced evidence (which P3 did). No 3-of-5 convergence on shape. All variants share: read-only observational, diagnostic not generative, anti-laundering guards.
+
+## Provisional closure criteria
+
+These criteria may be refined during OI-019's lifetime. Any refinement requires deliberation.
+
+1. **Operational evidence** from the engine's continued running that one of the proposed mechanisms is load-bearing — i.e., absence of it demonstrably caused a surface-missed observation or drift. "We have a hunch it might help" is not sufficient.
+
+2. **Cross-family deliberation with ≥3 perspectives converging on a specific mechanism shape.** Session 043's 4-of-5 "something should change" conclusion is insufficient; the convergence must be on *the specific thing*.
+
+3. **Anti-laundering adjudication** showing the adopted shape is not retrofit to rationalise past Path-A concentration. The Path-Selection Defender's §5.12 reopen warrant (b) specifically tests this.
+
+4. **§5.12 engagement.** Any OI-019 deliberation MUST address the §5.12 operational reopen warrants (a/b/c) by argument; failure to address them is itself a laundering signal.
+
+## Seed material
+
+The five Session 043 perspective files:
+- `provenance/043-session-assessment/01a-perspective-work-shape-proposer.md` (P1)
+- `provenance/043-session-assessment/01b-perspective-path-selection-defender.md` (P2 = §5.12 position)
+- `provenance/043-session-assessment/01c-perspective-long-baseline-auditor.md` (P3)
+- `provenance/043-session-assessment/01d-perspective-outsider.md` (P4)
+- `provenance/043-session-assessment/01e-perspective-non-claude.md` (P5)
+
+Plus the synthesis at `provenance/043-session-assessment/01-deliberation.md`, decisions at `02-decisions.md`, and close notes at `03-close.md`.
+
+## Cross-linkage
+
+- **§5.12 first-class minority** (Session 043 D-131): Path-Selection Defender preserved position. OI-019 deliberations must address §5.12 reopen warrants.
+- **§5.6 joint minority** (Session 041 D-125): GPT-family-concentration concern. Session 043 Gemini participation is first operational data point on vindication side. OI-019 should include non-Claude non-GPT participation in future deliberations to avoid re-concentrating the record.
+- **§5.3 discharged-vindicated** (Session 041 D-125): the vindication event that motivated the operator's framing. OI-019 sub-question (b) is the direct forward-mechanism implication of this vindication.
+- **OI-018** (engine-v bump-trigger criteria): adjacent but distinct — OI-018 concerns bump frequency; OI-019 concerns path-selection diversity. Coordination needed if OI-019 deliberation proposes any spec change (which would itself be an engine-v bump candidate).
+- **OI-002** (substantive vs minor classification): OI-019 closure may require substantive-vs-minor classification for whichever mechanism is adopted; OI-002 heuristic applies.
+- **WX-35-1** (file-edit claim discipline): operational analog for D-129 — forward convention adopted at session level, vindicated in 3-session window, graduated to standing discipline.
+
+## Session 043+ activation triggers
+
+This OI is Open. Deliberation becomes priority-active if any of:
+
+- **D-129 convention degradation at S046 evaluation.** Triggers §5.12 reopen warrant (a); OI-019 deliberation should consider whether the degradation is evidence that the larger mechanism question needs resolution or whether it is evidence the whole framing was wrong.
+- **Operational incident.** A future session surfaces a concrete engine-internal problem that the current path-selection mechanism demonstrably failed to surface. This is the §5.12 reopen warrant (c) mirror: what §5.12 is structured to protect against, OI-019 is structured to resolve.
+- **§5.3-analog vindication in another preserved minority.** If a different preserved minority is vindicated after a long deferral window in a way that parallels §5.3's "indefinitely deferrable" pattern, OI-019 becomes priority-active.
+- **Operator direction.** The operator may undertake OI-019 deliberation in any session as Path-OSA operator-surfaced-agenda (per S036 and S043 precedent).
+
+## Until activation trigger fires
+
+Session 044+ sessions should:
+
+- Record in their close whether any path-selection mechanism was informally exercised beyond Path A (e.g., a case where the required D-129 alternative was adopted rather than Path A).
+- Note this OI-019 in the OI-monitoring list at close (per OI-018 pattern).
+- Not undertake pre-emptive path-selection mechanism revisions without the activation trigger firing (per same-session-causing-and-revising prohibition).
+- If a non-Claude non-GPT perspective is convened in a future session (warranted by §5.6 or by agenda content), cast the result as an OI-019 observational data point.
+
+## Honest note
+
+OI-019 is opened at the session that surfaced it. Per MAD v4 anti-laundering, this is acceptable — issue-opening is not spec-change. But the reader should be aware that if OI-019 is closed rapidly (e.g., within 1-2 sessions) with a spec change, that would fire §5.12 reopen warrant (b). The expectation is that OI-019 runs for multiple sessions accumulating evidence before any mechanism is adopted, mirroring how OI-016 and OI-004 operated across their life cycles.
+
+ succeeded in 0ms:
+### When Non-Claude Participation Is Required
+
+Distinct from the requirement to convene multi-agent deliberation at all, this specification governs when at least one participant must come from outside the Claude model family (human reviewer, non-Anthropic model, or both).
+
+Non-Claude participation is **required** for any deliberation whose decision falls in one of the following categories:
+
+1. Modifies `methodology-kernel.md`.
+2. Creates or substantively revises `multi-agent-deliberation.md`.
+3. Creates or substantively revises `validation-approach.md` in ways that touch semantic (Tier 2) validation.
+4. Asserts a change in the state of OI-004.
+
+Non-Claude participation is **recommended** for other decisions that meet the multi-agent triggers above.
+
+Non-Claude participation is **optional** for all other decisions.
+
+**Opt-out.** A session may make a required-trigger decision without a non-Claude participant, but must record in the decision:
+
+- `non_claude_participation: skipped`
+- A reason. Acceptable reasons: "no non-Claude participant available within session timebox"; "mechanism designer exempt" (the first-use bootstrap exemption, see below); "subject matter does not plausibly expose Claude-family blind spots" (must be argued in the decision record, not asserted).
+- `retry_in_session: NNN` — the session number where the missing non-Claude participation will be added.
+
+Unstated skips on required-trigger decisions are a specification violation.
+
+**Bootstrap exemption (one-time).** Session 004, which established these rules, was exempt because the rules did not exist when it began. Future sessions revising this mechanism do not share the exemption.
+
+### Perspectives
+
+- **Number.** Default three. Up to five when the problem spans clearly different concern-domains. More than five requires a written justification recorded at convening time.
+- **Selection.** Perspectives are chosen for expected disagreement on *this* problem. There is no permanent roster. Reaffirms D-005.
+- **Adversarial requirement.** At least one perspective must be adversarial — its job is to challenge the emerging consensus and argue against the proposal. Reaffirms the methodology-kernel rule.
+- **Naming.** Each perspective has a short name (e.g., "The Pragmatist," "The Archivist") used consistently throughout briefs, raw outputs, synthesis, and decision records.
+
+### Stance Briefs
+
+Each perspective receives a stance brief before the independent phase begins. Every brief in a single deliberation has the same structure, in this order:
+
+1. **Methodology context** — shared, byte-identical across all briefs in the deliberation. A concise description of what the methodology is and its current state.
+2. **Problem statement** — shared, byte-identical. What question the deliberation is answering.
+3. **Design questions** — shared, byte-identical. The specific questions each perspective is asked to address.
+4. **Role-specific stance** — the only section that varies between briefs. Second person, imperative, naming the specific concerns the perspective holds. Target length 150–300 words.
+5. **Response format** — shared. What structure the response should take, length target, constraints on output.
+6. **Constraint on external imports** — shared. A reminder to reason primarily from the brief and to flag pretrained ideas as external inputs rather than committing them directly (per the PROMPT.md rule).
+
+Diffing two briefs from the same deliberation should reveal only the role-specific stance. This makes deliberations reproducible.
+
+**Workspace context per perspective.** Minimal and identical. Perspectives reason from the brief; they do not read workspace files or use other tools during the independent phase. This keeps the deliberation reproducible and prevents spurious disagreement from divergent reading. A future version may specify differentiated context per perspective (see Open Extensions below); until then, uniform minimal context is the rule.
+
+**Brief immutability.** Briefs are committed to the workspace (or otherwise preserved) before any perspective is launched. Briefs are not edited during the deliberation. The commit hash or equivalent timestamp at brief-finalisation is the deliberation's anchor.
+
+### Non-Claude Participation Mechanism
+
+A non-Claude participant joins a multi-agent deliberation in one of two shapes:
+
+**Shape A — Participant as perspective.** The non-Claude participant is treated as a perspective indistinguishable in role from the Claude perspectives:
+
+1. A brief is written following the Stance Briefs section above and committed before the participant sees it.
+2. The brief is delivered to the participant by whatever channel is available: for a human, a text editor; for a non-Anthropic model, a web UI paste or a CLI invocation from the workspace.
+3. The returned response is committed **verbatim** as a raw-output file at the session's provenance root (flat layout) or under `deliberations/<decision-id>/responses/` (subdirectory layout) with the same naming convention as Claude raw outputs.
+4. If the participant cannot respond synchronously, the session writes `provenance/NNN/STATUS.md` naming the awaited participant and **halts**. Synthesis does not proceed until the awaited response is committed.
+
+**Shape B — Participant as reviewer.** The non-Claude participant is a named auditor at synthesis-time:
+
+1. Claude raw outputs are committed as normal.
+2. Before the synthesizer runs, a named human reviewer (not the session operator) reads the raw outputs and writes `provenance/NNN/human-review.md` containing: the review's frontmatter (identity, relationship-to-operator, time-spent), a prose record of what was flagged, and the explicit field `reviewer_changed_synthesis: true | false`.
+3. The synthesizer reads `human-review.md` as an input alongside the raw perspective outputs.
+4. A reviewer is not a deliberator: they see the Claude outputs in raw form and their job is to flag what a Claude-only synthesis would likely miss.
+
+Shapes A and B may be used separately or in combination in the same deliberation, provided the manifest declares each participant's shape.
+
+**Transport guarantee.** The workspace guarantees the **record** (committed brief, verbatim response, attributable participant), not the **generation** (which depends on channels the workspace cannot automate). Convener fidelity to verbatim reproduction is a required property; attempts to automate faithfulness are a future direction, not a day-one requirement.
+
+### Heterogeneous-Participant Recording Schema
+
+Heterogeneous-participant deliberations record identity across three layers.
+
+**Layer 1 — Raw-output file frontmatter (minimal).** Required fields: `session`, `title`, `date`, `status`, `perspective`, `committed_at`. The response body is the payload; no identity, version, or transport fields appear here.
+
+**Layer 2 — Per-participant manifest.** One YAML file per participant at `provenance/NNN/manifests/<perspective>.manifest.yaml`. Required fields:
+
+```yaml
+perspective: <role name>
+participant_kind: claude-subagent | anthropic-other | non-anthropic-model | human | unknown
+participant_identity: <free text, canonicalized>
+model_family: <string or "unknown">
+model_id: <string or "n/a" for human or "unknown">
+model_version: <string or "unknown">
+provider: <anthropic | openai | google | local | human | unknown>
+endpoint: <string or "web-ui" | "in-person" | "unknown">
+invocation_method: <agent-tool | cli-wrapper | copy-paste | written-by-hand | unknown>
+sampling:
+  temperature: <value or "unknown">
+  top_p: <value or "unknown">
+  max_tokens: <value or "unknown">
+training_lineage_overlap_with_claude: known-overlap | unknown | independent-claim
+participant_selected_by: <operator identity>
+participant_selection_method: self | solicited-from-graph | solicited-externally | pre-registered
+identity_known: true | false | partial
+context_source: <path to brief, or "verbal" for humans>
+delivered_at: <ISO-8601 or "unknown">
+received_at: <ISO-8601 or "unknown">
+raw_response_file: <path>
+transport_notes: <free text>
+output_edited_after_submission: true | false
+participation_shape: perspective | reviewer
+```
+
+**Layer 2 fields added in v4 (D-082, Session 021)** — for OI-004 criterion-4 enforcement; see §Criterion-4 Articulation for OI-004 below for normative use:
+
+```yaml
+participant_organisation: <organisation-name from closed set>  # required when participant_kind: non-anthropic-model. Closed set enumerated in tools/validate.sh PARTICIPANT_ORGANISATION_CLOSED_SET; extensible by named decision per validation-approach.md v4 §Closed-set extension discipline. Operationalised by check 19.
+claude_output_in_training: known-yes | known-no | unknown | n/a  # required when participant_kind in {non-anthropic-model, human}; n/a permitted for human. Out-of-scope for {claude-subagent, anthropic-other}. Operationalised by check 17. The `unknown` value is signal per the Unknown-field rule and surfaces to Tier 2 Q8 review.
+training_lineage_evidence_pointer: <provenance-relative path | URL | "unknown-but-asserted">  # required when training_lineage_overlap_with_claude: independent-claim. Operationalised by check 16. The pointer must resolve to: a model card or training-data card published by the provider (URL); a provider-public statement on Claude-distillation policy (URL); a workspace-internal note explaining what evidence the operator inspected (provenance-relative path); or the literal string "unknown-but-asserted" with mandatory transport_notes explanation.
+aggregator_intermediary: <string or "n/a">  # required when access via aggregator (e.g., OpenRouter); names the aggregator. "n/a" for direct provider access.
+selection_relationship_to_operator: <free-text or "n/a">  # required when participant_kind: human. Records relationship-to-operator and selection method context per the OI-004 criterion-4 articulation human-branch requirement.
+independence_basis: organization-distinct | local-open-weights | human-selection-distinct | mixed-panel | unknown  # required for participants claimed for OI-004 narrowing. Records the basis on which the participant claims criterion-4 eligibility.
+```
+
+The v4 fields are required from session 021 onward for participants claimed for OI-004 narrowing; pre-adoption sessions (001-020) are out-of-scope per the immutability rule (D-017) and per the session-number gating in `validation-approach.md` v4.
+
+**Layer 3 — Session-level index.** `provenance/NNN/participants.yaml` (preferred) or `provenance/NNN/participants.md` listing each participant and their manifest path.
+
+**Composition fields (synthesis frontmatter).** The synthesis file's frontmatter records:
+
+```yaml
+participants_family: claude-only | mixed-anthropic | cross-model
+cross_model: true | false
+non_claude_participants: <integer>
+oi004_qualifying_participants: [<list-of-perspective-names>]  # added v4: explicit declaration of which perspectives' manifests satisfy criterion-4 articulation; empty list permitted for sessions making no OI-004-narrowing claim
+```
+
+**Session-level participants index extension (added v4, D-082, Session 021).** When mechanical cross-family invocation occurs outside the perspective-deliberation frame (e.g., the Session 018 contamination-canary pattern), it is recorded as a separate top-level block in `provenance/NNN/participants.yaml`:
+
+```yaml
+mechanical_cross_family_invocation:
+  - purpose: <free text, e.g. "C3 5-gram overlap test", "L1 contamination canary">
+    invoked_model: <model id>
+    provider: <provider id>
+    invocation_method: <cli-wrapper | api | other>
+    decision_shaped: <D-NNN id or "none">
+    evidence_pointer: <provenance-relative path>
+```
+
+This block records mechanical cross-family invocation as corroborating evidence for criterion 3 of OI-004 (recorded impact on outcomes); it is **not** a participant kind for criterion 4 (per §Acceptable Participant Kinds for OI-004 below). The block is optional; absence is permitted (most sessions will not record mechanical invocation).
+
+`participants_family: mixed-anthropic` is the value for intra-Claude-family size-mixing (Opus + Sonnet + Haiku, any combination) — this **is not** cross-model participation (see the Claude-Only-Is-Not-Cross-Model rule below). `cross_model: true` requires at least one participant with `training_lineage_overlap_with_claude` other than `known-overlap`.
+
+**Unknown-field rule.** Unknown values are recorded as the literal string `unknown`. Empty strings are forbidden. Missing required fields are a schema violation. `identity_known: partial` requires a `transport_notes` entry explaining what is and is not recorded. The literal `unknown` is signal — it says "this session could not determine the value" and is itself auditable.
+
+**Claude-Only-Is-Not-Cross-Model.** A deliberation whose participants are all members of the Claude model family (any mix of Opus, Sonnet, Haiku; any sizes; any post-training runs) does not constitute cross-model participation for OI-004 purposes. The manifest must record `participants_family: claude-only` (or `mixed-anthropic` for explicit size-mixing) and `cross_model: false`. Intra-family size-mixing may be recorded for separate reasons (see OI-011) but contributes nothing to OI-004.
+### Synthesis
+
+After all perspectives (Claude and non-Claude) have returned their raw outputs, a synthesis step produces a single deliberation record.
+
+- **Synthesizer identity.** The synthesizer must not have been one of the deliberation's perspectives. The synthesizer's identity (agent/model/date) is recorded in the synthesis file's frontmatter.
+- **Reviewer input.** If the deliberation includes a reviewer-shape non-Claude participant, the synthesizer reads `human-review.md` alongside the raw perspective outputs.
+- **Citation requirement.** Claims attributing a position to a perspective must cite the source file and section/question: `[source-file, Q#]` or `[source-file, section]`.
+- **Synthesizer-original claims.** Claims not directly sourced from any raw perspective are marked `[synth]`. This lets future readers compute the ratio of sourced to synthesised content and judge faithfulness.
+- **Quote over paraphrase for load-bearing claims.** Where a perspective's argument turns on specific language, the synthesis quotes that language rather than paraphrasing.
+- **Preserve dissent.** Disagreements are listed as disagreements. A minority position with a strong argument is preserved as-is, not diluted. Majority/minority structure is reported explicitly.
+- **Convergence vs coverage.** The synthesis distinguishes *convergence* (all perspectives independently reached a similar conclusion) from *coverage* (only one perspective raised a point; others were silent). These are different epistemic states.
+- **Synthesis order anchoring.** Perspectives are presented to the synthesis step in alphabetical order by role name, or in a fixed order documented in the synthesis file, to reduce ordering-induced synthesizer bias.
+
+Synthesis maps; it does not decide. The Decide activity operates on the synthesis, not on raw outputs directly.
+
+### Limitations
+
+These statements are required content for every multi-agent deliberation's synthesis or decision record that relies on a Claude-only mechanism:
+
+- **All Claude-subagent perspectives share a model family.** The parallel-subagent implementation uses instances of the same Claude model family. Shared training produces shared blind spots: the same cultural priors, argumentative reflexes, refusal patterns, and aesthetic preferences.
+- **Intra-Claude-family size-mixing is not cross-model participation.** Mixing Opus, Sonnet, and Haiku does not narrow OI-004; it may surface capability-band differences but does not introduce independent training lineages. See OI-011 for separate tracking of intra-family mixing.
+- **Parallel isolation prevents conversational anchoring, not training-distribution anchoring.** Four instances of the same model, given briefs written in a shared vocabulary, will correlate in ways that look like agreement but are actually shared priors. Consensus across subagents is weak evidence, not strong.
+- **Brief-writing has no adversary.** The convening agent's framing choices propagate into all perspectives identically. Adding multi-agent to brief-writing creates infinite regress; the methodology does not pretend otherwise.
+- **The synthesis step is the pattern's highest-risk single-agent re-entry point.** Synthesis conventions (citation, dissent-preservation, `[synth]` marker, quote-over-paraphrase) reduce but do not eliminate this risk.
+- **Non-Claude participation depends on convener fidelity.** The transport guarantee is over the record, not the generation. The convener must commit the participant's response verbatim; there is no automated verification of faithfulness at v2. See Open Extensions below for future enforcement directions.
+- **A single non-Claude participant narrows OI-004 less than its presence suggests.** One human reviewer selected from the operator's social graph shares correlated priors with the operator; one non-Anthropic model accessed once may not reveal training differences that emerge only over many interactions. Closure of OI-004 requires sustained practice (see the Closure section).
+
+The specification's tone on limitations is deliberately uncompromising. Softening the language in future revisions is not a minor correction.
+
+
+ succeeded in 0ms:
+## §6 Rejected alternatives (for this assessment's proposed shape)
+
+The operator explicitly requested that the deliberation consider multiple output shapes without pre-deciding. The alternatives below are rejected for **the shape of the deliberation itself**, not for its substantive output.
+
+1. **Single-perspective Case Steward handling**. Rejected: operator explicitly asked for "a question for the engine to deliberate" and specified multi-perspective shape; meets MAD v4 substantive-revision-candidate trigger in any case.
+
+2. **Three-perspective Claude-only deliberation**. Rejected: operator explicitly requested "at least one non-Claude lineage"; this session is also the operator-identified opportunity to cast §5.6 observational data point on vindication side; cross-family participation is required by both operator direction and standing minority warrant.
+
+3. **Four-perspective Claude + GPT only (replicating S041 shape)**. Rejected on two grounds: (i) operator specifically noted non-GPT would make §5.6 data point vindication-side rather than just cross-family-nonconcentrated; (ii) S041 already exhausted the GPT-specific cross-family data; exercising a genuinely distinct non-Claude lineage is itself a response to the §5.6 concentration minority.
+
+4. **Defer to Session 044 or later for shape ratification** (treating S043 as assessment-only, halt-for-operator-on-perspectives). Rejected: over-proceduralises a session that the operator has already framed substantively; operator ratification of the shape (this §5 proposal) is sufficient, and subsequent deliberation can proceed in the same session.
+
+5. **Combine with a §6.2 audit shape**. Rejected: §6.2 audit shapes are structured around post-v-bump quality checks (S029 / S034 / S037), not around substantive meta-questions about path-selection. Combining would conflate verification work with generative work and is likely to produce weaker output on both.
+
+6. **Skip deliberation and author a speculative spec-change draft for operator review**. Rejected: operator explicitly said "I want to surface this as a question for the engine to deliberate, not a directive to implement." Also violates anti-laundering (retrofitting a spec in the same session that surfaces its motivating pattern is exactly what `multi-agent-deliberation.md` warns against).
+
+7. **Incorporate an engine-feedback/inbox/ triage step into this session**. Rejected: inbox is empty (verified); no feedback-triage warrant fires. Keeping the session focused on the operator's question is more coherent.
+
+
+exec
+/bin/zsh -lc "sed -n '29,41p' specifications/multi-agent-deliberation.md" in /Users/ericmccowan/Development/complex-systems-engine
+ succeeded in 0ms:
+### When Multi-Agent Deliberation Is Required
+
+A session must convene a multi-agent deliberation for any decision where at least one of the following is true:
+
+1. The decision modifies `methodology-kernel.md`.
+2. The decision creates or substantively revises any specification in `specifications/`.
+3. The question is one on which reasonable practitioners could genuinely disagree — operationalised as: the session author can name at least two plausible positions before the deliberation begins.
+4. The session author has marked the decision load-bearing for any other reason and records why.
+
+For any decision that meets at least one of these triggers but is made by a single agent anyway, the decision record must state this explicitly, naming the reason (e.g., "Single-perspective; non-load-bearing: minor correction per D-014 precedent"). Unstated single-perspective decisions on triggered questions are a specification violation.
+
+Decisions that meet none of the triggers — typos, reordering, routine execution of already-decided plans — may be made by a single agent without annotation.
+
+
+codex
+---
+session: 044
+perspective: Outsider
+perspective_index: 3
+lineage: gpt
+---
+
+# Perspective 3: Outsider
+
+## Reading performed
+
+- `provenance/044-session-assessment/01-brief-shared.md` §§1-4, §5c, §§6-9 only. I did not read §§5a/5b/5d.
+- `provenance/044-session-assessment/00-assessment.md` §§2-3.
+- `provenance/043-session-assessment/00-assessment.md` §§5-6.
+- `provenance/043-session-assessment/01-deliberation.md` §§1-7.
+- `provenance/043-session-assessment/participants.yaml`.
+- `provenance/043-session-assessment/manifests/outsider.manifest.yaml`.
+- `provenance/043-session-assessment/manifests/non-claude.manifest.yaml`.
+- `specifications/multi-agent-deliberation.md` §§When Multi-Agent Deliberation Is Required, When Non-Claude Participation Is Required, Perspectives, Stance Briefs, Non-Claude Participation Mechanism, Heterogeneous-Participant Recording Schema, Synthesis, Limitations.
+- `specifications/methodology-kernel.md` §Convene.
+- `open-issues/OI-019.md`.
+
+## Q1 through Q7 (Q5 skipped per operator R3)
+
+### Q1
+
+The S043 split happened because the engine treated "Outsider" as a stance label and "non-Claude" as a participant-presence property, while the historical practice had made them the same operational object.
+
+Candidate (1), no MAD v4 normative requirement, is load-bearing. S044 assessment §3c verifies that MAD v4 requires non-Claude participation for certain decision categories but does not constrain which role that participant fills. MAD v4 §Perspectives likewise governs number, disagreement, adversarial stance, and naming, not lineage.
+
+Candidate (2), no Convene lineage check, is also load-bearing. Methodology Kernel §Convene says to assemble perspectives, name each stance, and record why chosen, but says nothing about recording provider/model family against role-function. That makes the S043 shape formally legible while functionally hiding the break.
+
+Candidate (3), S043 assessment §5 splitting the historically fused roles without naming the split, is the proximate cause. S043 §5a item 4 called Outsider a Claude subagent "per the engine's established Outsider pattern"; item 5 separately assigned Gemini the non-Claude lineage. S044 §3d correctly identifies the problem: it cited the role pattern while omitting the 21-for-21 lineage component.
+
+Candidate (4), default-token ratification, is contributory but not root. The operator ratified a shape whose implication was not surfaced. That is an interface failure in convening records, not a substantive operator endorsement of the split.
+
+Candidate (5), §5.6 literal discharge on participant-presence grounds, is partly load-bearing and partly symptomatic. Strictly, S043 §5.6 asked whether non-GPT non-Claude participation occurred, and Gemini satisfied that. But S044 §3e is right that the warrant operated at participant-presence level while the latent concern presumed role/lineage continuity.
+
+Additional cause: MAD v4 Shape A says a non-Claude participant may be a perspective "indistinguishable in role from the Claude perspectives." That phrasing is useful generally, but here it encouraged role fungibility. It made "add a non-Claude perspective" look equivalent to "preserve the Outsider function." It was not.
+
+### Q2
+
+The operator's position is correctly scoped to every deliberation where the engine uses the role name "Outsider." It need not imply that every multi-perspective deliberation must include an Outsider, or that every low-stakes deliberation must become cross-family. But once the engine invokes "Outsider" as a role, non-Claude lineage is part of the role's function, not an optional transport detail.
+
+The narrow trigger-based scope - "Outsider must be non-Claude only when MAD v4 independently requires non-Claude participation" - is too weak. It would still allow a Claude Outsider in optional non-Claude cases, preserving the same false role signal.
+
+The broader but cleaner scope is: in a Claude-hosted workspace, a perspective named Outsider cannot be Claude-family. If no non-Claude participant is available, the engine may convene an "Internal Frame Challenger" or "Adversarial Reviewer," but should not call it Outsider. For required non-Claude-trigger decisions, the Outsider seat should normally satisfy the non-Claude requirement unless the convening record explicitly justifies assigning the non-Claude participant to another lineage-sensitive function.
+
+### Q3
+
+Mitigation 1, increased default-read surface, helps but is insufficient. Mechanism: session-open assessment should include a small role/lineage precedent note whenever it cites an "established pattern"; for Outsider, it should surface the 21-for-21 prior non-Claude assignment verified in S044 §3b. Risk: precedent can be laundered into rule without deliberation. Codification should start as convention with a verification window, not immediate spec text. OI-019 interaction: positive but narrow; it increases visible warrant surface without deciding OI-019.
+
+Mitigation 2, Convene checklist, is the strongest immediate control. Mechanism: add a convene-time role/participant matrix to the assessment shape: perspective, role function, participant kind, provider/model family, which MAD v4 trigger it satisfies, and any lineage constraint. It should halt if Outsider = Claude unless an explicit operator override states that the role is degraded and not counted as a true Outsider. This can begin as convention; if successful, it belongs in Methodology Kernel §Convene or MAD v4. Spec-level adoption is an engine-v bump candidate.
+
+Mitigation 3, MAD v4 normative addition, is warranted. The rule should not only say "when non-Claude participation is required"; it should say that Outsider is a lineage-constrained role. Risk: overfitting to one label while leaving other role/lineage dependencies invisible. Pair it with the matrix.
+
+Mitigation 4, multi-family panel as default, should be rejected for now as an operational default. The brief §7 separates the Outsider question from the three-family-panel question, and §9 records that this session's GPT-only non-Claude availability is an operator-informed tradeoff. Multi-family panels are valuable data points for OI-019 and §5.6, not a present standing requirement.
+
+Claude-family perspectives are likely to miss: that stance-brief independence does not equal lineage independence; that "spec silent" is not "function preserved"; that operator ratification is weak when the implication is unmarked; and that bundling this with OI-019 is neat but may dilute both problems.
+
+### Q4
+
+Candidate (a), "Outsider MUST be non-Claude when non-Claude participation is required," is a good floor but wrongly scoped. It fixes the exact S043 required-trigger case but leaves the role name available for Claude in optional cases.
+
+Candidate (b), "Outsider MUST be non-Claude in all multi-perspective deliberations," is closer, provided it means "whenever an Outsider role is used," not "every deliberation must include non-Claude." If non-Claude is unavailable, do not use the role name.
+
+Candidate (c), "Convene MUST enumerate lineage per perspective and halt if Outsider = Claude without explicit override," is necessary but not sufficient. It prevents invisible recurrence, but an override can become boilerplate unless it requires a reasoned statement that the Outsider function is not being fully instantiated.
+
+Preferred formulation: MAD v4 should define Outsider as a lineage-constrained role in Claude-hosted deliberations: a perspective named Outsider must be non-Claude; if unavailable, the convening record must either defer, rename the role to an internal challenger, or record an explicit operator override. Separately, Convene should require the role/lineage matrix for all MAD deliberations.
+
+### Q6
+
+OI-019 and the S044 issue should be linked but not bundled into one closure path.
+
+The overlap is real: both concern what the engine sees at convene/session-open time, and both involve a hidden mismatch between formal compliance and functional discipline. OI-019 asks whether path-selection work channels and warrant surfaces are too narrow; this session asks whether perspective roles with lineage-dependent functions are being preserved.
+
+Bundled spec revision would be a mistake. OI-019 explicitly requires operational evidence, cross-family convergence on a specific mechanism, and engagement with the §5.12 Path-Selection Defender minority. Its Honest note warns against rapid closure with spec change. This issue has enough evidence now for a targeted MAD/Convene fix; forcing it through OI-019 would either slow a direct safety correction or launder OI-019 forward prematurely.
+
+Operational recommendation: create a cross-link and shared checklist surface, not a joint OI closure. The Convene role/lineage matrix can serve both: here it blocks Outsider-role misuse; for OI-019 it may later expose whether path-selection alternatives and warrant inputs were genuinely considered.
+
+### Q7
+
+Partial rejection is warranted only against the narrow "one-time error" framing. Under the operator's declared position, S043 was an error. But the more accurate formulation is: S043 exposed a spec/convention asymmetry in which a functionally lineage-dependent role was preserved by name while its lineage basis was silently severed.
+
+Several candidate causes should be narrowed. Default-token ratification did not cause the split; it failed to catch an unmarked implication. §5.6 discharge did not directly require the Outsider role to be non-Claude; it revealed the participant-presence vs role-assignment confusion. Mitigation 1 alone addresses visibility but not enforceability. Mitigation 4 addresses cross-family concentration but not the specific Outsider-role failure.
+
+The residual gap after adopting a default-read note, Convene checklist, and MAD v4 Outsider rule is broader role/lineage discipline. The engine still needs to ask, for each named perspective: does this role depend on structural position, training lineage, operator relation, or synthesis timing? MAD v4 §Limitations already says Claude subagents share family blind spots and that brief-writing has no adversary. A non-Claude Outsider helps, but it does not fix Claude-authored framing, Claude synthesis re-entry, or future cases where a different role has an unstated lineage dependency.
+
+## Independent claim
+
+The missing concept is not simply "non-Claude participation"; it is role-function integrity. A role whose purpose is to stand outside the Claude workspace cannot be instantiated by a Claude subagent, even with a perfect stance brief, because the structural relation is part of the role.
+
+## Confidence and limits
+
+High confidence: S043 formally split Outsider role from non-Claude lineage; MAD v4 did not prohibit it; Convene lacks a lineage check; a targeted Outsider-lineage clause plus convene-time matrix is warranted.
+
+Lower confidence: exact spec wording and engine-v classification should be decided after synthesis across all four perspectives. The requested root path `manifests/non-claude.manifest.yaml` was not present; I read the S043 `provenance/.../manifests/non-claude.manifest.yaml` instead.
+tokens used
+45,627
+---
+session: 044
+perspective: Outsider
+perspective_index: 3
+lineage: gpt
+---
+
+# Perspective 3: Outsider
+
+## Reading performed
+
+- `provenance/044-session-assessment/01-brief-shared.md` §§1-4, §5c, §§6-9 only. I did not read §§5a/5b/5d.
+- `provenance/044-session-assessment/00-assessment.md` §§2-3.
+- `provenance/043-session-assessment/00-assessment.md` §§5-6.
+- `provenance/043-session-assessment/01-deliberation.md` §§1-7.
+- `provenance/043-session-assessment/participants.yaml`.
+- `provenance/043-session-assessment/manifests/outsider.manifest.yaml`.
+- `provenance/043-session-assessment/manifests/non-claude.manifest.yaml`.
+- `specifications/multi-agent-deliberation.md` §§When Multi-Agent Deliberation Is Required, When Non-Claude Participation Is Required, Perspectives, Stance Briefs, Non-Claude Participation Mechanism, Heterogeneous-Participant Recording Schema, Synthesis, Limitations.
+- `specifications/methodology-kernel.md` §Convene.
+- `open-issues/OI-019.md`.
+
+## Q1 through Q7 (Q5 skipped per operator R3)
+
+### Q1
+
+The S043 split happened because the engine treated "Outsider" as a stance label and "non-Claude" as a participant-presence property, while the historical practice had made them the same operational object.
+
+Candidate (1), no MAD v4 normative requirement, is load-bearing. S044 assessment §3c verifies that MAD v4 requires non-Claude participation for certain decision categories but does not constrain which role that participant fills. MAD v4 §Perspectives likewise governs number, disagreement, adversarial stance, and naming, not lineage.
+
+Candidate (2), no Convene lineage check, is also load-bearing. Methodology Kernel §Convene says to assemble perspectives, name each stance, and record why chosen, but says nothing about recording provider/model family against role-function. That makes the S043 shape formally legible while functionally hiding the break.
+
+Candidate (3), S043 assessment §5 splitting the historically fused roles without naming the split, is the proximate cause. S043 §5a item 4 called Outsider a Claude subagent "per the engine's established Outsider pattern"; item 5 separately assigned Gemini the non-Claude lineage. S044 §3d correctly identifies the problem: it cited the role pattern while omitting the 21-for-21 lineage component.
+
+Candidate (4), default-token ratification, is contributory but not root. The operator ratified a shape whose implication was not surfaced. That is an interface failure in convening records, not a substantive operator endorsement of the split.
+
+Candidate (5), §5.6 literal discharge on participant-presence grounds, is partly load-bearing and partly symptomatic. Strictly, S043 §5.6 asked whether non-GPT non-Claude participation occurred, and Gemini satisfied that. But S044 §3e is right that the warrant operated at participant-presence level while the latent concern presumed role/lineage continuity.
+
+Additional cause: MAD v4 Shape A says a non-Claude participant may be a perspective "indistinguishable in role from the Claude perspectives." That phrasing is useful generally, but here it encouraged role fungibility. It made "add a non-Claude perspective" look equivalent to "preserve the Outsider function." It was not.
+
+### Q2
+
+The operator's position is correctly scoped to every deliberation where the engine uses the role name "Outsider." It need not imply that every multi-perspective deliberation must include an Outsider, or that every low-stakes deliberation must become cross-family. But once the engine invokes "Outsider" as a role, non-Claude lineage is part of the role's function, not an optional transport detail.
+
+The narrow trigger-based scope - "Outsider must be non-Claude only when MAD v4 independently requires non-Claude participation" - is too weak. It would still allow a Claude Outsider in optional non-Claude cases, preserving the same false role signal.
+
+The broader but cleaner scope is: in a Claude-hosted workspace, a perspective named Outsider cannot be Claude-family. If no non-Claude participant is available, the engine may convene an "Internal Frame Challenger" or "Adversarial Reviewer," but should not call it Outsider. For required non-Claude-trigger decisions, the Outsider seat should normally satisfy the non-Claude requirement unless the convening record explicitly justifies assigning the non-Claude participant to another lineage-sensitive function.
+
+### Q3
+
+Mitigation 1, increased default-read surface, helps but is insufficient. Mechanism: session-open assessment should include a small role/lineage precedent note whenever it cites an "established pattern"; for Outsider, it should surface the 21-for-21 prior non-Claude assignment verified in S044 §3b. Risk: precedent can be laundered into rule without deliberation. Codification should start as convention with a verification window, not immediate spec text. OI-019 interaction: positive but narrow; it increases visible warrant surface without deciding OI-019.
+
+Mitigation 2, Convene checklist, is the strongest immediate control. Mechanism: add a convene-time role/participant matrix to the assessment shape: perspective, role function, participant kind, provider/model family, which MAD v4 trigger it satisfies, and any lineage constraint. It should halt if Outsider = Claude unless an explicit operator override states that the role is degraded and not counted as a true Outsider. This can begin as convention; if successful, it belongs in Methodology Kernel §Convene or MAD v4. Spec-level adoption is an engine-v bump candidate.
+
+Mitigation 3, MAD v4 normative addition, is warranted. The rule should not only say "when non-Claude participation is required"; it should say that Outsider is a lineage-constrained role. Risk: overfitting to one label while leaving other role/lineage dependencies invisible. Pair it with the matrix.
+
+Mitigation 4, multi-family panel as default, should be rejected for now as an operational default. The brief §7 separates the Outsider question from the three-family-panel question, and §9 records that this session's GPT-only non-Claude availability is an operator-informed tradeoff. Multi-family panels are valuable data points for OI-019 and §5.6, not a present standing requirement.
+
+Claude-family perspectives are likely to miss: that stance-brief independence does not equal lineage independence; that "spec silent" is not "function preserved"; that operator ratification is weak when the implication is unmarked; and that bundling this with OI-019 is neat but may dilute both problems.
+
+### Q4
+
+Candidate (a), "Outsider MUST be non-Claude when non-Claude participation is required," is a good floor but wrongly scoped. It fixes the exact S043 required-trigger case but leaves the role name available for Claude in optional cases.
+
+Candidate (b), "Outsider MUST be non-Claude in all multi-perspective deliberations," is closer, provided it means "whenever an Outsider role is used," not "every deliberation must include non-Claude." If non-Claude is unavailable, do not use the role name.
+
+Candidate (c), "Convene MUST enumerate lineage per perspective and halt if Outsider = Claude without explicit override," is necessary but not sufficient. It prevents invisible recurrence, but an override can become boilerplate unless it requires a reasoned statement that the Outsider function is not being fully instantiated.
+
+Preferred formulation: MAD v4 should define Outsider as a lineage-constrained role in Claude-hosted deliberations: a perspective named Outsider must be non-Claude; if unavailable, the convening record must either defer, rename the role to an internal challenger, or record an explicit operator override. Separately, Convene should require the role/lineage matrix for all MAD deliberations.
+
+### Q6
+
+OI-019 and the S044 issue should be linked but not bundled into one closure path.
+
+The overlap is real: both concern what the engine sees at convene/session-open time, and both involve a hidden mismatch between formal compliance and functional discipline. OI-019 asks whether path-selection work channels and warrant surfaces are too narrow; this session asks whether perspective roles with lineage-dependent functions are being preserved.
+
+Bundled spec revision would be a mistake. OI-019 explicitly requires operational evidence, cross-family convergence on a specific mechanism, and engagement with the §5.12 Path-Selection Defender minority. Its Honest note warns against rapid closure with spec change. This issue has enough evidence now for a targeted MAD/Convene fix; forcing it through OI-019 would either slow a direct safety correction or launder OI-019 forward prematurely.
+
+Operational recommendation: create a cross-link and shared checklist surface, not a joint OI closure. The Convene role/lineage matrix can serve both: here it blocks Outsider-role misuse; for OI-019 it may later expose whether path-selection alternatives and warrant inputs were genuinely considered.
+
+### Q7
+
+Partial rejection is warranted only against the narrow "one-time error" framing. Under the operator's declared position, S043 was an error. But the more accurate formulation is: S043 exposed a spec/convention asymmetry in which a functionally lineage-dependent role was preserved by name while its lineage basis was silently severed.
+
+Several candidate causes should be narrowed. Default-token ratification did not cause the split; it failed to catch an unmarked implication. §5.6 discharge did not directly require the Outsider role to be non-Claude; it revealed the participant-presence vs role-assignment confusion. Mitigation 1 alone addresses visibility but not enforceability. Mitigation 4 addresses cross-family concentration but not the specific Outsider-role failure.
+
+The residual gap after adopting a default-read note, Convene checklist, and MAD v4 Outsider rule is broader role/lineage discipline. The engine still needs to ask, for each named perspective: does this role depend on structural position, training lineage, operator relation, or synthesis timing? MAD v4 §Limitations already says Claude subagents share family blind spots and that brief-writing has no adversary. A non-Claude Outsider helps, but it does not fix Claude-authored framing, Claude synthesis re-entry, or future cases where a different role has an unstated lineage dependency.
+
+## Independent claim
+
+The missing concept is not simply "non-Claude participation"; it is role-function integrity. A role whose purpose is to stand outside the Claude workspace cannot be instantiated by a Claude subagent, even with a perfect stance brief, because the structural relation is part of the role.
+
+## Confidence and limits
+
+High confidence: S043 formally split Outsider role from non-Claude lineage; MAD v4 did not prohibit it; Convene lacks a lineage check; a targeted Outsider-lineage clause plus convene-time matrix is warranted.
+
+Lower confidence: exact spec wording and engine-v classification should be decided after synthesis across all four perspectives. The requested root path `manifests/non-claude.manifest.yaml` was not present; I read the S043 `provenance/.../manifests/non-claude.manifest.yaml` instead.

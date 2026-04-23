@@ -1,0 +1,32 @@
+perspective: cross-family-reviewer
+participant_kind: non-anthropic-model
+participant_identity: openai-gpt-via-codex-exec-cli
+model_family: gpt
+model_id: gpt-5.4
+model_version: unknown
+provider: openai
+endpoint: codex-exec-cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: operator-044
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/044-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/044-session-assessment/01d-perspective-cross-family-reviewer.md
+transport_notes: "Invoked via `codex exec --sandbox read-only \"$(cat provenance/044-session-assessment/codex-reviewer-prompt.txt)\" 2>&1 | tee provenance/044-session-assessment/codex-reviewer-raw-output.log`. Raw-output log preserved at `codex-reviewer-raw-output.log` (2114 lines); final markdown response extracted from lines 1925-2018 to 01d perspective file verbatim (no post-submission edit). Codex reported 74,028 tokens used. Operator chose second Codex (vs Gemini) for P4 Cross-Family Reviewer seat because Gemini is operationally weaker at substantive reasoning at present. MINOR INDEPENDENCE-PHASE BREACH recorded by P4 in its own 'Confidence and limits' section: P4 inadvertently opened the first 120 lines of `codex-outsider-raw-output.log` during its independent-phase file reads. The first 120 lines contain the P3 invocation prompt material and early command log, NOT P3's substantive answers (P3's substantive response begins at line 1212 of its log). P4's self-report: 'I saw invocation/prompt material and early command log, not P3's substantive answers, but that weakens independent-phase purity slightly.' Recorded as a forward observation for convene-time briefing improvement (WX-44-1 candidate); P4's output is not invalidated by this breach but the limit is noted honestly."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+independent_claim: "Adversarial audit of the repair package reveals that the risk is not merely that MAD v4 forgot a sentence — it is that the engine can satisfy lineage counts while preserving Claude-family CONTROL over the role whose function is to break that control. The load-bearing cause of the S043 split was NOT passive MAD silence but S043 §5a item 4's AFFIRMATIVE INVOCATION of 'the engine's established Outsider pattern' while assigning that role to a Claude subagent despite 21-for-21 prior non-Claude pattern — this 'converted a lineage-bearing convention into a role-style convention without saying so' (positive laundering act, not absent-rule bug). Retrofit-risk audit: M1 high-if-broad / medium-if-narrow; M2 low-to-medium (BEST NEAR-TERM); M3 medium (under-scoped if 'when required'); M4 high (laundering vehicle for §5.6+OI-019 concerns disguised as Outsider-role fix). Q4 candidate (d) preferred formulation: 'Outsider role is reserved for non-Claude lineage; if no non-Claude participant can serve that function, the engine may convene a differently named Claude adversarial/frame-review role but must not call it Outsider; Convene must map role to lineage before ratification.' Residual gap: SYNONYM DRIFT — future session could use 'Independent Framer' or 'Externality Reviewer' with Claude and satisfy non-Claude elsewhere, re-creating the failure without the literal label. Explicit Claude bias prediction: Claude will over-endorse MAD v4 normative clause (item 3) because it 'looks like the substantive repair' when deeper fix is convene-time role-lineage binding. NOT a second independent-lineage vantage beyond P3 — shared training provenance; role-stance differs (adversarial vs framing-independent) but independence-of-model does not."
+independent_claim_evidence_pointer: provenance/044-session-assessment/01d-perspective-cross-family-reviewer.md
