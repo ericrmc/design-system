@@ -1,0 +1,225 @@
+---
+session: 047
+title: Shared brief — four-perspective two-family MAD to design a plan artefact for the external-application workspace (selvedge-disaster-response) optimised for engine-feedback yield to self-development
+date: 2026-04-24
+status: brief-immutable-at-commit
+---
+
+# Shared brief — Session 047
+
+## §0 Operator ratification (verbatim)
+
+Operator agenda (session open):
+
+> Follow PROMPT.md and start the next session.
+> The objective is to design a new artefact: a plan the operator can use to execute the new external application. In it will contain the stubs and evolving scenario/constraints for each of multiple sessions. Use MAD in this session to design the external application runs to get the most valuable feedback for this system's self-development.
+
+Operator Halt-1 ratification: **"Proceed"** — accepted R1 (4-perspective two-family MAD; 2 Claude + 2 Codex/GPT-5.5 per S044 R2 standing preference); R2 (Q1-Q5 question set); R3 (default placement `applications/001-disaster-response/arc-plan.md` in external workspace); R4 (scope defaults: 4-5 sessions per S046 scope; perspectives choose specific engine surfaces to target; mix of pre-scripted + emergent constraint changes).
+
+## §0b §5.6 GPT-family-concentration worst-case-side disclosure
+
+Zero non-GPT non-Claude participants this session per operator S044 R2 standing preference (Gemini operationally weaker; Codex preferred for non-Claude seats). §5.6 joint minority worst-case-side data point continues. Spirit-level sustained-exercise question open for future self-dev MAD session re-examination per S045 §6 carry-forward.
+
+## §1 What this deliberation is
+
+You are one of four perspectives in a multi-agent deliberation for Session 047 of the Selvedge engine's self-development workspace. The Selvedge engine is a methodology realised as a loadable file set (the specifications enumerated in `engine-manifest.md` §3); the self-development workspace is where the engine evolves its own specifications by running on its own outputs; this workspace has now bootstrapped its **first external-problem application workspace** at `/Users/ericmccowan/Development/selvedge-disaster-response/` (Session 046 close, commit 60f2483).
+
+The external-application workspace is intended to run a **fictional self-contained disaster-response scenario** across 4-5 sessions with changing constraints per session. The operator has declared the arc's primary optimisation target: **"the most valuable feedback for this system's self-development"**. This is an inversion of the natural framing of an external-application brief — a plan designed for narrative realism may produce weak engine-feedback (the engine chugs through competently); a plan designed to stress-test engine weak-surfaces will produce stronger feedback. When the two diverge, **feedback-yield wins**.
+
+This deliberation designs the **plan artefact** that the operator will use to execute the 4-5 session external-application arc. Output location: `applications/001-disaster-response/arc-plan.md` in the external workspace (alongside the existing `brief.md` slot-template stub, which this plan will implicitly supersede as the authoritative scope document). The plan contains: overall arc structure + per-session stubs (scope, starting state, expected artefacts, validation approach) + the constraint-evolution mechanic.
+
+You have four perspectives in this deliberation:
+
+- **P1 Plan Designer** (Claude subagent): propose the overall arc shape.
+- **P2 Scenario Evolver** (Claude subagent): design the constraint-evolution mechanic.
+- **P3 Outsider / Feedback-Yield Reviewer** (Codex/GPT-5.5 via `codex exec`): independent reframe on feedback-maximisation; gaps between proposed design and engine weak-surfaces.
+- **P4 Cross-Family Reviewer / Realist** (Codex/GPT-5.5 via `codex exec`): adversarial laundering-audit + feasibility + measurable anti-laundering guards.
+
+Your outputs will be committed verbatim and synthesised by the Case Steward (Claude orchestrator). Minority positions that do not converge will be preserved per MAD v4 §Preserve Dissent.
+
+## §2 Problem statement
+
+**Design the arc-plan for the 4-5 session disaster-response external-application. Optimise for engine-feedback yield to self-development, not disaster-response verisimilitude.**
+
+Engine surfaces that are candidates for the arc to deliberately exercise (to be refined by your answers):
+
+- **Kernel §7 Reference-validation void**: the scenario is fictional, so the three-cell reference-validation protocol cannot run. Does the engine default gracefully to qualitative multi-agent validation, or does §7 produce friction?
+- **Retroactive invalidation + D-017 immutability**: constraint changes invalidate prior session's assumptions. D-017 says closed-session provenance is never edited. How are retroactive invalidations recorded without violating D-017 or silently compressing?
+- **Cross-session OI lifecycle**: OIs opened at external Session 001 may become irrelevant by Session 004 as constraints shift. The engine's OI state machine (open/resolved/deferred) does not currently specify a "constraint-invalidated" state transition.
+- **Read-contract pressure**: 4-5 sessions of substantive deliberation-heavy sessions may pressure §2c retention window or §2b aggregate budget in the external workspace (which starts at aggregate ~0 but grows fast).
+- **Minority-preservation under constraint invalidation**: if a minority is preserved at external Session 002 on assumption X, and assumption X is invalidated at Session 003, what happens to the minority?
+- **Engine-feedback outbox first real use**: live exercise of the `engine-feedback/outbox/` pathway bootstrapped at S046 D-142.
+- **MAD v4 scaling across an arc with evolving state**: does the adversarial-coverage requirement + minority-preservation work across 4-5 sessions on evolving content, or does cumulative minority count become unmanageable?
+- **Validation approach when all three kernel §7 senses are under-specified or N/A**: workspace-validation (validate.sh) applies; domain-validation has no domain-actor; reference-validation is N/A; the fallback is qualitative multi-agent, which is not itself a codified §7 sense.
+
+The operator did NOT pre-specify which surfaces the arc should target. Your answer to Q5 chooses.
+
+## §3 Design questions (Q1-Q5)
+
+Answer each question with a concrete proposal grounded in the operator's stated scope (fictional self-contained disaster response + recovery; 4-5 sessions; per-session constraint invalidation and changing infrastructure/demand/coordination/communications; qualitative multi-agent validation).
+
+### Q1. Scenario at T0 + arc structure
+
+What is the fictional self-contained disaster-response scenario at external Session 001's T0? Be concrete: what kind of disaster (natural hazard / technological / compound / social-infrastructure failure / other), where (fictional geography, not a real place), when (fictional time or "present"), and what is the affected population's profile (size range, demographics, critical vulnerabilities)?
+
+What is the arc structure? How many sessions (within 4-5 per operator scope)? What is each session's broad objective — e.g., Session 001 system-model + initial assumptions; Session 002 response plan + risk register; Session 003 re-plan under invalidated assumptions; etc.?
+
+### Q2. Constraint-evolution mechanic + D-017-compliant retroactive-invalidation handling
+
+What changes between sessions? Operator scope answer 3 named four axes: infrastructure / demand / coordination / communications. Which axis changes in which session, and what specifically?
+
+How is the change delivered? Options: (a) operator injects new facts at session-open as a "constraint-update brief"; (b) pre-scheduled reveals declared in the arc-plan (Session N's brief says "at Session N+1 open, assumption X is revealed to have been wrong"); (c) emergent from prior session's outputs (session deliberation surfaces tensions that become Session N+1's invalidated assumptions).
+
+How is retroactive invalidation of prior assumptions recorded without violating D-017 immutability? Candidate mechanisms: (α) append a "superseded-by-session-N-decision" note to the current session's open-issues/OI-NNN.md without editing closed-session files; (β) add a supersession-marker spec clause if the engine doesn't already have one; (γ) treat invalidated assumptions as first-class OIs with an "invalidated" state transition; (δ) preserve the invalidated assumption verbatim in archive-pack style with a forward-reference from the new session.
+
+### Q3. Artefact progression
+
+What artefact set does each session produce? Operator scope answer 2 named: system model, explicit assumptions, response plan, risks and failure points, decision trees. Which artefacts are new per session, which are revised, which are superseded? Name each artefact's file path in the external workspace (typical: `applications/001-disaster-response/<artefact-name>.md`).
+
+Which artefacts carry cross-session frontmatter fields (e.g., `originating_session`, `last-revised-session`, `supersedes`)? Which artefacts are sealed at their originating session (like self-dev provenance) vs. mutable across sessions (like self-dev specifications)?
+
+### Q4. Validation approach per session
+
+Qualitative multi-agent per operator scope answer 4. Be specific:
+
+- What perspective shape does each session's validation use (number + roles + lineage)?
+- Is validation the same shape every session, or does it vary by artefact type?
+- Reference-validation is explicitly N/A (fictional scenario; no public-domain text to seal against). Domain-validation has no domain-actor (fictional; no practitioner to consult). What fills the kernel §7 void? Propose concrete validation criteria that don't require a reference or a domain-actor — e.g., internal coherence, cross-artefact consistency, adversarial red-team perspective, stakeholder-simulation perspective.
+- Where does the Case Steward synthesiser sit in the validation chain?
+
+### Q5. Feedback-yield optimisation (primary target)
+
+This is the **primary design question**. Everything Q1-Q4 resolves must serve this.
+
+Name at least **three concrete engine surfaces** that your proposed design deliberately exercises. For each, name:
+- Which of Q1-Q4's answers exercises the surface.
+- What specific engine-feedback record you expect the exercise to produce (draft the feedback-file name `EF-NNN-<slug>` and one-sentence summary of what the feedback would report).
+- What property of the engine the feedback would surface (unclear spec / missing affordance / wrong abstraction / load-bearing gap / rigid convention / etc.).
+
+Name at least **one engine surface** your design deliberately does NOT target (to keep the arc scope-bounded) and why.
+
+Feedback-yield is the load-bearing criterion. A "clever" scenario that doesn't exercise any engine surface should be rejected; a "bland" scenario that hits multiple engine surfaces should be preferred.
+
+## §4 Reading guidance
+
+- You should read the shared brief (this file) and your role-specific stance in §5. You should NOT attempt to read other perspectives' raw outputs during the independent phase; this breaks the MAD v4 independence discipline.
+- You may reference the engine-definition files for technical accuracy — e.g., to cite `specifications/methodology-kernel.md` §7 when naming the reference-validation void, or `specifications/workspace-structure.md` §provenance when discussing D-017 immutability. Cite by file + section, not by paraphrase.
+- Your raw output should demonstrate that you reasoned from the brief and the engine's own specifications, not from pre-trained knowledge about disaster-response domain practice. External-imports constraint in §6.
+
+## §5 Role-specific stances
+
+### §5a P1 Plan Designer (Claude subagent)
+
+**You are the Plan Designer.** Your function is to propose the **overall arc shape**: session count, per-session broad objective, per-session stub structure (what each session's brief-at-session-open looks like), artefact progression across the arc, validation approach aggregated at arc level.
+
+You own the arc-level structural coherence. If Session 003's objective depends on Session 002 having produced a specific artefact, you make that dependency explicit. If the arc makes narrative sense only if the sessions happen in a specific order, you justify the order.
+
+Your ownership is distinct from P2 Scenario Evolver (who owns session-to-session constraint-evolution mechanics) — you can assume constraints change between sessions without specifying HOW (that is P2's job). You and P2 may produce subtly different arc shapes; the synthesis resolves any disagreement.
+
+Propose specific engine surfaces your arc exercises (minimum three per Q5). Do not just name surfaces — explain which arc-structural choice exercises each surface. Name at least one surface you intentionally DO NOT target.
+
+Target length: 2,000-3,000 words. Output format per §6 below.
+
+### §5b P2 Scenario Evolver (Claude subagent)
+
+**You are the Scenario Evolver.** Your function is to design the **constraint-evolution mechanic**: what specifically changes between sessions (infrastructure / demand / coordination / communications per operator scope answer 3; you may add axes if warranted), how changes are delivered to the executing sessions, and how retroactive invalidation is recorded in a D-017-compliant way.
+
+You own the session-to-session transitions. P1 Plan Designer proposes arc structure; you make the between-session machinery concrete. Your session-by-session deliverable: for each transition (Session 001→002, 002→003, 003→004, 004→005 if applicable), specify (a) what changes, (b) who/what delivers the change and when, (c) how the prior session's provenance handles the invalidated content.
+
+Your Q2 answer must address the D-017-compliance question explicitly. Propose a concrete mechanism (α/β/γ/δ from Q2 or your own). If your mechanism implies a spec amendment to workspace-structure.md or methodology-kernel.md, name it — this becomes an engine-feedback signal regardless of whether the amendment is adopted.
+
+Propose specific engine surfaces the evolution mechanic exercises (minimum two per Q5). At least one of your surfaces should be the retroactive-invalidation handling question itself (this is the most under-specified part of the engine for multi-session external applications).
+
+Target length: 2,000-3,000 words. Output format per §6 below.
+
+### §5c P3 Outsider / Feedback-Yield Reviewer (Codex/GPT-5.5)
+
+**You are the Outsider / Feedback-Yield Reviewer.** Your function is **independent frame-completion and reframe**. You are NOT a paraphrase-Claude; your job is to see what the Claude perspectives cannot see from inside their framing.
+
+Key question for you: **Is the design that P1+P2 would produce actually optimised for feedback yield, or has it drifted toward producing a coherent disaster-response narrative at the cost of stress-testing the engine?** This is the core reframe risk the Case Steward cannot audit from inside the Claude-family framing.
+
+You are the lineage-constrained Outsider per the 21-for-21 convention (Outsider role requires non-Claude participation). Per S044 D-133 M2 matrix, your function is distinct from P4 Cross-Family Reviewer: you are reframe-seeking; P4 is laundering-audit. Do not converge on P4's concerns.
+
+Concrete work for you:
+
+- Re-read the problem statement (§2) from outside the Claude framing. What engine surfaces does §2 mention that are under-weighted in the candidate designs you anticipate P1+P2 producing? What engine surfaces are OMITTED from §2 that a competent external-application arc should exercise?
+- Propose your own feedback-yield-optimal arc structure, citing engine specifications. It does not have to agree with P1 or P2 — diverge if warranted.
+- Identify at least one **frame-level property** of the engine that the disaster-response scenario makes visible but that the engine's own specifications currently under-address. This is your independent reframing deliverable.
+- Cite specifications by file + section. External imports only as explicit surveying per §6.
+
+Target length: 1,500-2,500 words. Output format per §6 below.
+
+Your output will be written to file by the operator via `codex exec`. Produce a single markdown document with the frontmatter specified in §6. Do NOT attempt to read other perspectives' outputs.
+
+### §5d P4 Cross-Family Reviewer / Realist (Codex/GPT-5.5)
+
+**You are the Cross-Family Reviewer / Realist.** Your function is **adversarial laundering-audit and feasibility**. You are the worst-case-scenario inspector for this design.
+
+Key question for you: **What shortcuts will the executing sessions (external-workspace Session 001-005) take that would compromise the feedback yield this plan is designed for?** An arc-plan is only as good as its fidelity in execution; if the plan is brittle to motivated executing-session shortcuts, it will produce weaker feedback than expected.
+
+You are lineage-distinct from Claude but your role is NOT frame-completion (that's P3). Per S044 D-133 M2 matrix synonym-drift guard, you must produce **laundering-audit + feasibility** output that is not P3-paraphrase. If your concerns materially overlap P3's, flag the overlap explicitly.
+
+Concrete work for you:
+
+- For each of Q1-Q5, identify at least one laundering risk: where could the executing session absorb a domain-given without surveying it (OI-015 laundering concern), treat a constraint-change as "noted" without deliberating it, or declare a session "closed" without producing the engine-feedback the arc-plan intended.
+- Propose **measurable anti-laundering guards**: specific, observable criteria for whether a session exercised the engine surface the arc-plan targets, or whether it ceremonially hit the checkpoint without substantive exercise. Examples of measurable guards: minimum word count in engine-feedback/outbox records per session; named deliberation on retroactive-invalidation in any session where a prior-session artefact is revised; explicit documentation of which engine surface was exercised in each session's 03-close.md §2.
+- Feasibility check: is a 4-5 session arc with substantive deliberation actually executable in reasonable time? Where are the over-specification risks (arc-plan too rigid to accommodate emergent issues) or under-specification risks (arc-plan too loose to guide execution)?
+- Vindication/refutation criteria: name observable conditions at the end of external-workspace Session 005 (or arc-end) that would vindicate or refute the arc-plan's design choices. These feed into OI-019 or future MAD sessions in self-dev.
+
+Target length: 1,500-2,500 words. Output format per §6 below.
+
+Your output will be written to file by the operator via `codex exec`. Produce a single markdown document with the frontmatter specified in §6. Do NOT attempt to read other perspectives' outputs.
+
+## §6 Response format
+
+Each perspective's raw output file carries this frontmatter:
+
+```yaml
+---
+session: 047
+title: <perspective role>: <one-line summary of your Q5 position>
+date: 2026-04-24
+status: raw
+perspective: <plan-designer | scenario-evolver | outsider-feedback-yield | cross-family-reviewer-realist>
+committed_at: <will be filled in by committer>
+---
+```
+
+Body structure (required sections, in this order):
+
+1. **Position summary** — 150-300 words; your overall stance across Q1-Q5. What's your arc design's feedback-yield thesis in one paragraph.
+2. **Q1 — Scenario at T0 + arc structure** — your concrete proposal.
+3. **Q2 — Constraint-evolution mechanic + D-017-compliant retroactive-invalidation handling** — your concrete proposal.
+4. **Q3 — Artefact progression** — your concrete proposal.
+5. **Q4 — Validation approach per session** — your concrete proposal.
+6. **Q5 — Feedback-yield optimisation (primary target)** — your concrete proposal. Name ≥3 engine surfaces the design exercises (P3 + P4: ≥2 each); name ≥1 engine surface deliberately NOT targeted.
+7. **Confidence and limits** — 100-300 words; what you're not confident about, what you assumed, what you'd want to defer to synthesis or another session. P3 + P4 flag any independence-phase breach observed (WX-44-1 discipline).
+8. **Independent-claim evidence pointer** — required for P3 + P4 per MAD v4 §Layer 2 schema + OI-004 §independence_basis: pointer to your own manifest fields or to provider public statement on Claude-distillation policy. P1 + P2 may omit (Claude subagents).
+
+## §7 Session-specific anti-laundering reminders
+
+- **OI-002 discipline**: if your proposal implies a spec amendment, classify it substantive or minor per OI-002 heuristic and name the trigger. Do not soft-assert "this might need a spec change" without classification.
+- **WX-35-1 file-edit claim discipline**: if your proposal names external files that you expect to be edited by the executing sessions, state the claim concretely — the executing sessions will verify via `git log`.
+- **§5.6 transparency**: both non-Claude seats are Codex/GPT-5.5 per operator R2; §5.6 worst-case-side data point continues. Record this in your §Confidence-and-limits.
+- **D-133 M2 synonym-drift guard**: P3 and P4 must produce function-distinct output. If P4 paraphrases P3's frame-completion, synonym-drift observation fires in the deliberation.
+- **Feedback-yield as load-bearing**: a "clever" scenario that doesn't exercise engine surfaces is rejected. Your feedback-yield position is the primary way your proposal is judged.
+
+## §8 Convergence threshold
+
+**3-of-4 cross-family with at least one non-Claude on prevailing side** for any plan-level decision adopted as the primary arc design. 1-of-4 minorities are preserved as first-class per MAD v4 §Preserve Dissent. Any synthesis move that goes against 3-of-4 cross-family convergence must cite an explicit adversarial counter-argument.
+
+Questions where perspectives genuinely disagree without 3-of-4 convergence are preserved as open design uncertainty for operator resolution (like S043 OI-019 sub-questions).
+
+## §9 Codex exec invocation pattern (for P3 + P4)
+
+P3 and P4 are invoked via:
+
+```
+codex exec --sandbox read-only "$(cat codex-<role>-prompt.txt)" 2>&1 | tee codex-<role>-raw-output.log
+```
+
+where `codex-<role>-prompt.txt` concatenates §1 + §2 + §3 + §4 + the role-specific stance from §5c or §5d + §6 + §7 + §8 (same brief for both; only §5 role-specific section differs). The raw output is extracted from the log's final markdown section.
+
+Per WX-44-2 model-version-drift discipline, manifest `model_id` is verified from Codex CLI startup metadata at raw-output log line 5 (not pattern-copied from prior sessions).
+
+Per WX-44-1 independence-phase discipline (n=2 observations S044+S045), codex prompts should NOT read prior perspectives' outputs. Guard: run P3 and P4 from fresh codex invocations; each invocation sees only its own prompt.
