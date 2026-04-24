@@ -1,0 +1,31 @@
+perspective: folder-name-reviewer
+participant_kind: claude-subagent
+participant_identity: claude-subagent-via-anthropic-agent-tool
+model_family: claude
+model_id: claude-opus-4-7
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator-045
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/045-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/045-session-assessment/01a-perspective-folder-name-reviewer.md
+transport_notes: Spawned via Claude Code Agent tool subagent_type=general-purpose; shared brief read from workspace path; role stance §5a supplied in agent invocation prompt with explicit instruction to not read §5b/§5c/§5d. Subagent self-committed perspective file at commit a043540 during its run. Fifth cumulative Claude-subagent self-commit observation across S043+S044+S045; WX-43-1 reaches 6-of-8 cumulative OI-promotion threshold at S045 close per §D-141c.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: same-family-declared-role-separation
+independent_claim: "A rigorous S027-precedent-aware test of the §B activation warrant's literal wording against operator's observation's literal wording, applied with anti-laundering discipline (explicit refusal to silently re-propose the S027-rejected §B position without citing what has changed, and explicit acknowledgment that what has changed is weak). Position: preserve D-094; do NOT activate §B. §B requires 'confusion caused' and 'misleading' — operator has reported mild redundancy and historical-origin awareness, not confusion or being misled. Change-in-circumstance (4 instances at S027 → 21 instances at S045 + operator observation newly present) is weak for spec-revision against OI-007 scaling-restraint. 1-of-4 Claude-only dissent preserved as §5.14 per D-140 with three operational reopen warrants."
+independent_claim_evidence_pointer: provenance/045-session-assessment/01a-perspective-folder-name-reviewer.md

@@ -1,10 +1,13 @@
 ---
 session: 045
+title: Perspective 2 — Retention-Window Reviewer (Claude subagent; scope B dedicated advocate; Q3(c) partially warranted for new mechanism not §2c value revision; direct aggregate measurement)
 perspective: Retention-Window Reviewer
 perspective_index: 2
 lineage: claude
 participant_kind: claude-subagent
 model: anthropic/claude-opus-4-7
+date: 2026-04-24
+status: raw-output-committed
 independence_attestation: zero cross-reads of other perspectives' raw-output files during independent phase (01a-folder-name-reviewer / 01c-outsider / 01d-cross-family-reviewer not accessed); brief §5a, §5c, §5d not read per independent-phase discipline
 ---
 

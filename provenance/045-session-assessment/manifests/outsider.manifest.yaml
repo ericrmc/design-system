@@ -1,0 +1,32 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: openai-gpt-via-codex-exec-cli
+model_family: gpt
+model_id: gpt-5.5
+model_version: unknown
+provider: openai
+endpoint: codex-exec-cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+training_lineage_evidence_pointer: unknown-but-asserted
+participant_selected_by: operator-045
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/045-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/045-session-assessment/01c-perspective-outsider.md
+transport_notes: "Invoked via `codex exec --sandbox read-only \"$(cat provenance/045-session-assessment/codex-outsider-prompt.txt)\" 2>&1 | tee provenance/045-session-assessment/codex-outsider-raw-output.log`. Raw-output log preserved at `codex-outsider-raw-output.log` (2024 lines); final markdown response extracted from log to 01c perspective file verbatim (minor post-extraction edit: removed an earlier-iteration duplicate from the log and added title/date/status frontmatter fields for validator check 8 compliance; no content edit to the perspective's substantive answers). Codex CLI reported `model: gpt-5.5` at raw-output.log line 5; MODEL_VERSION: gpt-5.5 printed at end of output. Manifest model_id matches CLI-reported value per WX-44-2 discipline. S045 is 22nd post-operator-correction Outsider exercise with non-Claude in the seat per 21-for-21 convention + S044 D-133 M2 matrix lineage-constraint."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+independent_claim: "This perspective separates two things the current framing risks merging: access-budget control (§2c) and epistemic-horizon control. Scope A should reduce false semantic load in the address via narrow §B activation at `NNN-session` (not bare `NNN`, which would fail the current `NNN-title` validator pattern); scope B should add long-baseline visibility without undoing the aggregate discipline that close-rotation was built to protect. Q3(c) partially warranted — operator's observation is load-bearing for a new cross-sectional/long-baseline mechanism, not for §2c window-value-number revision. Q4 prefer tiered/diagnostic mechanism; synthesize with OI-019 sub-question (f) rather than invent here. Q6 separate decisions. Anti-laundering guard: diagnostic visibility alone does not authorize substantive work without a separate warrant."
+independent_claim_evidence_pointer: provenance/045-session-assessment/01c-perspective-outsider.md

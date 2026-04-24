@@ -1,5 +1,6 @@
 ---
 session: 045
+title: Shared deliberation brief — Path OS four-perspective cross-family two-scope deliberation on folder-name prefix legacy (scope A) + close-retention window value (scope B)
 role: brief-shared
 status: immutable-after-commit
 date: 2026-04-24

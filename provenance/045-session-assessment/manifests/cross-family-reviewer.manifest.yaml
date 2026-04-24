@@ -1,0 +1,32 @@
+perspective: cross-family-reviewer
+participant_kind: non-anthropic-model
+participant_identity: openai-gpt-via-codex-exec-cli
+model_family: gpt
+model_id: gpt-5.5
+model_version: unknown
+provider: openai
+endpoint: codex-exec-cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+training_lineage_evidence_pointer: unknown-but-asserted
+participant_selected_by: operator-045
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/045-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/045-session-assessment/01d-perspective-cross-family-reviewer.md
+transport_notes: "Invoked via `codex exec --sandbox read-only \"$(cat provenance/045-session-assessment/codex-reviewer-prompt.txt)\" 2>&1 | tee provenance/045-session-assessment/codex-reviewer-raw-output.log`. Raw-output log preserved at `codex-reviewer-raw-output.log` (3363 lines); final markdown response extracted from log lines 3233-3363 to 01d perspective file. Codex CLI reported `model: gpt-5.5` at raw-output.log line 5 (authoritative for manifest model_id per WX-44-2); MODEL_VERSION: codex-cli 0.124.0 printed at end of output (P4 reported CLI version rather than model version in the MODEL_VERSION print; model_id: gpt-5.5 per CLI startup metadata is authoritative). Minor independence-phase breach disclosed by P4 in own §Confidence-and-limits: (i) initial brief extraction accidentally included §§5a-5c (other perspectives' stances); (ii) broad `rg 'retention-exception'` search exposed snippets of codex-outsider-raw-output.log (command/output context around retention-exception searches). P4 stated snippets were not relied on for positions. WX-44-1 second occurrence pattern (S044 P4 120-line P3 log read; S045 P4 §5a-c + broad-rg P3 snippets); forward observation for S046+ codex prompt files recommended per §D-141d to include explicit instruction NOT to use broad rg / broad file-tree searches during independent phase. Minor post-extraction edit to the perspective file: the initial extraction from the log was missing the opening `---` frontmatter delimiter (log started content with `session: 045` line but no leading `---`); Case Steward added the opening `---` + title/date/status fields for validator check 8 compliance; no content edit to the perspective's substantive answers."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+independent_claim: "This perspective contributes the laundering audit the other roles are less likely to foreground: §B can be activated without retrofitting history, and §2c can be stress-tested without laundering a new horizon-compression concern into the old retention-exception warrant. Independent recomputation of Path-A (9/19 = 47.4% verified) and aggregate numbers (direct measurement made 15+ full closes much less viable than the brief estimate suggests: 15-session measured ~106.3K vs brief estimate ~92K). Named measurable vindication/refutation conditions for scope B observation over S046-S051 bounded window (e.g., expanded long-horizon read surfaces material correction or missed precedent older than 6 closes that changes an assessment/decision/minority; vs. older-than-6 reads produce no material decision changes). Q1 activate §B → `NNN-session` narrowly. Q3(c) partially warranted but not load-bearing for simple §2c value revision. Q6 separate decisions."
+independent_claim_evidence_pointer: provenance/045-session-assessment/01d-perspective-cross-family-reviewer.md

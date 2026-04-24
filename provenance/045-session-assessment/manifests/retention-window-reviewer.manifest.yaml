@@ -1,0 +1,31 @@
+perspective: retention-window-reviewer
+participant_kind: claude-subagent
+participant_identity: claude-subagent-via-anthropic-agent-tool
+model_family: claude
+model_id: claude-opus-4-7
+model_version: unknown
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator-045
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: provenance/045-session-assessment/01-brief-shared.md
+delivered_at: 2026-04-24T00:00:00Z
+received_at: 2026-04-24T00:00:00Z
+raw_response_file: provenance/045-session-assessment/01b-perspective-retention-window-reviewer.md
+transport_notes: Spawned via Claude Code Agent tool subagent_type=general-purpose; shared brief read from workspace path; role stance §5b supplied in agent invocation prompt with explicit instruction to not read §5a/§5c/§5d. Subagent self-committed perspective file at commit 86dfe06 during its run. Sixth cumulative Claude-subagent self-commit observation across S043+S044+S045.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: same-family-declared-role-separation
+independent_claim: "Empirical per-close aggregate-budget quantification measured directly rather than estimated (wc -w across S002-S044; brief §2 Q5 estimates corrected: ii-15 measured 107K not ~92K because S027/S028/S032 substantive-content closes ~5.5K each above brief's 3K assumed mean), and disambiguation of the attribution question between window-value-revision and long-horizon-mechanism-addition. The only role with direct responsibility to name that scope B's operator-observation is plausibly mis-located on §2c value. Q3 position: (c) partially warranted for NEW mechanism not §2c value revision. Four competing attributions for deliberation-horizon-compression identified (retention-length / engine-maturation / Path-A-default-convention / watchpoint-only-by-design); none dominant. Verified S043 Long-Baseline Auditor 47% claim at 9/19 = 47.4% independently."
+independent_claim_evidence_pointer: provenance/045-session-assessment/01b-perspective-retention-window-reviewer.md

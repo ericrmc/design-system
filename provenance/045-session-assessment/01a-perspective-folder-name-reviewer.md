@@ -1,11 +1,14 @@
 ---
 session: 045
+title: Perspective 1 — Folder-Name Reviewer (Claude subagent; scope A dedicated advocate; Q1 preserve-D-094 position)
 perspective: Folder-Name Reviewer
 perspective_index: 1
 lineage: claude
 participant_kind: claude-subagent
 model_id: anthropic/claude-opus-4-7
 role: scope-A-dedicated-advocate
+date: 2026-04-24
+status: raw-output-committed
 ---
 
 # Perspective 1: Folder-Name Reviewer

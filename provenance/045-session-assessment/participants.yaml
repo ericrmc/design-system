@@ -1,0 +1,75 @@
+---
+session: 045
+participants_family: cross-family-two-lineages
+cross_model: true
+non_claude_participants: 2
+non_gpt_non_claude_participants: 0
+non_gpt_non_claude_rationale: "worst-case-side per operator S044 R2 standing disclosure (Gemini operationally weaker for substantive reasoning at present; both non-Claude seats filled by Codex/GPT-5.5). §5.6 GPT-family-concentration reopen-warrant (i) worst-case-side data point this session. Disclosed transparently at brief §0b and §5d P4 self-scrutiny. S046 re-examination of §5.6 spirit-level sustained-exercise question calendared."
+oi004_qualifying_participants: []
+oi004_qualifying_participants_rationale: "OI-004 closed S041 per D-125 state 3→4; tally semantics narrowed post-closure (d023_4 forward-narrowed semantics per D-126 minor amendment). Not applicable for S045 non-qualifying-by-closed-state."
+case_steward: claude-opus-4-7-orchestrator
+synthesizer: claude-opus-4-7-case-steward
+synthesis_notes: "MAD v4 §Limitations 'synthesis step is pattern's highest-risk single-agent re-entry point' warning applies; Claude synthesis; disclosed in 01-deliberation.md §7 honest limits; convergence tabulated per-perspective without orchestrator-deference where perspectives differ (particularly Q1 where 3-of-4 adopted §B and Case Steward synthesis preserved P1's 1-of-4 dissent as §5.14 rather than absorbing it)"
+perspectives:
+  - index: 1
+    role: Folder-Name Reviewer
+    manifest: manifests/folder-name-reviewer.manifest.yaml
+    raw_output: 01a-perspective-folder-name-reviewer.md
+  - index: 2
+    role: Retention-Window Reviewer
+    manifest: manifests/retention-window-reviewer.manifest.yaml
+    raw_output: 01b-perspective-retention-window-reviewer.md
+  - index: 3
+    role: Outsider
+    manifest: manifests/outsider.manifest.yaml
+    raw_output: 01c-perspective-outsider.md
+    codex_prompt_file: codex-outsider-prompt.txt
+    codex_raw_output_log: codex-outsider-raw-output.log
+  - index: 4
+    role: Cross-Family Reviewer
+    manifest: manifests/cross-family-reviewer.manifest.yaml
+    raw_output: 01d-perspective-cross-family-reviewer.md
+    codex_prompt_file: codex-reviewer-prompt.txt
+    codex_raw_output_log: codex-reviewer-raw-output.log
+convergence_threshold: 3-of-4 cross-family including ≥1 non-Claude for substantive moves (per brief §8; S033/S036/S044 precedent)
+convergence_events:
+  - question: Q1 (scope A §B activation)
+    result: 3-of-4 cross-family including both non-Claude for §B activation → NNN-session
+    dissent_count: 1-of-4 Claude-only (P1 preserve-D-094 → §5.14 first-class minority preservation per D-140)
+  - question: Q3 (scope B revision load-bearing?)
+    result: 4-of-4 cross-family (c) partially warranted for NEW mechanism not §2c value revision
+    dissent_count: 0
+  - question: Q4 (window value conditional)
+    result: 4-of-4 cross-family tiered/diagnostic as top-ranked conditional
+    dissent_count: 0
+  - question: Q5 (aggregate-budget interaction)
+    result: 2-of-4 direct measurement (P2 + P4) converged within 1-2% margin; brief estimates corrected at synthesis (ii-15 measured 107K not ~92K)
+    dissent_count: 0 (corroboration, not divergence)
+  - question: Q6 (bundle or separate)
+    result: 4-of-4 cross-family separate decisions same session
+    dissent_count: 0
+decisions_produced:
+  - id: D-138
+    triggers_met: [d016_2]
+    subject: "Scope A §B activation — NNN-session-assessment → NNN-session forward-only S046+"
+  - id: D-139
+    triggers_met: [d009_1]
+    subject: "Scope B disposition — §2c preserved; OI-019 cross-linkage sub-question (f) long-horizon visibility mechanism"
+  - id: D-140
+    triggers_met: [d004_3_minority_preservation]
+    subject: "§5.14 Folder-Name Reviewer preserve-D-094 first-class minority preservation with three operational reopen warrants"
+  - id: D-141
+    triggers_met: [none]
+    subject: "Housekeeping — D-129 second-of-3 + D-133 M2 first-of-3 verification exercises; WX-43-1 6-of-8 OI-promotion threshold; WX-44-1 second occurrence; §5.6 worst-case-side data point; engine-v7 preservation window count 9; fifteenth close-rotation"
+verification_window_exercises:
+  - convention: D-129 non-Path-A alternatives surfacing
+    exercise_number: 2-of-3
+    window_sessions: [S044, S045, S046]
+    result_this_session: vindication-side (three non-Path-A alternatives with non-vacuous rationales at 00-assessment.md §5d)
+    evaluation_session: S046 close
+  - convention: D-133 M2 Convene-time role/lineage matrix
+    exercise_number: 1-of-3
+    window_sessions: [S045, S046, S047]
+    result_this_session: vindication-side (7-column matrix populated; lineage-constraint compliance verified; synonym-drift guard applied; departure discipline not triggered)
+    evaluation_session: S047 close
+---
