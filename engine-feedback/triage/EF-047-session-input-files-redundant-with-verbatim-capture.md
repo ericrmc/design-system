@@ -3,11 +3,14 @@ triage_id: EF-047-session-inputs-triage
 feedback_ref: ../inbox/EF-047-session-input-files-redundant-with-verbatim-capture.md
 triaged_in_session: 048
 triaged_at: 2026-04-24
-status: triaged
-disposition: practice-level already adopted (operator workflow dropped session-inputs/ subdirectory for selvedge-disaster-response arc execution); spec-level minor documentary amendment bundled with S050 MAD per S049 D-157/D-161 scope revision + defer
+status: resolved
+disposition: resolved at S050 close per D-174 bundled-minor disposition; practice-level adopted at S050 (session-inputs-as-prior-synthesis-reference shape without re-verbatim-capture when cited artefact is in-workspace provenance); minor documentary captured in specifications/retrieval-contract.md v1 §5 bootstrap-contract-note rather than as separate spec amendment
 opened_issue: null
 scheduled_mad_session: 050
-engine_version_impact_pending: minor documentary only (bundled with S050 MAD)
+resolved_at: 2026-04-24
+resolved_in_session: 050
+resolution_decisions: [D-174]
+engine_version_impact: none (minor documentary folded into retrieval-contract.md v1 §5; no separate engine-v-bump driver)
 ---
 
 # Triage — EF-047 session-input-files-redundant-with-verbatim-capture

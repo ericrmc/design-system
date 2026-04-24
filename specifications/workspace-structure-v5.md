@@ -1,11 +1,11 @@
 ---
 title: Workspace Structure
-version: 6
+version: 5
 status: active
 created: 2026-04-17
 last-updated: 2026-04-24
-updated-by-session: 050
-supersedes: workspace-structure-v5.md
+updated-by-session: 045
+supersedes: workspace-structure-v4.md
 ---
 
 # Workspace Structure
@@ -295,17 +295,7 @@ Six minorities were preserved from the Session 036 Path PD deliberation per `mul
 
 - **§10.4-M6 Outsider separate-prompt-files-operator-invoked (Session 036).** Position: the dispatcher should be eliminated; the operator invokes `PROMPT-development.md` or `PROMPT-external.md` directly; explicit entrypoints are common in mature tooling and avoid autodispatch ambiguity. Rejected in favour of preserving the single-entry-point abstraction. Source: `[provenance/036-session-assessment/01D-perspective-outsider.md, Q5]`. Activation warrant: if MODE.md + fallback continues to produce dispatcher ambiguity beyond the Session 036 revision over 6 sessions, reconsider explicit operator-invoked separate prompt files.
 
-Note on minority count: these six Session 036 minorities, added to the 21 preserved at Session 035 close (consolidated in `provenance/036-session-assessment/01-deliberation.md` §6), bring engine-wide first-class minorities to **27** at Session 036 close. Sessions 037–049 added minorities inline bringing the count to 31 at Session 049 close. Session 050's retrieval-substrate MAD adds five more minorities (§10.4-M7 through §10.4-M11 below), bringing engine-wide first-class minorities to **36** at Session 050 close.
-
-- **§10.4-M7 P2 minimum-adoption / defer-with-instrumentation (Session 050).** Position: adoption should earn expansion through measured use, not anticipated architecture. If phase-1 proves unused, phase-1 should not have shipped. Source: `[provenance/050-session/01b-perspective-incrementalist-skeptic.md, §1.3]`. Activation warrant: if the WX-50-1 gate (retrieval-contract.md §6) fails to fire across S050–S053 AND zero use recorded for phase-1 tools in ≥3 consecutive sessions, revisit whether phase-1 should have shipped at all. Reopen warrants: (a) WX-50-1 non-firing + zero-use across 3+ consecutive sessions; (b) phase-1 tool maintenance becomes operationally burdensome relative to evidence of value. Mirrored in `specifications/retrieval-contract.md` v1 §7.1.
-
-- **§10.4-M8 DuckDB structured-first substrate (Session 050).** Position: if structured filters and graph traversal prove dominant, SQLite FTS5 may be the wrong long-term substrate despite winning phase-1. Source: `[provenance/050-session/01a-perspective-substrate-architect.md, §1.2 + §2 counter-frames]` + `[provenance/050-session/01d-perspective-cross-family-reviewer.md, §7 dissent-rec 2]`. Activation warrant: any session in which phase-1 tool use shows structured-filter + graph-traversal queries dominate prose-search queries by ≥3× count over a 5-session window. Reopen warrants: (a) query-class data demonstrates structured-first dominance; (b) SQLite FTS5 ecosystem churn that DuckDB-FTS does not share. Mirrored in `specifications/retrieval-contract.md` v1 §7.2.
-
-- **§10.4-M9 P1 engine-definition-at-adoption (Session 050).** Position: the retrieval-substrate capability is important enough that it warrants engine-definition classification now, not deferred; the current contract adopted engine-adjacent per D-170 but this minority preserves the opposite position for evidence-triggered reconsideration. Source: `[provenance/050-session/01a-perspective-substrate-architect.md, §4.1]` + `[provenance/050-session/01d-perspective-cross-family-reviewer.md, §7 dissent-rec 3]`. Activation warrant: if an external-workspace adoption exposes inconsistent inheritance (workspace A and workspace B have divergent substrate implementations producing different answers on equivalent queries), re-enter the engine-definition case. Reopen warrants: (a) inconsistent-inheritance signal; (b) ≥3 stable substrate versions + ≥1 successful external-workspace adoption + operator surfacing promotion. Mirrored in `specifications/retrieval-contract.md` v1 §7.3.
-
-- **§10.4-M10 Substrate-N2 structured-artefacts-as-source-of-truth reframe (Session 050).** Position: the shared markdown-plus-index frame should not be mistaken for the only scalable answer; decisions, OIs, minorities, watchpoints, etc. may eventually become structured records with markdown as witness. Source: `[provenance/050-session/01c-perspective-outsider-frame-completion.md, §2 Substrate-N2]`. Activation warrant: if substrate phase-2+ maintenance cost exceeds projections by ≥2× OR multi-hop cross-reference queries become the dominant operational burden, revisit Substrate-N2 as a multi-session arc. Reopen warrants: (a) cumulative phase-2+ maintenance time exceeds projection 2× across 3 consecutive sessions; (b) multi-hop cross-reference query class dominates ≥5× prose-search over a 5-session window. Mirrored in `specifications/retrieval-contract.md` v1 §7.4.
-
-- **§10.4-M11 `syncs_with:` declaration-of-intent distinction (Session 050).** Position: extracted edges may not replace explicit co-evolution commitments; edges answer "what is cited"; `syncs_with:` would answer "what must co-evolve"; the distinction is load-bearing; phase-2 deliberation on edges MUST explicitly deliberate whether to preserve or fold `syncs_with:`. Source: `[provenance/050-session/01c-perspective-outsider-frame-completion.md, Q6]` + `[provenance/050-session/01d-perspective-cross-family-reviewer.md, §7 dissent-rec 5]`. Activation warrant: at phase-2 deliberation on the `edges` table, the fold-vs-preserve question on `syncs_with:` is explicitly on the agenda; auto-fold is not permitted. Reopen warrants: (a) cross-spec drift that an `edges` table did not catch; (b) declared co-evolution relationships that are not citation-observable. Mirrored in `specifications/retrieval-contract.md` v1 §7.5.
+Note on minority count: these six Session 036 minorities, added to the 21 preserved at Session 035 close (consolidated in `provenance/036-session-assessment/01-deliberation.md` §6), bring engine-wide first-class minorities to **27** at Session 036 close.
 
 ## Validation
 

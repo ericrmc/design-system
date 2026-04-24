@@ -4,10 +4,13 @@ feedback_ref: ../inbox/EF-047-brief-slot-template-hidden-arc-leakage.md
 triaged_in_session: 048
 triaged_at: 2026-04-24
 status: triaged
-disposition: adoption bundled with S050 MAD as minor alongside EF-047-retrieval-discipline substantive scope per S049 D-157/D-161 scope revision + defer; both suggested options (a) bootstrap --hidden-arc flag + prompts/application.md paragraph, and (b) workspace-structure.md §applications documentary clarification, remain candidates at S050
+disposition: S050 D-174 defers spec-level adoption to the next self-dev or external-arc session that exercises arc-plan brief slots (earliest selvedge-disaster-response S002+ arc resumption); deferral is principled not punting per S050 close — the S050 substrate-adoption MAD surface did not exercise arc-plan-hidden-view leakage pressure; both suggested options ((a) bootstrap --hidden-arc flag + prompts/application.md paragraph; (b) workspace-structure.md §applications documentary clarification) remain live candidates for that next session; no OI opened at this time
 opened_issue: null
-scheduled_mad_session: 050
-engine_version_impact_pending: minor (bundled with S050 MAD engine-v bump if retrieval-discipline adoption also bumps)
+scheduled_mad_session: null  # deferred to next-arc-exercise session per S050 D-174
+deferred_at: 2026-04-24
+deferred_in_session: 050
+deferral_decisions: [D-174]
+engine_version_impact_pending: minor (deferred; no current engine-v-bump driver)
 ---
 
 # Triage — EF-047 brief-slot-template-hidden-arc-leakage

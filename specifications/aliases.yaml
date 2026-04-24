@@ -1,0 +1,78 @@
+# Selvedge alias vocabulary.
+#
+# Schema versioned per specifications/retrieval-contract.md v1 §2.3.
+# Two-label phase-1 (canonical + aliases[]). Phase-3+ may migrate to SKOS
+# three-label (prefLabel / altLabel / hiddenLabel) by bumping schema_version.
+#
+# Each entry lets `resolve_id(alias)` map surface forms to a canonical id
+# string that build_retrieval_index.py can anchor to a specific source file.
+#
+# Populated incrementally as aliases surface. Keep this file compact.
+
+schema_version: 1
+
+aliases:
+  # Session 050 seed entries (sample of canonical-with-common-aliases patterns).
+  - canonical: "§10.4-M5"
+    kind: minority
+    aliases:
+      - "M5"
+      - "Reviser OI-tag-only"
+      - "§10.4-minority-5"
+    added_session: 50
+    notes: "Session 036 minority on OI-tag-only feedback pathway (discharged-as-vindicated S048)."
+
+  - canonical: "§10.4-M2"
+    kind: minority
+    aliases:
+      - "M2"
+      - "Skeptic-preserver premature-feedback-pathway"
+    added_session: 50
+    notes: "Session 036 minority on feedback-pathway timing."
+
+  - canonical: "D-157"
+    kind: decision
+    aliases:
+      - "Decision 157"
+      - "the S049 scope-revision decision"
+      - "operator scope revision S049"
+    added_session: 50
+    notes: "S049 operator-directed scope revision to design-space + meta-decision class."
+
+  - canonical: "D-163"
+    kind: decision
+    aliases:
+      - "Decision 163"
+      - "S050 Halt-1 ratifications"
+    added_session: 50
+
+  - canonical: "D-172"
+    kind: decision
+    aliases:
+      - "Decision 172"
+      - "retrieval-contract v1 adoption"
+      - "engine-v9 bump"
+    added_session: 50
+
+  - canonical: "OI-019"
+    kind: open-issue
+    aliases:
+      - "OI 19"
+      - "Path-selection work-channel and warrant-surface diversity"
+    added_session: 50
+
+  - canonical: "WX-50-1"
+    kind: watchpoint
+    aliases:
+      - "retrieval-substrate-use recording"
+      - "phase-2 gate"
+      - "WX 50-1"
+    added_session: 50
+    notes: "Phase-2 gate for retrieval-contract.md v1 per §6."
+
+  - canonical: "EF-047-retrieval-discipline"
+    kind: feedback
+    aliases:
+      - "EF-047 retrieval"
+      - "retrieval-discipline-and-text-system-scaling-ceiling"
+    added_session: 50

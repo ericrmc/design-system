@@ -4,7 +4,7 @@ version: 1
 status: active
 created: 2026-04-22
 last-updated: 2026-04-24
-updated-by-session: 048
+updated-by-session: 050
 supersedes: none
 ---
 
@@ -29,11 +29,11 @@ The engine is distinct from:
 
 ### 2. Current engine version
 
-**`engine-v8`** (established Session 048 per D-154).
+**`engine-v9`** (established Session 050 per D-172).
 
-Subsequent engine versions (`engine-v9`, `engine-v10`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
+Subsequent engine versions (`engine-v10`, `engine-v11`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
 
-### 3. Engine-definition files at `engine-v8`
+### 3. Engine-definition files at `engine-v9`
 
 The following files constitute the engine at the current version:
 
@@ -49,6 +49,7 @@ The following files constitute the engine at the current version:
 | `specifications/identity.md` | Records the name Selvedge and the three-layer denotation. |
 | `specifications/reference-validation.md` | Defines reference-validation as the third sense of validation. |
 | `specifications/read-contract.md` | Defines the access discipline: default-read surface vs archive surface (v1, added engine-v3). |
+| `specifications/retrieval-contract.md` | Declares the required retrieval capabilities for Selvedge workspaces (v1, added engine-v9). |
 | `specifications/engine-manifest.md` | **This file.** |
 | `tools/validate.sh` | Executable: runs the Tier 1 structural checks from `validation-approach.md`. |
 
@@ -177,6 +178,24 @@ Engine-v8 is the seventh engine-v-bump overall (v2 Session 021; v3 Session 022; 
 Engine-v8 introduces a **new class of substantive-revision provenance**: operator-directed inbox-record resolution. The prior bumps traced the following provenance classes: v2–v4 came from preserved-minority / watchpoint activation; v5–v6 came from preserved-minority activation; v7 came from operator-surfaced mid-session deliberation; v8 comes from operator-directed-resolution on an inbox feedback record with the direction pre-declared as not-for-deliberation by the operator. This class is compatible with the engine's preservation-and-dissent-recording machinery: the feedback record itself is the preservation artefact; the `operator_directed_resolution` frontmatter field makes the non-deliberation explicit; the adopting session documents the adoption as a single-orchestrator implementation of a pre-ratified direction rather than as a deliberation. The pattern does not bypass deliberation when deliberation is warranted; it recognises that some operator interventions (narrow, directionally clear) are appropriately handled as single-orchestrator implementations.
 
 **Key consequence at v8 adoption:** aggregate default-read surface is effectively unchanged in aggregate (the carve-out clarifies pre-existing exclusion of `applications/` from §1 enumeration; it does not add or remove any file from the §1 count). `read-contract.md` word count grows from 4,762 to approximately 5,624 (comfortable under §2 6K soft warning). Close-rotation continues standard per §2c; Session 042 close rotates OUT at Session 048 close per standard rotation mechanics.
+
+- **`engine-v9`** — established Session 050 via D-172. **First engine-v-bump driven by a substantive MAD adopting a new engine-definition spec.** Resolution of `engine-feedback/inbox/EF-047-retrieval-discipline-and-text-system-scaling-ceiling.md` via 4-perspective two-family MAD (P1 Substrate Architect Claude + P2 Incrementalist Skeptic Claude + P3 Outsider Codex/GPT-5.5 + P4 Cross-Family Reviewer Codex/GPT-5.5) per S049 D-159 pre-ratification + S050 00-assessment §2a correction-overlay + Halt-1 Q6 external-application-portability scope expansion. Substantive: adds one new engine-definition file.
+
+  - `specifications/retrieval-contract.md` v1 (new) — declares required retrieval capabilities for all Selvedge workspaces (self-development + external-application): phase-1 `search` + `resolve_id` MCP tools; two-label `specifications/aliases.yaml` schema_version 1; workspace-local `.cache/retrieval.db` state; session-open mtime rebuild trigger; bootstrap-contract for external-workspace inheritance; WX-50-1 phase-2 gate (retrieval-substrate-use recording across S050–S053); five preserved first-class minorities §7.1–§7.5 (also mirrored in `workspace-structure.md` v6 §10.4-M7 through §10.4-M11).
+
+  Engine-adjacent implementation (NOT added to §3 per Q7 synthesis adopting P3's middle path — engine-defined contract + engine-adjacent implementation per D-170): `tools/build_retrieval_index.py` (~300 LOC SQLite FTS5 indexer); `tools/retrieval_server.py` (~200 LOC FastMCP stdio server); `.mcp.json` (project-scoped server registration); `specifications/aliases.yaml` (two-label schema_version 1 with 8 seed entries). These implement the contract; they are not part of the engine-definition file set (§3), but conforming workspaces MUST provide equivalent implementations per the contract.
+
+  Substantive minor amendment to one engine-definition file bundled in the v9 adoption: `specifications/workspace-structure.md` v5 → v6 (adds §10.4-M7 through §10.4-M11; 5 new preserved first-class minorities from S050 MAD; minority-index count 27 → 36 after counting S047/S049 minorities preserved inline + S050 MAD five new). v5 preserved as `workspace-structure-v5.md` with `status: superseded`.
+
+  Ancillary tooling amended (non-engine-definition): `tools/bootstrap-external-workspace.sh` extended with substrate-install steps (copy implementation files; print pip-install instructions; build initial index; validate `search`/`resolve_id` work).
+
+  All other engine-definition files unchanged at engine-v9 boundary: `PROMPT.md`; `prompts/development.md`; `prompts/application.md`; `methodology-kernel.md` v6; `multi-agent-deliberation.md` v4; `validation-approach.md` v5; `identity.md` v2; `reference-validation.md` v3; `read-contract.md` v5; `tools/validate.sh` (unchanged; check 24 deferred to phase-2 per D-171). Workspace-identity files unchanged: `MODE.md` (self-dev marker).
+
+Engine-v9 is the eighth engine-v-bump overall (v2 Session 021; v3 Session 022; v4 Session 023; v5 Session 028; v6 Session 033; v7 Session 036; v8 Session 048; v9 Session 050) and the fifth post-cadence-maturation content-driven bump (v5 + v6 + v7 + v8 + v9). §5.4 Session 022 engine-v-cadence minority (activated-not-escalated) does NOT re-escalate at this bump per Session 028 D-096 / Session 033 D-107 / Session 036 D-114 / Session 048 D-154 content-driven-bump precedent chain (cadence concern separates from substantive-bump classification). Engine-v9 follows a 2-session preservation window (S049 + S050-pre-adoption-state); preservation depth is modest compared to the 11-session engine-v7→v8 window but appropriate given the S049 design-space → S050 MAD → S050 adoption arc was pre-committed at S048 D-155.
+
+Engine-v9 introduces a **new class of substantive-revision provenance**: MAD-adopted new engine-definition spec driven by inbox engine-feedback with explicit retrieval-substrate capability. Prior classes: v2–v4 preserved-minority / watchpoint activation; v5–v6 preserved-minority activation; v7 operator-surfaced mid-session deliberation; v8 operator-directed-resolution of inbox record (single-orchestrator not-for-deliberation). Engine-v9 is the first bump where inbox feedback triggers MAD deliberation (not single-orchestrator) which produces a new engine-definition spec (not an amendment to existing). The class is distinct from v7 (which was operator-surfaced mid-session) and from v8 (which was operator-directed-pre-ratified).
+
+**Key consequence at v9 adoption:** aggregate default-read surface gains `specifications/retrieval-contract.md` (~3,500 words). `specifications/aliases.yaml` is ~40 words (very compact). `workspace-structure.md` grows from 3,412 to approximately 4,200 (five new §10.4 minorities ~160 words each). Net default-read aggregate post-S050-close forecast ~70–72K (S044 close rotates OUT; S050 close enters; retrieval-contract.md added). Well under §2b 90K soft ceiling (~18–20K headroom). Phase-2 engine-v10 candidate is gated on WX-50-1 firing per retrieval-contract.md §6.
 
 Future engine-version increments will extend this history in this section.
 

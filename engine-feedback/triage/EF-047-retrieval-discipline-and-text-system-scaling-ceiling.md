@@ -3,8 +3,12 @@ triage_id: EF-047-retrieval-discipline-triage
 feedback_ref: ../inbox/EF-047-retrieval-discipline-and-text-system-scaling-ceiling.md
 triaged_in_session: 048
 triaged_at: 2026-04-24
-status: triaged
-disposition: adoption under deliberation at S050 4-perspective two-family MAD; design-space document at provenance/049-session/design-space.md is prior synthesis (historical; preserved as-is) loaded as MAD input under S050 00-assessment §2a correction-overlay; S050 Q1–Q8 agenda covers primary substrate + adoption scope + kernel §1 amendment shape + alias vocabulary + rebuild trigger + syncs_with field + external-application inheritance (Q7 load-bearing per operator Halt-1 Q6 scope expansion — substrate MUST be portable to external-application workspaces with workspace-relative bootstrapped index) + validator check 24 scope
+status: resolved
+disposition: resolved at S050 close via 14 decisions D-163–D-176 in provenance/050-session/02-decisions.md; new engine-definition spec specifications/retrieval-contract.md v1 adopted per D-170+D-172 (engine-v8→v9); engine-adjacent implementation shipped (tools/build_retrieval_index.py + tools/retrieval_server.py + specifications/aliases.yaml + .mcp.json); bootstrap-script extended to install substrate in external-application workspaces per D-170 P3 middle path (engine-defined contract + engine-adjacent implementation + workspace-local .cache/retrieval.db); workspace-structure.md v5→v6 adds §10.4-M7 through §10.4-M11 preserving 5 first-class minorities from the MAD; WX-50-1 phase-2 gate requires retrieval-substrate-use recording across S050–S053 before phase-2 substrate extensions can adopt (edges/frontmatter_kv/warrants_currently_met/validator-check-24/kernel-§1a-amendment)
+resolved_at: 2026-04-24
+resolved_in_session: 050
+resolution_decisions: [D-163, D-164, D-165, D-166, D-167, D-168, D-169, D-170, D-171, D-172, D-173, D-174, D-175, D-176]
+engine_version_impact: engine-v8 → engine-v9 (D-172)
 opened_issue: null
 scheduled_mad_session: 050
 scheduled_mad_scope: |

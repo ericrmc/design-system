@@ -1,0 +1,33 @@
+---
+perspective: cross-family-reviewer
+participant_kind: non-anthropic-model
+participant_identity: OpenAI GPT-5.5 via `codex exec --sandbox read-only -o`; codex-cli 0.124.0
+model_family: gpt
+model_id: gpt-5.5
+model_version: gpt-5.5 (codex-cli 0.124.0; reasoning-effort xhigh per ~/.codex/config.toml)
+provider: openai
+endpoint: cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: ericmccowan
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/050-session/codex-cross-family-reviewer-prompt.txt
+delivered_at: 2026-04-24
+received_at: 2026-04-24
+raw_response_file: provenance/050-session/01d-perspective-cross-family-reviewer.md
+transport_notes: "codex exec invoked with -s read-only + -C <workspace-root> + -o <raw-file> + stdin-piped prompt (WX-47-1 stdin-pipe workaround applied). Launched after P1 + P2 completed per stance-brief dependency (P4 reads P1 + P2 for laundering audit). --model flag omitted; config default gpt-5.5 + xhigh used per WX-44-2. Output written via -o flag to 01d-perspective-cross-family-reviewer-raw.md; Case Steward copied verbatim into 01d-perspective-cross-family-reviewer.md adding only frontmatter. Stdout/stderr log preserved at codex-cross-family-reviewer-raw-output.log. No repo-wide search from inside codex per §0d standing instruction. Synonym-drift guard (per D-133 M2): P4's laundering audit is distinct from P3's frame-completion — observed: P3 proposed Substrate-N1/N2/N3 + portability middle-path (genuine reframe); P4 audited P1/P2 for Claude-lineage patterns + named 5 dissent-preservation items (genuine audit). Roles distinct in evidence."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+independent_claim: true
+---

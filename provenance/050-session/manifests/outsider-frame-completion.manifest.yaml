@@ -1,0 +1,33 @@
+---
+perspective: outsider-frame-completion
+participant_kind: non-anthropic-model
+participant_identity: OpenAI GPT-5.5 via `codex exec --sandbox read-only -o`; codex-cli 0.124.0
+model_family: gpt
+model_id: gpt-5.5
+model_version: gpt-5.5 (codex-cli 0.124.0; reasoning-effort xhigh per ~/.codex/config.toml)
+provider: openai
+endpoint: cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: ericmccowan
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/050-session/codex-outsider-prompt.txt
+delivered_at: 2026-04-24
+received_at: 2026-04-24
+raw_response_file: provenance/050-session/01c-perspective-outsider-frame-completion.md
+transport_notes: "codex exec invoked with -s read-only + -C <workspace-root> + -o <raw-file> + stdin-piped prompt (WX-47-1 stdin-pipe workaround applied to avoid YAML-in-argv parsing bug). --model flag omitted; picked up model=gpt-5.5 + reasoning_effort=xhigh from ~/.codex/config.toml per WX-44-2 discipline (config verified at session open; model_id not pattern-copied). Output written via -o flag to 01c-perspective-outsider-raw.md; Case Steward copied verbatim content into 01c-perspective-outsider-frame-completion.md adding only frontmatter (preserved provenance_note). Stdout/stderr log preserved at codex-outsider-raw-output.log. No repo-wide search from inside codex per §0d standing instruction."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+independent_claim: true
+---

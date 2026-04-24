@@ -157,6 +157,7 @@ SPEC_FILES=(
   identity.md
   reference-validation.md
   read-contract.md
+  retrieval-contract.md
   engine-manifest.md
 )
 for spec in "${SPEC_FILES[@]}"; do
@@ -167,7 +168,45 @@ done
 cp "$SOURCE_ROOT/tools/validate.sh" "$TARGET/tools/validate.sh"
 chmod +x "$TARGET/tools/validate.sh"
 
-echo "    engine-definition files copied (12 files per engine-manifest §3)."
+echo "    engine-definition files copied (13 files per engine-manifest §3)."
+echo ""
+
+# -----------------------------------------------------------------------------
+# 3e. Copy engine-adjacent retrieval substrate (per retrieval-contract.md v1 §5).
+# These files implement the phase-1 retrieval contract but are NOT enumerated in
+# engine-manifest.md §3 — they are engine-adjacent tooling that conforming
+# workspaces MUST provide. Per D-170 S050, the implementation travels via this
+# bootstrap rather than via engine-definition inheritance.
+# -----------------------------------------------------------------------------
+
+echo "[3e] Copying engine-adjacent retrieval substrate..."
+
+cp "$SOURCE_ROOT/tools/build_retrieval_index.py" "$TARGET/tools/build_retrieval_index.py"
+cp "$SOURCE_ROOT/tools/retrieval_server.py"      "$TARGET/tools/retrieval_server.py"
+cp "$SOURCE_ROOT/specifications/aliases.yaml"    "$TARGET/specifications/aliases.yaml"
+cp "$SOURCE_ROOT/.mcp.json"                      "$TARGET/.mcp.json"
+chmod +x "$TARGET/tools/build_retrieval_index.py" "$TARGET/tools/retrieval_server.py"
+
+# External workspaces start with an empty aliases file (per retrieval-contract §5);
+# preserve the schema_version line but wipe the seed entries so the new workspace
+# accumulates its own aliases.
+cat > "$TARGET/specifications/aliases.yaml" <<'EOF'
+# Selvedge alias vocabulary (external-application workspace).
+# Phase-1 two-label schema per specifications/retrieval-contract.md v1 §2.3.
+schema_version: 1
+
+aliases: []
+EOF
+
+# .gitignore for the retrieval cache.
+cat > "$TARGET/.gitignore" <<'EOF'
+# Retrieval substrate (adopted S050 per retrieval-contract.md v1 §4).
+# Cache is workspace-local and regenerable from markdown via tools/build_retrieval_index.py.
+.cache/
+EOF
+
+echo "    engine-adjacent tooling copied (build_retrieval_index.py, retrieval_server.py,"
+echo "    aliases.yaml scaffold, .mcp.json, .gitignore with .cache/)."
 echo ""
 
 # -----------------------------------------------------------------------------
@@ -460,16 +499,30 @@ Next steps for the operator:
      Replace each <<...>> placeholder with application-specific content.
      The brief is the primary input Session 001 will Read.
 
-  2. Initialise git in the new workspace (your choice of remote, author, signing):
+  2. Install retrieval substrate dependencies (required by retrieval-contract.md §5):
        cd $TARGET
+       pip install 'mcp[cli]' pyyaml
+       # OR, if uv is present:
+       # uv tool install pyyaml && uv tool install mcp
+
+  3. Build the initial retrieval index:
+       python3 tools/build_retrieval_index.py
+       # Produces .cache/retrieval.db (gitignored). Run once here; subsequently
+       # the MCP server (tools/retrieval_server.py) checks freshness on startup
+       # and rebuilds on mtime drift. Smoke-test after populating the brief:
+       # the MCP server's search("brief") should return your applications/001-$SLUG/brief.md.
+
+  4. Initialise git in the new workspace (your choice of remote, author, signing):
        git init
        git add -A
        git commit -m "Bootstrap external-problem workspace at $ENGINE_V"
 
-  3. Open Claude Code in the new workspace. The dispatcher reads MODE.md and
-     loads prompts/application.md. Session 001 begins per that prompt.
+  5. Open Claude Code in the new workspace. The dispatcher reads MODE.md and
+     loads prompts/application.md. The .mcp.json registers selvedge-retrieval
+     at project scope; Claude Code picks it up automatically once pip install
+     step 2 is complete. Session 001 begins per prompts/application.md.
 
-  4. If engine/methodology friction arises during any session, write a feedback
+  6. If engine/methodology friction arises during any session, write a feedback
      file to $TARGET/engine-feedback/outbox/ (see README there for schema).
      Between sessions, copy the file into:
        $SOURCE_ROOT/engine-feedback/inbox/

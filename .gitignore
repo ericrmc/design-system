@@ -3,3 +3,6 @@
 .serena/*
 mempalace.yaml
 entities.json
+# Retrieval substrate (adopted S050 per D-170 / retrieval-contract.md v1 §4).
+# Cache is workspace-local and regenerable from markdown via tools/build_retrieval_index.py.
+.cache/

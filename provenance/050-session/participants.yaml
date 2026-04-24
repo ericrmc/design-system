@@ -1,0 +1,38 @@
+---
+session: 050
+participants_family: cross-family-two-lineages
+cross_model: true
+non_claude_participants: 2
+non_gpt_non_claude_participants: 0
+oi004_qualifying_participants: []  # OI-004 closed state-4 since S041
+perspectives:
+  - perspective: substrate-architect
+    manifest: manifests/substrate-architect.manifest.yaml
+    raw_response_file: 01a-perspective-substrate-architect.md
+  - perspective: incrementalist-skeptic
+    manifest: manifests/incrementalist-skeptic.manifest.yaml
+    raw_response_file: 01b-perspective-incrementalist-skeptic.md
+  - perspective: outsider-frame-completion
+    manifest: manifests/outsider-frame-completion.manifest.yaml
+    raw_response_file: 01c-perspective-outsider-frame-completion.md
+  - perspective: cross-family-reviewer
+    manifest: manifests/cross-family-reviewer.manifest.yaml
+    raw_response_file: 01d-perspective-cross-family-reviewer.md
+independence_phase_observations:
+  - perspective: substrate-architect
+    kind: no-breach-observed
+    detail: "Launched via Agent tool general-purpose; subagent read only the enumerated files in the task prompt (shared brief + design-space + engine-manifest + bootstrap script + kernel skim). Did not self-commit per explicit instruction. WX-43-1 explicit-instruction-variant clean."
+    wx_44_1_counts_toward_threshold: false
+  - perspective: incrementalist-skeptic
+    kind: no-breach-observed
+    detail: "Launched via Agent tool general-purpose; subagent read only the enumerated files in the task prompt (shared brief + design-space + validate.sh). Did not self-commit. WX-43-1 clean."
+    wx_44_1_counts_toward_threshold: false
+  - perspective: outsider-frame-completion
+    kind: no-breach-observed
+    detail: "codex exec --sandbox read-only; no repo-wide search from inside codex per §0d WX-44-1 standing instruction; output delivered via -o flag to raw file then wrapped with frontmatter by Case Steward; stdout raw log preserved. WX-47-1 stdin-pipe workaround applied (prompt via `<` redirection)."
+    wx_44_1_counts_toward_threshold: false
+  - perspective: cross-family-reviewer
+    kind: no-breach-observed
+    detail: "codex exec --sandbox read-only; read P1 + P2 perspective files + shared brief + design-space per stance-brief direction; did not perform repo-wide search; did not self-commit. WX-47-1 stdin-pipe applied."
+    wx_44_1_counts_toward_threshold: false
+---
