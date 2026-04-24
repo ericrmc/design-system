@@ -4,10 +4,10 @@ feedback_ref: ../inbox/EF-047-session-input-files-redundant-with-verbatim-captur
 triaged_in_session: 048
 triaged_at: 2026-04-24
 status: triaged
-disposition: practice-level already adopted (operator workflow dropped session-inputs/ subdirectory for selvedge-disaster-response arc execution); spec-level minor documentary amendment bundled with S049 MAD
+disposition: practice-level already adopted (operator workflow dropped session-inputs/ subdirectory for selvedge-disaster-response arc execution); spec-level minor documentary amendment bundled with S050 MAD per S049 D-157/D-161 scope revision + defer
 opened_issue: null
-scheduled_mad_session: 049
-engine_version_impact_pending: minor documentary only (bundled with S049 MAD)
+scheduled_mad_session: 050
+engine_version_impact_pending: minor documentary only (bundled with S050 MAD)
 ---
 
 # Triage — EF-047 session-input-files-redundant-with-verbatim-capture
@@ -16,7 +16,7 @@ engine_version_impact_pending: minor documentary only (bundled with S049 MAD)
 
 **Target**: methodology. **Severity on inbox record**: observation (lower than companion brief-slot-template friction). **Source**: `selvedge-self-development` Session 047, direct-to-inbox out-of-session operator observation.
 
-**Disposition**: **triaged; practice-level already adopted; spec-level adoption bundled with S049 MAD** per operator ratification at S048 Halt 1 Q4 = (b).
+**Disposition**: **triaged; practice-level already adopted; spec-level adoption bundled with S050 MAD** per operator S048 Halt 1 Q4=(b) ratification preserved through S049 D-157 scope revision (bundled-minors defer with the substantive MAD).
 
 ## Practice-level status
 

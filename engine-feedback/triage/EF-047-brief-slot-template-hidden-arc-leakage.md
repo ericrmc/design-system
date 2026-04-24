@@ -4,10 +4,10 @@ feedback_ref: ../inbox/EF-047-brief-slot-template-hidden-arc-leakage.md
 triaged_in_session: 048
 triaged_at: 2026-04-24
 status: triaged
-disposition: adoption bundled with S049 MAD as minor alongside EF-047-retrieval-discipline substantive scope; both suggested options (a) bootstrap --hidden-arc flag + prompts/application.md paragraph, and (b) workspace-structure.md §applications documentary clarification, remain candidates at S049
+disposition: adoption bundled with S050 MAD as minor alongside EF-047-retrieval-discipline substantive scope per S049 D-157/D-161 scope revision + defer; both suggested options (a) bootstrap --hidden-arc flag + prompts/application.md paragraph, and (b) workspace-structure.md §applications documentary clarification, remain candidates at S050
 opened_issue: null
-scheduled_mad_session: 049
-engine_version_impact_pending: minor (bundled with S049 MAD engine-v bump if retrieval-discipline adoption also bumps)
+scheduled_mad_session: 050
+engine_version_impact_pending: minor (bundled with S050 MAD engine-v bump if retrieval-discipline adoption also bumps)
 ---
 
 # Triage — EF-047 brief-slot-template-hidden-arc-leakage
@@ -16,7 +16,7 @@ engine_version_impact_pending: minor (bundled with S049 MAD engine-v bump if ret
 
 **Target**: engine. **Severity on inbox record**: friction. **Source**: `selvedge-self-development` Session 047, direct-to-inbox out-of-session operator observation.
 
-**Disposition**: **triaged; adoption bundled with S049 MAD** per operator ratification at S048 Halt 1 Q4 = (b). Both suggested options ((a) `--hidden-arc` flag in `tools/bootstrap-external-workspace.sh` + `prompts/application.md` paragraph; (b) `specifications/workspace-structure.md` v5 §applications documentary clarification) remain candidates at S049; selection between (a) / (b) / bundled-(a)+(b) is an S049 deliberation question.
+**Disposition**: **triaged; adoption bundled with S050 MAD** per operator S048 Halt 1 Q4=(b) ratification as preserved through S049 D-157 scope revision (bundled-minors defer with the substantive MAD wherever the MAD runs). Both suggested options ((a) `--hidden-arc` flag in `tools/bootstrap-external-workspace.sh` + `prompts/application.md` paragraph; (b) `specifications/workspace-structure.md` v5 §applications documentary clarification) remain candidates at S050; selection between (a) / (b) / bundled-(a)+(b) is an S050 deliberation question.
 
 ## Why not adopted this session
 

@@ -4,14 +4,19 @@ feedback_ref: ../inbox/EF-047-retrieval-discipline-and-text-system-scaling-ceili
 triaged_in_session: 048
 triaged_at: 2026-04-24
 status: triaged
-disposition: adoption scheduled for S049 dedicated multi-agent deliberation; level (A) adoption minimum expected; level (B) and level (C) MAD-deliberated for scope decision
+disposition: adoption scheduled for S050 dedicated multi-agent deliberation per operator Halt-1 scope revision at S049; design-space document produced at provenance/049-session/design-space.md as MAD input; S050 Q1–Q8 agenda covers primary substrate (Option A SQLite FTS5 vs Option B DuckDB+FTS vs defer) + adoption scope + kernel §1 amendment shape + alias vocabulary + rebuild trigger + syncs_with field + external-application inheritance + validator check 24 scope
 opened_issue: null
-scheduled_mad_session: 049
+scheduled_mad_session: 050
 scheduled_mad_scope: |
-  Level (A) — formalise retrieval discipline in kernel §1 (substantive kernel §1 amendment adding a Warrant-evaluation sub-activity + validator check that preserved minorities in provenance have living pointers in active-spec minority blocks). Adoption recommended.
-  Level (B) — make cross-spec synchronisation first-class via a syncs_with frontmatter field + validator cross-checks (substantive workspace-structure.md + validation-approach.md amendments). Deliberated at S049; adoption scope determined there.
-  Level (C) — commit to structured retrieval substrate (tools/query.sh or index file or database-backed layer). Deliberated at S049; if adoption-warranted, likely multi-session design process; S049 determines direction-of-travel not full adoption.
-engine_version_impact_pending: engine-v8 → engine-v9 candidate at S049 close (conditional on adoption)
+  Per S049 D-157 operator-directed scope revision: the original EF-047 level (A) framing (kernel-discipline-only minor amendment) is set aside. Replaced with data-structure + retrieval-substrate direction per operator Halt-1 guidance ("recommendations should include data structure changes rather than discipline only … real scalable technical solutions"). S049 produced synthesis + options meta-decision; S050 executes the substantive MAD.
+  S050 MAD menu (per design-space.md §4–§7):
+    Option A — SQLite FTS5 + structured tables (documents, identifiers, frontmatter_kv, edges, aliases) + MCP server via FastMCP stdio. Operator-named direction. Zero install cost; BM25 native; snippet()/highlight() auxiliary functions; ~140ms rebuild / sub-millisecond query on this corpus.
+    Option B — DuckDB + FTS extension + edges table + MCP server. Strongest competitor to Option A; table-centric model unifies frontmatter filters with prose FTS; DuckPGQ optional for property-graph queries; FTS extension flagged experimental upstream.
+    Complementary: git-as-temporal-substrate (git log -S pickaxe); ripgrep-as-floor (baseline that any substrate must beat on ID-lookup); validator check 24 (preserved-minority substrate-pointer coverage); SKOS alias vocabulary at specifications/aliases.yaml.
+    Rejected with rationale: Meilisearch/Typesense (typo-tolerance wrong for ID-crisp queries); Tantivy (scale mismatch); RDF stores (schema-tax disproportional); vector/embedding (ID-lookup failure; <200K-token Anthropic contextual-retrieval guidance); Neo4j/Memgraph (scale mismatch); rank_bm25/whoosh (stale/frozen).
+  S050 MAD 8-question agenda per design-space §8.2: Q1 primary substrate; Q2 adoption scope (full-kit vs incremental); Q3 kernel §1 amendment shape; Q4 alias vocabulary; Q5 rebuild trigger; Q6 syncs_with: field disposition; Q7 external-application inheritance (engine-definition vs ancillary); Q8 validator check 24 scope.
+  S050 convening: 4-perspective two-family per operator S044 R2 (P1 Substrate Architect Claude + P2 Incrementalist Skeptic Claude + P3 Outsider Codex/GPT-5.5 + P4 Cross-Family Reviewer Codex/GPT-5.5) per design-space §8.1.
+engine_version_impact_pending: engine-v8 → engine-v9 candidate at S050 close (conditional on substantive adoption)
 cross_references:
   - OI-019 sub-question (f): extended-baseline visibility mechanism
 ---
@@ -22,7 +27,7 @@ cross_references:
 
 **Target**: methodology. **Severity on inbox record**: friction. **Source**: `selvedge-self-development` Session 047, direct-to-inbox out-of-session operator observation.
 
-**Disposition**: **triaged; adoption deferred to S049 dedicated multi-agent deliberation**. The source record is deliberately forceful and explicitly pre-empts the Skeptic/Minimalist/Pragmatist "don't overengineer" response at level (A). Per operator ratification at S048 Halt 1 Q3, S049 is scheduled as 4-perspective two-family MAD (per S044 R2 standing preference) to deliberate level (A) adoption + level (B)/(C) scope.
+**Disposition**: **triaged; adoption rescheduled to S050 dedicated multi-agent deliberation per S049 D-157 operator scope revision.** The source record is deliberately forceful and explicitly pre-empts the Skeptic/Minimalist/Pragmatist "don't overengineer" response at level (A). Per operator ratification at S048 Halt 1 Q3, S049 was originally scheduled as 4-perspective two-family MAD. At S049 Halt-1 operator delivered scope revision: recommendations should include data structure changes rather than discipline only; real scalable technical solutions; suggested five substrate candidates (inverted index + BM25; identifier alias tables; structured frontmatter metadata filters; key-value lookup for ID resolution; regex for exact patterns; local FTS5 index exposed via MCP). Operator explicitly suggested using S049 for synthesis + options + meta-decision, deferring substantive MAD deliberation to S050. S049 produced the design-space document at `provenance/049-session/design-space.md`; S050 executes the substantive 4-perspective MAD with the design-space as input.
 
 ## Why not adopted this session
 
