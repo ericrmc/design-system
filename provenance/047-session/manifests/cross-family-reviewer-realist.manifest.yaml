@@ -1,0 +1,33 @@
+---
+perspective: cross-family-reviewer-realist
+participant_kind: non-anthropic-model
+participant_identity: OpenAI GPT-5.5 via `codex exec --sandbox read-only`; session id 019dbd64-e2a4-72c2-b69f-80faa6a782e8
+model_family: gpt
+model_id: gpt-5.5
+model_version: gpt-5.5 (codex-cli 0.124.0)
+provider: openai
+endpoint: cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: ericmccowan
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/047-session/codex-cross-family-reviewer-prompt.txt
+delivered_at: 2026-04-24
+received_at: 2026-04-24
+raw_response_file: provenance/047-session/01d-perspective-cross-family-reviewer-realist.md
+transport_notes: "First invocation failed due to codex-cli argv parsing of leading `---` in YAML frontmatter; re-invoked via stdin pipe (WX-47-1 candidate convention). Raw output extracted from codex-cross-family-reviewer-raw-output.log lines 1468-1617 (final markdown). Model_id gpt-5.5 verified from CLI startup metadata at log line 5 per WX-44-2 discipline; not pattern-copied. P4 disclosed observing filenames of other perspective files during file discovery but not opening their contents; P4 characterized this as non-substantive breach — no addition to WX-44-1 count."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+independent_claim: true
+---

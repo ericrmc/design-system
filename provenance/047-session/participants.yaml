@@ -1,0 +1,30 @@
+---
+session: 047
+participants_family: cross-family-two-lineages
+cross_model: true
+non_claude_participants: 2
+non_gpt_non_claude_participants: 0
+oi004_qualifying_participants: []  # OI-004 closed state-4 since S041; narrowing claims not applicable
+perspectives:
+  - perspective: plan-designer
+    manifest: manifests/plan-designer.manifest.yaml
+    raw_response_file: 01a-perspective-plan-designer.md
+  - perspective: scenario-evolver
+    manifest: manifests/scenario-evolver.manifest.yaml
+    raw_response_file: 01b-perspective-scenario-evolver.md
+  - perspective: outsider-feedback-yield
+    manifest: manifests/outsider-feedback-yield.manifest.yaml
+    raw_response_file: 01c-perspective-outsider-feedback-yield.md
+  - perspective: cross-family-reviewer-realist
+    manifest: manifests/cross-family-reviewer-realist.manifest.yaml
+    raw_response_file: 01d-perspective-cross-family-reviewer-realist.md
+independence_phase_observations:
+  - perspective: outsider-feedback-yield
+    kind: substantive-breach-self-disclosed
+    detail: "Repository-wide search for OI-002 material surfaced snippets from 01b-perspective-scenario-evolver.md via tool output; P3 stated snippets were not relied on as evidence."
+    wx_44_1_counts_toward_threshold: true
+  - perspective: cross-family-reviewer-realist
+    kind: filename-visibility-only
+    detail: "File discovery revealed names of other perspective files; P4 did not open contents; P4 characterized as non-substantive breach."
+    wx_44_1_counts_toward_threshold: false
+---

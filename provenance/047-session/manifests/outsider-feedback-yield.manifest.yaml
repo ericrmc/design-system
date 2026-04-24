@@ -1,0 +1,33 @@
+---
+perspective: outsider-feedback-yield
+participant_kind: non-anthropic-model
+participant_identity: OpenAI GPT-5.5 via `codex exec --sandbox read-only`; session id 019dbd64-e1ec-7280-bf8e-f6e30be19611
+model_family: gpt
+model_id: gpt-5.5
+model_version: gpt-5.5 (codex-cli 0.124.0)
+provider: openai
+endpoint: cli
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: ericmccowan
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/047-session/codex-outsider-prompt.txt
+delivered_at: 2026-04-24
+received_at: 2026-04-24
+raw_response_file: provenance/047-session/01c-perspective-outsider-feedback-yield.md
+transport_notes: "First invocation failed due to codex-cli argv parsing of leading `---` in YAML frontmatter; re-invoked via stdin pipe (WX-47-1 candidate convention). Raw output extracted from codex-outsider-raw-output.log lines 5675-5805 (final markdown; log also contains reasoning trace). Model_id gpt-5.5 verified from CLI startup metadata at log line 5 per WX-44-2 discipline; not pattern-copied. Independence-phase breach self-disclosed: during repository-wide search for OI-002 material, tool output surfaced snippets from 01b-perspective-scenario-evolver.md; P3 stated the snippets were not relied on as evidence. WX-44-1 n=3 cumulative (S044+S045+S047) — OI-promotion threshold met per S045 close §D-141d."
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+independent_claim: true
+---

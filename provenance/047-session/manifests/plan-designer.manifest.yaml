@@ -1,0 +1,27 @@
+---
+perspective: plan-designer
+participant_kind: claude-subagent
+participant_identity: Claude Opus 4.7 (1M context) via Agent tool general-purpose subagent; Session 047 P1
+model_family: claude
+model_id: claude-opus-4-7
+model_version: claude-opus-4-7 (1M context)
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: ericmccowan
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/047-session/01-brief-shared.md
+delivered_at: 2026-04-24
+received_at: 2026-04-24
+raw_response_file: provenance/047-session/01a-perspective-plan-designer.md
+transport_notes: "Launched via Agent tool in parallel with P2 Scenario Evolver; subagent did not self-commit per explicit instruction; returned a ≤200-word position summary after writing raw output."
+output_edited_after_submission: false
+participation_shape: perspective
+independent_claim: false
+---
