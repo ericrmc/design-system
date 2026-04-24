@@ -8,7 +8,7 @@ Created Session 036 per D-116 as the adoption artefact for the engine-feedback p
 
 ## Status summary
 
-- **New** (inbox, not yet triaged): 3
+- **New** (inbox, not yet triaged): 4
 - **Triaged** (triage-record exists, awaiting resolution): 0
 - **Resolved** (triage-record + resolution pointer): 0
 - **Rejected** (triaged with no action warranted): 0
@@ -20,6 +20,7 @@ Created Session 036 per D-116 as the adoption artefact for the engine-feedback p
 | [EF-047-brief-slot-template-hidden-arc-leakage](inbox/EF-047-brief-slot-template-hidden-arc-leakage.md) | selvedge-self-development | 047 | engine | friction | new (direct-to-inbox; out-of-session) | — | — |
 | [EF-047-session-input-files-redundant-with-verbatim-capture](inbox/EF-047-session-input-files-redundant-with-verbatim-capture.md) | selvedge-self-development | 047 | methodology | observation | new (direct-to-inbox; out-of-session) | — | — |
 | [EF-001-read-contract-budget-scaling-for-domain-artefacts](inbox/EF-001-read-contract-budget-scaling-for-domain-artefacts.md) | selvedge-disaster-response | 001 | engine | friction | new (direct-to-inbox; operator-relay); **operator-directed resolution recorded — not open to deliberation** | — | exclude applications/ from §2 per-file budget; chunked-read-on-demand; optional manifest/index; subsumes EF-047-(iv) |
+| [EF-047-retrieval-discipline-and-text-system-scaling-ceiling](inbox/EF-047-retrieval-discipline-and-text-system-scaling-ceiling.md) | selvedge-self-development | 047 | methodology | friction | new (direct-to-inbox; out-of-session) | — | forceful; pre-empts "don't overengineer" response at (A) level; three-level suggested change (kernel retrieval discipline / spec-sync field / structured retrieval substrate); flags trajectory-level scaling concern; OI-019 sub-question (f) contribution |
 
 **Note on direct-to-inbox placement**: both records above originated in self-dev post-S047 out-of-session discussion, not from external-application execution. Operator directed direct placement in `inbox/` rather than fabricating provenance by routing through the external workspace's `outbox/` (which would contaminate that workspace's execution record). `source_workspace_id` accurately reflects self-dev origin. This is a forward-convention observation candidate: the `engine-feedback/` schema per `workspace-structure.md` v5 §engine-feedback describes the external-workspace→self-dev-inbox direction but does not forbid self-dev-originating records being placed directly in inbox; the practical discipline is accurate attribution via `source_workspace_id` and `reported_by` fields.
 
