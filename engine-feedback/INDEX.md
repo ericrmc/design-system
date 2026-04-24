@@ -4,23 +4,23 @@ Thin index of operator-mediated engine/methodology feedback records. Full per-re
 
 This file is default-read surface in self-development mode per `specifications/read-contract.md` v4 §1 item 9. See `specifications/workspace-structure.md` v5 §engine-feedback for the full specification.
 
-Created Session 036 per D-116 as the adoption artefact for the engine-feedback pathway. No feedback records present at adoption — the directory is in place for forthcoming external-application feedback return.
+Created Session 036 per D-116 as the adoption artefact for the engine-feedback pathway. First non-empty inbox state reached post-Session 047; first full inbox→triage cycle executed at Session 048.
 
 ## Status summary
 
-- **New** (inbox, not yet triaged): 4
-- **Triaged** (triage-record exists, awaiting resolution): 0
-- **Resolved** (triage-record + resolution pointer): 0
+- **New** (inbox, not yet triaged): 0
+- **Triaged** (triage-record exists, awaiting resolution): 3
+- **Resolved** (triage-record + resolution pointer): 1
 - **Rejected** (triaged with no action warranted): 0
 
 ## Records
 
 | ID | Source workspace | Source session | Target | Severity | Status | Triage session | OI/Disposition |
 |----|------------------|----------------|--------|----------|--------|----------------|----------------|
-| [EF-047-brief-slot-template-hidden-arc-leakage](inbox/EF-047-brief-slot-template-hidden-arc-leakage.md) | selvedge-self-development | 047 | engine | friction | new (direct-to-inbox; out-of-session) | — | — |
-| [EF-047-session-input-files-redundant-with-verbatim-capture](inbox/EF-047-session-input-files-redundant-with-verbatim-capture.md) | selvedge-self-development | 047 | methodology | observation | new (direct-to-inbox; out-of-session) | — | — |
-| [EF-001-read-contract-budget-scaling-for-domain-artefacts](inbox/EF-001-read-contract-budget-scaling-for-domain-artefacts.md) | selvedge-disaster-response | 001 | engine | friction | new (direct-to-inbox; operator-relay); **operator-directed resolution recorded — not open to deliberation** | — | exclude applications/ from §2 per-file budget; chunked-read-on-demand; optional manifest/index; subsumes EF-047-(iv) |
-| [EF-047-retrieval-discipline-and-text-system-scaling-ceiling](inbox/EF-047-retrieval-discipline-and-text-system-scaling-ceiling.md) | selvedge-self-development | 047 | methodology | friction | new (direct-to-inbox; out-of-session) | — | forceful; pre-empts "don't overengineer" response at (A) level; three-level suggested change (kernel retrieval discipline / spec-sync field / structured retrieval substrate); flags trajectory-level scaling concern; OI-019 sub-question (f) contribution |
+| [EF-047-brief-slot-template-hidden-arc-leakage](inbox/EF-047-brief-slot-template-hidden-arc-leakage.md) ([triage](triage/EF-047-brief-slot-template-hidden-arc-leakage.md)) | selvedge-self-development | 047 | engine | friction | triaged — adoption scheduled S049 MAD (bundled minor with retrieval-discipline) | 048 | options (a)/(b)/both under deliberation at S049 |
+| [EF-047-session-input-files-redundant-with-verbatim-capture](inbox/EF-047-session-input-files-redundant-with-verbatim-capture.md) ([triage](triage/EF-047-session-input-files-redundant-with-verbatim-capture.md)) | selvedge-self-development | 047 | methodology | observation | triaged — practice-level adopted; spec-level minor documentary bundled S049 MAD | 048 | paragraph amendment to prompts/application.md §Engine-feedback pathway or workspace-structure.md §engine-feedback |
+| [EF-001-read-contract-budget-scaling-for-domain-artefacts](inbox/EF-001-read-contract-budget-scaling-for-domain-artefacts.md) ([triage](triage/EF-001-read-contract-budget-scaling-for-domain-artefacts.md)) | selvedge-disaster-response | 001 | engine | friction | **resolved** (S048 D-153 + D-154) | 048 | adopted via read-contract.md v4→v5 (§1 clarification + §2d carve-out) + minor prompts/application.md §Read clarification + engine-v7→v8; subsumes S047 D-150 (iv) |
+| [EF-047-retrieval-discipline-and-text-system-scaling-ceiling](inbox/EF-047-retrieval-discipline-and-text-system-scaling-ceiling.md) ([triage](triage/EF-047-retrieval-discipline-and-text-system-scaling-ceiling.md)) | selvedge-self-development | 047 | methodology | friction | triaged — adoption scheduled S049 dedicated MAD (level A substantive; B+C scope decision) | 048 | forceful; pre-empts "don't overengineer" at level (A); three-level suggested change; OI-019 sub-question (f) cross-referenced |
 
 **Note on direct-to-inbox placement**: both records above originated in self-dev post-S047 out-of-session discussion, not from external-application execution. Operator directed direct placement in `inbox/` rather than fabricating provenance by routing through the external workspace's `outbox/` (which would contaminate that workspace's execution record). `source_workspace_id` accurately reflects self-dev origin. This is a forward-convention observation candidate: the `engine-feedback/` schema per `workspace-structure.md` v5 §engine-feedback describes the external-workspace→self-dev-inbox direction but does not forbid self-dev-originating records being placed directly in inbox; the practical discipline is accurate attribution via `source_workspace_id` and `reported_by` fields.
 

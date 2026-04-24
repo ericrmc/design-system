@@ -3,8 +3,8 @@ title: Engine Manifest
 version: 1
 status: active
 created: 2026-04-22
-last-updated: 2026-04-23
-updated-by-session: 036
+last-updated: 2026-04-24
+updated-by-session: 048
 supersedes: none
 ---
 
@@ -29,11 +29,11 @@ The engine is distinct from:
 
 ### 2. Current engine version
 
-**`engine-v7`** (established Session 036 per D-114).
+**`engine-v8`** (established Session 048 per D-154).
 
-Subsequent engine versions (`engine-v8`, `engine-v9`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
+Subsequent engine versions (`engine-v9`, `engine-v10`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
 
-### 3. Engine-definition files at `engine-v7`
+### 3. Engine-definition files at `engine-v8`
 
 The following files constitute the engine at the current version:
 
@@ -164,6 +164,19 @@ Engine-v7 is the first engine-v-bump **driven by an operator-surfaced agenda ite
 **Key consequence at v7 adoption:** aggregate default-read surface gains `MODE.md` (~200 words) and conditionally `engine-feedback/INDEX.md` (~100 words at adoption, thin-header). Close-rotation continues standard per §2c. Projected post-close aggregate well under §2b soft 90K. No close rotates out specifically for v7 adoption; Session 030 close rotates out at Session 036 close per standard rotation mechanics.
 
 **Key consequence at v5 adoption:** aggregate default-read surface is reduced from 105,399 (pre-session) to approximately 55,000 (post-rotation) via Session 028 close-rotation first exercise. Sessions 002–022 `03-close.md` files (20 files, ~56,180 words) rotate to archive-surface by exclusion per revised §1 item 7. Files remain physically at their paths; the access-discipline category changes. Sessions 023–028 close files plus Session 028's own close (6 total) remain default-read per §2c 6-session retention window. Post-rotation aggregate well below both §2b soft (90K) and hard (100K) ceilings — comfortable forward headroom.
+
+- **`engine-v8`** — established Session 048 via D-154. **First engine-v-bump driven by operator-directed resolution of an inbox engine-feedback record** (as distinct from prior bumps driven by preserved-minority activation warrants, `§9` trigger firings, watchpoint firings, or operator-surfaced-agenda mid-session deliberation). Operator-directed resolution of EF-001 (`engine-feedback/inbox/EF-001-read-contract-budget-scaling-for-domain-artefacts.md`; source_workspace_id `selvedge-disaster-response`, source_session 001) carried the `operator_directed_resolution` frontmatter field declaring the resolution direction as not-for-deliberation; Session 048 adopts that direction via single-orchestrator implementation. Substantive revision to one engine-definition file + minor clarification to one prompt:
+
+  - `specifications/read-contract.md` v4 → v5 (substantive) — §1 gains a closing paragraph ("Applications directory clarification") making explicit that `applications/NNN-<slug>/` is outside the §1 closed enumeration and is read at session scope rather than at session-open-in-full; §2d new section codifying the per-file-budget carve-out for `applications/` + the chunked-read-on-demand mechanism (existing Read-tool `offset`/`limit` parameters) + optional `applications/NNN-<slug>/index.md` navigation-pointer pattern; §2d explicitly names what the carve-out does NOT change (§1 enumeration closure preserved; §2 budget applies to §1 files; §2b aggregate scope unchanged; §2c close-rotation unchanged; §3 archive-surface discipline unchanged; §4–§9 archive-pack discipline unchanged); §10 versioning updated. Subsumes S047 D-150 deferred spec-amendment candidate (iv) (`read-contract.md` §1 vs. `prompts/application.md` §Read ambiguity) by direction. No change to §2 per-file budget values, §2a sensor thresholds, §2b budget values, §2c retention-window value, or §4–§7 archive-pack mechanisms. v4 preserved as `read-contract-v4.md` with `status: superseded`.
+  - `prompts/application.md` §Read (minor documentary clarification per OI-002) — Workspace-reading bullet rewritten to enumerate `read-contract.md` §1 items explicitly (MODE.md; active-status specs; PROMPT.md + prompts; SESSION-LOG; open-issues/index; prior 03-close.md files subject to §2c close-rotation; currently-active session provenance; conditionally engine-feedback/INDEX.md in self-development mode) and to remove the pre-v8 "and `applications/`" inclusion that produced the S047 P3 Outsider's latent spec contradiction; Domain-reading bullet restructured to name §Domain reading — `applications/` scope explicitly, to reference `read-contract.md` v5 §2d, and to name the chunked-read-on-demand mechanism + optional index file. Classification: minor documentary (brings prompt's Read enumeration into alignment with `read-contract.md` §1 closure + codifies session-scope-read-as-needed language; no new normative rule beyond what §2d introduces). No prior version of `prompts/application.md` is preserved as a separate file because `prompts/*` files are prompt text with history in git rather than versioned-via-suffix documents (Session 017 establishing precedent; `PROMPT.md` dispatcher was rewritten at engine-v7 without physical versioned-file preservation per same precedent).
+
+  All other engine-definition files unchanged at engine-v8 boundary: `PROMPT.md`; `prompts/development.md`; `methodology-kernel.md` v6; `multi-agent-deliberation.md` v4; `validation-approach.md` v5; `workspace-structure.md` v5; `identity.md` v2; `reference-validation.md` v3; `engine-manifest.md` (this file, documentary update per Session 021/023/028/033/036 sub-pattern). `tools/validate.sh` unchanged: check 20 (default-read per-file budget) is not affected by the v5 revision at constants level because `applications/` files were already not in the default-read aggregate counted by check 20 (§1 was already closed pre-v5); the §2d carve-out makes the pre-existing behaviour explicit and extends it by documentation, adding no new enforcement mechanism. No new validator check is required.
+
+Engine-v8 is the seventh engine-v-bump overall (v2 Session 021; v3 Session 022; v4 Session 023; v5 Session 028; v6 Session 033; v7 Session 036; v8 Session 048) and the fourth post-cadence-maturation content-driven bump (v5 + v6 + v7 + v8). §5.4 Session 022 engine-v-cadence minority (activated-not-escalated) does NOT re-escalate at this bump per Session 028 D-096 / Session 033 D-107 / Session 036 D-114 content-driven-bump precedent chain (cadence concern separates from substantive-bump classification). Engine-v8 follows an 11-session preservation window (S037–S047 all non-bump; S048 substantive) — equalling-and-slightly-exceeding the longest prior preservation run, reinforcing the content-driven-bump precedent. OI-018 remains open; Session 048 does not engage `engine-manifest.md` §5 revision.
+
+Engine-v8 introduces a **new class of substantive-revision provenance**: operator-directed inbox-record resolution. The prior bumps traced the following provenance classes: v2–v4 came from preserved-minority / watchpoint activation; v5–v6 came from preserved-minority activation; v7 came from operator-surfaced mid-session deliberation; v8 comes from operator-directed-resolution on an inbox feedback record with the direction pre-declared as not-for-deliberation by the operator. This class is compatible with the engine's preservation-and-dissent-recording machinery: the feedback record itself is the preservation artefact; the `operator_directed_resolution` frontmatter field makes the non-deliberation explicit; the adopting session documents the adoption as a single-orchestrator implementation of a pre-ratified direction rather than as a deliberation. The pattern does not bypass deliberation when deliberation is warranted; it recognises that some operator interventions (narrow, directionally clear) are appropriately handled as single-orchestrator implementations.
+
+**Key consequence at v8 adoption:** aggregate default-read surface is effectively unchanged in aggregate (the carve-out clarifies pre-existing exclusion of `applications/` from §1 enumeration; it does not add or remove any file from the §1 count). `read-contract.md` word count grows from 4,762 to approximately 5,624 (comfortable under §2 6K soft warning). Close-rotation continues standard per §2c; Session 042 close rotates OUT at Session 048 close per standard rotation mechanics.
 
 Future engine-version increments will extend this history in this section.
 

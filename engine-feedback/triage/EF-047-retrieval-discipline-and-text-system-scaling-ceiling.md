@@ -1,0 +1,72 @@
+---
+triage_id: EF-047-retrieval-discipline-triage
+feedback_ref: ../inbox/EF-047-retrieval-discipline-and-text-system-scaling-ceiling.md
+triaged_in_session: 048
+triaged_at: 2026-04-24
+status: triaged
+disposition: adoption scheduled for S049 dedicated multi-agent deliberation; level (A) adoption minimum expected; level (B) and level (C) MAD-deliberated for scope decision
+opened_issue: null
+scheduled_mad_session: 049
+scheduled_mad_scope: |
+  Level (A) — formalise retrieval discipline in kernel §1 (substantive kernel §1 amendment adding a Warrant-evaluation sub-activity + validator check that preserved minorities in provenance have living pointers in active-spec minority blocks). Adoption recommended.
+  Level (B) — make cross-spec synchronisation first-class via a syncs_with frontmatter field + validator cross-checks (substantive workspace-structure.md + validation-approach.md amendments). Deliberated at S049; adoption scope determined there.
+  Level (C) — commit to structured retrieval substrate (tools/query.sh or index file or database-backed layer). Deliberated at S049; if adoption-warranted, likely multi-session design process; S049 determines direction-of-travel not full adoption.
+engine_version_impact_pending: engine-v8 → engine-v9 candidate at S049 close (conditional on adoption)
+cross_references:
+  - OI-019 sub-question (f): extended-baseline visibility mechanism
+---
+
+# Triage — EF-047 retrieval-discipline-and-text-system-scaling-ceiling
+
+## Classification
+
+**Target**: methodology. **Severity on inbox record**: friction. **Source**: `selvedge-self-development` Session 047, direct-to-inbox out-of-session operator observation.
+
+**Disposition**: **triaged; adoption deferred to S049 dedicated multi-agent deliberation**. The source record is deliberately forceful and explicitly pre-empts the Skeptic/Minimalist/Pragmatist "don't overengineer" response at level (A). Per operator ratification at S048 Halt 1 Q3, S049 is scheduled as 4-perspective two-family MAD (per S044 R2 standing preference) to deliberate level (A) adoption + level (B)/(C) scope.
+
+## Why not adopted this session
+
+Level (A) adoption is a **substantive kernel §1 amendment**, triggering MAD v4 §When Multi-Agent Deliberation Is Required. Single-orchestrator adoption would bypass the preservation-and-dissent-recording machinery that substantive kernel revisions require. The operator's pre-emption of the "don't overengineer" response is not a pre-emption of deliberation itself — it is a constraint on one possible rejection path that deliberation might otherwise land on. Deliberation at S049 may still produce dissent on the specific mechanism (which MAY/MUST/MUST NOT modals; which validator check; which spec gains the pointer) or on scope (level (A) alone vs. (A)+(B) vs. (A)+(B)+(C)).
+
+## Scheduled S049 MAD scope
+
+**Level (A) — Kernel §1 Warrant-evaluation sub-activity.** Minimum-viable retrieval discipline:
+
+- **Candidate spec text**: add to `methodology-kernel.md` §1 Read (or as new §1a) a sub-activity instructing the session to scan every active specification's §5 / §10 / preserved-minority / activation-warrant section against the current session's context at session-open, recording whether any warrant's firing condition has been met.
+- **Candidate validator check**: new check in `tools/validate.sh` that enumerates all preserved minorities across all active specs + all 02-decisions.md files (both default-read and archive-surface), and for each preserved minority verifies that an active-specification §5/§10 block contains a pointer to it.
+- **Classification**: substantive per OI-002 heuristic (new kernel sub-activity + new validator check + new enforcement mechanism).
+- **Engine-v impact**: engine-v8 → engine-v9 candidate at S049 close.
+
+**Level (B) — Cross-spec synchronisation first-class.** Medium-scope addition:
+
+- **Candidate spec text**: spec frontmatter gains an optional `syncs_with:` field naming specs whose coherence depends on this one; validator check cross-checks named values (e.g., `read-contract.md` §2 budget values vs. `validate.sh` constants).
+- **Classification**: substantive per OI-002 (new frontmatter field + new validator check + new coherence enforcement).
+- **Engine-v impact**: engine-v9 candidate at S049 close (conditional on adoption).
+
+**Level (C) — Structured retrieval substrate.** Large-scope direction:
+
+- **Candidate direction**: `tools/query.sh` as a dedicated query tool over markdown + frontmatter; or a SQLite-style index file (committed to git; regenerable from source) indexing every preserved minority, warrant, OI, EF-record, archive-pack, and cross-reference; or full database-backed retrieval layer with text files as canonical source-of-truth.
+- **Classification**: substantial methodology-level decision. Likely multi-session design process.
+- **Engine-v impact**: undetermined; S049 produces direction-of-travel decision and recommended next-session work rather than full adoption.
+
+## Why S049 specifically
+
+Operator-ratified at S048 Halt 1 Q3 = (i) S049 dedicated MAD. Rationale for same-session-next rather than several-sessions-later:
+
+- Inbox-to-triage-to-adoption latency is itself the kind of asymmetry EF-047-retrieval-discipline flags. Scheduling late would be structurally ironic.
+- `selvedge-disaster-response` external arc is not yet advanced (S001 has run; S002–S005 pending operator transport); retrieval-discipline adoption at engine-v9 would propagate to later external-arc sessions if adoption completes before arc end.
+- §10.4-M5 activation-pending on arc-feedback-production resolves at S048 (see S048 close §10.4-M5 disposition); engine-feedback/ infrastructure is now exercised operationally, and extending its discipline layer to retrieval is the natural next increment.
+
+## Bundled scope at S049 per operator ratification
+
+Per S048 Halt 1 Q4 = (b) bundle with S049 MAD: **EF-047-brief-slot-template-hidden-arc-leakage** (friction; two options minor) and **EF-047-session-input-files-redundant-with-verbatim-capture** (observation; minor documentary) are bundled with the S049 retrieval-discipline MAD. Both are minor-documentary scope; they compose with the retrieval-discipline territory at the engine-feedback / external-application-workspace boundary. Bundled-minor adoption expected at S049 close alongside level (A) substantive.
+
+## Forward observations
+
+- **EF-047-retrieval-discipline is self-referential evidence of its own concern.** The source record names "agents cannot be told to look where indices don't point" as a failure mode; S048 triage reads preserved-minority status largely via SESSION-LOG.md summaries + INDEX.md (not via the minorities' original full activation-warrant text). The S049 MAD is itself a data point on whether the Case Steward at S049 can reliably load the EF-047-retrieval source record's claims against the full set of preserved minorities without a retrieval affordance beyond the current text-substrate — the MAD's own preparation is a meta-exercise.
+- **OI-019 sub-question (f)** "extended-baseline visibility mechanism periodic-vs-triggered-vs-narrow" was opened at S043 as seed territory; EF-047-retrieval-discipline's level (B) and level (C) directions are concrete candidate mechanisms for sub-question (f). OI-019 is cross-referenced but not closed by this triage (OI closure would require the MAD to produce a specific mechanism).
+- **Trajectory-level concern**: operator observation about the engine applied to "multi-year software-engineering project with 100+ sessions" is forward-looking; S049 adoption at level (A) addresses the concern at policy level but does not resolve the substrate question. That question remains open through S049 and likely beyond.
+
+## OI impact
+
+No OI opened by this triage. OI-019 cross-referenced; no state change. If S049 MAD closes with level (C) direction-of-travel decision, a new OI may be opened for the multi-session structured-retrieval design process; deferred to the S049 MAD.

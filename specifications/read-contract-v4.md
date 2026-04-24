@@ -1,11 +1,13 @@
 ---
 title: Read Contract
-version: 5
-status: active
+version: 4
+status: superseded
 created: 2026-04-22
-last-updated: 2026-04-24
-updated-by-session: 048
-supersedes: read-contract-v4.md
+last-updated: 2026-04-23
+updated-by-session: 036
+supersedes: read-contract-v3.md
+superseded-by: read-contract.md
+superseded-in-session: 048
 ---
 
 # Read Contract
@@ -26,7 +28,7 @@ This specification applies equally to the self-development application and to ex
 
 The default-read surface is the bounded set of files read in full at every session open. Every session's Read activity must read every file enumerated below in full before any substantive work proceeds.
 
-**The default-read surface enumeration at engine-v5 (of this spec; engine-v8 of the manifest):**
+**The default-read surface enumeration at engine-v4 (of this spec; engine-v7 of the manifest):**
 
 0. (Added v4) `MODE.md` at workspace root — the workspace-identity marker declaring `mode: self-development | external-problem`. See `specifications/workspace-structure.md` §MODE.md for schema. Required in workspace-identity file class per `workspace-structure.md` v5.
 1. Every active-status `.md` file in `specifications/`. "Active-status" means frontmatter `status: active`. Superseded-status files (`*-v1.md`, `*-v2.md`, etc., carrying `status: superseded`) are archive surface by exclusion (§3).
@@ -40,8 +42,6 @@ The default-read surface is the bounded set of files read in full at every sessi
 9. (Added v4, conditional) `engine-feedback/INDEX.md` when the file exists AND the workspace is in self-development mode per `MODE.md`. In external-problem mode, `engine-feedback/` is outbox-role and `INDEX.md` (if present) is not default-read by this rule. In the absence of the file, this item does not contribute to the default-read surface.
 
 The enumeration is closed. A file not enumerated here is archive surface by §3.
-
-**Applications directory clarification (added v5, Session 048).** The `applications/NNN-<slug>/` directory and its contents are NOT part of the §1 default-read enumeration. Files in `applications/` are read at **session scope** — as-needed during session work — rather than at session-open-in-full. This applies in both self-development and external-problem workspaces. See §2d for the consequent per-file budget carve-out and the chunked-read-on-demand mechanism.
 
 **Retention-exception (added v3, Session 028).** A session may record a **retention-exception decision** to keep a specific close older than the 6-session window in default-read, when that close carries load-bearing content for currently-active governance (e.g., a minority activation warrant text, a cross-referenced decision rationale). The retention-exception is recorded in the session's `02-decisions.md` with the explicit close path and the load-bearing-purpose rationale. Retention-exceptions are cumulative and lifted when the load-bearing purpose ends; the lifting is also recorded in a decision record.
 
@@ -142,31 +142,6 @@ The validator's default-read detection treats retention-exception paths as inclu
 **Why 6 sessions specifically.** The 6-session window is the Outsider's cross-family recommendation `[01d, Q3]` from Session 028 deliberation: "Every `03-close.md` stays default-read. That is a rule, not an accident. ... I recommend the most recent 6 session closes, plus any older close that is explicitly cited by an active specification or open issue for currently load-bearing governance." The window balances the recent-history minority-review band (§5.2 vindicated at 5-session runway; §5.4 aged out at 9-session; cross-session patterns typically operate at 3–7 session horizons) against aggregate-control forcing function. See deliberation §4 for the retention-window alternatives considered (3 Pacer, 10 Synthesiser) and their preservation as first-class minorities §6.4 and §6.5.
 
 **Relationship to §2a sensor layer.** §2a's advisory and activation thresholds (90K / 100K) remain. The close-rotation rule is the primary remediation mechanism when aggregate approaches those thresholds. Other remediation mechanisms (spec-archive-migration, per-file restructure) remain available per §8 and §9.
-
-### 2d. Applications-directory carve-out (added v5, Session 048 per D-153)
-
-Adopted Session 048 per D-153 as the operator-directed resolution of feedback record EF-001 (`engine-feedback/inbox/EF-001-read-contract-budget-scaling-for-domain-artefacts.md`; `operator_directed_resolution: exclude applications/ from per-file budget; aggregate budget unchanged; chunked-read-on-demand via existing Read-tool offset/limit mechanism; optional manifest/index as navigation pointer; not open to deliberation`). Subsumes S047 D-150 deferred spec-amendment candidate (iv) (`read-contract.md` §1 vs. `prompts/application.md` §Read ambiguity).
-
-**The carve-out.** Files at `applications/NNN-<slug>/` in any workspace are NOT subject to the §2 per-file budget (6K soft / 8K hard). They are consequently not counted in the §2b aggregate default-read surface budget (90K soft / 100K hard), because they remain outside the §1 closed enumeration (archive-surface-by-exclusion per §3).
-
-**Rationale.** The §2 budget values were calibrated (Session 023 D-086) against self-development methodology-content files (SESSION-LOG.md, open-issues.md) with an empirical 3.0× tokens-per-word ratio against the 25K-token single-Read ceiling. That calibration is appropriate for files that must be read in full at every session open. Application-scope artefacts — domain response plans, system models, research documents, design specifications — have different size profiles (a realistic 10-day disaster-response plan for 200K population is plausibly 10K–30K words; a multi-session engineering artefact may grow unboundedly). Applying the default-read per-file budget to them forces content compression (domain-fidelity distortion), artefact splitting (file proliferation), or archive-packing of primary working artefacts (misuse of the archive-pack mechanism, which is designed for archive-surface content not primary artefacts).
-
-**Session-scope read-as-needed mechanism.** A session reads `applications/` files at the scope and depth the current work requires. For a small artefact (under ~5K words) this is typically a full read via the Read tool at session-relevant time. For a larger artefact this is typically **partial reads via Read tool with `offset` and `limit` parameters**, with repeated partial-reads as work progresses across different sections. No new archive-pack machinery is required for application-scope artefacts; the existing Read-tool offset/limit capability is the chunking mechanism.
-
-**Optional applications-index navigation pointer.** An external application MAY place a thin `applications/NNN-<slug>/index.md` (or `manifest.yaml`) file enumerating its artefacts, their sections, approximate word-count hints, and chunk hints. The pattern is **optional**; recommended for applications whose artefacts are large enough that section-level navigation is useful. The index is itself not bound by §2 per-file budget under this carve-out, though the spirit of the carve-out is to keep such an index thin (typical target: under 1,000 words; the index's own size is a navigation-affordance question, not a budget-enforcement question).
-
-**What the carve-out does NOT change:**
-
-- §1 default-read enumeration remains closed; `applications/` remains excluded.
-- §2 per-file budget continues to apply to every file in the §1 enumeration.
-- §2b aggregate default-read surface budget (90K soft / 100K hard) continues to apply to the §1 enumeration aggregate.
-- §2c close-rotation rule (most recent 6 session closes retained) continues unchanged.
-- §3 archive-surface discipline continues to treat `applications/` content as archive-surface-by-exclusion.
-- §4–§9 archive-pack discipline for oversized archive-surface records is unchanged; application-scope artefacts do not require archive-pack treatment for mere size (chunked-read-on-demand is the alternative access mechanism).
-
-**Context-window pressure from applications/ reads.** A session's in-session context may carry substantial `applications/` content via chunked-read-on-demand. That content is not counted in the engine's default-read aggregate (which measures only §1 enumeration). Context-window pressure from large application reads is a session-scope concern — managed by the agent's chunked-read discipline and the harness's context budget — distinct from the default-read surface's growth discipline.
-
-**Interaction with `prompts/application.md` §Read.** `prompts/application.md` §Read §Domain reading is clarified at v8 to describe `applications/` reading explicitly as session-scope chunked-read-on-demand, removing the latent ambiguity whereby §Read appeared to enumerate `applications/` as part of the default-read surface. That clarification is documentary (minor) and does not change the carve-out's semantics; it brings `prompts/application.md` into alignment with §1's closed enumeration and this §2d.
 
 ### 3. Archive surface
 
@@ -294,8 +269,6 @@ Version 1 established Session 022 per D-084. Version 2 established Session 023 p
 Version 3 established Session 028 per D-096 in response to §5.3 minority activation warrant firing at Session 027 close (aggregate crossed 100,000 words). Substantive additions: §2b aggregate hard budget (100K hard / 90K soft, pass/fail/warn); §2c close-rotation rule (most recent 6 sessions' closes retained in default-read; older closes archive-surface by exclusion; retention-exception mechanism); §1 item 7 revised from "every close" to "6 most recent closes"; §2a role clarified as informational sensor layer supplementing §2b budget enforcement; six new first-class minorities §5.6–§5.11 preserved with activation warrants. v2 preserved as `read-contract-v2.md` with `status: superseded`.
 
 Version 4 established Session 036 per D-113 + D-116. Substantive additions: §1 item 0 adds `MODE.md` at workspace root as default-read (workspace-identity marker per `workspace-structure.md` v5 §MODE.md); §1 item 9 adds conditional `engine-feedback/INDEX.md` default-read clause in self-development mode. No change to §2 per-file budget values, §2b aggregate budget, §2c close-rotation mechanics, §4 archive-pack structure, §5 manifest fields, §6 reference convention, or §7 integrity mechanism. Aggregate budget headroom impact: `MODE.md` is approximately 200 words at adoption (negligible against 68,689 aggregate); `engine-feedback/INDEX.md` at adoption is thin-index header-only (under 100 words). v3 preserved as `read-contract-v3.md` with `status: superseded`.
-
-Version 5 established Session 048 per D-153 as the operator-directed resolution of EF-001 (`engine-feedback/inbox/EF-001-read-contract-budget-scaling-for-domain-artefacts.md`). Substantive additions: §1 carries a new closing paragraph ("Applications directory clarification") making explicit that `applications/NNN-<slug>/` is outside the §1 closed enumeration and is read at session scope rather than at session-open-in-full; §2d new section codifying the per-file-budget carve-out for `applications/` + the chunked-read-on-demand mechanism (existing Read-tool `offset`/`limit`) + optional `applications/NNN-<slug>/index.md` navigation-pointer pattern; §2d explicitly names what the carve-out does NOT change (§1 enumeration closure preserved; §2 budget applies to §1 files; §2b aggregate scope unchanged; §2c close-rotation unchanged; §3 archive-surface discipline unchanged; §4–§9 archive-pack discipline unchanged). Subsumes S047 D-150 deferred spec-amendment candidate (iv) (`read-contract.md` §1 vs. `prompts/application.md` §Read ambiguity) by direction. No change to §2 per-file budget values, §2a sensor thresholds, §2b budget values, §2c retention-window value, §4 archive-pack structure, §5 manifest fields, §6 reference convention, or §7 integrity mechanism. `tools/validate.sh` check 20 is not affected by this revision at constants level (applications/ files were already not in the default-read aggregate counted by check 20 because §1 was already closed; the carve-out makes the pre-existing behaviour explicit and extends it by documentation). v4 preserved as `read-contract-v4.md` with `status: superseded`.
 
 Subsequent revisions to this specification follow OI-002 substantive-vs-minor heuristic (`open-issues/OI-002.md`):
 - **Substantive:** any change to the §1 enumeration, §2 budget values, §2a aggregate thresholds, §2b budget values, §2c retention-window values, §4 archive-pack structure, §5 manifest fields, §6 reference convention, or §7 integrity mechanism. Engine-version bump per `engine-manifest.md` §5.
