@@ -1,0 +1,31 @@
+---
+archive_id: 051-pre-L-SESSION-LOG
+originating_session: pre-051
+originating_path: SESSION-LOG.md
+migrated_in_session: 051
+kind: over-budget-annotation
+total_bytes: 68470
+total_words: 8086
+chunk_count: 1
+chunk_boundary_rule: single-file
+source_hash_sha256: 82e644d64570b2ec477c039b3af43bfd90a0526b3201b8d8fdb500af36727713
+chunks:
+  - ordinal: 1
+    file: 00-source.md
+    line_range: "1-60"
+    chunk_hash_sha256: 82e644d64570b2ec477c039b3af43bfd90a0526b3201b8d8fdb500af36727713
+readers_note: |
+  Pre-Session-051 SESSION-LOG.md preserved verbatim before Path L+A forced-
+  restructure per S050 D-176 §9 forward commitment. File had crossed the 8K
+  hard ceiling by 86 words (8086 words > 8000) — first 8K breach since the
+  engine-v4 S023 D-086 recalibration. Rows S041–S048 had accreted back into
+  verbose multi-paragraph form following the S040 D-123 compression, while
+  S049 and S050 had adopted thin-row discipline per Q5=(a) operator
+  ratifications. Session 051 compressed rows S041–S048 to single-sentence
+  thin-index form per SESSION-LOG.md header + workspace-structure.md v6
+  §SESSION-LOG.md + read-contract.md v5 §1 item 5. Canonical per-session
+  detail already lives in each provenance/NNN-*/03-close.md; no decision-
+  surface information is lost — this archive is the byte-identical witness
+  to the pre-S051 form. Analogous to S022 R8a pre-R8a archive-pack and S040
+  D-123 pre-L-SESSION-LOG archive-pack; third archive-pack of this class.
+---
