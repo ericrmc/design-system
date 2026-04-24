@@ -4,18 +4,28 @@ feedback_ref: ../inbox/EF-047-retrieval-discipline-and-text-system-scaling-ceili
 triaged_in_session: 048
 triaged_at: 2026-04-24
 status: triaged
-disposition: adoption scheduled for S050 dedicated multi-agent deliberation per operator Halt-1 scope revision at S049; design-space document produced at provenance/049-session/design-space.md as MAD input; S050 Q1–Q8 agenda covers primary substrate (Option A SQLite FTS5 vs Option B DuckDB+FTS vs defer) + adoption scope + kernel §1 amendment shape + alias vocabulary + rebuild trigger + syncs_with field + external-application inheritance + validator check 24 scope
+disposition: adoption under deliberation at S050 4-perspective two-family MAD; design-space document at provenance/049-session/design-space.md is prior synthesis (historical; preserved as-is) loaded as MAD input under S050 00-assessment §2a correction-overlay; S050 Q1–Q8 agenda covers primary substrate + adoption scope + kernel §1 amendment shape + alias vocabulary + rebuild trigger + syncs_with field + external-application inheritance (Q7 load-bearing per operator Halt-1 Q6 scope expansion — substrate MUST be portable to external-application workspaces with workspace-relative bootstrapped index) + validator check 24 scope
 opened_issue: null
 scheduled_mad_session: 050
 scheduled_mad_scope: |
-  Per S049 D-157 operator-directed scope revision: the original EF-047 level (A) framing (kernel-discipline-only minor amendment) is set aside. Replaced with data-structure + retrieval-substrate direction per operator Halt-1 guidance ("recommendations should include data structure changes rather than discipline only … real scalable technical solutions"). S049 produced synthesis + options meta-decision; S050 executes the substantive MAD.
-  S050 MAD menu (per design-space.md §4–§7):
-    Option A — SQLite FTS5 + structured tables (documents, identifiers, frontmatter_kv, edges, aliases) + MCP server via FastMCP stdio. Operator-named direction. Zero install cost; BM25 native; snippet()/highlight() auxiliary functions; ~140ms rebuild / sub-millisecond query on this corpus.
-    Option B — DuckDB + FTS extension + edges table + MCP server. Strongest competitor to Option A; table-centric model unifies frontmatter filters with prose FTS; DuckPGQ optional for property-graph queries; FTS extension flagged experimental upstream.
+  Per S049 D-157 operator-directed scope revision: the original EF-047 level (A) framing (kernel-discipline-only minor amendment) is set aside. Replaced with data-structure + retrieval-substrate direction per operator Halt-1 guidance at S049 ("recommendations should include data structure changes rather than discipline only … real scalable technical solutions"). S049 produced synthesis + options meta-decision; S050 executes the substantive MAD.
+
+  Per operator pre-session corrections at S050 open (S050 00-assessment §2a), two framing adjustments apply:
+    (1) Factual: DuckDB FTS extension is current/stable, not experimental. The S049 design-space §5.3 characterisation "biggest stability concern" is retracted.
+    (2) Framing: Operator-mentioned candidates carry no deliberation weighting privilege. Design-space §3.1 "operator-named default" / §4 header "operator's named direction" / §5.4 "edge on operator alignment" / §6.4 bullet-4 "operator did not name embeddings" framings are retracted. MAD evaluates every candidate on technical merits alone.
+
+  Per operator Halt-1 Q6 scope expansion at S050 open: external-application workspaces (e.g., selvedge-disaster-response per S046 D-142 + S047 application artefacts) contain dense domain artefacts and provenance that should benefit from the substrate's mechanics via a workspace-relative bootstrapped index. Q7 agenda item is load-bearing and resolves toward portability; the question becomes the shape of portability (engine-definition file set + workspace-relative paths + bootstrap integration vs alternative mechanisms).
+
+  S050 MAD candidate menu (neutrally labelled per S050 Halt-1 Q3):
+    Substrate-1 — SQLite FTS5 + structured tables (documents, identifiers, frontmatter_kv, edges, aliases) + MCP server via FastMCP stdio. Stdlib on macOS; BM25 native; snippet()/highlight() auxiliary functions; ~140ms rebuild / sub-millisecond query on this corpus.
+    Substrate-2 — DuckDB + FTS extension + edges table + MCP server. Table-centric model unifies frontmatter filters with prose FTS; DuckPGQ optional for property-graph queries; FTS extension current/stable per operator 2026-04-24 data point.
+    Substrate-3 — tantivy-py (Rust-backed full-text).
+    Substrate-4 — Whoosh-Reloaded (pure-Python fallback).
+    Substrate-N — P3-surfaced alternative(s) not on the design-space menu.
     Complementary: git-as-temporal-substrate (git log -S pickaxe); ripgrep-as-floor (baseline that any substrate must beat on ID-lookup); validator check 24 (preserved-minority substrate-pointer coverage); SKOS alias vocabulary at specifications/aliases.yaml.
-    Rejected with rationale: Meilisearch/Typesense (typo-tolerance wrong for ID-crisp queries); Tantivy (scale mismatch); RDF stores (schema-tax disproportional); vector/embedding (ID-lookup failure; <200K-token Anthropic contextual-retrieval guidance); Neo4j/Memgraph (scale mismatch); rank_bm25/whoosh (stale/frozen).
-  S050 MAD 8-question agenda per design-space §8.2: Q1 primary substrate; Q2 adoption scope (full-kit vs incremental); Q3 kernel §1 amendment shape; Q4 alias vocabulary; Q5 rebuild trigger; Q6 syncs_with: field disposition; Q7 external-application inheritance (engine-definition vs ancillary); Q8 validator check 24 scope.
-  S050 convening: 4-perspective two-family per operator S044 R2 (P1 Substrate Architect Claude + P2 Incrementalist Skeptic Claude + P3 Outsider Codex/GPT-5.5 + P4 Cross-Family Reviewer Codex/GPT-5.5) per design-space §8.1.
+    Rejected with rationale (per design-space §6): Meilisearch/Typesense (typo-tolerance wrong for ID-crisp queries); RDF stores (schema-tax disproportional); vector/embedding (ID-lookup failure; <200K-token Anthropic contextual-retrieval guidance; semantic drift — three bullets stand; §6.4 bullet-4 "operator did not name embeddings" retracted per §2a); Neo4j/Memgraph (scale mismatch); rank_bm25/whoosh (stale/frozen).
+  S050 MAD 8-question agenda per design-space §8.2 (Q-numbers preserved; framings per S050 00-assessment): Q1 primary substrate; Q2 adoption scope (full-kit vs incremental); Q3 kernel §1 amendment shape; Q4 alias vocabulary; Q5 rebuild trigger; Q6 syncs_with: field disposition; Q7 external-application inheritance (load-bearing per Halt-1 Q6; portability shape); Q8 validator check 24 scope.
+  S050 convening: 4-perspective two-family per operator S044 R2 (P1 Substrate Architect Claude neutral-surveyor per Halt-1 Q4 + P2 Incrementalist Skeptic Claude + P3 Outsider Codex/GPT-5.5 + P4 Cross-Family Reviewer Codex/GPT-5.5).
 engine_version_impact_pending: engine-v8 → engine-v9 candidate at S050 close (conditional on substantive adoption)
 cross_references:
   - OI-019 sub-question (f): extended-baseline visibility mechanism
