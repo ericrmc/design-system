@@ -54,6 +54,39 @@ Engine surfaces that are candidates for the arc to deliberately exercise (to be 
 
 The operator did NOT pre-specify which surfaces the arc should target. Your answer to Q5 chooses.
 
+## §2.5 Post-commit pre-launch brief amendment (operator, 2026-04-24)
+
+**This section was added after the initial §1-§2 commit (5c2a722) but before any perspective launched**, in response to a material constraint the operator added mid-preparation. It is recorded here (rather than editing prior sections silently) to preserve MAD v4 §Brief Immutability transparency; perspectives should treat this section as equal in standing to §1-§2.
+
+**Operator amendment verbatim**:
+
+> (It's important to note the external application will not have the full view of the scenario until all sessions are completed)
+
+**Implications for the design**:
+
+1. **The arc-plan's authoritative copy cannot live default-read in the external workspace.** If `applications/001-disaster-response/arc-plan.md` sits in the external workspace's default-read surface, each external session's Read activity would surface the whole arc — future constraint changes included — defeating the "no full view until arc completion" constraint. The original R3-default placement (`arc-plan.md` in external workspace alongside `brief.md`) is no longer viable as-is.
+
+2. **The operator is the transport for per-session reveals.** Per-session scope content is delivered by the operator to the external workspace at that session's T0, not pre-populated as a read-at-open file. This matches the existing `engine-feedback/` operator-mediated-transport pattern (workspace-structure.md v5 §engine-feedback return semantics: "the operator is the transport").
+
+3. **Candidate placements for the authoritative arc-plan (to be resolved by the deliberation)**:
+   - (a) Arc-plan lives in **self-dev** (this workspace) as the design record; operator reads it to orchestrate external sessions; external workspace sees only what the operator has injected at each session's open. Self-dev holds the complete view; external workspace holds the accumulating-partial-view.
+   - (b) Arc-plan lives in external workspace but in a **hidden file** explicitly excluded from default-read (e.g., `applications/001-disaster-response/.orchestrator/arc-plan.md` or a path convention the external workspace's `read-contract.md` treats as archive-surface). Risk: new directory convention is a spec change in the external workspace.
+   - (c) Arc-plan is **split into per-session reveal files** (`session-001-input.md`, `session-002-input.md`, etc.) in the external workspace, with the operator placing each at its session's T0; the overall arc view exists only in self-dev or in the operator's head.
+   - (d) Arc-plan lives **outside both workspaces** (operator-held), with the self-dev S047 provenance recording only design decisions and the external workspace receiving per-session content via operator transport.
+
+4. **Hidden-scenario mechanic exercises additional engine surfaces** relevant to Q5 feedback-yield:
+   - **Non-visible-scope handling**: the engine currently assumes a session's scope is fully readable at session-open (per kernel §1 + read-contract §1 + prompts/application.md §Read). The hidden-scenario constraint tests whether the engine handles partial-view gracefully.
+   - **Session-level "done-ness" detection**: external sessions don't know the full arc; how do they know when the session's objective is complete vs. when to defer to the next session's revealed content? This stresses the Close activity's criteria.
+   - **MAD within each external session under partial view**: perspectives convened inside external Session 001 must reason without knowing Sessions 002-005 content. If synthesis produces strong convergence on an assumption that gets invalidated in Session 002, is that vindication-of-MAD-under-uncertainty or a feedback signal that MAD's context assumptions are too strong?
+
+5. **Revised Q1 + Q2 + Q3 + Q5**:
+   - **Q1 addition**: name the placement approach (a/b/c/d from §2.5.3 above or your own) and justify against the hidden-scenario constraint.
+   - **Q2 addition**: the evolution mechanic must be **delivery-compatible** with operator transport (options c "emergent from prior session's outputs" becomes more load-bearing; option b "pre-scheduled reveals declared in arc-plan" now means declared-in-arc-plan-but-operator-withholds).
+   - **Q3 addition**: artefact progression must specify which artefacts live in the external workspace (visible to the session producing them and later) vs. which live in self-dev (operator/Case-Steward view only).
+   - **Q5 addition**: hidden-scenario-handling counts as an engine surface for feedback-yield. Any design that credibly exercises non-visible-scope handling or session-done-ness-under-partial-view scores high.
+
+6. **Anti-laundering reminder**: the hidden-scenario constraint must not be used to paper over weak design. "The operator knows the full arc" is not an excuse for arc-level incoherence; the arc must be coherent from the operator's orchestrator viewpoint even if the executing sessions see only fragments.
+
 ## §3 Design questions (Q1-Q5)
 
 Answer each question with a concrete proposal grounded in the operator's stated scope (fictional self-contained disaster response + recovery; 4-5 sessions; per-session constraint invalidation and changing infrastructure/demand/coordination/communications; qualitative multi-agent validation).
