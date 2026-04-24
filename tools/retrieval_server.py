@@ -34,6 +34,11 @@ except ImportError:
     )
     sys.exit(1)
 
+try:
+    import yaml
+except ImportError:
+    yaml = None  # aliases.yaml support becomes degraded if pyyaml is absent
+
 # Known ID patterns for resolve_id heuristic resolution (matches ID_PATTERNS in
 # build_retrieval_index.py).
 ID_LIKE_RE = re.compile(
@@ -100,8 +105,51 @@ def ensure_index(workspace: Path, db_path: Path) -> dict:
     }
 
 
+def load_aliases_map(workspace: Path) -> dict:
+    """Load specifications/aliases.yaml into {alias: canonical} for query-time resolution.
+
+    Implements retrieval-contract.md v1 §2.2 clause:
+      "If `alias` matches an `aliases[]` entry in `specifications/aliases.yaml`,
+       resolves to the corresponding canonical."
+
+    Per Session 052 D-181 (EF-051 resolution, Direction B: query-time aliases
+    consultation). Returns empty dict if aliases.yaml is absent, malformed, or
+    pyyaml is unavailable (degraded mode; surface via resolve_id payload).
+    """
+    if yaml is None:
+        return {}
+    aliases_path = workspace / "specifications" / "aliases.yaml"
+    if not aliases_path.exists():
+        return {}
+    try:
+        data = yaml.safe_load(aliases_path.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError:
+        return {}
+    out: dict = {}
+    for entry in data.get("aliases", []) or []:
+        if not isinstance(entry, dict):
+            continue
+        canonical = entry.get("canonical")
+        if not canonical:
+            continue
+        for a in entry.get("aliases", []) or []:
+            if isinstance(a, str) and a:
+                out[a] = canonical
+    return out
+
+
 def build_server(workspace: Path, db_path: Path) -> FastMCP:
     mcp = FastMCP("selvedge-retrieval")
+
+    # Alias map loaded once at startup per retrieval-contract.md v1 §2.2 +
+    # Session 052 D-181 (Direction B). `resolve_id` consults this before
+    # id_text lookup so aliases.yaml is authoritative at query time without
+    # requiring index rebuild when the file changes. Re-load requires server
+    # restart (consistent with mtime-rebuild semantics for the DB itself).
+    aliases_map = load_aliases_map(workspace)
+    aliases_available = yaml is not None
+    aliases_path = workspace / "specifications" / "aliases.yaml"
+    aliases_present = aliases_path.exists()
 
     @mcp.tool()
     def search(query: str, k: int = 10) -> dict:
@@ -178,6 +226,14 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
         except Exception as e:
             return {"available": False, "reason": str(e), "match": None}
 
+        # Degraded-mode disclosure per retrieval-contract.md v1 §3 clause 3.
+        missing: list[str] = []
+        if not aliases_available:
+            missing.append("pyyaml")
+        if not aliases_present:
+            missing.append("specifications/aliases.yaml")
+        degraded = bool(missing)
+
         conn = sqlite3.connect(db_path)
         try:
             cur = conn.cursor()
@@ -190,10 +246,29 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
                 (alias,),
             ).fetchone()
             if row:
-                return _match_payload(row, status)
+                return _match_payload(row, status, degraded, missing)
+
+            # Strategy 1.5: query-time aliases.yaml consultation (D-181, Direction B).
+            # If the alias is declared in aliases.yaml, resolve its canonical via
+            # the same direct-canonical lookup as Strategy 1. Implements
+            # retrieval-contract.md v1 §2.2 second clause.
+            resolved_canonical = aliases_map.get(alias)
+            if resolved_canonical and resolved_canonical != alias:
+                row = cur.execute(
+                    "SELECT canonical, id_kind, source_path, line, context_snippet "
+                    "FROM identifiers WHERE canonical = ? "
+                    "ORDER BY CASE WHEN source_path LIKE 'specifications/%' THEN 0 ELSE 1 END, "
+                    "         source_path, line LIMIT 1",
+                    (resolved_canonical,),
+                ).fetchone()
+                if row:
+                    return _match_payload(row, status, degraded, missing)
 
             # Strategy 2: id_text (raw alias form) lookup — build_retrieval_index.py
-            # already remaps id_text via aliases.yaml if present.
+            # UPDATE only remaps rows whose id_text already matches an ID_PATTERNS
+            # regex, so non-regex aliases (handled by Strategy 1.5 above) never
+            # land here. Kept for canonicals whose surface form matches regex but
+            # not the canonical column directly.
             row = cur.execute(
                 "SELECT canonical, id_kind, source_path, line, context_snippet "
                 "FROM identifiers WHERE id_text = ? "
@@ -202,7 +277,7 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
                 (alias,),
             ).fetchone()
             if row:
-                return _match_payload(row, status)
+                return _match_payload(row, status, degraded, missing)
 
             # Strategy 3: if alias looks like a known ID pattern, pick first occurrence.
             if ID_LIKE_RE.match(alias):
@@ -213,26 +288,26 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
                     (alias + "%", alias + "%"),
                 ).fetchone()
                 if row:
-                    return _match_payload(row, status)
+                    return _match_payload(row, status, degraded, missing)
 
             return {
                 "available": True,
-                "degraded": False,
-                "missing": [],
+                "degraded": degraded,
+                "missing": missing,
                 "index_mtime": status["index_mtime"],
                 "index_fresh": status["index_fresh"],
                 "rebuilt_on_demand": status["rebuilt_on_demand"],
                 "match": None,
-                "reason": "no match in identifiers table",
+                "reason": "no match in identifiers table or aliases.yaml",
             }
         finally:
             conn.close()
 
-    def _match_payload(row, status) -> dict:
+    def _match_payload(row, status, degraded: bool = False, missing: list | None = None) -> dict:
         return {
             "available": True,
-            "degraded": False,
-            "missing": [],
+            "degraded": degraded,
+            "missing": missing or [],
             "index_mtime": status["index_mtime"],
             "index_fresh": status["index_fresh"],
             "rebuilt_on_demand": status["rebuilt_on_demand"],
