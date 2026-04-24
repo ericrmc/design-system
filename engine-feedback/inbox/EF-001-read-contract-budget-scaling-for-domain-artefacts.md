@@ -3,6 +3,7 @@ feedback_id: EF-001-read-contract-budget-scaling-for-domain-artefacts
 source_workspace_id: selvedge-disaster-response
 source_session: 001
 created_at: 2026-04-24
+last_updated: 2026-04-24
 reported_by: operator
 target: engine
 target_files:
@@ -11,9 +12,10 @@ target_files:
   - specifications/workspace-structure.md
 severity: friction
 status: inbox
+operator_directed_resolution: exclude applications/ from per-file budget; aggregate budget unchanged; chunked-read-on-demand via existing Read-tool offset/limit mechanism; optional manifest/index as navigation pointer; not open to deliberation
 ---
 
-# EF-001 — Read-contract per-file budget (6K soft / 8K hard) does not obviously scale to domain artefacts in external applications
+# EF-001 — Read-contract per-file budget (6K soft / 8K hard) does not scale to domain artefacts; operator-directed resolution: exclude applications/ from per-file budget
 
 ## Observation
 
@@ -49,23 +51,32 @@ Three concrete scaling problems:
 
 3. **Aggregate pressure**. `read-contract.md` §2b aggregate budget (90K soft / 100K hard) applies across all default-read files. In the external workspace, the default-read surface at S003 includes: engine-definition files (~80K per self-dev measurement) + MODE.md + SESSION-LOG + open-issues/index + 2 prior closes + 7+ application artefacts + current session provenance. This can plausibly exceed 100K hard by S003 or S004 — forcing close-rotation AND artefact-restructure simultaneously, potentially mid-deliberation.
 
-## Suggested Change
+## Operator-directed resolution (not open to deliberation)
 
-This is a **substantive spec question** warranting proper deliberation (self-dev MAD), not an ad-hoc fix. Candidate framings for that deliberation:
+The operator has directed the resolution path directly, removing this record from the post-arc deliberation candidate set. **Resolution**:
 
-**(a) Separate budget class for application-scope mutable artefacts.** New §2d in `read-contract.md`: application-scope artefacts have a relaxed per-file budget (candidate values: 24K hard / 18K soft, approximately 3× the engine-file default). Aggregate budget still applies. Rationale: domain artefacts have different natural size distributions than engine/methodology files.
+1. **Exclude `applications/` from `read-contract.md` §2 per-file budget enforcement.** The 6K soft / 8K hard per-file ceilings do not apply to files at `applications/NNN-<slug>/` in any workspace.
+2. **`read-contract.md` §2b aggregate budget continues to apply.** Total default-read surface remains bounded at 90K soft / 100K hard; large domain artefacts contribute to aggregate and will still force close-rotation or artefact restructure if aggregate approaches ceiling. The per-file relief does not change aggregate pressure.
+3. **Chunked-read-on-demand via the existing Read-tool offset/limit mechanism.** When a session needs to read a large artefact, it reads in chunks as needed. No new archive-pack machinery required for application-scope artefacts; the existing Read-tool capability is the chunking mechanism.
+4. **Optional manifest or index as navigation pointer.** An external application MAY place a thin `applications/NNN-<slug>/index.md` (or `manifest.yaml`) enumerating its artefacts + sections + chunk hints, to help sessions find content without reading everything. Not mandatory; recommended for applications whose artefacts are large enough that section-level navigation is useful.
 
-**(b) Index-plus-detail pattern formalised for application artefacts.** Canonical artefact at `applications/NNN-<slug>/system-model.md` is an index under 6K with `[archive: applications/NNN-<slug>/system-model-detail/]` references; detail files in `system-model-detail/` each under 8K with archive-pack discipline. Preserves existing budget; introduces index-layer overhead.
+This operator directive also **resolves** the direction of deferred candidate EF-047-(iv) (the `read-contract.md` §1 / `prompts/application.md` §Read ambiguity): `applications/` is NOT part of the §1 closed default-read enumeration and not subject to §2 per-file budget; `prompts/application.md` §Read's instruction to read `applications/` refers to session-scope read-as-needed, not default-read-at-session-open. EF-047-(iv) becomes "document this clarification" rather than "choose between two readings".
 
-**(c) Exclude applications/ from default-read per-file budget; apply only to aggregate.** `read-contract.md` §2 carves out `applications/` content from per-file measurement. Only §2b aggregate budget applies. Simple; asymmetric across file classes but matches different natural size distributions.
+## Implementation obligation (pending future self-dev session)
 
-**(d) Defer to external-application discretion.** Each external application records a per-artefact-budget choice in its brief or arc-plan; engine provides guidance but not mandate. Preserves engine simplicity; increases per-application governance cost.
+The operator-directed resolution is engine-level but has not yet been adopted via self-dev session + decision record. Adoption obligation:
 
-**(e) Preserve current strict budget; mandate artefact-splitting convention.** Formalise split-into-multiple-files with naming conventions (`system-model-infrastructure.md`, `system-model-population.md`, ...). Lowest spec change; highest per-artefact complexity cost.
+- **`read-contract.md`**: add a §2 carve-out clause explicitly exempting `applications/` from per-file budget (6K/6 hard, 8K soft values remain for all other enumerated classes); update §10 versioning. Classification: **substantive** per OI-002 (changes normative budget semantics for a class of files) — engine-v7 → v8 candidate.
+- **`prompts/application.md`**: §Read paragraph clarifying that "domain reading" of `applications/` is session-scope read-as-needed via chunked-read-on-demand, not default-read-at-session-open; notes optional manifest/index pattern. Classification: **minor** documentary clarification (no new normative rule; consolidates operator-directed interpretation).
+- **`specifications/workspace-structure.md`** §applications: may note the optional manifest/index pattern if adopted.
 
-Related: resolving the `applications/` default-read enumeration ambiguity (deferred candidate EF-047-(iv)) is **prerequisite** to any of (a)-(e). The current spec contradiction (`read-contract.md` §1 excludes `applications/`; `prompts/application.md` §Read includes it) must be settled first to know whether the budget even applies.
+Bundling (iii) of S047 D-150 (kernel §7 `qualitative-multi-agent` label) and (iv) (this resolution's documentary half) plus the §2 budget carve-out into a single engine-v7→v8 bump deliberation is a likely post-arc path. Not proposed here; just noted as the natural grouping.
 
-OI-002 classification: any of (a)-(e) is **substantive** (changes §2 budget semantics or adds new classes). Would bump `read-contract.md` v4 → v5 + engine-v7 → v8.
+## Implications for the current `selvedge-disaster-response` arc
+
+The external Session 001 Case Steward's compliance path (quoted at §Observation) is **no longer required** under the operator-directed resolution. The session may produce v1 artefacts at natural domain size without compression or artefact-splitting. The operator may communicate the directive into the external workspace via an operator-message injection at an appropriate point.
+
+Forward observation: if Session 001 has already committed compressed or split artefacts before the operator directive reaches it, later sessions may consolidate via the normal canonical-path-revised revision pattern (S013 D-066 precedent) without violating D-017 (the sealed S001 provenance stays; the mutable application-scope artefact gets a v2 in-place).
 
 ## Evidence
 
@@ -80,10 +91,10 @@ OI-002 classification: any of (a)-(e) is **substantive** (changes §2 budget sem
 
 ## Application-Scope Disposition
 
-The `selvedge-disaster-response` Session 001 is operating under the current budget (per the quoted statement; compliance path being domain-content compression and/or potential file-splitting). This produces **domain-distortion of the v1 artefacts** for this specific application — a direct cost to disaster-response-artefact quality.
+The `selvedge-disaster-response` Session 001 began under the current (pre-directive) budget interpretation, per the quoted statement. The operator subsequently directed the resolution above (exclude `applications/` from per-file budget; chunked-read-on-demand; optional manifest/index). Communication of the directive into the external workspace is an operator action; at the time of this record update the external session may or may not have received the directive.
 
-Per arc-plan §11 operator-is-the-transport, the operator has chosen to route this feedback direct-to-self-dev-inbox rather than waiting for external Session 001's own outbox-write + operator-mediation. This is expedient (gets the signal to self-dev immediately while the external session is still running) but means the external session's own potential outbox record about the same friction may duplicate this one. Deduplication at triage is acceptable.
+Per arc-plan §11 operator-is-the-transport, this feedback was routed direct-to-self-dev-inbox rather than via the external workspace's outbox → operator-mediated transport, for expediency while the external session was running. The external session's potential own-outbox record about the same friction may duplicate this one; deduplication at triage is acceptable.
 
-**In-session resolution at Session 001**: none. The budget is a standing engine-level constraint; external sessions cannot amend it from inside their own execution (per `prompts/application.md`: "[engine-definition files] are not up for revision within this application's sessions unless a kernel-revision is explicitly authorised by the engine's source workspace"). The session must execute under the current constraint.
+**In-session impact at Session 001**: the directive removes the constraint; whether Session 001's already-produced v1 artefacts need re-expansion depends on how much compression was applied before the directive reached the session. If artefacts are compressed and the domain demands more detail, later sessions revise in place via the canonical-path-revised pattern (S013 D-066 precedent).
 
-**Post-arc self-dev review**: this feedback joins the backlog of S047 D-150 deferred candidates. The spec contradiction at EF-047-(iv) is prerequisite; this EF-001 record is the downstream scalability consequence. Post-arc self-dev MAD (probably engine-v8 bump candidate) should address (iv) resolution first, then (a)-(e) budget-scaling framings, likely in one bundled deliberation.
+**Post-arc self-dev review obligation**: the operator-directed resolution still requires formal spec adoption in a future self-dev session (substantive `read-contract.md` §2 carve-out + engine-v8 bump + minor `prompts/application.md` §Read clarification; see "Implementation obligation" section above). This record stays in inbox pending that triage. The S047 D-150 deferred candidate (iv) is subsumed: its direction is determined; its documentation remains to be written.
