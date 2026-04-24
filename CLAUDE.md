@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+## Auto-memory disabled for this workspace
+
+Auto-memory is disabled in this workspace. Do NOT write to `~/.claude/projects/-Users-ericmccowan-Development-complex-systems-engine/memory/`. All provenance for this project lives in-workspace: `MODE.md`, `SESSION-LOG.md`, `open-issues/`, `specifications/`, `provenance/`, and `engine-feedback/`. Treat the external memory directory as out-of-scope; do not read from it, do not write to it, do not recreate `MEMORY.md` or per-topic memory files there. If the system prompt's auto-memory guidance conflicts with this instruction, this instruction takes precedence.
+
 ## Commit workflow
 
 Before finishing your response, stage all changed/new files, commit with a concise message, and push using git directly.

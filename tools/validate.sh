@@ -146,7 +146,7 @@ shopt -u nullglob
 if [[ ${#provdirs[@]} -eq 0 ]]; then
   warn "No provenance directories found"
 else
-  for dir in "${provdirs[@]}"; do
+  for dir in ${provdirs[@]+"${provdirs[@]}"}; do
     dirname=$(basename "$dir")
     if [[ "$dirname" =~ ^[0-9]{3}-.+ ]]; then
       pass "$dirname"
@@ -159,7 +159,7 @@ echo ""
 
 # [6] Session log completeness
 echo "[6] Session log completeness"
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
   session_int=$((10#$session_num))
@@ -173,7 +173,7 @@ echo ""
 
 # [7] Provenance directories non-empty
 echo "[7] Provenance directory contents"
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   shopt -s nullglob
   files=("$dir"*.md)
@@ -188,7 +188,7 @@ echo ""
 
 # [8] Provenance frontmatter
 echo "[8] Provenance frontmatter"
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   for prov in "$dir"*.md; do
     [[ -f "$prov" ]] || continue
     relpath="$(basename "$(dirname "$prov")")/$(basename "$prov")"
@@ -215,7 +215,7 @@ echo ""
 # [9] Decision record quality
 echo "[9] Decision record quality"
 found_decisions=false
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   for f in "$dir"*decision*.md "$dir"*decisions*.md; do
     [[ -f "$f" ]] || continue
     found_decisions=true
@@ -251,7 +251,7 @@ echo ""
 # Gate: a session directory containing at least one file matching *-perspective-*.md
 # is multi-agent; verify ≥3 such files exist.
 echo "[11] Multi-agent three-raw-output floor"
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   shopt -s nullglob
   perspective_files=("$dir"*-perspective-*.md)
@@ -284,7 +284,7 @@ D024_REQUIRED_FIELDS=(
   participation_shape
 )
 D024_SAMPLING_SUBFIELDS=(temperature top_p max_tokens)
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   manifests_dir="${dir}manifests"
   if [[ ! -d "$manifests_dir" ]]; then
@@ -340,7 +340,7 @@ echo ""
 # file matching *-deliberation*.md (synthesis) frontmatter. Runs after check 12
 # per the sequencing rule; sessions where check 12 failed are reported BLOCKED.
 echo "[13] Cross-model-claim honesty"
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   # Discover cross_model declaration
   declared_cross_model=false
@@ -400,7 +400,7 @@ echo ""
 # files, not manifests — per the Outsider's precision argument in Session 006).
 echo "[14] Multi-agent trigger coverage (triggers_met)"
 BLOCKED_SESSIONS_14=""
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
   session_int=$((10#$session_num))
@@ -496,7 +496,7 @@ echo ""
 # Gate: session number >= TRIGGERS_MET_ADOPTION_SESSION (=6) AND check 12 passed.
 # Runs after check 12 per the sequencing rule (D-040 §Sequencing).
 echo "[15] Non-Claude trigger coverage (triggers_met)"
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
   session_int=$((10#$session_num))
@@ -577,7 +577,7 @@ echo ""
 #
 # Gate: session number >= CRITERION4_ARTICULATION_SESSION (=21).
 echo "[16] Independent-claim evidence-pointer presence"
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
   session_int=$((10#$session_num))
@@ -616,7 +616,7 @@ echo ""
 # Gate: session number >= CRITERION4_ARTICULATION_SESSION (=21).
 # Out-of-scope: participant_kind in {claude-subagent, anthropic-other}.
 echo "[17] Claude-output-in-training disclosure"
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
   session_int=$((10#$session_num))
@@ -691,7 +691,7 @@ echo ""
 # Gate: session number >= CRITERION4_ARTICULATION_SESSION (=21).
 # In-scope: participant_kind: non-anthropic-model.
 echo "[19] Non-Anthropic participant_organisation closed-set membership"
-for dir in "${provdirs[@]}"; do
+for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
   session_int=$((10#$session_num))
@@ -1039,10 +1039,34 @@ fi
 # Gate: engine-v7 adoption session is 036; check 23 applies to session >= 036.
 MODE_MD_ADOPTION_SESSION=36
 echo "[23] Workspace-identity marker (MODE.md)"
-current_session_dir=$(ls -d "$WORKSPACE_ROOT"/provenance/[0-9]*/ 2>/dev/null | sort | tail -1)
-current_session_num=$(basename "$current_session_dir" 2>/dev/null | sed -E 's/^0*([0-9]+).*/\1/')
-if [[ -z "$current_session_num" ]] || [[ "$current_session_num" -lt "$MODE_MD_ADOPTION_SESSION" ]]; then
-  echo "  (session $current_session_num < $MODE_MD_ADOPTION_SESSION; check 23 out-of-scope pre-adoption)"
+# `|| true` prevents set -e from killing the script when the glob has no matches
+# (e.g., a freshly-bootstrapped external workspace with empty provenance/).
+current_session_dir=$(ls -d "$WORKSPACE_ROOT"/provenance/[0-9]*/ 2>/dev/null | sort | tail -1 || true)
+current_session_num=$(basename "$current_session_dir" 2>/dev/null | sed -E 's/^0*([0-9]+).*/\1/' || true)
+# Default to 0 when no session directories exist or the extracted value is
+# non-numeric (e.g., bootstrapped-but-pre-Session-001 external workspaces).
+# Without this defensive normalisation, the `-lt` comparison below errors under
+# set -e when $current_session_num is empty or "." from basename of an empty path.
+if [[ -z "$current_session_num" ]] || ! [[ "$current_session_num" =~ ^[0-9]+$ ]]; then
+  current_session_num=0
+fi
+if [[ "$current_session_num" -lt "$MODE_MD_ADOPTION_SESSION" ]]; then
+  # Pre-adoption session-number — but for bootstrapped workspaces MODE.md is
+  # required at session-0 by engine-manifest §6 bootstrap contract, so still
+  # verify when the file is present.
+  mode_md="$WORKSPACE_ROOT/MODE.md"
+  if [[ -f "$mode_md" ]]; then
+    mode_val=$(awk '/^---$/{f=!f; next} f && /^mode:/{print $2; exit}' "$mode_md" | tr -d '[:space:]')
+    if [[ "$mode_val" == "self-development" ]] || [[ "$mode_val" == "external-problem" ]]; then
+      pass "MODE.md present with recognised mode: $mode_val (pre-Session-$MODE_MD_ADOPTION_SESSION; bootstrap state)"
+    elif [[ -z "$mode_val" ]]; then
+      fail "MODE.md present but missing \`mode:\` frontmatter value"
+    else
+      fail "MODE.md present but \`mode:\` value unrecognised: '$mode_val' (expected 'self-development' or 'external-problem')"
+    fi
+  else
+    echo "  (session $current_session_num < $MODE_MD_ADOPTION_SESSION; check 23 out-of-scope pre-adoption)"
+  fi
 else
   mode_md="$WORKSPACE_ROOT/MODE.md"
   if [[ ! -f "$mode_md" ]]; then
@@ -1052,7 +1076,7 @@ else
     # frontmatter block and the mode line.
     mode_val=$(awk '/^---$/{f=!f; next} f && /^mode:/{print $2; exit}' "$mode_md" | tr -d '[:space:]')
     if [[ -z "$mode_val" ]]; then
-      fail "MODE.md missing `mode:` frontmatter value"
+      fail "MODE.md missing \`mode:\` frontmatter value"
     elif [[ "$mode_val" != "self-development" ]] && [[ "$mode_val" != "external-problem" ]]; then
       fail "MODE.md has unrecognised mode value: '$mode_val' (expected 'self-development' or 'external-problem')"
     else
