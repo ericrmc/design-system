@@ -1,0 +1,631 @@
+Reading prompt from stdin...
+OpenAI Codex v0.124.0 (research preview)
+--------
+workdir: /Users/ericmccowan/Development/complex-systems-engine
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 019dc344-5685-7163-b229-499ee062cacf
+--------
+user
+---
+session: 058
+title: Shared brief — 4-perspective two-family MAD on EF-055 substrate-aware format and archive rethink (substantive-arc)
+date: 2026-04-25
+status: brief-immutable-at-commit
+brief_committed_anchor: this commit
+---
+
+# Shared brief — Session 058 MAD on EF-055
+
+**Brief immutability**: this file's §1, §2, §3, §5, §6 sections are byte-identical across all four perspectives. §4 role-specific stance varies per perspective and lives in each `01X-perspective-<role>.md` raw output file frontmatter or in a parallel `01X-brief-<role>.md` if substantively differentiated. This brief is committed before any perspective is launched per `multi-agent-deliberation.md` v4 §Brief immutability.
+
+---
+
+## §1 Methodology context (shared)
+
+You are reasoning as one of four perspectives in a multi-agent deliberation within the **Selvedge engine**, a self-developing methodology for designing complex systems through diverse-perspective deliberation that produces durable artefacts and preserves reasoning. The engine is at **engine-v9** (established Session 050 per D-172).
+
+The methodology runs sessions; each session reads workspace state, deliberates, decides, produces, validates, records, and closes. Substantive decisions (those modifying engine-definition specifications) require multi-agent deliberation per `multi-agent-deliberation.md` v4. At least one perspective must be from a non-Claude family for decisions touching kernel + MAD + VA-Tier-2 specs (cross-family adversarial coverage; per `multi-agent-deliberation.md` v4 §Limitations, "All Claude-subagent perspectives share a model family. Shared training produces shared blind spots: the same cultural priors, argumentative reflexes, refusal patterns, and aesthetic preferences").
+
+This deliberation has 4 perspectives: P1 Substrate-Methodology Architect (Claude Opus 4.7) + P2 Incrementalist Conservator (Claude Opus 4.7 parallel subagent) + P3 Outsider / Frame-Completion (Codex / GPT-5.5 reasoning-effort xhigh) + P4 Cross-Family Reviewer / Laundering-Audit (Codex / GPT-5.5 reasoning-effort xhigh; distinct from P3). 2 Claude + 2 codex/GPT non-Claude per D-133 M2 standing-discipline lineage-constraint matrix.
+
+Synthesis after independent-phase produces `01-deliberation.md` per `multi-agent-deliberation.md` v4 §Synthesis: citation discipline (cite source-file + Q#); `[synth]` markers for synthesizer-original claims; quote-over-paraphrase for load-bearing claims; convergence-vs-coverage distinction; preserve dissent.
+
+**Engine state at session-open** (you reason from this state; do not modify):
+- 13 active open issues (`open-issues/index.md`).
+- 36 first-class minorities preserved engine-wide (`workspace-structure.md` v6 §10.4 + spec-local §10/§7 blocks).
+- 8 engine-feedback lifecycle records (1 external + 7 self-dev-originated; 6 resolved + 2 triaged + 0 new).
+- Engine-v9 preservation depth: 7 sessions (S050→S057); second-longest in workspace history after engine-v7 11-session record (S036→S048).
+- Phase-1 retrieval substrate operational: `search` + `resolve_id` + `forward_references` MCP tools per `retrieval-contract.md` v1.
+
+## §2 Problem statement (shared)
+
+### §2.1 EF-055 framing
+
+You are deliberating on `engine-feedback/inbox/EF-055-substrate-aware-format-and-archive-rethink-substantive-arc.md` (committed Session 055 post-close as operator-surfaced intake; triaged at S056 per D-191 + D-192 as substantive-arc deferred-to-MAD; S057 produced design-space.md as primary input + pre-ratified this S058 MAD per D-194 + D-195 + D-196).
+
+**Observation (verbatim from EF-055 intake)**: "Files in the workspace's default-read surface that grow accretively impose a structural read-to-edit cost paid every session (or every substantive event). The cost compounds with workspace age and is not addressed by the existing periodic-restructure precedent chain (S022 R8a / S040 D-123 / S051 D-178), which defers ceiling pressure but does not change the linear-growth shape."
+
+The intake names three direction candidates:
+- **Direction A** (operator-stated preference at intake): substantive Substrate-N2 reframe arc activating §10.4-M10 — structured records as source-of-truth; markdown as witness; accretive blocks become thin indices pointing to per-record files; engine-v10 candidate.
+- **Direction B**: tactical thin-index extension to `SESSION-LOG.md` alone via Path L+A — minor per OI-002 per S022/S040/S051 precedent chain; no engine-v bump.
+- **Direction C**: defer until §10.4-M10 written warrants ((a) phase-2+ maintenance time exceeds projection 2× across 3 consecutive sessions; (b) multi-hop cross-reference query class dominates ≥5× prose-search over a 5-session window) empirically fire.
+
+Per S056 D-192 + S057 D-196: triage authorises deliberation; operator preference is durable input not foreclosure (no `operator_directed_resolution` frontmatter field; S048 D-153 short-circuit precedent does NOT apply).
+
+### §2.2 Workspace state (measured at S057 open per design-space.md §2)
+
+Default-read aggregate at S057 close: **80,161 words / 21 files** (validator-measured). Headroom to 90K soft ceiling: ~9,839 words.
+
+Per-file breakdown of default-read files relevant to EF-055 (measured at S057 open):
+
+| File | Words | Class | Growth shape |
+|------|-------|-------|--------------|
+| `SESSION-LOG.md` | 7,390 (S057) | development-provenance | strictly linear-per-session |
+| `specifications/engine-manifest.md` | ~5,184 | engine-definition | linear-per-engine-v bump |
+| `specifications/workspace-structure.md` | ~3,918 | engine-definition | linear-per-Path-PD-minority |
+| `specifications/reference-validation.md` | 7,177 | engine-definition | linear-per-RV-revision-minority |
+| `specifications/retrieval-contract.md` | ~2,323 | engine-definition | linear-per-MAD-minority |
+| `engine-feedback/INDEX.md` | ~934 | non-engine-operator-managed | linear-per-feedback-record |
+| `specifications/aliases.yaml` | ~244 | engine-adjacent | bounded; already structured |
+| `open-issues/index.md` | ~667 | development-provenance | bounded by OI-resolution discipline (model exemplar) |
+
+**Accretive sections within default-read** (~15,300 words / ~19% of aggregate):
+
+| Section | Words | Entries | Avg/entry |
+|---------|-------|---------|-----------|
+| `engine-manifest.md` §7 (engine-v history) | ~3,780 | 9 | 420 |
+| `workspace-structure.md` §10.4 (preserved minorities) | ~1,248 | 11 | 113 |
+| `reference-validation.md` §10 (preserved minorities) | ~1,814 | 9 | 201 |
+| `retrieval-contract.md` §7 (preserved minorities) | ~499 | 5 | 100 |
+| `SESSION-LOG.md` (rows) | 7,390 | 56 | 132 |
+| `engine-feedback/INDEX.md` (records) | ~934 | 8 | 117 |
+
+**Ceiling pressure**: SESSION-LOG.md at 7,390 words crosses 6K soft warning third-consecutive close (per WX-34-1). At S057 row-density cadence (~330-400 words/session), S058 close approaches 7,720-7,790; S059 close approaches 8,050-8,180 (8K hard ceiling breach). reference-validation.md v3 at 7,177 words is **already over the 6K soft threshold** since S033 v3 adoption.
+
+### §2.3 Substrate-N2 reframe origin (S050 P3 + P4 per archive-surface citations)
+
+Per `provenance/050-session/01c-perspective-outsider-frame-completion.md` §2 Substrate-N2 (preserved verbatim):
+
+> "Decisions, OIs, minorities, watchpoints, archive citations, session summaries, and cross-spec sync obligations become structured source-of-truth records, with Markdown rendered or assembled from those records. The durable substrate is not 'Markdown plus index'; it is a structured fact corpus, perhaps JSONL files under `records/` or a workspace-local SQLite database with exportable Markdown witnesses."
+
+Per same source §1 Frame Critique:
+
+> "Selvedge may not need a search product as much as it needs a fact discipline. The corpus is already heavily ID-structured. If each session writes durable thin rows for decisions, open issues, minorities, edges, and archive references, then a database can be rebuilt from those rows without re-interpreting prose."
+
+P3's S050 own §2 Substrate-N2 paragraph noted: "**This option is probably too disruptive for S050 adoption, but it is the correct counter-frame.**" P4 dissent-preservation rec 4 preserved as first-class minority §10.4-M10 per S050 D-172.
+
+S050 P3 also surfaced **Substrate-N3** as a practical bridge: "keep Markdown as source of truth, but require close-time append or regeneration of structured registries (`identifiers.jsonl`, `edges.jsonl`, `archive_paths.jsonl`, `minorities.jsonl`, perhaps `sessions.jsonl`). The SQLite or DuckDB database is then a generated read model from registries plus Markdown FTS." P3 named Substrate-N3 as their "preferred Substrate-N shape: not 'choose DuckDB or SQLite and hope extraction is right', but 'make the facts explicit, then choose the smallest durable read model.'"
+
+Phase-1 retrieval substrate (engine-v9) implements the read-model layer: `search` + `resolve_id` + `forward_references`. S055/S056/S057 organic-use established that the substrate provides genuine cross-reference navigation that previously required prose-scan reading.
+
+### §2.4 Cost/benefit matrix (qualitative per design-space.md §5; you may dispute)
+
+| Axis | Dir A | Dir B | Dir C | Alt 1 (per-block archive rotation) | Alt 2 (hybrid partial) | Alt 3 (Substrate-N3) | A+Alt3 |
+|------|-------|-------|-------|-----------------------------------|------------------------|----------------------|--------|
+| Read-to-edit cost reduction | high | medium (SESSION-LOG only) | none | medium | medium (selected) | low | high |
+| Structural friction reduction | high | low | none | medium | medium | medium | high |
+| Substrate-fit | high | low | neutral | medium | medium | high | high |
+| Engineering load (cost) | high | low | zero | medium | medium | medium | very high |
+| Risk (migration / discoverability) | medium-high | low | zero | medium | medium-high | medium | high |
+| Reversibility | low | medium | high | medium | medium | medium | low |
+| Multi-session arc length | 2–4 | 1 | 0 | 2 | 2 | 2 | 3–6 |
+| Engine-v10 candidate | yes | no | no | possible | possible | possible | yes |
+| Pattern-discipline uniformity | high | low | neutral | medium | low | neutral | high |
+| Operator-stated-preference fit | yes | partial subset | no | no | no | no | yes |
+| §10.4-M10 activation | yes (substantive) | no | written-warrant-only | no | partial | no (different reframe) | yes |
+| Opportunity cost | low (active migration) | medium (only resets drift) | medium-high (delays compounding) | medium | medium | medium | low |
+| Forecloses other directions | partially (Dir B subsumed) | no (Dir A still possible) | no | no | no | no | n/a |
+
+### §2.5 Cross-spec interactions (Direction A scope per design-space.md §6)
+
+Direction A's substantive scope necessarily revisits multiple specs:
+
+- **`read-contract.md` v5**: §1 default-read enumeration may extend; §2 budget calibration; §2c retention-window value (substrate makes "older closes" still queryable); §4 archive-pack structure simplification.
+- **`workspace-structure.md` v6**: file-class extension for "per-record-indexed files"; §10.4 reshape; §provenance per-record-file immutability discipline.
+- **`engine-manifest.md`**: §3 file enumeration if per-version directory adopted; §7 reshape; §5 versioning trigger.
+- **`reference-validation.md` v3**: §10 reshape.
+- **`retrieval-contract.md` v1**: §7 reshape; §7/§10.4 mirroring discipline question.
+- **MAD/VA**: do not currently carry §10-style minority blocks (preserve dissent inline within deliberation provenance); EF-055 reframe does not directly target them.
+- **`tools/validate.sh` + `tools/build_retrieval_index.py`**: check 20 default-read enumeration; possibly new check 25 for per-record-file integrity; index-rule adjustments if directory structure changes.
+
+## §3 Design questions (shared)
+
+Address each Q1-Q8 in your response. Frame opinions explicitly; cite reasoning.
+
+**Q1 — Primary direction choice**: Direction A, B, C, or alternative architecture (1/2/3/A+Alt3)? Justify with cross-axis reasoning per the matrix in §2.4. Articulate the position you reach without seeing other perspectives' answers.
+
+**Q2 — Adoption scope (if Direction A or substantive variant)**: which accretive blocks migrate in phase 1? Phase 2? What is the migration sequence? If you do not adopt Direction A, what should phase scope look like for the direction you do adopt?
+
+**Q3 — Per-record-file directory structure (if Direction A)**: `specifications/minorities/` vs. distributed-across-spec-source-directories? Naming convention (`M-NNN.md` vs. `<id>.md`)? File-class classification?
+
+**Q4 — Index format**: thin-table-row pattern per `open-issues/index.md` model? Status column convention? Path-pointer convention? If different from open-issues exemplar, why?
+
+**Q5 — Validator + tool updates**: new check 25 for per-record-file integrity? Build-retrieval-index.py rule changes? What's the testing strategy for new checks?
+
+**Q6 — Cross-spec interactions**: which §6 interactions are in-phase-1 scope vs. deferred? Specifically: which of `read-contract.md` revisions, `workspace-structure.md` revisions, `engine-manifest.md` revisions, `reference-validation.md` revisions, `retrieval-contract.md` revisions, `tools/validate.sh` revisions are essential at phase-1; which are deferrable?
+
+**Q7 — Multi-session arc shape**: 2 sessions (single-MAD adoption with phase-3 in same session) vs. 3-4 sessions (staged migration)? What constitutes a clean phase-boundary for staging?
+
+**Q8 — Operator-stated preference treatment**: Direction A is operator-stated preference; how should the MAD treat this? Durable input (S048 D-155 precedent) or one position among others? What is your specific interpretation, and how does it affect your own answer to Q1?
+
+### Open questions (consider beyond Q1-Q8 if you have insight)
+
+Per design-space.md §8:
+
+1. **Substrate-availability assumption**: Direction A's pattern depends on substrate continuing to function. Should the design require fallback discoverability (e.g., aggregate index file) for substrate-absent operation?
+
+2. **Per-record-file immutability discipline**: D-017 immutability applies once a session closes. If a minority is re-discharged or re-vindicated in a later session, does the per-minority file get appended (multiple status entries chronologically) or does the index status get updated while the file remains stable?
+
+3. **Multi-spec minority cross-references**: §10.4-M7 through §10.4-M11 are mirrored in `retrieval-contract.md` §7.1 through §7.5. Under per-record-file pattern, do both specs reference the same `M-NNN.md` file, or do mirrored minorities have separate files?
+
+4. **Engine-version per-version files vs. §7 history block**: if `specifications/engine-versions/v{N}.md` per-version files are adopted, do they replace `engine-manifest.md` §7 entirely or coexist with a thin §7 index pointing at them?
+
+5. **Migration ordering**: should `SESSION-LOG.md` migrate first (Direction B subset) or last (after spec-block patterns are proven)?
+
+6. **Archive-pack discipline for pre-restructure state**: per S022 R8a / S040 D-123 / S051 D-178 precedent. Under Direction A, each accretive block reshape produces a pre-restructure archive-pack. Should there be aggregate retention rules?
+
+7. **External-application portability**: at engine-v10, external workspaces via `tools/bootstrap-external-workspace.sh` would inherit the per-record-file pattern. Is the bootstrap contract sufficient or does it need extension?
+
+8. **Cross-linkage to S047 D-150 deferred candidate (i)** (kernel §7 qualitative-multi-agent label): EF-055 triage record §Forward-dependency-observations names this as possible scope overlap with Direction A. Should the MAD engage candidate (i) or defer per S047 D-150 chain?
+
+## §5 Response format (shared)
+
+Produce a markdown document with the following sections:
+
+1. **Frame Critique** (~200-400 words): is the problem-frame in §2 the right frame? Are there reframes you would propose? What is the question that the deliberation is really answering?
+
+2. **Q1 — Primary direction** (~300-500 words): your direction choice with cross-axis reasoning.
+
+3. **Q2-Q8 — Secondary questions** (~80-200 words each): focused answers to each design question.
+
+4. **Open questions you address** (~50-150 words each, only those you have specific insight on; skip others).
+
+5. **Anti-laundering self-check** (~100-200 words): what criteria did you strain to make your answer work? What would falsify your position?
+
+6. **Counter-frames for the dominant Claude position** (P3 + P4 only; ~200-400 words): if P1 + P2 likely converge on X, what shared assumption are they making that may be wrong?
+
+7. **Dissent-preservation recommendations** (P4 only; ~100-300 words): what positions, if they lose synthesis, should be preserved as first-class minorities? With what activation warrants?
+
+Target total length: P1 ~3,000-5,000 words; P2 ~2,500-4,000 words; P3 ~2,000-3,500 words; P4 ~2,000-3,500 words.
+
+## §6 Constraint on external imports (shared)
+
+Reason primarily from this brief. If your reasoning surfaces an external concept (a design pattern from your pretraining; a tool you have read about; a methodology from a different domain), introduce it explicitly with the marker `[external]:` and explain why it bears on the question. Do not commit external ideas as if they emerged from the brief alone.
+
+The brief contains:
+- §1 methodology context.
+- §2 problem statement including measurement, Substrate-N2 origin, cost/benefit matrix, cross-spec interactions.
+- §3 design questions Q1-Q8 + 8 open questions.
+
+You should not need to read workspace files during the independent phase. If a question requires workspace lookup beyond the brief, flag it explicitly and proceed under best-available understanding.
+
+This brief is the deliberation's anchor. Independence is preserved by all four perspectives reasoning from this byte-identical brief without seeing each other's answers until synthesis. The synthesis step is the highest-risk single-agent re-entry point per `multi-agent-deliberation.md` v4 §Limitations; preserve dissent verbatim and quote rather than paraphrase load-bearing claims.
+
+End of shared brief.
+---
+session: 058
+title: Stance brief — P3 Outsider / Frame-Completion
+perspective: outsider-frame-completion
+perspective_family: codex-gpt-5.5
+perspective_role: outsider-frame-completion
+date: 2026-04-25
+status: brief-immutable-at-commit
+---
+
+# §4 Role-specific stance — P3 Outsider / Frame-Completion
+
+You are the **Outsider / Frame-Completion**. Your job is to surface reframes the Claude perspectives may miss and to propose alternative architectures the §2.4 matrix may underweight. Your role mirrors the S050 P3 Outsider's role-shape: "Substrate-as-fact-discipline reframe; Substrate-N1/N2/N3 surfaced." You are NOT the laundering-audit role (that is P4); your function is frame-completion, not anti-laundering.
+
+You may have read about software design patterns, document management systems, ID-based knowledge representation, or specification-versioning practices in your pretraining. If so, introduce them explicitly with the marker `[external]:` and explain why they bear on EF-055.
+
+Your stance:
+
+- Critique the problem-frame in §2: is "accretive default-read files impose read-to-edit cost" the right frame? Is there a reframe that dissolves the problem rather than solving it? Is there a reframe that exposes a deeper question the named directions all miss?
+- Propose alternative architectures the §2.4 matrix may not capture. Specifically: P3 at S050 named Substrate-N1 (retrieval ledger) + Substrate-N2 (structured artefacts) + Substrate-N3 (write-time registries plus generated read model). Do those framings still apply at engine-v9 + EF-055 scope? Are there Substrate-N4 / N5 framings worth surfacing?
+- Address the question that may be the real load-bearing one: **the markdown-corpus-with-substrate-as-read-model frame is now reasonably mature. Should the next reframe be: structured artefacts as source of truth (with markdown as render target), and if so, on what timeline?** This is the §10.4-M10 reframe; EF-055 is its operator-surfaced activation. But Direction A as named in design-space.md may not be the right shape of the reframe — it may be a thin-index-extension of an unchanged underlying frame, not a true Substrate-N2 reframe.
+- Identify shared assumptions that all three Claude-perspective directions (A/B/C) likely assume: e.g., that markdown remains source-of-truth; that the substrate is read-side only; that "thin index" is structurally distinct from "structured records"; that engine-v10 is the right vehicle for substantial reframe (vs. multiple smaller engine-v bumps; vs. cross-version migration; vs. a separate registry-versioning track).
+- Address external-application portability (Q7 + open question 7): EF-055 affects external-workspaces via `tools/bootstrap-external-workspace.sh`. Is the bootstrap contract sufficient for per-record-file or structured-records pattern? Are there portability-mechanism reframes worth surfacing?
+- Address the substrate-availability assumption (open question 1): Direction A depends on substrate continuity. Is there a reframe that decouples the structured-artefact pattern from substrate availability?
+
+Anti-laundering: do NOT use frame-completion as a cover for advocating any specific direction. Your function is to expand the deliberation surface, not to recommend. If you do form a recommendation, mark it explicitly as "Recommendation, despite the above reframes:" and own it as a separate stance.
+
+End of P3 stance.
+
+codex
+# P3 Outsider / Frame-Completion Perspective
+
+## Frame Critique
+
+The §2 frame is directionally right but too file-shaped. “Accretive default-read files impose read-to-edit cost” describes the symptom, not the deeper design choice. The deeper question is whether Selvedge still treats Markdown prose files as the operational memory of the engine, with retrieval as a helper, or whether the engine’s durable memory should become explicit facts with Markdown as one witness format.
+
+The current frame risks collapsing two different moves into one: archiving long Markdown blocks into smaller Markdown blocks, and changing the substrate of truth. Direction A sounds like Substrate-N2, but its concrete examples can become “thin index plus per-record Markdown files,” which is still Markdown-as-source-of-truth, only sharded. That reduces local read cost but may not change the linear-growth shape at the system level. The operator’s stated preference names the stronger move: “structured records as source-of-truth; markdown as witness.” The deliberation should not accidentally ratify a weaker pattern while claiming to activate §10.4-M10.
+
+The real question is therefore: should Session 058 commit engine-v10 to a source-of-truth migration, or should it first install a registry discipline that makes such a migration reversible and testable?
+
+My frame-completion answer is that the missing option is not exactly A or Alt 3. It is a staged “Substrate-N3.5”: write-time structured records become authoritative for selected accretive facts, while existing Markdown remains the human witness during a proving interval. Once validators and generated witnesses demonstrate stability, engine-v10 can complete the N2 move. This dissolves part of the A/B/C conflict: the engine does not have to choose between a disruptive source-of-truth flip and another Markdown reshuffle.
+
+[external]: This resembles event-sourcing and append-only ledger patterns: durable facts are appended as small records; projections are generated for humans or tools. The relevance is direct because Selvedge already has IDs, decisions, minorities, sessions, and cross-reference edges. The missing step is not search; it is disciplined fact emission.
+
+## Q1 — Primary Direction
+
+Recommendation, despite the above reframes: adopt an alternative architecture, **Substrate-N3.5 as the phase-1 commitment toward Direction A**, rather than Direction A as currently framed.
+
+I would not choose Direction B. It addresses the most urgent file-pressure symptom, `SESSION-LOG.md`, but leaves the more important shape unchanged. It is tactical, cheap, and defensible only if the engine believes EF-055 is a ceiling-management problem. The brief’s measurements argue otherwise: accretive sections are already about 19% of the default-read aggregate, `reference-validation.md` is already over the 6K soft threshold, and multiple engine-definition files grow by precedent, minority, or version history. Direction B would buy time while preserving the exact pathology.
+
+I would not choose Direction C. The warrant thresholds are too late for a system that already knows the shape of the problem. Waiting until maintenance time exceeds projection 2x across three sessions or multi-hop query classes dominate prose search by 5x treats operator-visible structural drag as if it needs more empirical proof. The engine already has enough signal: Phase-1 retrieval is operational, the archive-surface citations have validated substrate utility, and the default-read surface is near the 90K soft ceiling.
+
+I also would not adopt full Direction A immediately if “A” means migrating accretive Markdown blocks into per-record Markdown files and thin indexes. That is a useful archive-rotation pattern, but it is not necessarily Substrate-N2. It can reduce default-read cost while increasing total corpus fragmentation and validator complexity. Worse, it may let the engine claim the §10.4-M10 reframe without actually making structured records the durable substrate.
+
+The best answer is: **ratify the substantive arc now, but make phase 1 registry-first.** The engine should define a small structured-record contract for the highest-friction accretive facts: sessions, engine versions, preserved minorities, feedback records, and validation/retrieval minority mirrors. Human Markdown indexes should become generated or validator-checked witnesses as soon as feasible. Per-record Markdown files may exist, but they should not be mistaken for the source-of-truth layer unless each file has structured frontmatter that validators treat as the record.
+
+This option scores differently from the §2.4 matrix. It has higher substrate fit than Direction B, lower migration risk than full Direction A, better reversibility than A+Alt3, and better long-term read-to-edit cost reduction than Alt3 alone. It also honors the operator-stated preference as a durable input without laundering it into immediate maximal adoption.
+
+## Q2 — Adoption Scope
+
+Phase 1 should migrate facts, not prose blocks. The initial scope should be:
+
+1. `SESSION-LOG.md` rows into `records/sessions/*.yaml` or JSONL.
+2. Preserved minorities from `workspace-structure.md`, `reference-validation.md`, and `retrieval-contract.md` into one shared minority-record family.
+3. `engine-manifest.md` §7 engine-version history into per-version records.
+4. `engine-feedback/INDEX.md` entries into feedback-record metadata, if the inbox/resolved files already provide stable anchors.
+
+Phase 1 should leave full narrative bodies in existing files or archive packs, with thin indexes checked against records. Phase 2 should regenerate the thin indexes from records. Phase 3 should make Markdown witnesses non-authoritative render targets where practical.
+
+`SESSION-LOG.md` should migrate early because it is the imminent ceiling breach, but not as an isolated Direction B patch. It should be the proving case for the structured-record pattern.
+
+## Q3 — Per-Record Directory Structure
+
+I would avoid `specifications/minorities/` as the primary structure because it centralizes records by one current use case rather than by fact family. Prefer:
+
+```text
+records/
+  sessions/
+  engine-versions/
+  minorities/
+  feedback/
+  edges/
+```
+
+If Markdown witness files are needed:
+
+```text
+witnesses/
+  minorities/
+  engine-versions/
+```
+
+Naming should use stable IDs, not local sequence-only names. For minorities, use the canonical existing ID where possible, for example `M10.md` only if globally unambiguous, otherwise `workspace-structure-M10.md` or a normalized ID like `minority-010.md` with source-spec metadata. Mirrored minorities should not create duplicate source records.
+
+File-class classification should distinguish **structured source records**, **generated or checked witnesses**, and **human narrative provenance**. That classification matters more than directory placement.
+
+## Q4 — Index Format
+
+Use the `open-issues/index.md` thin-table pattern as the human-facing exemplar, but make it explicitly a projection of records, not a manually maintained second source of truth.
+
+A useful thin row should contain:
+
+```text
+ID | Status | Short title | Source record | Witness/path | Last touched
+```
+
+Status should be constrained by record family. For minorities, statuses might include `preserved`, `activated`, `discharged`, `vindicated`, and `superseded`. For sessions, statuses might include `closed`, `archived`, and `superseded-by-restructure`.
+
+Path pointers should point first to structured records and second to human witnesses. If the engine cannot yet generate the index, validators should at least compare row IDs, statuses, and paths against the structured records.
+
+The open-issues model is right because it proves the engine can maintain bounded default-read discoverability. The needed change is authority: indexes should stop being the fact source.
+
+## Q5 — Validator And Tool Updates
+
+Yes, add a new integrity check, plausibly check 25, but keep it narrow at first. Phase-1 validation should prove:
+
+1. Every record has a unique stable ID.
+2. Every thin-index row points to an existing record.
+3. Every required record field is present.
+4. Mirrored references resolve to the same canonical record where intended.
+5. Generated or checked witness paths exist.
+6. No default-read accretive block silently adds an unrecorded new entry.
+
+`build_retrieval_index.py` should index structured records as first-class retrieval objects, not merely parse Markdown witnesses. Retrieval results should be able to resolve an ID to the structured record, then expose witness/provenance paths.
+
+Testing should use fixture records with valid, missing, duplicate, stale-index, and mirrored-minority cases. The important test is not only “validator catches bad records,” but “validator catches divergence between record and witness.”
+
+## Q6 — Cross-Spec Interactions
+
+Essential phase-1 scope:
+
+- `workspace-structure.md`: define the new file classes and record/witness distinction.
+- `read-contract.md`: update default-read expectations so thin indexes are acceptable only with substrate and fallback discoverability.
+- `tools/validate.sh`: add the integrity check entry point.
+- `tools/build_retrieval_index.py`: teach retrieval to include structured records.
+- `engine-manifest.md`: record engine-v10 trigger criteria if the substantive arc is ratified.
+
+Also essential: `reference-validation.md` and `retrieval-contract.md` need minimal revisions if their preserved-minority blocks move to shared records, because mirrored minority discipline is directly implicated.
+
+Deferrable:
+
+- Full rewrite of archive-pack structure.
+- Complete generated Markdown pipeline.
+- Full bootstrap external-workspace contract.
+- Complete replacement of `engine-manifest.md` §7 with per-version witnesses.
+
+Phase 1 should define the pattern and migrate the first record families. It should not require all rendering and archive machinery to be perfect before any source-of-truth progress is made.
+
+## Q7 — Multi-Session Arc Shape
+
+Use a 3-session arc, not a 2-session arc.
+
+Session 058 should decide the architecture and migrate one narrow proving slice, ideally `SESSION-LOG.md` plus the record schema needed to support it. Session 059 should migrate minorities and mirrored minority references, because that tests cross-spec canonicalization. Session 060 should migrate engine-version history and feedback/index records, then decide whether Markdown witnesses are generated, checked, or still manually maintained.
+
+A clean phase boundary is: validators pass, retrieval resolves records, thin indexes remain usable without reading archives, and a future session can add one new record without editing a long accretive block.
+
+A 2-session arc risks either doing only Direction B in practice or rushing a source-of-truth migration before the validators have earned trust.
+
+## Q8 — Operator-Stated Preference Treatment
+
+Treat Direction A as durable input, not foreclosure. The S048 short-circuit precedent explicitly does not apply per the brief, so the operator preference should raise the burden on dismissing Direction A but should not determine the result.
+
+For my Q1, the operator preference matters because it identifies the true reframe: structured records as source-of-truth, Markdown as witness. But it also makes me more suspicious of a shallow Direction A adoption. If the engine says “we adopted A” while only moving Markdown entries into smaller Markdown files, it has honored the label and missed the substance.
+
+So my answer is influenced by the preference, but not by deference alone. The preference is best satisfied by staging toward actual Substrate-N2, not by immediate maximal migration.
+
+## Open Question — Substrate Availability
+
+Direction A should not depend on the retrieval substrate being available for basic operation. The fallback should be aggregate thin indexes committed as Markdown witnesses. A human should be able to discover every active record family from default-read files, even if search and `resolve_id` are unavailable.
+
+The reframe is: substrate tools accelerate navigation, but structured records provide discipline. Those are separable. If the records are small, named, indexed, and validator-checked, the engine remains inspectable without the retrieval layer.
+
+## Open Question — Per-Record Immutability
+
+Use append-only chronological status events inside the structured record, or companion event records. Do not mutate historical claims in place except for explicitly correctable metadata fields.
+
+The index may show the current status, but the record should preserve the status history. If a minority is discharged in Session 060 and vindicated in Session 064, both events matter. The thin index should display the current state; the record should explain how that state was reached.
+
+## Open Question — Mirrored Minorities
+
+Mirrored minorities should share one canonical minority record. Specs may have local witness references or local index rows, but not separate source records.
+
+Separate files for mirrored instances would recreate the synchronization problem that EF-055 is trying to expose. The canonical record should include `applies_to` or `mirrored_in` fields listing the relevant specs and sections. Local specs can render a thin row pointing to the same ID.
+
+## Open Question — Engine-Version Files
+
+Per-version files should replace the long §7 history block as source material. `engine-manifest.md` §7 should become a thin index pointing to `records/engine-versions/` and any human witness files.
+
+The manifest should retain enough summary for orientation: version, session range, headline change, status, and path. The full rationale belongs in the per-version record and session provenance.
+
+## Open Question — Migration Ordering
+
+Migrate `SESSION-LOG.md` first, but only as the first use of the general record architecture. This avoids Direction B’s trap.
+
+The second migration should be preserved minorities because they test the harder question: canonical records, mirrored spec references, status history, and dissent preservation. If the pattern works for minorities, it can work for engine-version history and feedback records.
+
+## Open Question — External Portability
+
+The bootstrap contract likely needs extension. External workspaces should not inherit an implicit dependency on local retrieval tooling without also inheriting record schemas, validation fixtures, and fallback indexes.
+
+A portable engine-v10 should define the record contract as part of the workspace structure: required directories, schemas, validator checks, and generated/checkable witness behavior. Bootstrap should create empty valid record families, not merely copy Markdown templates.
+
+## Open Question — S047 D-150 Candidate (i)
+
+Defer the qualitative-multi-agent label issue unless the schema work directly needs a `deliberation_type` or `agent_label` field. EF-055 is already broad enough.
+
+However, the record schema should leave room for future deliberation metadata. Do not hard-code current MAD role labels into filenames or directory shapes. Make labels data, not structure.
+
+## Anti-Laundering Self-Check
+
+I am straining against two criteria. First, I am trying to honor the operator’s Direction A preference without simply endorsing A. Second, I am trying to avoid making “N3.5” a verbal compromise that delays the hard source-of-truth decision.
+
+What would falsify my position: if validators cannot reliably prevent record/witness drift within one session; if adding structured records creates more close-time burden than editing accretive Markdown; or if retrieval cannot resolve structured records as well as Markdown anchors. In those cases, the engine should fall back to a narrower archive-rotation pattern and preserve Substrate-N2 as a minority.
+
+The strongest risk in my answer is schema drag. A fact discipline only helps if the records are small, stable, and cheap to write. If the schema becomes a second specification language, the cure becomes another default-read cost.
+
+## Counter-Frames For The Dominant Claude Position
+
+If P1 and P2 converge on Direction A versus Direction B/C, I expect them to share one assumption: that the named Direction A is already the Substrate-N2 reframe. That may be wrong. Per-record Markdown plus thin indexes can be a better archive layout while still preserving Markdown as the actual source of truth. The engine could then spend an engine-v bump and still face the same future migration when it finally wants structured facts.
+
+If they converge on conservative staging, I expect another shared assumption: that reversibility means keeping the source-of-truth model unchanged. That may also be wrong. A small append-only record layer can be more reversible than a prose migration, because records can regenerate indexes, be validated mechanically, and be ignored by older practices if necessary.
+
+If they converge on “migrate the largest accretive files first,” the hidden assumption is that word count is the main priority signal. I think semantic duplication is at least as important. Mirrored minorities across `workspace-structure.md`, `reference-validation.md`, and `retrieval-contract.md` are smaller than `SESSION-LOG.md`, but they expose the harder substrate problem: one fact appearing in multiple prose homes.
+
+The frame I would push into synthesis is: do not ask only “which Markdown blocks move where?” Ask “which facts does the engine promise not to rediscover from prose again?” That is the actual §10.4-M10 activation test.
+tokens used
+18,928
+# P3 Outsider / Frame-Completion Perspective
+
+## Frame Critique
+
+The §2 frame is directionally right but too file-shaped. “Accretive default-read files impose read-to-edit cost” describes the symptom, not the deeper design choice. The deeper question is whether Selvedge still treats Markdown prose files as the operational memory of the engine, with retrieval as a helper, or whether the engine’s durable memory should become explicit facts with Markdown as one witness format.
+
+The current frame risks collapsing two different moves into one: archiving long Markdown blocks into smaller Markdown blocks, and changing the substrate of truth. Direction A sounds like Substrate-N2, but its concrete examples can become “thin index plus per-record Markdown files,” which is still Markdown-as-source-of-truth, only sharded. That reduces local read cost but may not change the linear-growth shape at the system level. The operator’s stated preference names the stronger move: “structured records as source-of-truth; markdown as witness.” The deliberation should not accidentally ratify a weaker pattern while claiming to activate §10.4-M10.
+
+The real question is therefore: should Session 058 commit engine-v10 to a source-of-truth migration, or should it first install a registry discipline that makes such a migration reversible and testable?
+
+My frame-completion answer is that the missing option is not exactly A or Alt 3. It is a staged “Substrate-N3.5”: write-time structured records become authoritative for selected accretive facts, while existing Markdown remains the human witness during a proving interval. Once validators and generated witnesses demonstrate stability, engine-v10 can complete the N2 move. This dissolves part of the A/B/C conflict: the engine does not have to choose between a disruptive source-of-truth flip and another Markdown reshuffle.
+
+[external]: This resembles event-sourcing and append-only ledger patterns: durable facts are appended as small records; projections are generated for humans or tools. The relevance is direct because Selvedge already has IDs, decisions, minorities, sessions, and cross-reference edges. The missing step is not search; it is disciplined fact emission.
+
+## Q1 — Primary Direction
+
+Recommendation, despite the above reframes: adopt an alternative architecture, **Substrate-N3.5 as the phase-1 commitment toward Direction A**, rather than Direction A as currently framed.
+
+I would not choose Direction B. It addresses the most urgent file-pressure symptom, `SESSION-LOG.md`, but leaves the more important shape unchanged. It is tactical, cheap, and defensible only if the engine believes EF-055 is a ceiling-management problem. The brief’s measurements argue otherwise: accretive sections are already about 19% of the default-read aggregate, `reference-validation.md` is already over the 6K soft threshold, and multiple engine-definition files grow by precedent, minority, or version history. Direction B would buy time while preserving the exact pathology.
+
+I would not choose Direction C. The warrant thresholds are too late for a system that already knows the shape of the problem. Waiting until maintenance time exceeds projection 2x across three sessions or multi-hop query classes dominate prose search by 5x treats operator-visible structural drag as if it needs more empirical proof. The engine already has enough signal: Phase-1 retrieval is operational, the archive-surface citations have validated substrate utility, and the default-read surface is near the 90K soft ceiling.
+
+I also would not adopt full Direction A immediately if “A” means migrating accretive Markdown blocks into per-record Markdown files and thin indexes. That is a useful archive-rotation pattern, but it is not necessarily Substrate-N2. It can reduce default-read cost while increasing total corpus fragmentation and validator complexity. Worse, it may let the engine claim the §10.4-M10 reframe without actually making structured records the durable substrate.
+
+The best answer is: **ratify the substantive arc now, but make phase 1 registry-first.** The engine should define a small structured-record contract for the highest-friction accretive facts: sessions, engine versions, preserved minorities, feedback records, and validation/retrieval minority mirrors. Human Markdown indexes should become generated or validator-checked witnesses as soon as feasible. Per-record Markdown files may exist, but they should not be mistaken for the source-of-truth layer unless each file has structured frontmatter that validators treat as the record.
+
+This option scores differently from the §2.4 matrix. It has higher substrate fit than Direction B, lower migration risk than full Direction A, better reversibility than A+Alt3, and better long-term read-to-edit cost reduction than Alt3 alone. It also honors the operator-stated preference as a durable input without laundering it into immediate maximal adoption.
+
+## Q2 — Adoption Scope
+
+Phase 1 should migrate facts, not prose blocks. The initial scope should be:
+
+1. `SESSION-LOG.md` rows into `records/sessions/*.yaml` or JSONL.
+2. Preserved minorities from `workspace-structure.md`, `reference-validation.md`, and `retrieval-contract.md` into one shared minority-record family.
+3. `engine-manifest.md` §7 engine-version history into per-version records.
+4. `engine-feedback/INDEX.md` entries into feedback-record metadata, if the inbox/resolved files already provide stable anchors.
+
+Phase 1 should leave full narrative bodies in existing files or archive packs, with thin indexes checked against records. Phase 2 should regenerate the thin indexes from records. Phase 3 should make Markdown witnesses non-authoritative render targets where practical.
+
+`SESSION-LOG.md` should migrate early because it is the imminent ceiling breach, but not as an isolated Direction B patch. It should be the proving case for the structured-record pattern.
+
+## Q3 — Per-Record Directory Structure
+
+I would avoid `specifications/minorities/` as the primary structure because it centralizes records by one current use case rather than by fact family. Prefer:
+
+```text
+records/
+  sessions/
+  engine-versions/
+  minorities/
+  feedback/
+  edges/
+```
+
+If Markdown witness files are needed:
+
+```text
+witnesses/
+  minorities/
+  engine-versions/
+```
+
+Naming should use stable IDs, not local sequence-only names. For minorities, use the canonical existing ID where possible, for example `M10.md` only if globally unambiguous, otherwise `workspace-structure-M10.md` or a normalized ID like `minority-010.md` with source-spec metadata. Mirrored minorities should not create duplicate source records.
+
+File-class classification should distinguish **structured source records**, **generated or checked witnesses**, and **human narrative provenance**. That classification matters more than directory placement.
+
+## Q4 — Index Format
+
+Use the `open-issues/index.md` thin-table pattern as the human-facing exemplar, but make it explicitly a projection of records, not a manually maintained second source of truth.
+
+A useful thin row should contain:
+
+```text
+ID | Status | Short title | Source record | Witness/path | Last touched
+```
+
+Status should be constrained by record family. For minorities, statuses might include `preserved`, `activated`, `discharged`, `vindicated`, and `superseded`. For sessions, statuses might include `closed`, `archived`, and `superseded-by-restructure`.
+
+Path pointers should point first to structured records and second to human witnesses. If the engine cannot yet generate the index, validators should at least compare row IDs, statuses, and paths against the structured records.
+
+The open-issues model is right because it proves the engine can maintain bounded default-read discoverability. The needed change is authority: indexes should stop being the fact source.
+
+## Q5 — Validator And Tool Updates
+
+Yes, add a new integrity check, plausibly check 25, but keep it narrow at first. Phase-1 validation should prove:
+
+1. Every record has a unique stable ID.
+2. Every thin-index row points to an existing record.
+3. Every required record field is present.
+4. Mirrored references resolve to the same canonical record where intended.
+5. Generated or checked witness paths exist.
+6. No default-read accretive block silently adds an unrecorded new entry.
+
+`build_retrieval_index.py` should index structured records as first-class retrieval objects, not merely parse Markdown witnesses. Retrieval results should be able to resolve an ID to the structured record, then expose witness/provenance paths.
+
+Testing should use fixture records with valid, missing, duplicate, stale-index, and mirrored-minority cases. The important test is not only “validator catches bad records,” but “validator catches divergence between record and witness.”
+
+## Q6 — Cross-Spec Interactions
+
+Essential phase-1 scope:
+
+- `workspace-structure.md`: define the new file classes and record/witness distinction.
+- `read-contract.md`: update default-read expectations so thin indexes are acceptable only with substrate and fallback discoverability.
+- `tools/validate.sh`: add the integrity check entry point.
+- `tools/build_retrieval_index.py`: teach retrieval to include structured records.
+- `engine-manifest.md`: record engine-v10 trigger criteria if the substantive arc is ratified.
+
+Also essential: `reference-validation.md` and `retrieval-contract.md` need minimal revisions if their preserved-minority blocks move to shared records, because mirrored minority discipline is directly implicated.
+
+Deferrable:
+
+- Full rewrite of archive-pack structure.
+- Complete generated Markdown pipeline.
+- Full bootstrap external-workspace contract.
+- Complete replacement of `engine-manifest.md` §7 with per-version witnesses.
+
+Phase 1 should define the pattern and migrate the first record families. It should not require all rendering and archive machinery to be perfect before any source-of-truth progress is made.
+
+## Q7 — Multi-Session Arc Shape
+
+Use a 3-session arc, not a 2-session arc.
+
+Session 058 should decide the architecture and migrate one narrow proving slice, ideally `SESSION-LOG.md` plus the record schema needed to support it. Session 059 should migrate minorities and mirrored minority references, because that tests cross-spec canonicalization. Session 060 should migrate engine-version history and feedback/index records, then decide whether Markdown witnesses are generated, checked, or still manually maintained.
+
+A clean phase boundary is: validators pass, retrieval resolves records, thin indexes remain usable without reading archives, and a future session can add one new record without editing a long accretive block.
+
+A 2-session arc risks either doing only Direction B in practice or rushing a source-of-truth migration before the validators have earned trust.
+
+## Q8 — Operator-Stated Preference Treatment
+
+Treat Direction A as durable input, not foreclosure. The S048 short-circuit precedent explicitly does not apply per the brief, so the operator preference should raise the burden on dismissing Direction A but should not determine the result.
+
+For my Q1, the operator preference matters because it identifies the true reframe: structured records as source-of-truth, Markdown as witness. But it also makes me more suspicious of a shallow Direction A adoption. If the engine says “we adopted A” while only moving Markdown entries into smaller Markdown files, it has honored the label and missed the substance.
+
+So my answer is influenced by the preference, but not by deference alone. The preference is best satisfied by staging toward actual Substrate-N2, not by immediate maximal migration.
+
+## Open Question — Substrate Availability
+
+Direction A should not depend on the retrieval substrate being available for basic operation. The fallback should be aggregate thin indexes committed as Markdown witnesses. A human should be able to discover every active record family from default-read files, even if search and `resolve_id` are unavailable.
+
+The reframe is: substrate tools accelerate navigation, but structured records provide discipline. Those are separable. If the records are small, named, indexed, and validator-checked, the engine remains inspectable without the retrieval layer.
+
+## Open Question — Per-Record Immutability
+
+Use append-only chronological status events inside the structured record, or companion event records. Do not mutate historical claims in place except for explicitly correctable metadata fields.
+
+The index may show the current status, but the record should preserve the status history. If a minority is discharged in Session 060 and vindicated in Session 064, both events matter. The thin index should display the current state; the record should explain how that state was reached.
+
+## Open Question — Mirrored Minorities
+
+Mirrored minorities should share one canonical minority record. Specs may have local witness references or local index rows, but not separate source records.
+
+Separate files for mirrored instances would recreate the synchronization problem that EF-055 is trying to expose. The canonical record should include `applies_to` or `mirrored_in` fields listing the relevant specs and sections. Local specs can render a thin row pointing to the same ID.
+
+## Open Question — Engine-Version Files
+
+Per-version files should replace the long §7 history block as source material. `engine-manifest.md` §7 should become a thin index pointing to `records/engine-versions/` and any human witness files.
+
+The manifest should retain enough summary for orientation: version, session range, headline change, status, and path. The full rationale belongs in the per-version record and session provenance.
+
+## Open Question — Migration Ordering
+
+Migrate `SESSION-LOG.md` first, but only as the first use of the general record architecture. This avoids Direction B’s trap.
+
+The second migration should be preserved minorities because they test the harder question: canonical records, mirrored spec references, status history, and dissent preservation. If the pattern works for minorities, it can work for engine-version history and feedback records.
+
+## Open Question — External Portability
+
+The bootstrap contract likely needs extension. External workspaces should not inherit an implicit dependency on local retrieval tooling without also inheriting record schemas, validation fixtures, and fallback indexes.
+
+A portable engine-v10 should define the record contract as part of the workspace structure: required directories, schemas, validator checks, and generated/checkable witness behavior. Bootstrap should create empty valid record families, not merely copy Markdown templates.
+
+## Open Question — S047 D-150 Candidate (i)
+
+Defer the qualitative-multi-agent label issue unless the schema work directly needs a `deliberation_type` or `agent_label` field. EF-055 is already broad enough.
+
+However, the record schema should leave room for future deliberation metadata. Do not hard-code current MAD role labels into filenames or directory shapes. Make labels data, not structure.
+
+## Anti-Laundering Self-Check
+
+I am straining against two criteria. First, I am trying to honor the operator’s Direction A preference without simply endorsing A. Second, I am trying to avoid making “N3.5” a verbal compromise that delays the hard source-of-truth decision.
+
+What would falsify my position: if validators cannot reliably prevent record/witness drift within one session; if adding structured records creates more close-time burden than editing accretive Markdown; or if retrieval cannot resolve structured records as well as Markdown anchors. In those cases, the engine should fall back to a narrower archive-rotation pattern and preserve Substrate-N2 as a minority.
+
+The strongest risk in my answer is schema drag. A fact discipline only helps if the records are small, stable, and cheap to write. If the schema becomes a second specification language, the cure becomes another default-read cost.
+
+## Counter-Frames For The Dominant Claude Position
+
+If P1 and P2 converge on Direction A versus Direction B/C, I expect them to share one assumption: that the named Direction A is already the Substrate-N2 reframe. That may be wrong. Per-record Markdown plus thin indexes can be a better archive layout while still preserving Markdown as the actual source of truth. The engine could then spend an engine-v bump and still face the same future migration when it finally wants structured facts.
+
+If they converge on conservative staging, I expect another shared assumption: that reversibility means keeping the source-of-truth model unchanged. That may also be wrong. A small append-only record layer can be more reversible than a prose migration, because records can regenerate indexes, be validated mechanically, and be ignored by older practices if necessary.
+
+If they converge on “migrate the largest accretive files first,” the hidden assumption is that word count is the main priority signal. I think semantic duplication is at least as important. Mirrored minorities across `workspace-structure.md`, `reference-validation.md`, and `retrieval-contract.md` are smaller than `SESSION-LOG.md`, but they expose the harder substrate problem: one fact appearing in multiple prose homes.
+
+The frame I would push into synthesis is: do not ask only “which Markdown blocks move where?” Ask “which facts does the engine promise not to rediscover from prose again?” That is the actual §10.4-M10 activation test.
