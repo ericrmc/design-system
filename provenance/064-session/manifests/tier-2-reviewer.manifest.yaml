@@ -1,0 +1,31 @@
+perspective: tier-2-cross-family-reviewer
+participant_kind: non-anthropic-model
+participant_identity: GPT-5.5 via codex CLI exec; reasoning-effort xhigh per ~/.codex/config.toml defaults; sandbox=read-only
+model_family: gpt
+model_id: gpt-5.5
+model_version: gpt-5.5-xhigh-reasoning-codex-cli-0.124.0
+provider: openai
+endpoint: codex-cli-stdio
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: Operator (instruction "Use codex for review" at S064 session-mid amendment per 00b-assessment-amended.md §1 + §4 reviewer-family selection rationale)
+participant_selection_method: rule-based-prospective (revised v7 §Tier 2.5 reviewer-family rule per S064 D-233; reviewer not orchestrator + cross-family at family level + audit-scope-conditional family exclusion when self-validating own load-bearing claim with conflict-disclosure mandatory)
+identity_known: true
+context_source: /tmp/s064-reviewer-prompt.md (inlined reviewer-prompt template v2 per (z7) lock-in-after-n=2; reading-list specified retention-window closes + ledger + watchpoints + inbox + open-issues + S064 MAD artefacts + spec edits)
+delivered_at: 2026-04-26T08:50:00Z
+received_at: 2026-04-26T09:45:00Z
+raw_response_file: provenance/064-session/04-tier-2-audit.md
+raw_transcript_file: provenance/064-session/codex-reviewer-raw-output.log
+transport_notes: codex CLI 0.124.0 invocation pattern `codex exec --skip-git-repo-check --sandbox read-only --output-last-message /tmp/s064-reviewer-final.log < /tmp/s064-reviewer-prompt.md > /tmp/s064-reviewer-raw-output.log 2>&1`. Single-invocation success per (z7) v2 template + lessons learned at S064 P3 v2 invocation. Output 1,500 words within target range; **4 substantive findings**: F1 prompts/development.md retains v6 strict reviewer rule (implementation drift; fixed pre-commit per F1 disposition accepted); F2 check 26 not runnable in read-only reviewer sandbox (substrate debt; recorded as VD-002 in (z5) ledger); F3 close claims reviewer artefacts before they exist on disk (deferred; resolves on commit); F4 workspace-structure.md soft-warning understated (close §1d updated pre-commit per F4 disposition accepted). All 4 findings dispositioned. Bootstrap-limited-confidence label applied per Layer 6.5. Conflict-disclosed (codex/GPT-5.5 was P3+P4 in S064 MAD; load-bearing P3-or-P4-originated claims excluded from independent-validation status; audit assesses synthesis-fidelity not correctness). reviewer_prompt_template_version v2 per (z7). **Findings count exceeds expected** (S063 reviewer findings_count: 0; S064 reviewer findings_count: 4) — **operationally validates §10.4-M16 reopen warrant (b) tracking**: revised audit shape per v7 produced substantively higher engagement than S063 first-instance shape. Cost ~55 wall-clock minutes (>2× S063 baseline of 25 min); §10.4-M25 audit-cost-budget concern threshold approached but not crossed.
+output_edited_after_submission: false
+participation_shape: tier-2-reviewer (NOT perspective; this is the second-of-record §Tier 2.5 cross-family reviewer fired event in workspace history; first was Gemini at S063; reviewer audits implementation surface at session-close)
+participant_organisation: openai
+claude_output_in_training: known-no
+training_lineage_evidence_pointer: https://openai.com/policies (provider-public)
+aggregator_intermediary: n/a
+selection_relationship_to_operator: explicit (operator instructed "Use codex for review" at session-mid amendment)
+independence_basis: organization-distinct (OpenAI vs Anthropic orchestrator); same-family-as-S064-MAD-perspectives-P3+P4 (codex/GPT-5.5 hosts both reviewer and P3+P4) — disclosed in audit frontmatter `reviewer_overlap_with_recent_mad_perspectives:` field with explicit scope-handling per v7 relaxed rule + Layer 6.5 bootstrap-limited-confidence labelling

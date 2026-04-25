@@ -1,7 +1,9 @@
 ---
 perspective: cross-family-reviewer-laundering-audit
 session: 064
+title: P4 Cross-Family Reviewer Laundering-Audit — Session 064
 date: 2026-04-26
+status: complete
 participant_kind: non-anthropic-model
 participant_organisation: openai
 training_lineage_overlap_with_claude: independent-claim

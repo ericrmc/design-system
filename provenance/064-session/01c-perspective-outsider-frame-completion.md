@@ -1,7 +1,9 @@
 ---
 perspective: outsider-frame-completion
 session: 064
+title: P3 Outsider Frame-Completion — Session 064
 date: 2026-04-26
+status: complete
 participant_kind: non-anthropic-model
 participant_organisation: openai
 training_lineage_overlap_with_claude: independent-claim

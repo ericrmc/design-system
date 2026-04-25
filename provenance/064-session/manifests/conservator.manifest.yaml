@@ -1,0 +1,30 @@
+perspective: conservator
+participant_kind: claude-subagent
+participant_identity: Claude Opus 4.7 1M context via Agent tool general-purpose subagent_type
+model_family: claude
+model_id: claude-opus-4-7
+model_version: claude-opus-4-7-1m-context
+provider: anthropic
+endpoint: anthropic-internal
+invocation_method: Agent-tool-subagent
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: Case Steward (operator-pre-ratified at S064 00b-assessment-amended.md §3 + D-232 first-ratification-step per S062 D-220 precedent + D-133 M2 lineage-constraint matrix Conservator seat)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/064-session/01-brief-shared.md + provenance/064-session/01-brief-p2.md + workspace artefacts (validation-approach.md v6 + multi-agent-deliberation.md v4 + S062 deliberation including §10.4-M16 activation-warrant origin + S063 close + S063 reviewer audit + workspace-structure.md v8 §10.4-M16 + engine-manifest.md §5.4 cadence minority + §7 + validation-debt/index.md + CLAUDE.md per shared brief §7)
+delivered_at: 2026-04-26T08:27:00Z
+received_at: 2026-04-26T08:37:00Z
+raw_response_file: provenance/064-session/01b-perspective-conservator.md
+transport_notes: Agent tool subagent invocation per Claude Code harness; subagent_type=general-purpose; explicit do-not-self-commit instruction per WX-43-1 cumulative tracking. Output 4,961 words within target range; pushed for narrowest viable revision per role-specific stance; argued substantively. Five frame critiques + 5 dissent-preservation recommendations.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: known-yes
+training_lineage_evidence_pointer: n/a
+aggregator_intermediary: claude-code-harness
+selection_relationship_to_operator: n/a
+independence_basis: same-family (Claude Opus 4.7 1M context as orchestrator); not cross-family

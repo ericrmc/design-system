@@ -1359,12 +1359,36 @@ else
       if [[ ! -f "$audit_artefact" ]]; then
         fail "Check 27: Layer 2 trigger fired (engine-def or substantive-arc indicator detected) but $audit_artefact missing. NOTE: artefact-presence is mechanical; substantive quality is Layer 6 operator-audit counter-pressure."
       else
-        # Verify (α)-flag-coverage: if check 26 emitted WARN/FAIL, the audit must mention them.
-        # Approximation: verify §2 (α)-flag coverage section exists in audit artefact.
-        if grep -qE '^## §2' "$audit_artefact" 2>/dev/null; then
-          pass "Check 27: $audit_artefact present with §2 (α)-flag coverage section"
-        else
-          fail "Check 27: $audit_artefact missing required §2 (α)-flag coverage section per validation-approach.md v6 §Tier 2.5 reviewer audit shape"
+        # Verify required sections per validation-approach.md v7 §Tier 2.5 audit shape.
+        # v7 sub-clauses (added engine-v12 Session 064 per D-234):
+        # - §2 (α)-flag coverage (carried from v6)
+        # - §7 Next-session-shape critique (NEW v7 per S064 §10.4-M23 + P3's 5-condition test)
+        # - frontmatter scope_coverage_table (NEW v7 per S064 §10.4-M22 P1 audit-shape requirement)
+        # - bootstrap-limited-confidence label (NEW v7 per Layer 6.5; required when session adopts Tier 2.5 mechanism revisions)
+        check27_pass=true
+        if ! grep -qE '^## §2' "$audit_artefact" 2>/dev/null; then
+          fail "Check 27: $audit_artefact missing required §2 (α)-flag coverage section per validation-approach.md v7 §Tier 2.5 reviewer audit shape"
+          check27_pass=false
+        fi
+        if ! grep -qE '^## §7' "$audit_artefact" 2>/dev/null; then
+          fail "Check 27: $audit_artefact missing required §7 Next-session-shape critique section per validation-approach.md v7 §Tier 2.5 (NEW v7)"
+          check27_pass=false
+        fi
+        # Scope-coverage table check: scope_coverage_table or session_under_review_subjects with retention-window-closes
+        if ! grep -qE '^scope_coverage_table:|retention-window-closes:' "$audit_artefact" 2>/dev/null; then
+          fail "Check 27: $audit_artefact missing scope_coverage_table or retention-window-closes in frontmatter per validation-approach.md v7 §Tier 2.5 minimum-evidence-packet (NEW v7)"
+          check27_pass=false
+        fi
+        # Bootstrap-limited-confidence label check: required when session adopts Tier 2.5 mechanism revisions.
+        # Approximation: if the close mentions D-233 / D-234 / engine-v12 / Tier 2.5 revision, the audit MUST carry
+        # bootstrap_status: limited-confidence in frontmatter per Layer 6.5.
+        if grep -qE 'D-233|D-234|engine-v12|Tier 2.5 revision|§Tier 2.5.*revis' "$current_close" 2>/dev/null; then
+          if ! grep -qE '^bootstrap_status:[[:space:]]*limited-confidence' "$audit_artefact" 2>/dev/null; then
+            warn "Check 27: $audit_artefact appears to audit a session adopting Tier 2.5 mechanism revisions but lacks 'bootstrap_status: limited-confidence' frontmatter declaration per validation-approach.md v7 §Bootstrap-Paradox Layered Handling Layer 6.5 (NEW v7)"
+          fi
+        fi
+        if [[ "$check27_pass" == "true" ]]; then
+          pass "Check 27: $audit_artefact present with required sections (§2 + §7 + scope-coverage table per v7 audit shape)"
         fi
       fi
     else
@@ -1398,6 +1422,11 @@ else
     # Parse table rows: lines starting with | VD- and not the header divider row.
     declare -a row_errors=()
     row_count=0
+    # Check 28 v7 sub-clause (added engine-v12 Session 064 per D-234): verify frontmatter
+    # `authoritative: true` declaration per validation-approach.md v7 §(z5) authoritative-not-witness semantics.
+    if ! awk '/^---$/{f=!f; next} f && /^authoritative:[[:space:]]*true[[:space:]]*$/' "$ledger" | grep -q .; then
+      row_errors+=("frontmatter missing 'authoritative: true' declaration (required per validation-approach.md v7 §(z5) authoritative-not-witness semantics)")
+    fi
     while IFS= read -r line; do
       [[ "$line" =~ ^\|[[:space:]]*VD- ]] || continue
       row_count=$((row_count + 1))

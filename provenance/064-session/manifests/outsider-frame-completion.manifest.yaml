@@ -1,0 +1,31 @@
+perspective: outsider-frame-completion
+participant_kind: non-anthropic-model
+participant_identity: GPT-5.5 via codex CLI exec; reasoning-effort xhigh per ~/.codex/config.toml defaults; sandbox=read-only
+model_family: gpt
+model_id: gpt-5.5
+model_version: gpt-5.5-xhigh-reasoning-codex-cli-0.124.0
+provider: openai
+endpoint: codex-cli-stdio
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: Case Steward (operator-pre-ratified at S064 00b-assessment-amended.md §3 + D-232 first-ratification-step per S062 D-220 precedent + D-133 M2 lineage-constraint matrix non-Claude Outsider seat)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: /tmp/s064-p3-prompt-v2.md (v2 invocation; v1 prompt at /tmp/s064-p3-prompt.md hit internal turn-limit during file-reading phase per first-of-record codex-CLI-internal-turn-limit-during-file-reading-phase event recorded at S064 close §10 meta-observations). v2 prompt with inlined context (brief content + S063 + S062 deliberation excerpts inlined directly) + workspace-files-read-by-codex (validation-approach.md v6 + multi-agent-deliberation.md v4 + S062 deliberation §1.10+§2.1 + S063 close §1d+§1e+§6 + S063 reviewer audit + workspace-structure.md v8 §10.4-M16-M20 + engine-manifest.md §5+§7 + validation-debt/index.md + CLAUDE.md). Prompt piped via stdin per `codex exec --skip-git-repo-check --sandbox read-only --output-last-message /tmp/s064-p3-final.log < /tmp/s064-p3-prompt-v2.md` invocation pattern.
+delivered_at: 2026-04-26T08:34:00Z
+received_at: 2026-04-26T08:36:00Z
+raw_response_file: provenance/064-session/01c-perspective-outsider-frame-completion.md
+raw_transcript_file: provenance/064-session/codex-p3-raw-output.log
+transport_notes: codex CLI 0.124.0 invocation pattern. First attempt (v1 prompt with file-reading instructions + complex pipeline `cat /tmp/s064-p3-prompt.md | codex exec ... -o /tmp/s064-p3-final.log 2>&1 | tee ... | tail -3 &`) hit internal turn-limit during file-reading phase; ~530KB raw output without composing final response; multiple codex processes orphaned and killed via pkill. v2 invocation with inlined-context prompt + `--output-last-message` flag + clean foreground-synchronous Bash invocation produced 2,250-word response in ~2 min. Output captured at /tmp/s064-p3-final.log via `--output-last-message`; raw transcript at /tmp/s064-p3-raw-output-v2.log preserved at canonical path codex-p3-raw-output.log. **First-of-record codex-CLI-internal-turn-limit-during-file-reading-phase event** recorded transparently per WX-22-1 + S064 close §10 meta-observations.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: known-no
+training_lineage_evidence_pointer: https://openai.com/policies (provider-public statement; OpenAI does not train on Anthropic Claude outputs)
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct (OpenAI vs Anthropic orchestrator)

@@ -1,0 +1,30 @@
+perspective: reviewer-mechanism-architect
+participant_kind: claude-subagent
+participant_identity: Claude Opus 4.7 1M context via Agent tool general-purpose subagent_type
+model_family: claude
+model_id: claude-opus-4-7
+model_version: claude-opus-4-7-1m-context
+provider: anthropic
+endpoint: anthropic-internal
+invocation_method: Agent-tool-subagent
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: Case Steward (operator-pre-ratified at S064 00b-assessment-amended.md §3 + D-232 first-ratification-step per S062 D-220 + S058 D-198 + S050 D-172 precedent + D-133 M2 lineage-constraint matrix Architect seat)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/064-session/01-brief-shared.md + provenance/064-session/01-brief-p1.md + workspace artefacts (validation-approach.md v6 + multi-agent-deliberation.md v4 + S062 deliberation §1.10+§2.1 + S063 close §1d+§1e+§6 + S063 reviewer audit + /tmp/s063-reviewer-prompt.md if available + workspace-structure.md v8 §10.4-M16 + engine-manifest.md §5+§7 + CLAUDE.md per shared brief §7)
+delivered_at: 2026-04-26T08:27:00Z
+received_at: 2026-04-26T08:41:00Z
+raw_response_file: provenance/064-session/01a-perspective-reviewer-mechanism-architect.md
+transport_notes: Agent tool subagent invocation per Claude Code harness; subagent_type=general-purpose; explicit do-not-self-commit instruction per WX-43-1 cumulative tracking; subagent ran in background via run_in_background=true. Output 4,588 words within target range (3,000-5,000); 13 top-level sections (Frame critique + Q1-Q10 + Honest limits + Dissent-preservation). Single-orchestrator subagent invocation (not multi-agent pattern); raw response written directly to canonical perspective-file path by subagent.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: known-yes
+training_lineage_evidence_pointer: n/a
+aggregator_intermediary: claude-code-harness
+selection_relationship_to_operator: n/a
+independence_basis: same-family (Claude Opus 4.7 1M context as orchestrator); not cross-family

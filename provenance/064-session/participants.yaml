@@ -1,0 +1,18 @@
+session: 064
+date: 2026-04-26
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 2
+oi004_qualifying_participants: [outsider-frame-completion, cross-family-reviewer-laundering-audit]
+perspective_order: [reviewer-mechanism-architect, conservator, outsider-frame-completion, cross-family-reviewer-laundering-audit]
+synthesizer_identity: claude-opus-4-7-1m-context
+synthesizer: Case Steward (Claude Opus 4.7 1M context); orchestrating agent for Session 064; not a perspective in this deliberation per multi-agent-deliberation.md v4 §Synthesis synthesizer-identity rule
+participants:
+  - manifest: manifests/reviewer-mechanism-architect.manifest.yaml
+    role: P1
+  - manifest: manifests/conservator.manifest.yaml
+    role: P2
+  - manifest: manifests/outsider-frame-completion.manifest.yaml
+    role: P3
+  - manifest: manifests/cross-family-reviewer-laundering-audit.manifest.yaml
+    role: P4

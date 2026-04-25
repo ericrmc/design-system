@@ -4,7 +4,7 @@ version: 6
 status: active
 created: 2026-04-17
 last-updated: 2026-04-26
-updated-by-session: 063
+updated-by-session: 064
 supersedes: methodology-kernel-v5.md
 ---
 
@@ -113,7 +113,7 @@ Validate the session's output at each level on which it makes claims. Three sens
 
 **Label grandfathering.** Artefacts produced under kernel v3/v4/v5 (Sessions 009–032) that carry `validation: reference-validated` in frontmatter are semantically-equivalent-to `validation: reference-provisional` for citation purposes; no retroactive rewriting of sealed session records. New artefacts produced from engine-v6 adoption onward use the `validation: reference-provisional` label.
 
-**Distinct-reviewer mechanism for triggered surfaces (added engine-v11 Session 063 per D-228).** At session close, when any of the Layer 2 trigger conditions in `validation-approach.md` v6 §Tier 2.5 fires (engine-definition-touching session, substantive-arc-class session, Layer 1 (α) WARN/FAIL, (z5) lifecycle event, or operator-discretionary), the workspace produces a cross-family reviewer audit at `provenance/<NNN-session>/04-tier-2-audit.md`. The reviewer is non-Claude family per `multi-agent-deliberation.md` v4 §Heterogeneous-Participant Recording Schema; the audit shape and discipline are specified in `validation-approach.md` v6 §Tier 2.5. This mechanism supplements Tier 2 self-assessment by the orchestrator agent for claims about unresolved validation debt, substantive progress, engine-definition change, and repeated warnings — the surfaces where self-assessment was empirically insufficient per the S051-S058 honest-limit chain pattern that EF-058-tier-2-validation surfaced. Routine workspace claims (Tier 2 Q1-Q9) may remain self-assessed per the principled-asymmetry articulation in `validation-approach.md` v6 §Principled Asymmetry.
+**Distinct-reviewer mechanism for triggered surfaces (added engine-v11 Session 063 per D-228; revised engine-v12 Session 064 per D-233).** At session close, when any of the Layer 2 trigger conditions in `validation-approach.md` v7 §Tier 2.5 fires (engine-definition-touching session, substantive-arc-class session, Layer 1 (α) WARN/FAIL, (z5) lifecycle event, or operator-discretionary), the workspace produces a cross-family reviewer audit at `provenance/<NNN-session>/04-tier-2-audit.md`. The reviewer is non-Claude family per `multi-agent-deliberation.md` v4 §Heterogeneous-Participant Recording Schema; the audit shape and discipline are specified in `validation-approach.md` v7 §Tier 2.5. The audit's §3 substantive evidence applies a **tripartite distinction** per S064 D-233 §10.4-M24: close correctness (did the close narrative accurately record decisions, artefacts, state); mechanism adequacy (did the engine's mechanisms function as designed at this session); trajectory discipline (is the engine's multi-session trajectory engaging with accumulated state, or accumulating ceremony). This mechanism supplements Tier 2 self-assessment by the orchestrator agent for claims about unresolved validation debt, substantive progress, engine-definition change, and repeated warnings — the surfaces where self-assessment was empirically insufficient per the S051-S058 honest-limit chain pattern that EF-058-tier-2-validation surfaced. Routine workspace claims (Tier 2 Q1-Q9) may remain self-assessed per the principled-asymmetry articulation in `validation-approach.md` v7 §Principled Asymmetry.
 
 If any validation reveals problems, they are either fixed in this session (return to Produce) or recorded as open issues for subsequent sessions.
 

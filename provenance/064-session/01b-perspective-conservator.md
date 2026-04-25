@@ -1,7 +1,9 @@
 ---
 perspective: incrementalist-conservator
 session: 064
+title: P2 Conservator — Session 064
 date: 2026-04-26
+status: complete
 participant_kind: claude-subagent
 participant_organisation: anthropic
 training_lineage_overlap_with_claude: known-overlap

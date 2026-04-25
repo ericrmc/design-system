@@ -4,7 +4,7 @@ version: 1
 status: active
 created: 2026-04-22
 last-updated: 2026-04-26
-updated-by-session: 063
+updated-by-session: 064
 supersedes: none
 ---
 
@@ -29,11 +29,11 @@ The engine is distinct from:
 
 ### 2. Current engine version
 
-**`engine-v11`** (established Session 063 per D-228).
+**`engine-v12`** (established Session 064 per D-234).
 
 Subsequent engine versions (`engine-v11`, `engine-v12`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
 
-### 3. Engine-definition files at `engine-v11`
+### 3. Engine-definition files at `engine-v12`
 
 The following files constitute the engine at the current version:
 
@@ -272,6 +272,34 @@ The class subdivision is engine-conventional for substantive-arc resolutions whe
 - Net default-read aggregate forecast post-S063-close: ~83,000-85,000 words / 22 files (validation-approach.md +1,000; workspace-structure.md +300; methodology-kernel.md +100; engine-manifest.md +1,200-1,400; close-rotation S057 OUT ~3,800 / S063 close IN ~4,000). Within 90K soft (headroom ~5,000-7,000).
 
 **(γ) Cross-family reviewer first triggered application at S063 close.** S063 is engine-definition-touching per Layer 2 trigger (a); reviewer fires per the new §Tier 2.5 mechanism. Per S062 deliberation §3 + S063 00-assessment.md §5: the no-recent-perspective-overlap rule cannot be satisfied at S063 (codex/GPT-5.5 was P3+P4 at S062); Reading-2 bootstrap-paradox carve-out adopted with Layer 6 (operator audit at resolving close + observation window from S064+) substituting for the rule's purpose at S063. The reviewer audit at `provenance/063-session/04-tier-2-audit.md` is the first instance of the §Tier 2.5 audit shape in workspace history.
+
+- **`engine-v12`** — established Session 064 via D-234. **First-of-record depth-0 preservation event** (engine-v11 ratified S063; engine-v12 ratifies S064; engine-v11 preservation depth 0 — unprecedented in workspace history). **First-of-record operator-audit-as-MAD-input activation pattern**: S064 MAD activated by operator audit at S063 resolving close (Layer 6.1 second half) which surfaced three substantive findings disputing first-instance §Tier 2.5 implementation (rule scope too restrictive; reviewer scope at first instance too narrow; reviewer must challenge default-Path-A). Path AS-MAD-execution per session-mid path-amendment (Path L → Path AS-MAD-execution per operator instruction). 4-perspective two-family MAD (P1 Reviewer-Mechanism Architect Claude + P2 Conservator Claude + P3 Outsider Frame-Completion codex/GPT-5.5 + P4 Cross-Family Reviewer Laundering-Audit codex/GPT-5.5) produced 5,425-word synthesis adopting same-session bounded adoption per cross-family weighted convergence at Q7. Substantive: substantive revision to one engine-definition spec + sub-clause additions to one engine-definition tool + minor amendments to two engine-definition specs + minor revision to one prompt + revision to one engine-adjacent file.
+
+  - `specifications/validation-approach.md` v6 → v7 (substantive) — revises §Tier 2.5 reviewer-family rule (relaxed from "no perspective in audited MAD" to "not orchestrator/close-author/primary-implementer/accountable-doer + cross-family at family + audit-scope-conditional family exclusion when self-validating own load-bearing claim with conflict disclosure"); revises audit shape to require minimum-evidence-packet (retention-window closes + (z5) ledger + active watchpoints + engine-feedback inbox + open-issues) with scope-coverage table; adds §7 Next-session-shape critique with P3's 5-condition affirmative-no-action-justification test; revises §(z5) Validation-Debt Lifecycle to make ledger **authoritative-not-witness** with `authoritative: true` frontmatter declaration; adds tripartite audit distinction (close correctness / mechanism adequacy / trajectory discipline); adds Layer 6.5 bootstrap-limited-confidence labelling; adds (z7) reviewer-prompt-template versioning + lock-in-after-n=2 discipline; adds §10.4-M21 through M25 cross-reference. v6 preserved as `validation-approach-v6.md` `status: superseded`.
+
+  - `tools/validate.sh` substantive update (sub-clause additions to existing checks) — check 27 sub-clauses for §7 Next-session-shape critique presence + scope-coverage table presence in audit frontmatter + bootstrap-limited-confidence label presence when session adopts revisions to §Tier 2.5 mechanism. Check 28 sub-clause for `authoritative: true` declaration in `validation-debt/index.md` frontmatter.
+
+  Substantive minor amendments to existing engine-definition specs bundled in the v12 adoption:
+
+  - `specifications/methodology-kernel.md` v6 §7 Validate **minor amendment** (single-paragraph cross-reference update for tripartite audit distinction; no rename of senses; no removed text). v6 retained.
+
+  - `specifications/workspace-structure.md` v8 → v9 **minor amendment** (extends §10.4 with five new first-class minorities §10.4-M21 through §10.4-M25 from S064 MAD per D-234; minority count 45 → 50). v8 preserved as `workspace-structure-v8.md` `status: superseded`.
+
+  - `prompts/development.md` minor revision — adds explicit Path-justification at every close (z12) + reviewer-prompt-template versioning hook (z7) + (z11) (z5) authoritative-not-witness disposition discipline.
+
+  Engine-adjacent updates:
+
+  - `validation-debt/index.md` revised — adds `authoritative: true` frontmatter declaration per (z11) (z5) authoritative-not-witness semantics. NOT added to engine-manifest.md §3 (engine-adjacent per S063 D-228 precedent).
+
+  All other engine-definition files unchanged at engine-v12 boundary.
+
+Engine-v12 is the eleventh engine-v-bump overall and follows engine-v11 at preservation depth 0 — first-of-record. §5.4 Session 022 engine-v-cadence minority does NOT re-escalate at this bump per content-driven-bump precedent chain S028+S033+S036+S048+S050+S058+S062+S063 extended through S064 (cadence concern separates from substantive-bump classification); however, the depth-0 instance is unprecedented and §10.4-M25 P2 cadence-depth concern is preserved as standing reopen-warrant — engine-v13 at S065 would create first-of-record 3-bump-in-3-sessions pattern fully activating §5.4.
+
+Engine-v12 introduces a **new instance of operator-audit-as-MAD-input activation pattern** (first-of-record). All prior MADs were activated by inbox feedback (EF-047 / EF-055 / EF-058) or operator-surfaced agenda at session-open. The operator audit at S063 resolving close became the substantive activation surface for S064 MAD; future Layer 6.1 second-half audits may produce analogous activation events.
+
+Engine-v12 reifies the **cross-family-originated-and-adopted-at-MAD-execution reframe-architecture pattern at n=3** (S058 Substrate-N3.5 + S062 z5+z6 + S064 substrate-led + z11 + z12). Engine-conventional pattern.
+
+**Key consequence at v12 adoption**: engine-manifest.md grows by ~600-800 words (compact entry per S064 §1.5 deferral discipline; full restructure deferred to S065+). validation-approach.md v7 ~4,243 (down from v6's 4,483 due to tightening). workspace-structure.md v9 grows by ~1,800 words (5 new minorities). Net default-read aggregate forecast post-S064-close: ~84,500-85,500 / 90K soft (headroom ~4,500-5,500). Engine-manifest.md crosses 8K hard ceiling potentially; restructure-at-S065+ becomes blocking if check 20 emits FAIL.
 
 Future engine-version increments will extend this history in this section.
 

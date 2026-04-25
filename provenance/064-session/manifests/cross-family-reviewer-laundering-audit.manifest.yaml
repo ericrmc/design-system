@@ -1,0 +1,31 @@
+perspective: cross-family-reviewer-laundering-audit
+participant_kind: non-anthropic-model
+participant_identity: GPT-5.5 via codex CLI exec; reasoning-effort xhigh per ~/.codex/config.toml defaults; sandbox=read-only
+model_family: gpt
+model_id: gpt-5.5
+model_version: gpt-5.5-xhigh-reasoning-codex-cli-0.124.0
+provider: openai
+endpoint: codex-cli-stdio
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: Case Steward (operator-pre-ratified at S064 00b-assessment-amended.md §3 + D-232 first-ratification-step per S062 D-220 precedent + D-133 M2 lineage-constraint matrix non-Claude Cross-Family-Reviewer seat); launched after P1+P2+P3 wrapping per S058 honest-limit 8 + S062 meta-observation 4 forward-discipline (avoid first-of-record P4-blocked-on-precondition refusal repeat by pre-wrapping canonical files BEFORE P4 invocation)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: /tmp/s064-p4-prompt.md (inlined laundering-audit role specification + reading-list of P1+P2+P3 canonical perspective files at provenance/064-session/01a/01b/01c paths + briefs at 01-brief-shared.md + 01-brief-p4.md + workspace files as needed)
+delivered_at: 2026-04-26T08:43:00Z
+received_at: 2026-04-26T08:46:00Z
+raw_response_file: provenance/064-session/01d-perspective-cross-family-reviewer-laundering-audit.md
+raw_transcript_file: provenance/064-session/codex-p4-raw-output.log
+transport_notes: codex CLI 0.124.0 invocation pattern `codex exec --skip-git-repo-check --sandbox read-only --output-last-message /tmp/s064-p4-final.log < /tmp/s064-p4-prompt.md > /tmp/s064-p4-raw-output.log 2>&1`. Single-invocation success (no first-attempt-failure-repeat per S062 + S064 P3 lessons). Output 1,992 words within target range (2,000-3,500); 8 dissent-preservation recommendations; identifies z10 overloaded across 3 perspectives (must not merge); per-perspective audit with citations to specific lines; cross-frame coherence map per Q; 8 synthesis warnings; family-overlap with P3 disclosed transparently per Honest limits #1.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: known-no
+training_lineage_evidence_pointer: https://openai.com/policies (provider-public statement)
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct (OpenAI vs Anthropic orchestrator); same-family-as-P3 (codex/GPT-5.5 hosts both P3 and P4) — disclosed in raw response §Honest limits + per multi-agent-deliberation.md v4 §Heterogeneous-Participant Recording Schema cross-family discipline applied at family level not at instance level
