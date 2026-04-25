@@ -3,8 +3,8 @@ title: Engine Manifest
 version: 1
 status: active
 created: 2026-04-22
-last-updated: 2026-04-25
-updated-by-session: 058
+last-updated: 2026-04-26
+updated-by-session: 063
 supersedes: none
 ---
 
@@ -29,11 +29,11 @@ The engine is distinct from:
 
 ### 2. Current engine version
 
-**`engine-v10`** (established Session 058 per D-200).
+**`engine-v11`** (established Session 063 per D-228).
 
 Subsequent engine versions (`engine-v11`, `engine-v12`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
 
-### 3. Engine-definition files at `engine-v10`
+### 3. Engine-definition files at `engine-v11`
 
 The following files constitute the engine at the current version:
 
@@ -234,6 +234,44 @@ The class reification at v10 confirms the MAD-adopted-new-engine-definition-spec
 - `engine-manifest.md` grows by engine-v10 entry (~700 words).
 - SESSION-LOG.md (~7,390 words) **removed** from default-read enumeration per migration to records/sessions/index.md (~~thin~~ ~1,500 words estimated post-creation).
 - Net default-read aggregate forecast post-S058-close: ~76,000-78,000 words / 22 files (replaces SESSION-LOG.md with records/sessions/index.md; adds records-contract.md). Comfortable under 90K soft ceiling. WX-34-1 SESSION-LOG.md ceiling pressure permanently retired (file replaced by structurally bounded thin index).
+
+- **`engine-v11`** — established Session 063 via D-228. **First-of-record MAD-decision-then-deferred-phase-3 engine-v adoption shape** (S062 + S063 two-session arc per S062 close §10 meta-observation 11 + S062 deliberation §1.7 + §2.4). Resolution of `engine-feedback/inbox/EF-058-tier-2-validation-discipline-by-distinct-agent.md` adopted at S062 D-221 (the layered structural mechanism: (δ-γ + α + z5-lightweight + z6-deferred-spec) layer composition); phase-3 implementation at S063 per Path L (single-orchestrator). Substantive: substantive revision to one engine-definition spec + substantive update to one engine-definition tool + minor amendments to two engine-definition specs + minor revision to one prompt + new engine-adjacent file.
+
+  - `specifications/validation-approach.md` v5 → v6 (substantive) — adopts the layered structural mechanism per S062 D-221. Adds three new Tier 1 checks (26 honest-limit text repetition; 27 cross-family reviewer audit artefact + (α)-flag-coverage; 28 (z5) validation-debt lifecycle integrity); adds new Tier 2 question Q10 (layered-mechanism engagement); adds new sections §Tier 2.5 Cross-Family Reviewer Discipline (Layer 2 of D-221) + §(z5) Validation-Debt Lifecycle (Layer 4) + §(z6) Harness-Telemetry Digest (Layer 5 specified-deferred per EF-059) + §Bootstrap-Paradox Layered Handling (Layer 6); adds §Principled Asymmetry articulation per S062 D-221 §2.2 + §10.4-M17 (routine workspace checks may remain self-assessed; claims about unresolved validation debt, substantive progress, engine-definition change, and repeated warnings require stateful or distinct review); replaces §Limitations naming-as-mitigation language with structural-mechanism reference; adds §10 first-class minorities cross-reference (M16-M20). Five preserved first-class minorities §10.4-M16 through §10.4-M20 cross-mirrored in `specifications/workspace-structure.md` v8 §10.4. v5 preserved as `validation-approach-v5.md` with `status: superseded`.
+
+  - `tools/validate.sh` substantive update — new constants `REVIEWER_AUDIT_ADOPTION_SESSION=63`, `HONEST_LIMIT_REPETITION_THRESHOLD_WARN=3`, `HONEST_LIMIT_REPETITION_THRESHOLD_FAIL=6`, `LIFECYCLE_DEBT_STATUS_ENUM`. New checks 26 (honest-limit text repetition with substrate-aware-preferred / grep-fallback per `multi-agent-deliberation.md` v4 §Graceful Degradation; WARN at ≥3-cluster, FAIL at ≥6-cluster across §2c retention-window 03-close.md files); 27 (when Layer 2 trigger fires, verify `provenance/<NNN-session>/04-tier-2-audit.md` artefact presence + (α)-flag-coverage in §2 of audit); 28 ((z5) validation-debt lifecycle integrity at `validation-debt/index.md`: required fields, status enum, well-formed review_by_session, no stale-without-rationale rows). New Tier 2 Q10 added to print-out.
+
+  Substantive minor amendments to existing engine-definition specs bundled in the v11 adoption:
+
+  - `specifications/methodology-kernel.md` v6 §7 Validate **minor amendment** (single paragraph addition naming the distinct-reviewer (γ) mechanism + cross-reference to `validation-approach.md` v6 §Tier 2.5; per OI-002 minor — single-paragraph cross-reference; no rename of senses; no removed text). Engine-v bump driven by validation-approach.md v6 substantive + validate.sh substantive, not kernel; kernel retains v6 (frontmatter `last-updated: 2026-04-26` + `updated-by-session: 063`).
+
+  - `specifications/workspace-structure.md` v7 → v8 **minor amendment** (extends §10.4 with five new first-class minorities §10.4-M16 through §10.4-M20 from S062 EF-058-tier-2-validation MAD per D-222; adds `validation-debt/` directory to top-level structure as engine-adjacent lightweight ledger; minority count 40 → 45). Per OI-002 minor — additions only; no removals; no revisions to existing text. v7 preserved as `workspace-structure-v7.md` with `status: superseded`.
+
+  - `prompts/development.md` minor revision — §Validate / §Close add reviewer-invocation pattern (when γ triggers fire), scope-discipline routing (routine vs claim-about-debt/progress/engine-def/warnings), (z5) lifecycle-item disposition discipline at close. Per OI-002 minor (no new normative obligation beyond what `validation-approach.md` v6 introduces; prompt brings instruction in line with new spec).
+
+  Engine-adjacent updates (NOT added to §3 per S050 D-170 / S058 records-substrate engine-adjacent precedent):
+
+  - `validation-debt/index.md` (new) — markdown-table lightweight (z5) validation-debt lifecycle ledger per `validation-approach.md` v6 §(z5) Validation-Debt Lifecycle. Required fields per row: `id` (VD-NNN append-only), `introduced_session`, `owner_or_surface`, `next_action`, `review_by_session`, `status` (enum), `escalation_disposition`. Bootstrapped at S063 with VD-001 (S051-S058 MCP-stdio-transport honest-limit chain at status: resolved per S061 finding 13 + S062 D-221 + S063 check 26 mechanism deployment). Records-family promotion deferred to post-records-substrate phase-2/3 stabilisation per §10.4-M18 reopen warrants.
+
+  All other engine-definition files unchanged at engine-v11 boundary: `PROMPT.md`; `prompts/application.md`; `multi-agent-deliberation.md` v4 (WX-24-1 thirty-sixth-session no-growth streak continues; 21-session run from S042 reset); `identity.md` v2; `reference-validation.md` v3; `read-contract.md` v6; `retrieval-contract.md` v1; `records-contract.md` v1; `engine-manifest.md` (this file, documentary update per Session 021/023/028/033/036/048/050/058 sub-pattern). Workspace-identity files unchanged: `MODE.md` (self-dev marker).
+
+Engine-v11 is the tenth engine-v-bump overall (v2 Session 021; v3 Session 022; v4 Session 023; v5 Session 028; v6 Session 033; v7 Session 036; v8 Session 048; v9 Session 050; v10 Session 058; v11 Session 063) and the seventh post-cadence-maturation content-driven bump (v5 + v6 + v7 + v8 + v9 + v10 + v11). §5.4 Session 022 engine-v-cadence minority (activated-not-escalated) does NOT re-escalate at this bump per the content-driven-bump precedent chain S028 D-096 / S033 D-107 / S036 D-114 / S048 D-154 / S050 D-172 / S058 D-200 / S062 D-221 (cadence concern separates from substantive-bump classification). Engine-v11 follows a 5-session preservation window (S058 ratified + S059 + S060 + S061 + S062 preserved); engine-v10 closes at preservation depth 5 — same depth as engine-v6 (S033 adopted; S036 bump 3-session — actually 3 not 5; recheck: engine-v6→v7 was 3-session preservation: S033 + S034 + S035 + S036 = engine-v6 preserved at depths 1, 2, 3 closing at depth 3). Engine-v10 closes at preservation depth 5, matching the engine-v4 preservation depth (5-session: S023 + S024 + S025 + S026 + S027 + S028 ratification at depth 5) and engine-v5 (S028 + S029 + S030 + S031 + S032 + S033 ratification at depth 5). Third-place all-time after engine-v7 (11-session) + engine-v9 (8-session).
+
+Engine-v11 introduces a **new instance of phase-3-implementation-of-MAD-decision class**, which is the v10→v11 specialisation of the broader MAD-adopted-engine-definition-spec class first reified at v9 (S050) and second-of-record at v10 (S058). The class distinction:
+- v9 + v10: MAD-decision and engine-definition-spec adoption in same session (Path AS-MAD-execution = adoption shape).
+- v11: MAD-decision at session N (S062; Path AS-MAD-execution); engine-definition-spec adoption at session N+1 (S063; Path L). **First-of-record two-session-engine-v-adoption event.** Per S062 deliberation §1.7 perspective-independence preservation: the synthesizing Case Steward forbids spec edits at the synthesizing session; phase-3 implementation is the spec-adoption surface.
+
+The class subdivision is engine-conventional for substantive-arc resolutions where perspective-independence preservation is load-bearing. Future MADs may adopt either same-session adoption (v9/v10 shape) or deferred-phase-3 adoption (v11 shape) per the synthesizer's judgment about perspective-independence preservation; both shapes are now first-class engine-conventional patterns.
+
+**Key consequence at v11 adoption:** aggregate default-read surface impact:
+- `validation-approach.md` v6 grows from 3,485 to ~4,500 words (substantive revision adopting Layer 1-6 + §Tier 2.5 + §(z5) + §(z6) + §Bootstrap-Paradox Layered Handling + §Principled Asymmetry + §10 minorities + new sections — actual: 4,483 words at S063 close). Within 6K soft.
+- `workspace-structure.md` v7 → v8 grows from 5,400 to ~5,700 words (additions: §10.4-M16 through M20 ~500 words; validation-debt/ to top-level ~30 words; v8 version-history line ~120 words) — actual 5,698. Within 6K soft.
+- `methodology-kernel.md` v6 grows from ~1,900 to ~2,000 words (single paragraph addition to §7 Validate ~100 words) — actual 2,009. Within 6K soft.
+- `engine-manifest.md` grows by engine-v11 entry (~1,200-1,400 words; engine-v10 entry was ~700; ratio reflects engine-v11 having more cross-spec scope).
+- `validation-debt/index.md` (new engine-adjacent file) ~700-900 words; not in default-read enumeration (engine-adjacent per §3 boundary; analogous to `tools/validate.sh` exclusion).
+- Net default-read aggregate forecast post-S063-close: ~83,000-85,000 words / 22 files (validation-approach.md +1,000; workspace-structure.md +300; methodology-kernel.md +100; engine-manifest.md +1,200-1,400; close-rotation S057 OUT ~3,800 / S063 close IN ~4,000). Within 90K soft (headroom ~5,000-7,000).
+
+**(γ) Cross-family reviewer first triggered application at S063 close.** S063 is engine-definition-touching per Layer 2 trigger (a); reviewer fires per the new §Tier 2.5 mechanism. Per S062 deliberation §3 + S063 00-assessment.md §5: the no-recent-perspective-overlap rule cannot be satisfied at S063 (codex/GPT-5.5 was P3+P4 at S062); Reading-2 bootstrap-paradox carve-out adopted with Layer 6 (operator audit at resolving close + observation window from S064+) substituting for the rule's purpose at S063. The reviewer audit at `provenance/063-session/04-tier-2-audit.md` is the first instance of the §Tier 2.5 audit shape in workspace history.
 
 Future engine-version increments will extend this history in this section.
 

@@ -3,8 +3,8 @@ title: Methodology Kernel
 version: 6
 status: active
 created: 2026-04-17
-last-updated: 2026-04-23
-updated-by-session: 033
+last-updated: 2026-04-26
+updated-by-session: 063
 supersedes: methodology-kernel-v5.md
 ---
 
@@ -112,6 +112,8 @@ Validate the session's output at each level on which it makes claims. Three sens
 **Scope and citation discipline for Provisional reference substitute.** Reference-provisional evidence is qualified by the candidate's saturation profile. It supplies evidence about the methodology's capacity to derive an artefact under stated constraints **only to the extent that the reference is not recoverable from shared pretraining corpora across the Produce and judging families.** It does not establish that the artefact functioned in its intended use. It does not substitute for Domain validation when a domain-actor is available. A passing reference-provisional result in a domain where cross-family-symmetric reproduction was observed at any stage of `reference-validation.md` §1 C3 is not methodology-level evidence; it is at most methodology-consistent evidence. A reference-provisional artefact MAY be cited as methodology-capacity evidence. It MUST NOT be cited as evidence of domain function. It MUST carry the `validation: reference-provisional` label; label transition to `validation: domain-validated` occurs only upon subsequent Domain validation. When a domain-actor later becomes available, Domain validation supersedes and the artefact's label transitions.
 
 **Label grandfathering.** Artefacts produced under kernel v3/v4/v5 (Sessions 009–032) that carry `validation: reference-validated` in frontmatter are semantically-equivalent-to `validation: reference-provisional` for citation purposes; no retroactive rewriting of sealed session records. New artefacts produced from engine-v6 adoption onward use the `validation: reference-provisional` label.
+
+**Distinct-reviewer mechanism for triggered surfaces (added engine-v11 Session 063 per D-228).** At session close, when any of the Layer 2 trigger conditions in `validation-approach.md` v6 §Tier 2.5 fires (engine-definition-touching session, substantive-arc-class session, Layer 1 (α) WARN/FAIL, (z5) lifecycle event, or operator-discretionary), the workspace produces a cross-family reviewer audit at `provenance/<NNN-session>/04-tier-2-audit.md`. The reviewer is non-Claude family per `multi-agent-deliberation.md` v4 §Heterogeneous-Participant Recording Schema; the audit shape and discipline are specified in `validation-approach.md` v6 §Tier 2.5. This mechanism supplements Tier 2 self-assessment by the orchestrator agent for claims about unresolved validation debt, substantive progress, engine-definition change, and repeated warnings — the surfaces where self-assessment was empirically insufficient per the S051-S058 honest-limit chain pattern that EF-058-tier-2-validation surfaced. Routine workspace claims (Tier 2 Q1-Q9) may remain self-assessed per the principled-asymmetry articulation in `validation-approach.md` v6 §Principled Asymmetry.
 
 If any validation reveals problems, they are either fixed in this session (return to Produce) or recorded as open issues for subsequent sessions.
 

@@ -48,6 +48,14 @@ readonly DEFAULT_READ_CLOSE_RETENTION_WINDOW=6
 readonly RECORDS_CONTRACT_ADOPTION_SESSION=58
 readonly SESSION_RECORD_STATUS_ENUM="closed superseded archived"
 
+# Session from which the layered structural mechanism (Tier 2.5 + (z5) lifecycle) is enforced (D-228, Session 063).
+# Checks 26, 27, 28 apply only to sessions numbered >= this constant.
+# See specifications/validation-approach.md v6 §Tier 2.5 + §(z5) Validation-Debt Lifecycle + S062 D-221 layer composition.
+readonly REVIEWER_AUDIT_ADOPTION_SESSION=63
+readonly HONEST_LIMIT_REPETITION_THRESHOLD_WARN=3
+readonly HONEST_LIMIT_REPETITION_THRESHOLD_FAIL=6
+readonly LIFECYCLE_DEBT_STATUS_ENUM="open in-progress resolved deferred-with-rationale escalated"
+
 WORKSPACE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PASS=0
 FAIL=0
@@ -1213,6 +1221,240 @@ else
 fi
 echo ""
 
+# --- Check 26: Honest-limit text repetition (added engine-v11 Session 063 per D-228 + validation-approach.md v6 §Tier 2.5 + S062 D-221 Layer 1) ---
+#
+# This check verifies textual repetition of honest-limit content across the §2c
+# retention-window's 03-close.md files. It does not and cannot judge whether the
+# repetition reflects genuine operational recurrence (legitimate) or ceremonial
+# drift (the laundering surface that EF-058-tier-2-validation surfaces). The
+# Tier 2.5 cross-family reviewer is the methodology's designed counter-pressure
+# for the genuine-vs-ceremonial distinction.
+#
+# Substrate-aware variant uses mcp__selvedge-retrieval__search; grep-based
+# fallback computes n-gram similarity (>=4-token shared sequences) per close.
+# Per multi-agent-deliberation.md v4 §Graceful Degradation: when preferred path
+# unavailable, document the degradation, use the fallback, do not skip.
+echo "Check 26: honest-limit text repetition across §2c retention-window (validation-approach.md v6 §Tier 2.5 Layer 1)"
+if [[ -z "$last_session_num" ]] || ! [[ "$last_session_num" =~ ^[0-9]+$ ]]; then
+  echo "  (no provenance directories or unparseable session number; check 26 out-of-scope)"
+elif [[ $((10#$last_session_num)) -lt $REVIEWER_AUDIT_ADOPTION_SESSION ]]; then
+  echo "  (session $last_session_num < $REVIEWER_AUDIT_ADOPTION_SESSION; check 26 out-of-scope pre-adoption)"
+else
+  # Collect 03-close.md files within retention window (most recent N sessions)
+  declare -a recent_closes=()
+  while IFS= read -r close_file; do
+    [[ -f "$close_file" ]] || continue
+    recent_closes+=("$close_file")
+  done < <(ls -1 "$WORKSPACE_ROOT"/provenance/*/03-close.md 2>/dev/null | sort | tail -"$DEFAULT_READ_CLOSE_RETENTION_WINDOW")
+
+  if [[ ${#recent_closes[@]} -lt 2 ]]; then
+    pass "check 26 vacuous: <2 closes in retention window; cluster detection requires >=3"
+  else
+    # Grep-based fallback: extract §8 honest-limit numbered items per close as candidate fragments,
+    # then count cross-close occurrences of canonical phrases.
+    # We use a coarse heuristic: extract bigrams/tetragrams from "honest limit" lines and check
+    # multi-close presence.
+    tmpdir=$(mktemp -d)
+    cluster_count=0
+    declare -a cluster_fragments=()
+    for cf in "${recent_closes[@]}"; do
+      sess_id=$(basename "$(dirname "$cf")" | sed -E 's/^([0-9]+).*/\1/')
+      # Extract lines from §8 honest limits section: between '## §8' and next '## §' header
+      awk '/^## §8/,/^## §[0-9]/' "$cf" 2>/dev/null \
+        | grep -E '^[0-9]+\.|^- ' \
+        | sed -E 's/^[0-9]+\. \*?\*?//; s/\*\*//g' \
+        | head -c 5000 \
+        > "$tmpdir/$sess_id.txt" 2>/dev/null || true
+    done
+
+    # Detect honest-limit lines that recur across files. We use phrase fragments of first-50-chars
+    # taken from each close's honest-limit lines and check how many other closes contain a
+    # similar phrase (case-insensitive substring match). Bash 3.2-compatible: tempfile-based seen-set
+    # rather than associative array.
+    seen_file="$tmpdir/.seen-sigs"
+    : > "$seen_file"
+    for tf in "$tmpdir"/*.txt; do
+      [[ -f "$tf" ]] || continue
+      while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        # Take first 50 chars (lowercased + whitespace-collapsed) as the phrase signature
+        sig=$(echo "$line" | tr '[:upper:]' '[:lower:]' | tr -s '[:space:]' ' ' | cut -c 1-50 | sed 's/[^a-z0-9 ]//g')
+        [[ ${#sig} -lt 20 ]] && continue
+        # Skip if we already reported this signature
+        if grep -qxF "$sig" "$seen_file" 2>/dev/null; then
+          continue
+        fi
+        # Count how many closes (files) contain this signature
+        match_count=0
+        for tf2 in "$tmpdir"/*.txt; do
+          [[ "$(basename "$tf2")" == ".seen-sigs" ]] && continue
+          if grep -qiF -- "$sig" "$tf2" 2>/dev/null; then
+            match_count=$((match_count + 1))
+          fi
+        done
+        if [[ $match_count -ge $HONEST_LIMIT_REPETITION_THRESHOLD_FAIL ]]; then
+          fail "Check 26: honest-limit text recurs in $match_count closes (>= FAIL threshold $HONEST_LIMIT_REPETITION_THRESHOLD_FAIL): \"$sig...\""
+          echo "$sig" >> "$seen_file"
+          cluster_count=$((cluster_count + 1))
+        elif [[ $match_count -ge $HONEST_LIMIT_REPETITION_THRESHOLD_WARN ]]; then
+          warn "Check 26: honest-limit text recurs in $match_count closes (>= WARN threshold $HONEST_LIMIT_REPETITION_THRESHOLD_WARN): \"$sig...\". NOTE: textual repetition; reviewer judges genuine-vs-ceremonial."
+          echo "$sig" >> "$seen_file"
+          cluster_count=$((cluster_count + 1))
+        fi
+      done < "$tf"
+    done
+
+    if [[ $cluster_count -eq 0 ]]; then
+      pass "check 26: no honest-limit text clusters detected across ${#recent_closes[@]}-close retention window (substrate-aware variant deferred per Tier 2.5 fallback discipline; grep-fallback applied)"
+    fi
+    rm -rf "$tmpdir"
+  fi
+fi
+echo ""
+
+# --- Check 27: Cross-family reviewer audit artefact + (α)-flag-coverage (added engine-v11 Session 063 per D-228 + validation-approach.md v6 §Tier 2.5 Layer 3) ---
+#
+# This check verifies that when the Layer 2 (γ) reviewer mechanism triggers,
+# the session committed a provenance/<NNN-session>/04-tier-2-audit.md artefact
+# AND its content names every check 26 WARN/FAIL emitted at this session's
+# close. It does not and cannot verify that the audit's substantive findings
+# are correct, that the disposition table accurately reflects the audit's
+# reasoning, or that the reviewer's family is genuinely non-Claude. The
+# substrate-aware audit-quality assessment is Tier 2.5's reviewer-prompt +
+# operator audit at resolving close (Layer 6).
+#
+# Layer 2 trigger condition (any of):
+#   (a) engine-definition-touching (engine-v bump or specifications/ edit)
+#   (b) substantive-arc-class (S048+ precedent; resolves substantive-arc EF or executes Path AS)
+#   (c) check 26 emitted WARN/FAIL at this close
+#   (d) (z5) lifecycle event (status: resolved or deferred-with-rationale or stale-without-rationale)
+#   (e) operator-discretionary annotation
+echo "Check 27: cross-family reviewer audit artefact (validation-approach.md v6 §Tier 2.5 Layer 3)"
+if [[ -z "$last_session_num" ]] || ! [[ "$last_session_num" =~ ^[0-9]+$ ]]; then
+  echo "  (no provenance directories or unparseable session number; check 27 out-of-scope)"
+elif [[ $((10#$last_session_num)) -lt $REVIEWER_AUDIT_ADOPTION_SESSION ]]; then
+  echo "  (session $last_session_num < $REVIEWER_AUDIT_ADOPTION_SESSION; check 27 out-of-scope pre-adoption)"
+else
+  # Determine whether Layer 2 trigger fires for the current session.
+  # Heuristic (best-effort): trigger fires if (i) any specifications/*.md modified in last commit
+  # touching the session's provenance OR (ii) the close cites an engine-v bump OR (iii) check 26
+  # emitted any WARN/FAIL above OR (iv) operator-discretionary annotation in close.
+  # Implementation: infer from the close-narrative content + git-log if needed; here we adopt a
+  # conservative reading: if the close exists, run the artefact-presence check; the trigger
+  # condition itself is best assessed by the reviewer/operator. Out-of-scope when no close.
+  current_close="$last_provdir/03-close.md"
+  audit_artefact="$last_provdir/04-tier-2-audit.md"
+
+  if [[ ! -f "$current_close" ]]; then
+    echo "  (current session $last_session_num has no 03-close.md yet; check 27 out-of-scope)"
+  else
+    # Probe Layer 2 trigger: does close mention engine-v bump, substantive-arc, MAD, or operator-discretionary?
+    trigger_hits=0
+    if grep -qE 'engine-v[0-9]+ ratif|engine-v[0-9]+ candidate|engine-v[0-9]+ bump|engine-definition-touching|substantive revision|substantive-arc|Path AS|MAD-execution|D-221|D-228' "$current_close" 2>/dev/null; then
+      trigger_hits=$((trigger_hits + 1))
+    fi
+    # Layer 2 trigger (c): check 26 WARN/FAIL was emitted (we approximate by checking for WARN tokens in §8)
+    # Skipped here since check 26 result is in the runtime PASS/FAIL/WARN counters.
+    if [[ $trigger_hits -gt 0 ]]; then
+      if [[ ! -f "$audit_artefact" ]]; then
+        fail "Check 27: Layer 2 trigger fired (engine-def or substantive-arc indicator detected) but $audit_artefact missing. NOTE: artefact-presence is mechanical; substantive quality is Layer 6 operator-audit counter-pressure."
+      else
+        # Verify (α)-flag-coverage: if check 26 emitted WARN/FAIL, the audit must mention them.
+        # Approximation: verify §2 (α)-flag coverage section exists in audit artefact.
+        if grep -qE '^## §2' "$audit_artefact" 2>/dev/null; then
+          pass "Check 27: $audit_artefact present with §2 (α)-flag coverage section"
+        else
+          fail "Check 27: $audit_artefact missing required §2 (α)-flag coverage section per validation-approach.md v6 §Tier 2.5 reviewer audit shape"
+        fi
+      fi
+    else
+      echo "  (Layer 2 trigger condition not detected in close narrative; check 27 out-of-scope for this session)"
+    fi
+  fi
+fi
+echo ""
+
+# --- Check 28: (z5) Validation-debt lifecycle integrity (added engine-v11 Session 063 per D-228 + validation-approach.md v6 §(z5) Validation-Debt Lifecycle Layer 4) ---
+#
+# This check verifies that validation-debt/index.md table rows have required
+# fields (id, introduced_session, owner_or_surface, next_action,
+# review_by_session, status, escalation_disposition), valid status enum
+# membership, and well-formed review_by_session values. It does not and cannot
+# verify that the items genuinely represent unresolved debt, that next_action
+# descriptions are substantive, that owner_or_surface assignments are
+# appropriate, or that escalation_disposition rationales are non-formulaic.
+# The Tier 2.5 reviewer + operator audit are the counter-pressures for
+# substantive adequacy.
+echo "Check 28: (z5) validation-debt lifecycle integrity (validation-approach.md v6 §(z5) Layer 4)"
+if [[ -z "$last_session_num" ]] || ! [[ "$last_session_num" =~ ^[0-9]+$ ]]; then
+  echo "  (no provenance directories; check 28 out-of-scope)"
+elif [[ $((10#$last_session_num)) -lt $REVIEWER_AUDIT_ADOPTION_SESSION ]]; then
+  echo "  (session $last_session_num < $REVIEWER_AUDIT_ADOPTION_SESSION; check 28 out-of-scope pre-adoption)"
+else
+  ledger="$WORKSPACE_ROOT/validation-debt/index.md"
+  if [[ ! -f "$ledger" ]]; then
+    echo "  (validation-debt/index.md absent; check 28 out-of-scope per presence-gating sub-clause)"
+  else
+    # Parse table rows: lines starting with | VD- and not the header divider row.
+    declare -a row_errors=()
+    row_count=0
+    while IFS= read -r line; do
+      [[ "$line" =~ ^\|[[:space:]]*VD- ]] || continue
+      row_count=$((row_count + 1))
+      # Split on | and trim each field
+      IFS='|' read -ra fields <<< "$line"
+      # Expected layout: empty-leading, id, introduced_session, owner_or_surface, next_action,
+      # review_by_session, status, escalation_disposition, [optional empty-trailing dropped by bash read].
+      # Minimum 8 tokens = 1 empty leading + 7 data fields.
+      if [[ ${#fields[@]} -lt 8 ]]; then
+        row_errors+=("row $row_count has fewer than 7 data fields (saw ${#fields[@]} pipe-sep tokens)")
+        continue
+      fi
+      vd_id=$(echo "${fields[1]}" | xargs)
+      intro_sess=$(echo "${fields[2]}" | xargs)
+      owner=$(echo "${fields[3]}" | xargs)
+      next_act=$(echo "${fields[4]}" | xargs)
+      review_by=$(echo "${fields[5]}" | xargs)
+      status=$(echo "${fields[6]}" | xargs)
+      esc_disp=$(echo "${fields[7]}" | xargs)
+      # Required field presence
+      [[ -z "$vd_id" ]] && row_errors+=("row $row_count missing id")
+      [[ -z "$intro_sess" ]] && row_errors+=("row $row_count ($vd_id) missing introduced_session")
+      [[ -z "$owner" ]] && row_errors+=("row $row_count ($vd_id) missing owner_or_surface")
+      [[ -z "$next_act" ]] && row_errors+=("row $row_count ($vd_id) missing next_action")
+      [[ -z "$review_by" ]] && row_errors+=("row $row_count ($vd_id) missing review_by_session")
+      [[ -z "$status" ]] && row_errors+=("row $row_count ($vd_id) missing status")
+      [[ -z "$esc_disp" ]] && row_errors+=("row $row_count ($vd_id) missing escalation_disposition")
+      # Status enum membership
+      if [[ -n "$status" ]] && ! echo " $LIFECYCLE_DEBT_STATUS_ENUM " | grep -q " $status "; then
+        row_errors+=("row $row_count ($vd_id) invalid status '$status' (expected one of: $LIFECYCLE_DEBT_STATUS_ENUM)")
+      fi
+      # review_by_session well-formedness (S<NNN> or NNN)
+      if [[ -n "$review_by" ]] && ! [[ "$review_by" =~ ^S?[0-9]+$ ]]; then
+        row_errors+=("row $row_count ($vd_id) review_by_session '$review_by' not in S<NNN> or numeric form")
+      fi
+      # Stale-without-rationale: if status is open or in-progress and review_by_session has lapsed, escalation_disposition must not be "n/a"
+      if [[ "$status" == "open" ]] || [[ "$status" == "in-progress" ]]; then
+        review_by_num=$(echo "$review_by" | sed -E 's/^S?0*//' )
+        if [[ "$review_by_num" =~ ^[0-9]+$ ]] && [[ $review_by_num -lt $((10#$last_session_num)) ]]; then
+          if [[ "$esc_disp" == "n/a" ]] || [[ -z "$esc_disp" ]]; then
+            row_errors+=("row $row_count ($vd_id) past review_by_session $review_by (current $last_session_num) without escalation_disposition rationale")
+          fi
+        fi
+      fi
+    done < "$ledger"
+
+    if [[ ${#row_errors[@]} -eq 0 ]]; then
+      pass "Check 28: validation-debt/index.md integrity OK: $row_count lifecycle rows; all required fields present; status enum clean; review_by_session well-formed; no stale-without-rationale rows"
+    else
+      for err in "${row_errors[@]}"; do
+        fail "Check 28: $err"
+      done
+    fi
+  fi
+fi
+echo ""
+
 # --- Summary ---
 echo "--- Tier 1 Summary ---"
 echo "Passed: $PASS  |  Failed: $FAIL  |  Warnings: $WARN"
@@ -1281,6 +1523,21 @@ echo "      honest-limits section with the gap they leave. Flag silent skips —
 echo "      these are the harness-layer laundering pattern the read-contract"
 echo "      exists to prevent. Flag reliance on archive-surface claims without"
 echo "      corresponding reads (the witness-dumping pattern WX-22-1 tracks)."
+echo ""
+echo "  Q10. Layered-mechanism engagement (added v6; paired with checks 26, 27,"
+echo "       28). For this session's close, verify: (a) §8 honest-limits sections"
+echo "       were authored deliberately, distinguishing genuine new gaps from"
+echo "       recurrences; for recurrences, was the (z5) lifecycle ledger row"
+echo "       updated rather than the close re-recording the same text? (b) If"
+echo "       Layer 2 (γ) triggered, did the reviewer's audit substantively engage"
+echo "       with the session's claims (decisions + close + (α)-flagged items),"
+echo "       or was the audit ceremonial? (c) If a (z5) lifecycle item was"
+echo "       closed/deferred this session, was disposition substantive (concrete"
+echo "       next action or escalation rationale) or formulaic? Flag instances"
+echo "       where the structural mechanism passed Tier 1 mechanically but the"
+echo "       underlying discipline is not being engaged. The mechanism's value"
+echo "       depends on engagement-quality, not artefact-presence; this Q10 is"
+echo "       the designed counter-pressure for ceremonialisation."
 echo ""
 
 if [[ $FAIL -gt 0 ]]; then

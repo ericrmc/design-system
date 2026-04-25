@@ -1,0 +1,31 @@
+perspective: tier-2-cross-family-reviewer
+participant_kind: non-anthropic-model
+participant_identity: Google Gemini via gemini-cli 0.38.1; --approval-mode plan (read-only)
+model_family: gemini
+model_id: gemini (default model per gemini-cli 0.38.1)
+model_version: gemini-cli-0.38.1
+provider: google
+endpoint: gemini-cli-stdio
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: Case Steward (operator-pre-ratified at S062 D-221 Layer 2 + S063 D-229 first-of-record google provider selection per no-recent-perspective-overlap rule Reading-1 strict-literal — codex/GPT-5.5 was P3+P4 at S062 so excluded; Gemini was first operationally-available alternative in PARTICIPANT_ORGANISATION_CLOSED_SET satisfying rule literally)
+participant_selection_method: rule-based-prospective (no-recent-perspective-overlap rule per validation-approach.md v6 §Tier 2.5)
+identity_known: true
+context_source: /tmp/s063-reviewer-prompt.md + workspace-files-read-by-reviewer (provenance/063-session/00-assessment.md + specifications/validation-approach.md v6 + tools/validate.sh + specifications/methodology-kernel.md v6 + specifications/workspace-structure.md v8 + specifications/engine-manifest.md engine-v11 entry + prompts/development.md + validation-debt/index.md). Prompt piped via stdin per `cat /tmp/s063-reviewer-prompt.md | gemini --approval-mode plan -p "$(cat)"` invocation pattern.
+delivered_at: 2026-04-26T00:00:00Z
+received_at: 2026-04-26T00:25:00Z
+raw_response_file: provenance/063-session/04-tier-2-audit.md
+raw_transcript_file: provenance/063-session/gemini-reviewer-raw-output.log
+transport_notes: gemini-cli 0.38.1 invocation pattern `cat /tmp/s063-reviewer-prompt.md | gemini --approval-mode plan -p "$(cat)" 2>&1 | tee /tmp/s063-gemini-reviewer-output.log`. Markdown audit extracted from output via awk fence-extraction. Multiple "exhausted capacity on this model" retries observed during reviewer execution (visible in raw transcript); first-of-record Gemini-CLI quota-throttling event during Tier 2.5 review per S063 close §10 meta-observation 5. Final audit completed after retry-and-recover; ~25 wall-clock minutes total. --approval-mode plan provides read-only sandbox analogous to codex --sandbox read-only. Two minor inaccuracies in audit output recorded transparently per WX-22-1: (a) §3.1 conflated Layer-numbers-1-through-6 with candidate-letter-α-through-ε taxonomy; (b) §3.3 "quote" is paraphrased not verbatim. Per evidence-floor discipline, audit remains passing (findings_count: 0 with substantive §3 evidence).
+output_edited_after_submission: false
+participation_shape: tier-2-reviewer (NOT perspective; this is the first-of-record §Tier 2.5 cross-family reviewer fired event in workspace history; reviewer audits implementation surface at session-close; not a deliberation perspective)
+participant_organisation: google
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: https://ai.google.dev/gemini-api/docs (provider-public; Google does not publicly disclose Anthropic-Claude-output-in-training; conservative recording is unknown rather than known-no)
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct (Google vs Anthropic; Google vs OpenAI cross-checked because S062 perspectives were Anthropic + OpenAI; Gemini satisfies cross-family vs both)

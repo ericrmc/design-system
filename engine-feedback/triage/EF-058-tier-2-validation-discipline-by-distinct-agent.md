@@ -8,8 +8,8 @@ classification: substantive-arc
 opened_issue: null
 resolved_by: provenance/062-session/
 resolved_at: 2026-04-25
-resolved_in_sessions: [061, 062]
-phase_3_pending_sessions: [063]
+resolved_in_sessions: [061, 062, 063]
+phase_3_completed_session: 063
 observation_window_sessions: [064-onwards via WX-62-1]
 disposition: Classified substantive-arc-shape per S057 EF-055 precedent chain at S059 D-209. Phase-1 synthesis at S061 (Path AS Shape-1; design-space.md 6,306 words). Phase-2 MAD at S062 (Path AS-MAD-execution per S061 D-218 pre-ratification; 4-perspective two-family lineup per S050+S058 precedent; brief-extension §7 includes CLAUDE.md per design-space.md §8.2 EF-058-claude-md-drift cross-linkage; 3-of-4 cross-family weighted convergence on (δ-γ + α + z5-lightweight + z6-deferred-spec) layer composition; 5 first-class minorities preserved §10.4-M16 through §10.4-M20). Phase-3 adoption pending S063 (engine-v11 candidate per S062 D-221: validation-approach.md v5→v6 substantive + tools/validate.sh checks 26+27+28 + methodology-kernel.md v6 §7 minor amendment + prompts/development.md minor revision + lightweight z5 validation-debt lifecycle implementation). Observation window WX-62-1 opens post-S063 phase-3 adoption (3 successful triggered applications). Engine-v10 preserved at S062 close (preservation depth 4→5); engine-v11 candidate ratification at S063.
 decision_records:
@@ -21,7 +21,11 @@ decision_records:
   - D-223
   - D-224
   - D-225
-engine_version_impact: deferred at S059 triage; engine-v10 preserved at S062 MAD close (preservation depth 4→5); engine-v11 candidate ratification at S063 phase-3 adoption per S062 D-221
+  - D-227
+  - D-228
+  - D-229
+  - D-230
+engine_version_impact: deferred at S059 triage; engine-v10 preserved at S062 MAD close (preservation depth 4→5; final depth 5 at S063 close); engine-v11 ratified at S063 close per S062 D-221 + S063 D-228 (validation-approach.md v5→v6 substantive + tools/validate.sh checks 26+27+28 substantive + methodology-kernel.md v6 §7 minor amendment + workspace-structure.md v7→v8 minor amendment + prompts/development.md minor revision + new engine-adjacent file validation-debt/index.md + engine-manifest.md engine-v11 entry); first triggered (γ) cross-family reviewer fired at S063 close — Google Gemini (first-of-record google provider as Tier 2.5 reviewer; no-recent-perspective-overlap rule satisfied literally per Reading-1; codex/GPT-5.5 was P3+P4 at S062); reviewer findings_count: 0 with substantive §3 evidence per evidence-floor discipline; (z5) lifecycle ledger bootstrapped at validation-debt/index.md with VD-001 (S051-S058 MCP-stdio-transport honest-limit chain at status: resolved); WX-62-1 5-field recording obligation begins at S063 close
 direction_selected: (δ-γ + α + z5-lightweight + z6-deferred-spec) layer composition per S062 D-221 — universal mechanical detection (Layer 1 α) + triggered cross-family reviewer (Layer 2 γ) + validator-extension checks 27+28 (Layer 3) + lightweight validation-debt lifecycle ledger (Layer 4 z5) + harness-telemetry-digest specified-deferred-implementation (Layer 5 z6 via EF-059 filing) + bootstrap-paradox layered handling (Layer 6: one-time operator audit at S063 + standing operator-audit cadence + 3-session WX-62-1 observation window + validate.sh WARN if validation-discipline change resolved without distinct review or operator-audit annotation). Asymmetry articulated per Q2 convergence: routine workspace checks may remain self-assessed; claims about unresolved validation debt, substantive progress, engine-definition change, and repeated warnings require stateful or distinct review.
 alternative_directions_deferred:
   - direction: (α) Mechanical detection only — extend tools/validate.sh with new check (candidate check 26) detecting honest-limit text repetition across §2c retention-window 03-close.md files; substrate-aware extension uses resolve_id / search over records-substrate. Cost minimal; cannot catch failed-tool-call or repeated-Read patterns; cannot judge ceremony vs progress semantically.
