@@ -1,0 +1,30 @@
+perspective: incrementalist-conservator
+participant_kind: claude-subagent
+participant_identity: Claude Opus 4.7 (1M context); subagent via Claude Code Agent tool, general-purpose subagent_type; isolated context
+model_family: claude
+model_id: claude-opus-4-7
+model_version: claude-opus-4-7-1m-context-S062
+provider: anthropic
+endpoint: agent-tool-internal
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: Case Steward (operator-pre-ratified at S061 D-218 + S062 D-220 first-ratification-step per S050+S058 precedent)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/062-session/01-brief-shared.md + provenance/062-session/01-brief-p2.md + design-space.md + EF-058 intake + read-as-needed specs (validation-approach.md / multi-agent-deliberation.md / reference-validation.md §10.3)
+delivered_at: 2026-04-25T22:30:00Z
+received_at: 2026-04-25T22:39:00Z
+raw_response_file: provenance/062-session/01b-perspective-incrementalist-conservator.md
+transport_notes: Subagent launched via Claude Code Agent tool with run_in_background=true; reasoned from briefs + workspace files (per role-stance instruction allowing spec reads); did not commit or modify any files per WX-43-1 explicit-instruction discipline (n=0-of-15 cumulative breach).
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+training_lineage_evidence_pointer: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: known-overlap

@@ -71,3 +71,4 @@ Pre-engine-v10 SESSION-LOG.md preserved verbatim as archive-pack at `provenance/
 | [S059](S059.md) | closed | Path T+L bundled scope — Triage of 3 EF-058 inbox records (uv-migration resolve... | S059.md | provenance/059-session/03-close.md | 59 | closed S059 |
 | [S060](S060.md) | closed | Path L+A reshape mid-ratification; (i)+(b)+(β) records-substrate-authority alig... | S060.md | provenance/060-session/03-close.md | 60 | closed S060 |
 | [S061](S061.md) | closed | Path AS Shape-1 (Phase-1 Synthesis/Design-Space Session for EF-058-tier-2-valid... | S061.md | provenance/061-session/03-close.md | 61 | closed S061 |
+| [S062](S062.md) | closed | Path AS-MAD-execution per S061 D-218 pre-ratification — 4-perspective two-family MAD on EF-058-tier-2-validation; (δ-γ + α + z5-light + z6-deferred-spec) layer composition adopted | S062.md | provenance/062-session/03-close.md | 62 | closed S062 |

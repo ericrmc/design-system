@@ -1,0 +1,30 @@
+perspective: cross-family-reviewer-laundering-audit
+participant_kind: non-anthropic-model
+participant_identity: GPT-5.5 via codex CLI exec; reasoning-effort xhigh per ~/.codex/config.toml defaults; sandbox=read-only; distinct invocation from P3
+model_family: gpt
+model_id: gpt-5.5
+model_version: gpt-5.5-xhigh-reasoning-codex-2026-04-25
+provider: openai
+endpoint: codex-cli-stdio
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: Case Steward (operator-pre-ratified at S061 D-218 + S062 D-220 first-ratification-step per S050+S058 precedent + D-133 M2 lineage-constraint matrix non-Claude Cross-Family-Reviewer seat)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/062-session/01-brief-shared.md + provenance/062-session/01-brief-p4.md + canonical P1+P2+P3 perspective files at provenance/062-session/01a/01b/01c-perspective-*.md (embedded in prompt + accessible via read-only sandbox) + design-space.md + EF-058 intake (all concatenated into /tmp/s062-p4-prompt.md and piped via stdin)
+delivered_at: 2026-04-25T22:40:00Z
+received_at: 2026-04-25T22:43:00Z
+raw_response_file: provenance/062-session/01d-perspective-cross-family-reviewer.md
+transport_notes: codex CLI invocation pattern `cat /tmp/s062-p4-prompt.md | codex exec --skip-git-repo-check --sandbox read-only -o /tmp/s062-p4-final.log`. Single invocation succeeded at first launch — launch precondition met because Case Steward wrapped P1+P2+P3 to canonical filenames + committed at fda057e BEFORE launching P4 (per S058 honest-limit 8 + meta-observation 2 lesson). No P4-blocked-on-precondition refusal event at S062 (S058 first-of-record precondition discipline now applied at MAD-orchestration level). Final message captured at codex-p4-final.log; full transcript at codex-p4-raw-output.log; sandbox=read-only prevents file modifications.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: known-no
+training_lineage_evidence_pointer: https://openai.com/policies (provider-public statement; OpenAI does not train on Anthropic Claude outputs)
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct

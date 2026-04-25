@@ -1,0 +1,41 @@
+session: 062
+deliberation: EF-058-tier-2-validation MAD (Path AS-MAD-execution per S061 D-218 pre-ratification)
+synthesizer:
+  identity: Case Steward (Claude Opus 4.7 1M context); orchestrating agent
+  model_family: claude
+  model_id: claude-opus-4-7
+  was_perspective: false
+  synthesis_file: provenance/062-session/01-deliberation.md
+
+participants:
+  - perspective: validator-architect
+    manifest: manifests/validator-architect.manifest.yaml
+  - perspective: incrementalist-conservator
+    manifest: manifests/incrementalist-conservator.manifest.yaml
+  - perspective: outsider-frame-completion
+    manifest: manifests/outsider-frame-completion.manifest.yaml
+  - perspective: cross-family-reviewer-laundering-audit
+    manifest: manifests/cross-family-reviewer.manifest.yaml
+
+family_composition:
+  participants_family: cross-model
+  cross_model: true
+  non_claude_participants: 2
+  claude_participants: 2
+  oi004_qualifying_participants:
+    - outsider-frame-completion
+    - cross-family-reviewer-laundering-audit
+
+mechanical_cross_family_invocation:
+  - purpose: substantive deliberation perspective P3 (not corroborating mechanical invocation; this is a primary perspective per Layer 1 schema; recorded for completeness)
+    invoked_model: gpt-5.5
+    provider: openai
+    invocation_method: cli-wrapper
+    decision_shaped: D-221
+    evidence_pointer: provenance/062-session/01c-perspective-outsider-frame-completion.md
+  - purpose: substantive deliberation perspective P4 (not corroborating mechanical invocation; this is a primary perspective per Layer 1 schema; recorded for completeness)
+    invoked_model: gpt-5.5
+    provider: openai
+    invocation_method: cli-wrapper
+    decision_shaped: D-221
+    evidence_pointer: provenance/062-session/01d-perspective-cross-family-reviewer.md
