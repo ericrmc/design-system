@@ -288,7 +288,12 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
             row = cur.execute(
                 "SELECT canonical, id_kind, source_path, line, context_snippet "
                 "FROM identifiers WHERE canonical = ? "
-                "ORDER BY CASE WHEN source_path LIKE 'specifications/%' THEN 0 ELSE 1 END, "
+                "ORDER BY CASE "
+                "           WHEN source_path LIKE 'records/%' "
+                "                AND source_path NOT LIKE '%/index.md' THEN 0 "
+                "           WHEN source_path LIKE 'records/%' THEN 1 "
+                "           WHEN source_path LIKE 'specifications/%' THEN 2 "
+                "           ELSE 3 END, "
                 "         source_path, line LIMIT 1",
                 (alias,),
             ).fetchone()
@@ -304,7 +309,12 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
                 row = cur.execute(
                     "SELECT canonical, id_kind, source_path, line, context_snippet "
                     "FROM identifiers WHERE canonical = ? "
-                    "ORDER BY CASE WHEN source_path LIKE 'specifications/%' THEN 0 ELSE 1 END, "
+                    "ORDER BY CASE "
+                    "           WHEN source_path LIKE 'records/%' "
+                    "                AND source_path NOT LIKE '%/index.md' THEN 0 "
+                    "           WHEN source_path LIKE 'records/%' THEN 1 "
+                    "           WHEN source_path LIKE 'specifications/%' THEN 2 "
+                    "           ELSE 3 END, "
                     "         source_path, line LIMIT 1",
                     (resolved_canonical,),
                 ).fetchone()
@@ -319,7 +329,12 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
             row = cur.execute(
                 "SELECT canonical, id_kind, source_path, line, context_snippet "
                 "FROM identifiers WHERE id_text = ? "
-                "ORDER BY CASE WHEN source_path LIKE 'specifications/%' THEN 0 ELSE 1 END, "
+                "ORDER BY CASE "
+                "           WHEN source_path LIKE 'records/%' "
+                "                AND source_path NOT LIKE '%/index.md' THEN 0 "
+                "           WHEN source_path LIKE 'records/%' THEN 1 "
+                "           WHEN source_path LIKE 'specifications/%' THEN 2 "
+                "           ELSE 3 END, "
                 "         source_path, line LIMIT 1",
                 (alias,),
             ).fetchone()
@@ -331,7 +346,13 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
                 row = cur.execute(
                     "SELECT canonical, id_kind, source_path, line, context_snippet "
                     "FROM identifiers WHERE canonical LIKE ? OR id_text LIKE ? "
-                    "ORDER BY source_path, line LIMIT 1",
+                    "ORDER BY CASE "
+                    "           WHEN source_path LIKE 'records/%' "
+                    "                AND source_path NOT LIKE '%/index.md' THEN 0 "
+                    "           WHEN source_path LIKE 'records/%' THEN 1 "
+                    "           WHEN source_path LIKE 'specifications/%' THEN 2 "
+                    "           ELSE 3 END, "
+                    "         source_path, line LIMIT 1",
                     (alias + "%", alias + "%"),
                 ).fetchone()
                 if row:

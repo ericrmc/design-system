@@ -139,6 +139,65 @@ def extract_identifiers(body: str, source_path: str) -> list[tuple[str, str, str
     return rows
 
 
+# Maps records/<family>/ directory name to the id_kind used in the
+# identifiers table. Phase-1 only `sessions` is populated; phase-2+
+# extends as `records-contract.md` v1 §2 grows. Unknown families fall
+# back to a singular form (rstrip 's') so the indexer is forward-safe
+# without requiring an indexer release for every new family.
+RECORD_FAMILY_KIND_MAP = {
+    "sessions": "session",
+    "minorities": "minority",
+    "engine-versions": "engine-version",
+    "feedback": "feedback",
+}
+
+
+def extract_record_frontmatter_canonical(
+    text: str,
+    frontmatter: dict,
+    rel_path: str,
+    kind: str,
+) -> tuple[str, str, str, str, int, str] | None:
+    """Emit a row for the frontmatter ``id:`` field of a ``records/<family>/`` file.
+
+    `records-contract.md` v1 §2.1 declares the frontmatter ``id`` field
+    authoritative for migrated record-kind canonicals; the body-only
+    `extract_identifiers` misses frontmatter-only files (e.g., migrated
+    `records/sessions/S001-S058.md` per S058 D-203 are frontmatter-only).
+    Without this row, `resolve_id` falls through to `records/<family>/index.md`
+    rather than to the per-record source-of-truth file.
+
+    Returns None for non-record kinds or records lacking a string `id:` field.
+    """
+    if not kind.startswith("record-"):
+        return None
+    fm_id = frontmatter.get("id")
+    if not isinstance(fm_id, str) or not fm_id:
+        return None
+    family = kind[len("record-"):]
+    id_kind = RECORD_FAMILY_KIND_MAP.get(family, family.rstrip("s") or family)
+    # File-line of the `id:` field. Schema is flat YAML (records-contract.md
+    # v1 §2.1); `id:` is conventionally line 2. Scan the frontmatter region
+    # to be precise; default to line 2 if a scan-edge case fires.
+    line_no = 2
+    in_frontmatter = False
+    for idx, line in enumerate(text.splitlines(), start=1):
+        stripped = line.lstrip()
+        if idx == 1:
+            if stripped.startswith("---"):
+                in_frontmatter = True
+            continue
+        if not in_frontmatter:
+            break
+        if stripped.startswith("---"):
+            break
+        if stripped.startswith("id:") or stripped.startswith("id :"):
+            line_no = idx
+            break
+    context = f"id: {fm_id}"[:120]
+    return (fm_id, id_kind, fm_id, rel_path, line_no, context)
+
+
 def load_aliases(workspace: Path) -> list[tuple[str, str, str]]:
     """Load specifications/aliases.yaml. Returns [(alias, canonical, kind)]."""
     aliases_path = workspace / "specifications" / "aliases.yaml"
@@ -221,6 +280,7 @@ def build_index(workspace: Path, db_path: Path) -> dict:
     id_rows: list[tuple[str, str, str, str, int, str]] = []
     for path in files:
         rel = str(path.relative_to(workspace))
+        text = path.read_text(encoding="utf-8", errors="replace")
         frontmatter, title, body = parse_markdown(path)
         kind = classify_kind(path, workspace)
         session = extract_session(path, workspace)
@@ -232,6 +292,12 @@ def build_index(workspace: Path, db_path: Path) -> dict:
             (rel, kind, session, mtime, title, fm_json, body),
         )
         id_rows.extend(extract_identifiers(body, rel))
+        # records-contract.md v1 §2.1: frontmatter `id:` is the authoritative
+        # canonical for record-family files. Emit a row pointing at the
+        # per-record file so resolve_id can return the source-of-truth path.
+        rec_row = extract_record_frontmatter_canonical(text, frontmatter, rel, kind)
+        if rec_row is not None:
+            id_rows.append(rec_row)
 
     # Dedupe identifiers by primary key to avoid integrity errors.
     seen: set[tuple[str, str, str, int]] = set()
