@@ -8,7 +8,7 @@ Created Session 036 per D-116 as the adoption artefact for the engine-feedback p
 
 ## Status summary
 
-- **New** (inbox, not yet triaged): 0
+- **New** (inbox, not yet triaged): 1
 - **Triaged** (triage-record exists, awaiting resolution): 1
 - **Resolved** (triage-record + resolution pointer): 4
 - **Rejected** (triaged with no action warranted): 0
@@ -17,6 +17,7 @@ Created Session 036 per D-116 as the adoption artefact for the engine-feedback p
 
 | ID | Source workspace | Source session | Target | Severity | Status | Triage session | OI/Disposition |
 |----|------------------|----------------|--------|----------|--------|----------------|----------------|
+| [EF-053-search-query-parser-unquoted-hyphen-fts5-not-operator](inbox/EF-053-search-query-parser-unquoted-hyphen-fts5-not-operator.md) | selvedge-self-development | 053 | engine-adjacent | friction | **new** | — | awaiting triage; observation: `search("D-129 standing discipline")` crashes with `sqlite3.OperationalError: no such column: 129` because FTS5 parses unquoted hyphen as NOT operator, contradicting retrieval-contract §2.1 "hyphen word-internal" intent + §3 structured-error discipline; workaround is to quote hyphenated identifiers; three directions proposed (A query-sanitization / B structured-error-response / C spec-narrowing); Direction A most likely |
 | [EF-051-aliases-yaml-not-consulted-at-query-time](inbox/EF-051-aliases-yaml-not-consulted-at-query-time.md) ([triage](triage/EF-051-aliases-yaml-not-consulted-at-query-time.md)) | selvedge-self-development | 051 | engine-adjacent | friction | **resolved** (S052 D-180 + D-181) | 052 | Direction B (query-time aliases consultation in tools/retrieval_server.py) adopted; minor per OI-002 per seventh source-realignment precedent chain S022/S030/S033/S040/S046/S051/S052; no engine-v bump; smoke-test 8-of-8 PASS (5 alias-indirection + 2 direct-canonical + 1 None-case); Direction A deferred as optional additive |
 | [EF-047-brief-slot-template-hidden-arc-leakage](inbox/EF-047-brief-slot-template-hidden-arc-leakage.md) ([triage](triage/EF-047-brief-slot-template-hidden-arc-leakage.md)) | selvedge-self-development | 047 | engine | friction | triaged — S050 D-174 defers spec-level adoption to next self-dev or external-arc session exercising arc-plan brief slots (earliest selvedge-disaster-response S002+) | 048 | disposition per S050 D-174: deferral is principled, not punting; S050 MAD surface did not exercise arc-plan-hidden-view leakage pressure |
 | [EF-047-session-input-files-redundant-with-verbatim-capture](inbox/EF-047-session-input-files-redundant-with-verbatim-capture.md) ([triage](triage/EF-047-session-input-files-redundant-with-verbatim-capture.md)) | selvedge-self-development | 047 | methodology | observation | **resolved** (S050 D-174 adopted-as-practice) | 048 | practice-level adopted at S050 (session-inputs-as-prior-synthesis-reference is acceptable shape without re-verbatim-capture when cited artefact is in-workspace provenance); minor documentary captured in retrieval-contract.md v1 §5 bootstrap-contract-note |
