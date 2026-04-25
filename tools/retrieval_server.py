@@ -46,6 +46,45 @@ ID_LIKE_RE = re.compile(
     r"|S(?:ession\s+)?\d{1,3}|engine-v\d+|EF-\d{3}(?:-[a-z0-9-]+)?|d01\d_\d+)$"
 )
 
+# ID patterns recognised inside a search() query string. Used by _sanitize_query
+# to wrap hyphenated identifiers in phrase quotes before FTS5 sees them, so
+# `D-129` tokenises atomically rather than being parsed as `D NOT 129`.
+# Per Session 054 D-186 (EF-053 resolution, Direction A).
+_ID_TOKEN_RE = re.compile(
+    r'(?<!")'
+    r"("
+    r"D-\d{3}"
+    r"|OI-\d{3}"
+    r"|WX-\d+-\d+"
+    r"|EF-\d{3}(?:-[a-z0-9-]+)?"
+    r"|engine-v\d+"
+    r"|§\d+(?:\.\d+)*(?:-M\d+)?"
+    r"|d01\d_\d+"
+    r")"
+    r'(?!")'
+)
+
+
+def _sanitize_query(query: str) -> str:
+    """Wrap recognised hyphenated identifier patterns in FTS5 phrase quotes.
+
+    SQLite FTS5's query parser treats unquoted hyphens as the NOT operator,
+    so `D-129 standing` is parsed as `D NOT 129 standing` and crashes with
+    `no such column: 129`. Wrapping recognised ID patterns in phrase quotes
+    sidesteps this without forcing the entire query into a single phrase
+    (which would lose multi-word BM25 ranking).
+
+    Idempotent: identifiers already adjacent to `"` are left alone via
+    lookbehind/lookahead. Identifiers outside the curated pattern set are
+    not wrapped; the caller can phrase-quote them manually if needed.
+
+    Per `specifications/retrieval-contract.md` v1 §2.1: "Tokenisation MUST
+    treat hyphen, underscore, and § as word-internal so that IDs ...
+    tokenise atomically rather than splitting." Per Session 054 D-186
+    (EF-053 resolution, Direction A: query-sanitization at server level).
+    """
+    return _ID_TOKEN_RE.sub(r'"\1"', query)
+
 
 def resolve_workspace() -> Path:
     """Resolve the workspace root. Priority: CLI arg > cwd."""
@@ -170,11 +209,12 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
         conn = sqlite3.connect(db_path)
         try:
             cur = conn.cursor()
-            # Use MATCH with escaped quotes to handle hyphenated IDs.
-            # FTS5 treats `D-152` as prefix negation unless tokenchars includes '-';
-            # we set tokenchars in build_retrieval_index.py. Quoted phrase search
-            # is safer for IDs with §.
-            escaped = query.replace('"', '""')
+            # FTS5 treats unquoted `-` as the NOT operator, so a query like
+            # `D-129 standing` would be parsed as `D NOT 129 standing` and
+            # raise "no such column: 129". _sanitize_query wraps recognised
+            # ID patterns in phrase quotes so they tokenise atomically.
+            # Per Session 054 D-186 (EF-053 resolution, Direction A).
+            sanitized = _sanitize_query(query)
             try:
                 rows = cur.execute(
                     "SELECT d.path, "
@@ -183,10 +223,13 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
                     "FROM docs_fts JOIN documents d ON d.rowid = docs_fts.rowid "
                     'WHERE docs_fts MATCH ? '
                     "ORDER BY score LIMIT ?",
-                    (f'"{escaped}"', k),
+                    (sanitized, k),
                 ).fetchall()
             except sqlite3.OperationalError:
-                # Fall back to literal query if phrase parse fails.
+                # Last-ditch: wrap the original query as a single phrase. May
+                # lose multi-word BM25 ranking but avoids hard crash for
+                # hyphenated forms not covered by _ID_TOKEN_RE.
+                escaped = query.replace('"', '""')
                 rows = cur.execute(
                     "SELECT d.path, "
                     "       snippet(docs_fts, 2, '[', ']', '…', 16), "
@@ -194,7 +237,7 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
                     "FROM docs_fts JOIN documents d ON d.rowid = docs_fts.rowid "
                     'WHERE docs_fts MATCH ? '
                     "ORDER BY score LIMIT ?",
-                    (escaped, k),
+                    (f'"{escaped}"', k),
                 ).fetchall()
             results = [
                 {"path": row[0], "snippet": row[1], "score": float(row[2])}
@@ -319,6 +362,69 @@ def build_server(workspace: Path, db_path: Path) -> FastMCP:
                 "context": row[4],
             },
             "reason": None,
+        }
+
+    @mcp.tool()
+    def forward_references(target: str) -> dict:
+        """Return every line-precise occurrence of `target` in the identifiers index.
+
+        Unlike `resolve_id` (returns the first occurrence; §2.2) and `search`
+        (BM25-ranked over document bodies; §2.1), this tool returns the full
+        line-precise list of occurrences across the corpus. Useful for
+        session-open commitment audit ("what did prior sessions schedule for
+        this session?"), forward-reference enumeration, and any "all
+        occurrences" query that the §2.1/§2.2 surface cannot answer.
+
+        Returns `{results: [{path, line, context, kind}], count, ...}`,
+        sorted by `source_path` then `line` for deterministic output. Empty
+        results (count=0) for unindexed targets — never raises on unknown
+        target.
+
+        Per Session 054 D-187 (EF-054 resolution, Direction A:
+        forward_references MCP tool). Phase-1-compatible additive extension;
+        the contract names `search` + `resolve_id` as required minimum at
+        phase-1 (§2) and additional tools are permitted.
+        """
+        try:
+            status = ensure_index(workspace, db_path)
+        except Exception as e:
+            return {
+                "available": False,
+                "reason": str(e),
+                "results": [],
+                "count": 0,
+            }
+
+        conn = sqlite3.connect(db_path)
+        try:
+            cur = conn.cursor()
+            rows = cur.execute(
+                "SELECT source_path, line, context_snippet, id_kind "
+                "FROM identifiers WHERE id_text = ? OR canonical = ? "
+                "ORDER BY source_path, line",
+                (target, target),
+            ).fetchall()
+            results = [
+                {
+                    "path": row[0],
+                    "line": row[1],
+                    "context": row[2],
+                    "kind": row[3],
+                }
+                for row in rows
+            ]
+        finally:
+            conn.close()
+
+        return {
+            "available": True,
+            "degraded": False,
+            "missing": [],
+            "index_mtime": status["index_mtime"],
+            "index_fresh": status["index_fresh"],
+            "rebuilt_on_demand": status["rebuilt_on_demand"],
+            "results": results,
+            "count": len(results),
         }
 
     return mcp
