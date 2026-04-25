@@ -61,10 +61,16 @@ def classify_kind(path: Path, workspace: Path) -> str:
         return "prompt"
     if parts[0] == "tools":
         return "tool"
+    # Records substrate (added engine-v10 per S058 D-200; records-contract.md v1).
+    # Per-family records are first-class retrieval objects: kind = "record-<family>".
+    if parts[0] == "records" and len(parts) >= 2:
+        family = parts[1]
+        return f"record-{family}"
     return "root"
 
 
 SESSION_PATH_RE = re.compile(r"provenance/(\d{3})-")
+RECORDS_SESSION_PATH_RE = re.compile(r"records/sessions/S(\d{3})\.md$")
 
 
 def extract_session(path: Path, workspace: Path) -> int | None:
@@ -73,6 +79,10 @@ def extract_session(path: Path, workspace: Path) -> int | None:
     m = SESSION_PATH_RE.search(rel_str)
     if m:
         return int(m.group(1))
+    # Records substrate session records (added engine-v10 per S058 D-200).
+    m2 = RECORDS_SESSION_PATH_RE.search(rel_str)
+    if m2:
+        return int(m2.group(1))
     return None
 
 

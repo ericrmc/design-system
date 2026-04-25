@@ -1,11 +1,12 @@
 ---
 title: Workspace Structure
-version: 7
-status: active
+version: 6
+status: superseded
 created: 2026-04-17
-last-updated: 2026-04-25
-updated-by-session: 058
-supersedes: workspace-structure-v6.md
+last-updated: 2026-04-24
+updated-by-session: 050
+supersedes: workspace-structure-v5.md
+superseded-by: workspace-structure.md (v7)
 ---
 
 # Workspace Structure
@@ -13,10 +14,6 @@ supersedes: workspace-structure-v6.md
 ## Purpose
 
 This specification defines how the workspace is organized: what directories and files exist, what each contains, and how they relate. It ensures that any agent or person reading the workspace can orient themselves quickly and knows where to find — and where to put — each kind of content.
-
-Version 7 (Session 058 per D-202a + D-204) adds the records-substrate file-class extension (`structured-source-record` + `markdown-witness` + reaffirms `human-provenance`), adds `records/` directory to top-level structure, and extends §10.4 with four new first-class minorities §10.4-M12 through §10.4-M15 (S058 records-substrate MAD dissent-preservation; minority count 36 → 40). v6 preserved as `workspace-structure-v6.md`.
-
-Version 6 (Session 050 per D-172) added §10.4-M7 through §10.4-M11 five new first-class minorities preserved from S050 retrieval-substrate MAD. Minority count 27 → 36. v5 preserved as `workspace-structure-v5.md`.
 
 Version 5 (Session 036, D-113 + D-116) adds the `MODE.md` workspace-identity-file convention, the `engine-feedback/` directory with mode-dependent outbox/inbox semantics, and the §10.4 first-class-minority block preserving six Session 036 Path PD minorities. v4 preserved as `workspace-structure-v4.md`.
 
@@ -26,19 +23,17 @@ Version 3 (Session 017, D-074) adds the three file-class distinction (engine-def
 
 ## Specification
 
-### File classes (added v3, extended v5, extended v7)
+### File classes (added v3, extended v5)
 
-Under the three-layer denotation established in `identity.md` v2 (Selvedge methodology / Selvedge engine / application), workspace files fall into one of seven classes (v7 adds three records-substrate classes).
+Under the three-layer denotation established in `identity.md` v2 (Selvedge methodology / Selvedge engine / application), workspace files fall into one of four classes (v5 adds the workspace-identity class).
 
 - **Engine-definition files** — the loadable Selvedge engine. An external application workspace may (and should) clone this set without inheriting development-provenance. Enumerated canonically by `specifications/engine-manifest.md`. At `engine-v1`: `PROMPT.md`, `prompts/development.md`, `prompts/application.md`, `specifications/*.md` (all active files in the `specifications/` directory), `tools/validate.sh`.
 - **Workspace-identity files** (added v5) — per-workspace identity declarations created at initialisation time. Distinct from engine-definition because each workspace has its own content (not copied byte-identically from the engine). Includes `MODE.md` at workspace root (required from Session 001 of any new workspace per `PROMPT.md` §Session-001 obligation). See §MODE.md below.
-- **Development-provenance files** — the self-development application's own accumulated history. Not part of the engine load; not inherited by external-application workspaces by default. Includes `open-issues/`, and `provenance/`. (Pre-v7 also included `SESSION-LOG.md`; at v7 this is migrated to records-substrate per §records-substrate; SESSION-LOG.md is archive-pack at `provenance/058-session/archive/pre-records-SESSION-LOG/`.)
+- **Development-provenance files** — the self-development application's own accumulated history. Not part of the engine load; not inherited by external-application workspaces by default. Includes `SESSION-LOG.md`, `open-issues/`, and `provenance/`.
 - **Application-scope files** — per-application content (inputs, outputs, application-specific briefs and notes). Mutable per the `applications/` directory rules below. Organised as `applications/NNN-<slug>/`.
 - **Non-engine operator-managed content** — content that is neither engine-definition nor development-provenance nor application-scope but serves operator coordination. Includes `engine-feedback/` (added v5; see §engine-feedback below).
-- **Structured source records** (added v7) — authoritative per-fact-family records under `records/<family>/<id>.md`. Frontmatter is source-of-truth; body is optional witness/expansion. Schema and discipline per `specifications/records-contract.md` v1. Phase-1 family: `records/sessions/`. See §records-substrate below.
-- **Markdown witnesses** (added v7) — projection or generated-or-validator-checked witness files derived from structured source records. Per-family `records/<family>/index.md` is default-read surface entry per `read-contract.md` v6 §1; per-record markdown bodies (if any expansion content exists) are session-scope read-as-needed. Witnesses are NOT authoritative; if witness and record disagree, the record wins per `records-contract.md` v1 §3 + check 25.
 
-The normative rule: an external application workspace may load the engine-definition set as a read-only unit (or a cloned starting point) without inheriting development-provenance. The self-development application (this workspace) carries all classes by construction (the engine is being developed here; the provenance is the development record; the applications are the by-products; the workspace-identity marker names what this workspace is; the records-substrate is the source-of-truth layer for migrated fact families).
+The normative rule: an external application workspace may load the engine-definition set as a read-only unit (or a cloned starting point) without inheriting development-provenance. The self-development application (this workspace) carries all four classes by construction (the engine is being developed here; the provenance is the development record; the applications are the by-products; the workspace-identity marker names what this workspace is).
 
 ### Top-level structure
 
@@ -50,6 +45,7 @@ The workspace has the following top-level structure:
 /prompts/
   development.md
   application.md
+/SESSION-LOG.md
 /open-issues/
   index.md
   OI-NNN.md      (one file per open issue)
@@ -72,21 +68,12 @@ The workspace has the following top-level structure:
         0N-chunk.md
 /tools/
 /applications/
-/records/                      (added v7; structured-source-record substrate per records-contract.md v1)
-  sessions/                    (phase-1; per-session records replacing pre-v7 SESSION-LOG.md)
-    index.md                   (default-read; thin pointer-only)
-    S<NNN>.md                  (one record per session; structured frontmatter authoritative)
-  minorities/                  (phase-2 candidate; per-minority canonical records)
-  engine-versions/             (phase-3 candidate)
-  feedback/                    (phase-3 candidate)
 /engine-feedback/              (optional; added v5; mode-dependent semantics)
   INDEX.md                     (default-read in self-development mode when present)
   inbox/                       (self-development workspace: operator-deposited feedback from external workspaces)
   triage/                      (self-development workspace: per-feedback triage records)
   EF-<id>.md                   (external workspace: outbox feedback files)
 ```
-
-Pre-v7 also included `/SESSION-LOG.md` at workspace root; at v7 this file is migrated to `records/sessions/` per D-203 + records-contract.md v1; pre-migration SESSION-LOG.md preserved verbatim as archive-pack at `provenance/058-session/archive/pre-records-SESSION-LOG/`.
 
 ### PROMPT.md
 
@@ -130,25 +117,13 @@ Contains the two mode-specific executable prompts created by the D-074 split. Pa
 
 Both files are revisable under the methodology's spec-revision discipline (significant revisions recorded in provenance; v-suffix preservation if substantive changes accumulate).
 
-### records-substrate (added v7)
+### SESSION-LOG.md
 
-Per `specifications/records-contract.md` v1 (engine-v10 adoption), structured records under `records/<family>/<id>.md` are authoritative for selected fact families. At engine-v10 phase-1, the only family is `records/sessions/` (per-session records replacing the pre-v7 `SESSION-LOG.md`).
+A thin one-line-per-session index for quick orientation. Each entry is one Markdown table row containing the session number, date, title, and a one-sentence summary of the decision surface. The canonical detail for each session lives in its provenance `03-close.md` file; the SESSION-LOG entry is an index over that detail, not a replacement.
 
-Per-family `index.md` is the default-read surface entry (per `specifications/read-contract.md` v6 §1). It is a thin pointer-only file with one row per record. Authority discipline: source record (frontmatter) > index row; on disagreement, the record wins and `tools/validate.sh` check 25 emits FAIL.
+SESSION-LOG.md is default-read surface per `specifications/read-contract.md` §1 and must satisfy the default-read per-file budget (currently 8,000 words hard ceiling, 6,000 words soft warning). A long-form per-session summary that would push SESSION-LOG.md over budget belongs in `03-close.md`, not in SESSION-LOG. This file is updated at the close of each session.
 
-Per-record files (`records/<family>/<id>.md`) are NOT default-read surface; they are read at session-scope-as-needed (similar pattern to `applications/` per `read-contract.md` v5 §2d carve-out).
-
-### SESSION-LOG.md (pre-v7; migrated)
-
-Pre-v7, `SESSION-LOG.md` at workspace root was a thin one-line-per-session index for quick orientation, default-read surface entry. At v7 (engine-v10 adoption Session 058 per D-203), this file is **migrated to `records/sessions/`**: each row becomes one structured record `records/sessions/S<NNN>.md`; `records/sessions/index.md` replaces SESSION-LOG.md as the default-read entry per `read-contract.md` v6 §1 item 5.
-
-Pre-migration `SESSION-LOG.md` content is preserved verbatim as archive-pack witness at `provenance/058-session/archive/pre-records-SESSION-LOG/` per `read-contract.md` v6 §4-§7 archive-pack discipline + S022 R8a / S040 D-123 / S051 D-178 archive-pack precedent chain.
-
-Pre-migration archive-pack chain at workspace history:
-- `provenance/022-workspace-scaling-trajectory/archive/pre-R8a-SESSION-LOG/` (pre-Session-022 variable-length-summary form per S022 R8a thin-index restoration).
-- `provenance/040-session-log-preemptive-restructure/archive/pre-L-SESSION-LOG/` (pre-Session-040 verbose multi-cell rows per S040 D-123 thin-index restoration).
-- `provenance/051-session/archive/pre-L-SESSION-LOG/` (pre-Session-051 hard-ceiling-breach forced-restructure per S051 D-178).
-- `provenance/058-session/archive/pre-records-SESSION-LOG/` (pre-engine-v10 SESSION-LOG.md migrated to records/sessions/ per S058 D-203).
+The post-Session-022 thin-index form replaces the pre-Session-022 variable-length-summary form per Session 022 R8a; the pre-Session-022 SESSION-LOG content is preserved in `provenance/022-workspace-scaling-trajectory/archive/pre-R8a-SESSION-LOG/` as an archive-pack witness.
 
 ### open-issues/
 
@@ -332,18 +307,6 @@ Note on minority count: these six Session 036 minorities, added to the 21 preser
 - **§10.4-M10 Substrate-N2 structured-artefacts-as-source-of-truth reframe (Session 050).** Position: the shared markdown-plus-index frame should not be mistaken for the only scalable answer; decisions, OIs, minorities, watchpoints, etc. may eventually become structured records with markdown as witness. Source: `[provenance/050-session/01c-perspective-outsider-frame-completion.md, §2 Substrate-N2]`. Activation warrant: if substrate phase-2+ maintenance cost exceeds projections by ≥2× OR multi-hop cross-reference queries become the dominant operational burden, revisit Substrate-N2 as a multi-session arc. Reopen warrants: (a) cumulative phase-2+ maintenance time exceeds projection 2× across 3 consecutive sessions; (b) multi-hop cross-reference query class dominates ≥5× prose-search over a 5-session window. Mirrored in `specifications/retrieval-contract.md` v1 §7.4.
 
 - **§10.4-M11 `syncs_with:` declaration-of-intent distinction (Session 050).** Position: extracted edges may not replace explicit co-evolution commitments; edges answer "what is cited"; `syncs_with:` would answer "what must co-evolve"; the distinction is load-bearing; phase-2 deliberation on edges MUST explicitly deliberate whether to preserve or fold `syncs_with:`. Source: `[provenance/050-session/01c-perspective-outsider-frame-completion.md, Q6]` + `[provenance/050-session/01d-perspective-cross-family-reviewer.md, §7 dissent-rec 5]`. Activation warrant: at phase-2 deliberation on the `edges` table, the fold-vs-preserve question on `syncs_with:` is explicitly on the agenda; auto-fold is not permitted. Reopen warrants: (a) cross-spec drift that an `edges` table did not catch; (b) declared co-evolution relationships that are not citation-observable. Mirrored in `specifications/retrieval-contract.md` v1 §7.5.
-
-**§10.4-M10 written warrants update (Session 058 per D-204 Part A)**: §10.4-M10 activation warrants are extended with new clause (c) operator-surfacing channel formalisation. Existing warrants (a) maintenance-cost-2× and (b) multi-hop-dominance-5× preserved. New warrant (c): operator-surfacing of §10.4-M-N-activation per S036/S043/S044/S045/S047 Path PD/OS minority-activation pathway — operationally exercised at S057 D-194-D-196 (the dedicated MAD scheduling) + S058 D-198-D-205 (the substantive deliberation). **First-of-record minority-warrant-amendment via operator-surfacing-channel-formalisation event** in workspace history.
-
-Note on minority count: the four S058 minorities §10.4-M12 through §10.4-M15 below add to the 36 preserved at S057 close, bringing engine-wide first-class minorities to **40** at S058 close. Mirrored cross-reference at `specifications/records-contract.md` v1 §7.1 through §7.4.
-
-- **§10.4-M12 P2 warrant-gated deferral / Direction C with B fallback (Session 058).** Position: "Direction C (defer until §10.4-M10 written warrants empirically fire), with Direction B held as a contingent fallback if SESSION-LOG.md ceiling pressure forces a tactical local action before either warrant fires." Source: `[provenance/058-session/01b-perspective-incrementalist-conservator.md, Q1]`. Activation warrant: if no §10.4-M10 telemetry exists by S060, OR phase-1 cost exceeds projected maintenance savings across S058+S059, the Conservator's deferral position is vindicated and the substantive arc may be rolled back via archive-pack restoration. Reopen warrants: (a) check 25 noisy or expensive (high false-positive rate); (b) record-witness drift detected within two sessions; (c) phase-1 default-read load reduction <7K words. Mirrored in `specifications/records-contract.md` v1 §7.1.
-
-- **§10.4-M13 P3+P4 shallow-Direction-A warning / records-must-be-source-of-truth (Session 058).** Position: "Per-record Markdown plus thin indexes ... is not necessarily Substrate-N2." Source: `[provenance/058-session/01c-perspective-outsider-frame-completion.md, Frame Critique + Q1]` + `[provenance/058-session/01d-perspective-cross-family-reviewer.md, Counter-Frames]`. Activation warrant: if migrated `records/sessions/*.md` lack structured authoritative frontmatter, OR Markdown witnesses become manually authoritative, OR phase-2+ migration produces sharded-Markdown without strict source-of-truth discipline, this minority's substantive direction (true Substrate-N2 with structured records authoritative) becomes preferred revision direction. Reopen warrants: (a) phase-1 SESSION-LOG.md migration retains Markdown-as-source-of-truth in practice (operators edit body content rather than frontmatter); (b) phase-2 mirrored-minority migration creates duplicate source files; (c) bootstrap contract does not propagate record-schema discipline to external workspaces. Mirrored in `specifications/records-contract.md` v1 §7.2.
-
-- **§10.4-M14 P1 broader-phase-1 / SESSION-LOG.md + workspace-structure.md §10.4 in single phase (Session 058).** Position: "Phase-1 (S058 MAD adoption + first migration): SESSION-LOG.md migration to `provenance/sessions/S<NNN>.md` per-session files, plus workspace-structure.md §10.4 migration to `specifications/minorities/M-NNN.md` per-record files." Source: `[provenance/058-session/01a-perspective-substrate-methodology-architect.md, Q1+Q2]`. Activation warrant: if SESSION-LOG.md phase-1 pilot earns trust at S059 (check 25 clean; no drift; ≥95% resolution) AND default-read aggregate reduction is less than projected because §10.4 minority block continues accreting, the broader-phase-1 position is preferred for accelerated phase-2 (mirror minorities migrated at S059 in single-session rather than 2-session staging). Reopen warrants: (a) phase-1 soak shows pattern is robust enough to migrate two blocks per phase rather than one; (b) §10.4 minority block crosses 1,500 words (currently ~1,800 with M12-M15 added). Mirrored in `specifications/records-contract.md` v1 §7.3.
-
-- **§10.4-M15 P2 spec-local distributed minority directories (Session 058).** Position: "specifications/<spec-name>/minorities/M-NNN.md (distributed-across-spec-source-directories) over a centralised specifications/minorities/ directory. Rationale: minorities are spec-local artefacts that derive context from their parent spec." Source: `[provenance/058-session/01b-perspective-incrementalist-conservator.md, Q3]`. Activation warrant: if any cross-spec mirrored minority's status or text diverges across specs after migration to canonical `records/minorities/M-NNN.md`, the spec-local distribution position is vindicated as preferred direction. Reopen warrants: (a) `applies_to:` or equivalent metadata fails to scale; (b) external-workspaces inherit dependencies without context; (c) substrate cannot reliably distinguish mirrored-fact references from spec-local references. Mirrored in `specifications/records-contract.md` v1 §7.4.
 
 ## Validation
 

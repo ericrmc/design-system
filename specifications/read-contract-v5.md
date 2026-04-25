@@ -1,11 +1,12 @@
 ---
 title: Read Contract
-version: 6
-status: active
+version: 5
+status: superseded
 created: 2026-04-22
-last-updated: 2026-04-25
-updated-by-session: 058
-supersedes: read-contract-v5.md
+last-updated: 2026-04-24
+updated-by-session: 048
+supersedes: read-contract-v4.md
+superseded-by: read-contract.md (v6)
 ---
 
 # Read Contract
@@ -33,7 +34,7 @@ The default-read surface is the bounded set of files read in full at every sessi
 2. `PROMPT.md` (top-level dispatcher).
 3. `prompts/development.md` (self-development executable prompt).
 4. `prompts/application.md` (external-application executable prompt).
-5. `records/sessions/index.md` (thin one-line-per-session index per `records-contract.md` v1 §2.2; full per-session detail lives in `provenance/<NNN>-session/03-close.md` per the `anchor_close` field; per-session structured records at `records/sessions/S<NNN>.md` are session-scope read-as-needed, NOT default-read). Pre-v6 this item enumerated `SESSION-LOG.md` at workspace root; at v6 (engine-v10 adoption Session 058 per D-202b) the file is migrated to records-substrate per `records-contract.md` v1 + workspace-structure.md v7 §records-substrate; pre-migration SESSION-LOG.md preserved as archive-pack at `provenance/058-session/archive/pre-records-SESSION-LOG/`.
+5. `SESSION-LOG.md` (thin one-line-per-session index; full per-session detail lives in `03-close.md`).
 6. `open-issues/index.md` (thin overview; full per-OI detail lives in `open-issues/OI-NNN.md` files).
 7. The `03-close.md` file of each of the **most recent 6 session closes** (where "session" is determined by the numeric prefix on `provenance/NNN-title/` directories, sorted descending, top 6). Older closes are archive surface by exclusion (§3); they remain at their original `provenance/NNN-title/03-close.md` paths preserved verbatim but are not loaded by default. The 6-session retention window was adopted Session 028 per D-096 (supersedes v2's "every `03-close.md`" rule). See §2c close-rotation rule for mechanics.
 8. Every file in the currently-active session's provenance directory (`provenance/NNN-title/` where NNN is the current session). While the session is open, current-session provenance is default-read; on close, it becomes archive surface by exclusion (§3) unless it is a `03-close.md` that falls within the §7 retention window (which stays default-read by §7 above).
@@ -42,8 +43,6 @@ The default-read surface is the bounded set of files read in full at every sessi
 The enumeration is closed. A file not enumerated here is archive surface by §3.
 
 **Applications directory clarification (added v5, Session 048).** The `applications/NNN-<slug>/` directory and its contents are NOT part of the §1 default-read enumeration. Files in `applications/` are read at **session scope** — as-needed during session work — rather than at session-open-in-full. This applies in both self-development and external-problem workspaces. See §2d for the consequent per-file budget carve-out and the chunked-read-on-demand mechanism.
-
-**Records directory clarification (added v6, Session 058).** The `records/<family>/` directory and its per-record `*.md` files are NOT part of the §1 default-read enumeration except for the per-family thin pointer-only `index.md` (e.g., `records/sessions/index.md` is enumerated as item 5 above). Per-record files at `records/<family>/<id>.md` are read at **session scope** — as-needed during session work — rather than at session-open-in-full. This applies in both self-development and external-problem workspaces. The records-substrate is governed by `specifications/records-contract.md` v1; per `records-contract.md` v1 §1, structured records are source-of-truth; Markdown witnesses (the `index.md` files) are projection. Per-record files are not subject to the §2 per-file budget; the per-family `index.md` is subject to §2 (typical target: well under 1,000 words; the index's own size is a navigation-affordance question similar to applications-directory navigation pointers per §2d).
 
 **Retention-exception (added v3, Session 028).** A session may record a **retention-exception decision** to keep a specific close older than the 6-session window in default-read, when that close carries load-bearing content for currently-active governance (e.g., a minority activation warrant text, a cross-referenced decision rationale). The retention-exception is recorded in the session's `02-decisions.md` with the explicit close path and the load-bearing-purpose rationale. Retention-exceptions are cumulative and lifted when the load-bearing purpose ends; the lifting is also recorded in a decision record.
 
@@ -296,8 +295,6 @@ Version 1 established Session 022 per D-084. Version 2 established Session 023 p
 Version 3 established Session 028 per D-096 in response to §5.3 minority activation warrant firing at Session 027 close (aggregate crossed 100,000 words). Substantive additions: §2b aggregate hard budget (100K hard / 90K soft, pass/fail/warn); §2c close-rotation rule (most recent 6 sessions' closes retained in default-read; older closes archive-surface by exclusion; retention-exception mechanism); §1 item 7 revised from "every close" to "6 most recent closes"; §2a role clarified as informational sensor layer supplementing §2b budget enforcement; six new first-class minorities §5.6–§5.11 preserved with activation warrants. v2 preserved as `read-contract-v2.md` with `status: superseded`.
 
 Version 4 established Session 036 per D-113 + D-116. Substantive additions: §1 item 0 adds `MODE.md` at workspace root as default-read (workspace-identity marker per `workspace-structure.md` v5 §MODE.md); §1 item 9 adds conditional `engine-feedback/INDEX.md` default-read clause in self-development mode. No change to §2 per-file budget values, §2b aggregate budget, §2c close-rotation mechanics, §4 archive-pack structure, §5 manifest fields, §6 reference convention, or §7 integrity mechanism. Aggregate budget headroom impact: `MODE.md` is approximately 200 words at adoption (negligible against 68,689 aggregate); `engine-feedback/INDEX.md` at adoption is thin-index header-only (under 100 words). v3 preserved as `read-contract-v3.md` with `status: superseded`.
-
-Version 6 established Session 058 per D-202b as the resolution of EF-055 substantive-arc (`engine-feedback/inbox/EF-055-substrate-aware-format-and-archive-rethink-substantive-arc.md`) per S057 D-194/D-195/D-196 + S058 4-perspective two-family MAD synthesis. Substantive: §1 item 5 revised from `SESSION-LOG.md` (workspace root) to `records/sessions/index.md` (per the records-substrate adopted at engine-v10 per `records-contract.md` v1 + `workspace-structure.md` v7); §1 closing paragraph extended with new "Records directory clarification" making explicit that `records/<family>/<id>.md` per-record files are session-scope read-as-needed (similar pattern to v5 §2d applications-directory carve-out). No change to §2 per-file budget values, §2a sensor thresholds, §2b budget values, §2c retention-window value (gated on phase-2 evidence per `01-deliberation.md` §6), or §4–§7 archive-pack mechanisms. v5 preserved as `read-contract-v5.md` with `status: superseded`.
 
 Version 5 established Session 048 per D-153 as the operator-directed resolution of EF-001 (`engine-feedback/inbox/EF-001-read-contract-budget-scaling-for-domain-artefacts.md`). Substantive additions: §1 carries a new closing paragraph ("Applications directory clarification") making explicit that `applications/NNN-<slug>/` is outside the §1 closed enumeration and is read at session scope rather than at session-open-in-full; §2d new section codifying the per-file-budget carve-out for `applications/` + the chunked-read-on-demand mechanism (existing Read-tool `offset`/`limit`) + optional `applications/NNN-<slug>/index.md` navigation-pointer pattern; §2d explicitly names what the carve-out does NOT change (§1 enumeration closure preserved; §2 budget applies to §1 files; §2b aggregate scope unchanged; §2c close-rotation unchanged; §3 archive-surface discipline unchanged; §4–§9 archive-pack discipline unchanged). Subsumes S047 D-150 deferred spec-amendment candidate (iv) (`read-contract.md` §1 vs. `prompts/application.md` §Read ambiguity) by direction. No change to §2 per-file budget values, §2a sensor thresholds, §2b budget values, §2c retention-window value, §4 archive-pack structure, §5 manifest fields, §6 reference convention, or §7 integrity mechanism. `tools/validate.sh` check 20 is not affected by this revision at constants level (applications/ files were already not in the default-read aggregate counted by check 20 because §1 was already closed; the carve-out makes the pre-existing behaviour explicit and extends it by documentation). v4 preserved as `read-contract-v4.md` with `status: superseded`.
 

@@ -1,0 +1,30 @@
+perspective: outsider-frame-completion
+participant_kind: non-anthropic-model
+participant_identity: GPT-5.5 via codex CLI exec; reasoning-effort xhigh per ~/.codex/config.toml defaults; sandbox=read-only
+model_family: gpt
+model_id: gpt-5.5
+model_version: gpt-5.5-xhigh-reasoning-codex-2026-04-25
+provider: openai
+endpoint: codex-cli-stdio
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: Case Steward (operator-pre-ratified at S057 D-196 + S058 D-198 first-ratification-step per S050 precedent + D-133 M2 lineage-constraint matrix non-Claude Outsider seat)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/058-session/01-brief-shared.md + provenance/058-session/01-brief-p3.md (concatenated and piped to codex stdin per WX-47-1 workaround)
+delivered_at: 2026-04-25T00:00:00Z
+received_at: 2026-04-25T00:00:00Z
+raw_response_file: provenance/058-session/01c-perspective-outsider-frame-completion.md
+transport_notes: Invoked via `cat /tmp/s058-brief-p3.md | codex exec --sandbox read-only -o provenance/058-session/codex-p3-final.log`; final message captured at codex-p3-final.log; full transcript at codex-p3-raw-output.log; sandbox=read-only prevents file modifications; reasoned from concatenated shared+role-specific brief.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: known-no
+training_lineage_evidence_pointer: https://openai.com/policies (provider-public statement; OpenAI does not train on Anthropic Claude outputs)
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct

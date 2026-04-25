@@ -1,0 +1,133 @@
+---
+session: 058
+title: Perspective — P4 Cross-Family Reviewer / Laundering-Audit (Session 058)
+perspective: cross-family-reviewer
+perspective_family: codex-gpt-5.5
+perspective_role: cross-family-reviewer
+date: 2026-04-25
+status: immutable-at-commit
+provenance_note: verbatim from codex exec --sandbox read-only -o output (second invocation; first invocation correctly refused per blocked-on-precondition; canonical 01a/01b/01c committed before this run); raw log at codex-p4-raw-output.log; final message at codex-p4-final.md; model gpt-5.5 reasoning-effort xhigh per ~/.codex/config.toml; Case Steward wrapped with frontmatter only (no body edits)
+---
+
+## Frame Critique
+
+The frame is mostly right, but the audit question is not "which direction has the best architecture?" It is "which claims are actually warranted by the evidence in the three perspectives, and which are being promoted by relabeling, selective gates, or soft convergence?"
+
+P1 and P3 both see EF-055 as a source-of-truth problem: durable facts should stop living primarily in accretive Markdown. P2 sees it as a timing and warrant problem: §10.4-M10 already defined empirical triggers, and those triggers should not be bypassed by architectural enthusiasm. That split is useful. The danger for synthesis is laundering either side into a false majority: P1 + P3 do not agree on implementation, and P1 + P2 do not agree on adoption, but all three converge on staging, `SESSION-LOG.md` first, fallback discoverability, and operator preference as durable input rather than foreclosure.
+
+The strongest reframe comes from P3: Direction A can be satisfied only superficially if it becomes "thin indexes plus per-record Markdown." That reduces local read cost but may leave Markdown as source-of-truth. P1 partially addresses this by pairing A with Alt3, but then makes registries phase-3/opportunistic, which weakens the A+Alt3 claim. P2 correctly warns against warrant bypass, but overstates §10.4-M10 as a meta-gate that controls whether the matrix can be consulted at all.
+
+The deliberation is really deciding whether to begin an irreversible source-of-truth transition now, and if so what minimum phase proves the record discipline before the engine spends an engine-v bump on a Markdown reshuffle.
+
+## Q1 — Primary Direction
+
+**P4 own recommendation, separate from audit findings:** adopt an alternative architecture: a gate-bound Substrate-N3.5 pilot toward Direction A. This is closest to P3's Q1, but with P2's warrant discipline and a narrower phase-1 than P3 proposes.
+
+I would not adopt full P1 A+Alt3 as written. P1's strongest point is that Direction B does not change the structural shape, and `SESSION-LOG.md` pressure is real. But P1 launders part of the timing case by saying §10.4-M10 warrants "implicitly" fire because `SESSION-LOG.md` is near hard ceiling. The M10 warrants named in the shared brief are maintenance-time 2x across 3 sessions and multi-hop query dominance 5x over 5 sessions; a file-size warning is adjacent evidence, not the same warrant.
+
+I would not adopt P2's Direction C as the primary answer. P2 gives the best falsification discipline and a real fallback path, so it is not merely critique. But P2 adds a new combined gate: warrant-fire plus independent substrate verification. That may be prudent, but it is not the original warrant. P2 also relies on a claim that substrate transport is less than fully verified, while the shared brief states Phase-1 retrieval substrate is operational. That is a weak load-bearing move unless sourced elsewhere.
+
+P3's N3.5 is the best substantive distinction: structured records must be authoritative, with Markdown as generated or checked witness. But P3's scope drifts. Q2 lists sessions, minorities, engine versions, feedback, and mirrors in phase 1; Q7 narrows S058 to `SESSION-LOG.md` plus schema. The narrower version is the credible one.
+
+So the adoption should be: ratify the substantive arc, pilot structured records on `SESSION-LOG.md`, require validator and retrieval support immediately, and gate broader migration on measured success. This avoids B's ceiling-only patch, C's likely indefinite deferral, and P1's risk of calling a Markdown shard pattern Substrate-N2.
+
+## Q2-Q8 — Secondary Questions
+
+### Q2 — Adoption Scope
+
+Phase 1 should be `SESSION-LOG.md` only plus the record contract required to make it authoritative. The migrated session facts should live as structured records; the retained Markdown should become a thin generated or validator-checked witness. Do not migrate all minority blocks in phase 1.
+
+Phase 2 should migrate mirrored minorities, because that tests canonical fact identity across specs. Phase 3 should migrate engine-version history, reference-validation minorities, and feedback metadata. P1's `SESSION-LOG.md` + §10.4 phase is attractive but too broad for first proof; P3's phase-1 list is broader still.
+
+### Q3 — Per-Record Directory Structure
+
+Use fact-family directories, not spec-owned Markdown directories, for source records:
+
+```text
+records/sessions/
+records/minorities/
+records/engine-versions/
+records/feedback/
+```
+
+Original specs should retain thin witness indexes where human orientation requires them. File classes should distinguish `structured-source-record`, `markdown-witness`, and `human-provenance`. P1's centralized `specifications/minorities/` works for minorities but does not generalize cleanly. P2's distributed spec-local structure preserves locality but risks reintroducing mirrored-record divergence.
+
+### Q4 — Index Format
+
+Use the `open-issues/index.md` thin-table pattern, but only as witness/projection. Recommended columns: `ID | Status | Summary | Source record | Witness/path | Anchor session | Last status event`.
+
+The authority question matters more than the columns. If the index row and the record disagree, the record should win and the validator should fail. P1 and P2 both endorse thin rows; P3 correctly adds that thin rows must not become a second source of truth.
+
+### Q5 — Validator + Tool Updates
+
+Yes, add check 25 in phase 1. P2's suggestion that check 25 can be deferred until after a `SESSION-LOG.md` pilot is too weak; a pilot without integrity validation cannot prove the pattern.
+
+Check 25 should verify unique IDs, required fields, index-to-record consistency, no orphan records, no orphan index rows, valid status enums, and record/witness drift. `build_retrieval_index.py` should index structured records as first-class objects, not merely follow Markdown links. Tests need fixtures for duplicate IDs, broken paths, stale status, missing witness, and mirrored minority canonicalization.
+
+### Q6 — Cross-Spec Interactions
+
+Phase-1 essentials: `workspace-structure.md` for file classes and record/witness discipline; `read-contract.md` for default-read and fallback expectations; `SESSION-LOG.md` or its replacement index; `tools/validate.sh`; `tools/build_retrieval_index.py`; and `engine-manifest.md` only to record the transition or engine-v10 candidate status.
+
+Defer full `engine-manifest.md` §7 reshaping, `reference-validation.md` §10 migration, and `retrieval-contract.md` §7 migration until phase 2. P1's phase-1 cross-spec surface is larger than its "two blocks" framing suggests, because mirrored minorities pull `retrieval-contract.md` into scope.
+
+### Q7 — Multi-Session Arc Shape
+
+Use a 3-session minimum arc. S058: decide architecture and migrate `SESSION-LOG.md` as structured records. S059: migrate mirrored minorities if the gate passes. S060: migrate engine versions and feedback metadata, then decide whether Markdown witnesses are generated or merely checked.
+
+Normalized phase-2 gate: check 25 passes; retrieval resolves 100% of migrated IDs; fallback index is readable without substrate; default-read word count decreases by at least the migrated `SESSION-LOG.md` body minus thin-index overhead; two consecutive closes add session records without editing a long accretive block; no record/witness drift is detected. Broader migration should not begin before those conditions hold.
+
+### Q8 — Operator-Stated Preference Treatment
+
+Treat Direction A as durable input, not foreclosure. P1 and P3 handle this well; P2 is also right that surfacing a preference for MAD means adversarial testing, not automatic ratification.
+
+The preference should affect interpretation, not outcome selection. Specifically, it clarifies that "Direction A" means structured records as source-of-truth and Markdown as witness. It should make synthesis more suspicious of a shallow per-record Markdown migration, not less. Operator preference is not a tie-breaker only; it is evidence about the experienced friction and intended reframe. But it cannot override missing validation or unclear phase gates.
+
+## Open Questions Addressed
+
+### Substrate Availability
+
+All three perspectives converge on fallback discoverability, and that convergence is robust. The fallback should be committed thin indexes that point to source records and witnesses. However, the fallback must stay thin. A "single readable aggregate" that mirrors record content would recreate the linear-growth problem under a new name.
+
+### Per-Record Immutability
+
+Use append-only status events. The current index may show only latest status, but the source record should preserve preserved/discharged/vindicated/superseded history with sessions. P1 and P3 converge here; P2 is compatible but less explicit.
+
+### Mirrored Minorities
+
+Mirrored minorities should have one canonical source record with `applies_to` or equivalent metadata. Local specs may carry witness rows pointing to that record. P1 and P3 converge on this. P2's locality argument should be preserved as a caution, but duplicate source files for mirrored facts are the wrong tradeoff.
+
+### Archive Packs
+
+Archive packs should capture pre-migration Markdown state and a mapping from old rows to new record IDs. Do not create one archive pack per small block if a session-level migration pack can preserve the same evidence. The archive pack is rollback evidence, not an alternate live source.
+
+### External Portability
+
+P3 is right that bootstrap must extend if engine-v10 adopts records. External workspaces need empty valid record directories, schemas or schema documentation, validator fixtures, and fallback indexes. Otherwise Direction A exports an implicit local-tool dependency.
+
+## Anti-Laundering Self-Check
+
+I may be laundering P3's N3.5 into a compromise that sounds safer than it is. A structured-record pilot still adds schema, validator, and tool burden. If writing session records costs more than the current `SESSION-LOG.md` row, my recommendation fails.
+
+I also lean on `SESSION-LOG.md` ceiling pressure as enough reason to act now while rejecting P1's claim that this equals §10.4-M10 warrant-fire. That distinction is narrow. It holds only if phase 1 is explicitly a bounded pilot, not full activation.
+
+Falsifiers: check 25 proves noisy or expensive; record/witness drift occurs within two sessions; retrieval cannot resolve structured records cleanly; or the phase-1 migration fails to reduce default-read load in measured terms.
+
+## Counter-Frames For The Dominant Claude Position
+
+P1 and P2 do not converge on direction, but they share a quieter frame: the migration object is a Markdown block. P1 wants to move selected blocks into per-record files and indexes; P2 wants to delay, or if forced, pilot on `SESSION-LOG.md` as per-session Markdown rows. Both pay less attention than P3 to authority: which artifact is the fact source?
+
+That shared frame can mislead synthesis into treating "staged per-record Markdown" as the natural compromise between A and C. It is not. It may be only a better archive rotation. The real fork is whether the engine writes structured facts at close time and validates witnesses against them.
+
+A second shared Claude assumption is that word-count pressure is the main adoption signal. It matters, especially for `SESSION-LOG.md`, but semantic duplication is the harder substrate problem. Mirrored minorities are smaller than `SESSION-LOG.md`; they are more diagnostic of whether the engine can stop maintaining one fact in several prose homes.
+
+A third shared assumption is that reversibility means preserving the current source-of-truth model. A small structured layer can be more reversible than prose migration if it is append-only, schema-light, and validated. The synthesis should not equate "structured source records" with maximal irreversible Direction A.
+
+## Dissent-Preservation Recommendations
+
+1. Preserve P2's warrant-gated deferral if synthesis adopts A now. Position: "Direction C ... with Direction B held as a contingent fallback." Source: `01b`, Q1. Activation: no §10.4-M10 telemetry exists by S060, or phase-1 cost exceeds projected maintenance savings across two closes.
+
+2. Preserve P3's warning against shallow Direction A. Position: "Per-record Markdown plus thin indexes ... is not necessarily Substrate-N2." Source: `01c`, Q1/Frame Critique. Activation: migrated records lack structured authoritative fields, or Markdown witnesses remain manually authoritative.
+
+3. Preserve P1's staged substantive-arc position if synthesis chooses C or B only. Position: "I am buying ambition by buying staging." Source: `01a`, Anti-laundering self-check. Activation: `SESSION-LOG.md` breaches hard ceiling, or another default-read accretive block crosses 6K while no record pilot exists.
+
+4. Preserve canonical mirrored-minority records if synthesis chooses distributed spec-local files. Position: "Mirrored minorities should share one canonical minority record." Source: `01c`, Open Question — Mirrored Minorities; also `01a`, Open question 3. Activation: any mirrored minority status or text diverges across specs.

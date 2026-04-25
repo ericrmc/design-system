@@ -3,8 +3,8 @@ title: Engine Manifest
 version: 1
 status: active
 created: 2026-04-22
-last-updated: 2026-04-24
-updated-by-session: 050
+last-updated: 2026-04-25
+updated-by-session: 058
 supersedes: none
 ---
 
@@ -29,11 +29,11 @@ The engine is distinct from:
 
 ### 2. Current engine version
 
-**`engine-v9`** (established Session 050 per D-172).
+**`engine-v10`** (established Session 058 per D-200).
 
-Subsequent engine versions (`engine-v10`, `engine-v11`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
+Subsequent engine versions (`engine-v11`, `engine-v12`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
 
-### 3. Engine-definition files at `engine-v9`
+### 3. Engine-definition files at `engine-v10`
 
 The following files constitute the engine at the current version:
 
@@ -50,6 +50,7 @@ The following files constitute the engine at the current version:
 | `specifications/reference-validation.md` | Defines reference-validation as the third sense of validation. |
 | `specifications/read-contract.md` | Defines the access discipline: default-read surface vs archive surface (v1, added engine-v3). |
 | `specifications/retrieval-contract.md` | Declares the required retrieval capabilities for Selvedge workspaces (v1, added engine-v9). |
+| `specifications/records-contract.md` | Declares the structured-record-as-source-of-truth discipline + fact-family directory pattern + bootstrap obligations (v1, added engine-v10). |
 | `specifications/engine-manifest.md` | **This file.** |
 | `tools/validate.sh` | Executable: runs the Tier 1 structural checks from `validation-approach.md`. |
 
@@ -196,6 +197,43 @@ Engine-v9 is the eighth engine-v-bump overall (v2 Session 021; v3 Session 022; v
 Engine-v9 introduces a **new class of substantive-revision provenance**: MAD-adopted new engine-definition spec driven by inbox engine-feedback with explicit retrieval-substrate capability. Prior classes: v2–v4 preserved-minority / watchpoint activation; v5–v6 preserved-minority activation; v7 operator-surfaced mid-session deliberation; v8 operator-directed-resolution of inbox record (single-orchestrator not-for-deliberation). Engine-v9 is the first bump where inbox feedback triggers MAD deliberation (not single-orchestrator) which produces a new engine-definition spec (not an amendment to existing). The class is distinct from v7 (which was operator-surfaced mid-session) and from v8 (which was operator-directed-pre-ratified).
 
 **Key consequence at v9 adoption:** aggregate default-read surface gains `specifications/retrieval-contract.md` (~3,500 words). `specifications/aliases.yaml` is ~40 words (very compact). `workspace-structure.md` grows from 3,412 to approximately 4,200 (five new §10.4 minorities ~160 words each). Net default-read aggregate post-S050-close forecast ~70–72K (S044 close rotates OUT; S050 close enters; retrieval-contract.md added). Well under §2b 90K soft ceiling (~18–20K headroom). Phase-2 engine-v10 candidate is gated on WX-50-1 firing per retrieval-contract.md §6.
+
+- **`engine-v10`** — established Session 058 via D-200. **Second-instance MAD-adopted-new-engine-definition-spec class** (after engine-v8→v9 at S050 D-172). Resolution of `engine-feedback/inbox/EF-055-substrate-aware-format-and-archive-rethink-substantive-arc.md` via 4-perspective two-family MAD (P1 Substrate-Methodology Architect Claude + P2 Incrementalist Conservator Claude + P3 Outsider Frame-Completion Codex/GPT-5.5 + P4 Cross-Family Reviewer Laundering-Audit Codex/GPT-5.5) per S057 D-196 pre-ratification + S057 design-space.md as primary input + S058 first-ratification-step composition adoption per S050 D-172 precedent. Substantive: adds one new engine-definition file + 3 substantive revisions to existing engine-definition files.
+
+  - `specifications/records-contract.md` v1 (new) — declares structured-record-as-source-of-truth discipline for selected fact families per Substrate-N3.5 framing originated by P3 Outsider [`provenance/058-session/01c-perspective-outsider-frame-completion.md`, Q1] and endorsed by P4 [`01d`, Q1]; phase-1 family `records/sessions/`; per-record schema (id, session, date, title, summary, status, anchor_close); thin per-family `index.md` projection-not-source-of-truth pattern; WX-58-1 phase-2 gate (records-discipline-soak recording across S058–S060); four preserved first-class minorities §7.1–§7.4 (also mirrored in `workspace-structure.md` v7 §10.4-M12 through §10.4-M15).
+
+  Substantive revisions to existing engine-definition specs bundled in the v10 adoption:
+  - `specifications/workspace-structure.md` v6 → v7 — file-class extension (`structured-source-record` + `markdown-witness` per §file classes); `records/` directory added to top-level structure; SESSION-LOG.md migrated section per §records-substrate; §10.4-M10 written-warrant amendment (clause (c) operator-surfacing channel formalised); §10.4-M12 through §10.4-M15 four new first-class minorities preserved (minority count 36 → 40). v6 preserved as `workspace-structure-v6.md` with `status: superseded`.
+  - `specifications/read-contract.md` v5 → v6 — §1 item 5 revised from `SESSION-LOG.md` to `records/sessions/index.md`; §1 closing paragraph extended with "Records directory clarification" making explicit that `records/<family>/<id>.md` per-record files are session-scope read-as-needed (similar pattern to v5 §2d applications-directory carve-out). No change to §2 per-file budget values, §2a sensor thresholds, §2b budget values, §2c retention-window value, or §4–§9 archive-pack mechanisms. v5 preserved as `read-contract-v5.md` with `status: superseded`.
+
+  Engine-adjacent updates (NOT added to §3 per Q7 synthesis):
+  - `tools/validate.sh` — check 25 added (records-substrate integrity per `records-contract.md` v1 §3): unique IDs / required frontmatter fields / index-row points to existing record / no orphan records / no orphan index rows / valid status enum / no record-witness drift. Phase-1 implementation focuses on `records/sessions/`; phase-2+ extends to additional families. Constants: `RECORDS_CONTRACT_ADOPTION_SESSION=58`.
+  - `tools/build_retrieval_index.py` — record-aware indexing extension: walks `records/<family>/*.md` (in addition to existing `*.md` walk); parses frontmatter; extracts `id` as canonical identifier; extracts `kind` from family name; inserts into `documents` and `identifiers` tables.
+  - `tools/bootstrap-external-workspace.sh` — extended with records-substrate-bootstrap steps per `records-contract.md` v1 §5: copy records-contract.md; create empty `records/sessions/` + thin `records/sessions/index.md`.
+
+  SESSION-LOG.md migration (D-203): pre-engine-v10 SESSION-LOG.md content (rows S001 through S057 per pre-S058 thin-index discipline) migrated to `records/sessions/S<NNN>.md` per-session structured records; archive-pack pre-migration witness at `provenance/058-session/archive/pre-records-SESSION-LOG/` per S022 R8a / S040 D-123 / S051 D-178 archive-pack precedent chain.
+
+  All other engine-definition files unchanged at engine-v10 boundary: `PROMPT.md`; `prompts/development.md`; `prompts/application.md`; `methodology-kernel.md` v6; `multi-agent-deliberation.md` v4; `validation-approach.md` v5; `identity.md` v2; `reference-validation.md` v3; `retrieval-contract.md` v1. Workspace-identity files unchanged: `MODE.md` (self-dev marker).
+
+Engine-v10 is the ninth engine-v-bump overall (v2 Session 021; v3 Session 022; v4 Session 023; v5 Session 028; v6 Session 033; v7 Session 036; v8 Session 048; v9 Session 050; v10 Session 058) and the sixth post-cadence-maturation content-driven bump (v5 + v6 + v7 + v8 + v9 + v10). §5.4 Session 022 engine-v-cadence minority (activated-not-escalated) does NOT re-escalate at this bump per S028 D-096 / S033 D-107 / S036 D-114 / S048 D-154 / S050 D-172 content-driven-bump precedent chain (cadence concern separates from substantive-bump classification). Engine-v10 follows an 8-session preservation window (S050→S057; engine-v9 ratified at S050 + 7 preserved sessions); preservation depth is the second-longest engine-v in workspace history after engine-v7 11-session record. Engine-v9 closes at preservation depth 8 — first-of-record exceeds-engine-v4-and-v5-and-engine-v6 marks; second-place all-time after engine-v7's 11-session.
+
+Engine-v10 introduces a **new instance of the MAD-adopted-new-engine-definition-spec class** (second-of-record after engine-v9). Distinct from prior bump-provenance classes:
+- v2–v4: preserved-minority / watchpoint activation.
+- v5–v6: preserved-minority activation.
+- v7: operator-surfaced mid-session deliberation.
+- v8: operator-directed-resolution of inbox record (single-orchestrator not-for-deliberation).
+- v9: MAD-adopted new engine-definition spec driven by inbox engine-feedback (EF-047-retrieval-discipline) — first-of-record.
+- **v10: MAD-adopted new engine-definition spec driven by inbox engine-feedback (EF-055 substrate-aware-format-and-archive-rethink) — second-of-record same class.**
+
+The class reification at v10 confirms the MAD-adopted-new-engine-definition-spec pattern as engine-conventional for substantive-arc class engine-feedback resolutions. Path AS Shape-1 (synthesis at S057 producing design-space.md) → Path AS-MAD-execution (deliberation + adoption at S058) is the established two-session shape for this class; subsequent records-substrate phase-2 (S059) + phase-3 (S060+) sessions extend the arc per `records-contract.md` v1 §6 phase-2 gate.
+
+**Key consequence at v10 adoption:** aggregate default-read surface impact:
+- Adds `specifications/records-contract.md` (~3,000 words estimated post-creation).
+- `workspace-structure.md` v7 grows from 3,918 to ~5,400 words (file-class extension + records-substrate section + SESSION-LOG.md migrated section + §10.4-M12 through M15 new minorities + §10.4-M10 warrant amendment) — within 6K soft.
+- `read-contract.md` v6 grows from 5,624 to ~6,000 words (item 5 revised + records-directory clarification + v6 versioning entry) — at 6K soft boundary.
+- `engine-manifest.md` grows by engine-v10 entry (~700 words).
+- SESSION-LOG.md (~7,390 words) **removed** from default-read enumeration per migration to records/sessions/index.md (~~thin~~ ~1,500 words estimated post-creation).
+- Net default-read aggregate forecast post-S058-close: ~76,000-78,000 words / 22 files (replaces SESSION-LOG.md with records/sessions/index.md; adds records-contract.md). Comfortable under 90K soft ceiling. WX-34-1 SESSION-LOG.md ceiling pressure permanently retired (file replaced by structurally bounded thin index).
 
 Future engine-version increments will extend this history in this section.
 

@@ -1,0 +1,30 @@
+perspective: substrate-methodology-architect
+participant_kind: claude-subagent
+participant_identity: Claude Opus 4.7 (1M context); subagent via Claude Code Agent tool, general-purpose subagent_type; isolated context
+model_family: claude
+model_id: claude-opus-4-7
+model_version: claude-opus-4-7-1m-context-S058
+provider: anthropic
+endpoint: agent-tool-internal
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: Case Steward (operator-pre-ratified at S057 D-196 + S058 D-198 first-ratification-step per S050 precedent)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/058-session/01-brief-shared.md + provenance/058-session/01-brief-p1.md
+delivered_at: 2026-04-25T00:00:00Z
+received_at: 2026-04-25T00:00:00Z
+raw_response_file: provenance/058-session/01a-perspective-substrate-methodology-architect.md
+transport_notes: Subagent launched via Claude Code Agent tool with run_in_background=true; reasoned from briefs only; no workspace-file reads beyond the two specified brief files (per role-stance instruction); did not commit or modify any files.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+training_lineage_evidence_pointer: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: known-overlap

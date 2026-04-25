@@ -1,0 +1,18 @@
+---
+archive_id: 058-pre-records-SESSION-LOG
+originating_session: 058
+originating_path: SESSION-LOG.md
+migrated_in_session: 058
+kind: superseded-spec
+total_bytes: 62539
+total_words: 7390
+chunk_count: 1
+chunk_boundary_rule: single-file
+source_hash_sha256: 17302df920cbde44d6f6d8c2cb30efd03df93be8d42ce9429079a647226af27e
+chunks:
+  - ordinal: 1
+    file: 00-source.md
+    line_range: "1-70"
+    chunk_hash_sha256: 17302df920cbde44d6f6d8c2cb30efd03df93be8d42ce9429079a647226af27e
+readers_note: Pre-engine-v10 SESSION-LOG.md byte-identical witness preserved at S058 close per D-203. Migrated to records/sessions/ per records-contract.md v1. Consult to recover the pre-migration thin-table SESSION-LOG.md form (post-S051 D-178 forced-restructure thin-index discipline).
+---

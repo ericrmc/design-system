@@ -42,6 +42,12 @@ readonly DEFAULT_READ_AGGREGATE_HARD=100000
 readonly DEFAULT_READ_AGGREGATE_SOFT=90000
 readonly DEFAULT_READ_CLOSE_RETENTION_WINDOW=6
 
+# Session from which the records-substrate is enforced (D-200, Session 058).
+# Check 25 applies only to sessions numbered >= this constant.
+# See specifications/records-contract.md v1 §3 + §6 + specifications/validation-approach.md v5 (check 25 added at engine-v10).
+readonly RECORDS_CONTRACT_ADOPTION_SESSION=58
+readonly SESSION_RECORD_STATUS_ENUM="closed superseded archived"
+
 WORKSPACE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PASS=0
 FAIL=0
@@ -61,14 +67,26 @@ echo ""
 # [1] Required top-level files
 # Post-Session-022 (D-084 R8b): open-issues.md replaced by open-issues/ directory
 # with open-issues/index.md as the required default-read entry point.
+# Post-Session-058 (D-203): SESSION-LOG.md migrated to records/sessions/ per
+# records-contract.md v1; records/sessions/index.md replaces SESSION-LOG.md as
+# default-read entry per read-contract.md v6 §1 item 5. Pre-engine-v10 sessions
+# may still have SESSION-LOG.md at workspace root; accept either.
 echo "[1] Required files"
-for f in PROMPT.md SESSION-LOG.md; do
+for f in PROMPT.md; do
   if [[ -f "$WORKSPACE_ROOT/$f" ]]; then
     pass "$f exists"
   else
     fail "$f missing"
   fi
 done
+# Session log: accept either pre-engine-v10 SESSION-LOG.md OR post-engine-v10 records/sessions/index.md
+if [[ -f "$WORKSPACE_ROOT/records/sessions/index.md" ]]; then
+  pass "records/sessions/index.md exists (engine-v10 records-substrate)"
+elif [[ -f "$WORKSPACE_ROOT/SESSION-LOG.md" ]]; then
+  pass "SESSION-LOG.md exists (pre-engine-v10)"
+else
+  fail "Session log missing (records/sessions/index.md required at engine-v10+; SESSION-LOG.md acceptable pre-engine-v10)"
+fi
 # open-issues: accept either legacy single-file OR post-R8b directory
 if [[ -f "$WORKSPACE_ROOT/open-issues/index.md" ]]; then
   pass "open-issues/index.md exists (post-R8b directory form)"
@@ -158,15 +176,21 @@ fi
 echo ""
 
 # [6] Session log completeness
+# Post-engine-v10 (S058 D-203): SESSION-LOG.md migrated to records/sessions/.
+# Verify each provenance dir has a corresponding records/sessions/S<NNN>.md OR
+# (pre-engine-v10) is enumerated as a row in SESSION-LOG.md.
 echo "[6] Session log completeness"
 for dir in ${provdirs[@]+"${provdirs[@]}"}; do
   dirname=$(basename "$dir")
   session_num=$(echo "$dirname" | grep -o '^[0-9]\{3\}')
   session_int=$((10#$session_num))
-  if grep -qE "\|[[:space:]]*0*${session_int}[[:space:]]*\|" "$WORKSPACE_ROOT/SESSION-LOG.md" 2>/dev/null; then
-    pass "Session ${session_num} in SESSION-LOG.md"
+  rec_path="$WORKSPACE_ROOT/records/sessions/S${session_num}.md"
+  if [[ -f "$rec_path" ]]; then
+    pass "Session ${session_num} record at records/sessions/S${session_num}.md"
+  elif [[ -f "$WORKSPACE_ROOT/SESSION-LOG.md" ]] && grep -qE "\|[[:space:]]*0*${session_int}[[:space:]]*\|" "$WORKSPACE_ROOT/SESSION-LOG.md" 2>/dev/null; then
+    pass "Session ${session_num} in SESSION-LOG.md (pre-engine-v10)"
   else
-    fail "Session ${session_num} missing from SESSION-LOG.md"
+    fail "Session ${session_num} missing from session log (no records/sessions/S${session_num}.md and no SESSION-LOG.md row)"
   fi
 done
 echo ""
@@ -778,8 +802,12 @@ else
     [[ -f "$p" ]] && default_read_files+=("$p")
   done
 
-  # (3) SESSION-LOG.md
-  [[ -f "$WORKSPACE_ROOT/SESSION-LOG.md" ]] && default_read_files+=("$WORKSPACE_ROOT/SESSION-LOG.md")
+  # (3) Session log: records/sessions/index.md (engine-v10+) OR SESSION-LOG.md (pre-engine-v10)
+  if [[ -f "$WORKSPACE_ROOT/records/sessions/index.md" ]]; then
+    default_read_files+=("$WORKSPACE_ROOT/records/sessions/index.md")
+  elif [[ -f "$WORKSPACE_ROOT/SESSION-LOG.md" ]]; then
+    default_read_files+=("$WORKSPACE_ROOT/SESSION-LOG.md")
+  fi
 
   # (4) open-issues/index.md (post-R8b) or open-issues.md (pre-R8b, during migration)
   if [[ -f "$WORKSPACE_ROOT/open-issues/index.md" ]]; then
@@ -1081,6 +1109,105 @@ else
       fail "MODE.md has unrecognised mode value: '$mode_val' (expected 'self-development' or 'external-problem')"
     else
       pass "MODE.md present with recognised mode: $mode_val"
+    fi
+  fi
+fi
+echo ""
+
+# --- Check 25: records-substrate integrity (added engine-v10 Session 058 per D-200 + records-contract.md v1) ---
+echo "Check 25: records-substrate integrity (records-contract.md v1 §3)"
+# Gate: session >= RECORDS_CONTRACT_ADOPTION_SESSION (=58); presence-gate within scope on records/sessions/.
+last_session_num=""
+last_provdir=$(ls -1d "$WORKSPACE_ROOT"/provenance/*/ 2>/dev/null | sort | tail -1)
+if [[ -n "$last_provdir" ]]; then
+  last_session_dir="$(basename "$last_provdir")"
+  last_session_num="${last_session_dir%%-*}"
+fi
+if [[ -z "$last_session_num" ]]; then
+  echo "  (no provenance directories; check 25 out-of-scope)"
+elif ! [[ "$last_session_num" =~ ^[0-9]+$ ]]; then
+  echo "  (cannot parse session number from latest provenance dir; check 25 out-of-scope)"
+else
+  current_session_int=$((10#$last_session_num))
+  if [[ $current_session_int -lt $RECORDS_CONTRACT_ADOPTION_SESSION ]]; then
+    echo "  (session $current_session_num < $RECORDS_CONTRACT_ADOPTION_SESSION; check 25 out-of-scope pre-adoption)"
+  else
+    records_dir="$WORKSPACE_ROOT/records/sessions"
+    records_index="$records_dir/index.md"
+    if [[ ! -d "$records_dir" ]]; then
+      fail "records/sessions/ directory missing (required at engine-v10+; see records-contract.md v1 §2.1)"
+    elif [[ ! -f "$records_index" ]]; then
+      fail "records/sessions/index.md missing (required at engine-v10+; see records-contract.md v1 §2.2)"
+    else
+      check25_pass=true
+      orphan_records=0
+      orphan_rows=0
+      missing_field=0
+      bad_status=0
+      drift=0
+
+      # Collect record IDs from filesystem
+      declare -a fs_ids=()
+      for rfile in "$records_dir"/S*.md; do
+        [[ -f "$rfile" ]] || continue
+        rid=$(awk '/^---$/{f=!f; next} f && /^id:/{print $2; exit}' "$rfile" | tr -d '[:space:]')
+        if [[ -z "$rid" ]]; then
+          fail "records/sessions/$(basename "$rfile") missing required \`id\` frontmatter field"
+          missing_field=$((missing_field + 1))
+          check25_pass=false
+          continue
+        fi
+        # Status enum check
+        rstatus=$(awk '/^---$/{f=!f; next} f && /^status:/{print $2; exit}' "$rfile" | tr -d '[:space:]')
+        if [[ -z "$rstatus" ]]; then
+          fail "records/sessions/$(basename "$rfile") missing required \`status\` frontmatter field"
+          missing_field=$((missing_field + 1))
+          check25_pass=false
+        elif ! echo " $SESSION_RECORD_STATUS_ENUM " | grep -q " $rstatus "; then
+          fail "records/sessions/$(basename "$rfile") has invalid status '$rstatus' (expected one of: $SESSION_RECORD_STATUS_ENUM)"
+          bad_status=$((bad_status + 1))
+          check25_pass=false
+        fi
+        fs_ids+=("$rid")
+      done
+
+      # Collect row IDs from index
+      declare -a idx_ids=()
+      while IFS= read -r line; do
+        # Match table rows like "| [S001](S001.md) | ..."
+        if [[ "$line" =~ \[S[0-9]+\]\(S[0-9]+\.md\) ]]; then
+          rid=$(echo "$line" | sed -nE 's/.*\[(S[0-9]+)\].*/\1/p')
+          [[ -n "$rid" ]] && idx_ids+=("$rid")
+        fi
+      done < "$records_index"
+
+      # Orphan records: in fs but not in index
+      for fid in "${fs_ids[@]:-}"; do
+        [[ -z "$fid" ]] && continue
+        found=false
+        for iid in "${idx_ids[@]:-}"; do
+          [[ "$fid" == "$iid" ]] && { found=true; break; }
+        done
+        if [[ "$found" == "false" ]]; then
+          fail "Orphan record: records/sessions/${fid}.md exists but is not enumerated in records/sessions/index.md"
+          orphan_records=$((orphan_records + 1))
+          check25_pass=false
+        fi
+      done
+
+      # Orphan index rows: in index but not in fs
+      for iid in "${idx_ids[@]:-}"; do
+        [[ -z "$iid" ]] && continue
+        if [[ ! -f "$records_dir/${iid}.md" ]]; then
+          fail "Orphan index row: records/sessions/index.md references ${iid} but records/sessions/${iid}.md does not exist"
+          orphan_rows=$((orphan_rows + 1))
+          check25_pass=false
+        fi
+      done
+
+      if [[ "$check25_pass" == "true" ]]; then
+        pass "records-substrate integrity OK: ${#fs_ids[@]} session records; index rows match; status enum clean; no orphans"
+      fi
     fi
   fi
 fi

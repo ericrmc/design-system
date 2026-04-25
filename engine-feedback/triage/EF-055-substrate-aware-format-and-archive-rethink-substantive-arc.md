@@ -1,10 +1,10 @@
 ---
 feedback_ref: engine-feedback/inbox/EF-055-substrate-aware-format-and-archive-rethink-substantive-arc.md
 triage_session: 056
-status: deferred
+status: resolved
 classification: substantive
 opened_issue: none
-resolved_by: none
+resolved_by: provenance/058-session/
 ---
 
 # Triage — EF-055-substrate-aware-format-and-archive-rethink-substantive-arc
@@ -53,7 +53,7 @@ Possible compression: phase-1 + phase-2 collapse to a single MAD session if synt
 
 ## Disposition
 
-- **Status**: deferred.
-- **Resolution**: NONE at S056. Resolution will be recorded by the future session(s) that adopt a direction; this triage record's `resolved_by:` field will be updated retroactively when resolution occurs (per `workspace-structure.md` v6 §engine-feedback retention convention: triage records are additive; closing-direction is a new edit not an overwrite).
-- **No OI opened**: triage classification is substantive but the substance is internal to the engine-feedback lifecycle; the dedicated MAD session(s) may open an OI if the deliberation surfaces a sub-question that warrants OI tracking.
-- **Forward-tracker**: this triage record is the canonical scheduling artefact. Dedicated session(s) should reference this file's `triage_session: 056` + `feedback_ref:` for context recovery.
+- **Status**: resolved (updated S058 D-199 through D-205).
+- **Resolution**: at S058 via Substrate-N3.5 pilot toward Direction A — phase-1 = SESSION-LOG.md only as proving slice migrated to records/sessions/. New engine-definition spec records-contract.md v1 + workspace-structure.md v6→v7 + read-contract.md v5→v6 + engine-manifest.md engine-v10 entry + tools/validate.sh check 25 + tools/build_retrieval_index.py record-aware indexing. Engine-v9→v10 (second-instance MAD-adopted-new-engine-definition-spec class). Four new minorities §10.4-M12 through §10.4-M15 preserved (count 36→40). §10.4-M10 written-warrant amendment formalised (clause c operator-surfacing channel). Phase-2 (mirrored-minority migration) gated on phase-2-gate conditions per records-contract.md v1 §6.
+- **No OI opened**: substantive resolution achieved within the engine-feedback lifecycle; deliberation produced four first-class minorities + one warrant amendment as preservation discipline.
+- **Forward-tracker**: this triage record is the canonical scheduling artefact for the substantive-arc resolution. Phase-2 (S059) and phase-3 (S060+) sessions should reference S058 close §7 forward observations + records-contract.md v1 §6 phase-2 gate.
