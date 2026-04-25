@@ -17,13 +17,14 @@
 #   1. Validates arguments and refuses to overwrite an existing path.
 #   2. Creates the target directory tree.
 #   3. Copies the engine-definition files per engine-manifest.md §3.
-#      SKIPS: superseded spec versions (*-v1.md, *-v2.md, ...); SESSION-LOG.md;
+#      SKIPS: superseded spec versions (*-v1.md, *-v2.md, ...); records/;
 #      open-issues/; provenance/; applications/; engine-feedback/; MODE.md;
 #      CLAUDE.md; this script itself; .git/; .claude/; .serena/.
 #   4. Writes MODE.md with mode: external-problem + required metadata +
 #      application_brief pointer, per PROMPT.md §Session-001 obligation.
-#   5. Scaffolds empty development-provenance (SESSION-LOG.md header,
-#      open-issues/index.md header, empty open-issues/resolved/ and provenance/).
+#   5. Scaffolds empty development-provenance + records-substrate
+#      (records/sessions/index.md thin header per records-contract.md v1 §5;
+#      open-issues/index.md header; empty open-issues/resolved/ and provenance/).
 #   6. Creates applications/001-<slug>/brief.md stub derived from
 #      prompts/application.md §This application's context slot template.
 #   7. Creates engine-feedback/outbox/ with a README naming the
@@ -132,7 +133,8 @@ mkdir -p "$TARGET" \
          "$TARGET/open-issues/resolved" \
          "$TARGET/provenance" \
          "$TARGET/applications/001-$SLUG" \
-         "$TARGET/engine-feedback/outbox"
+         "$TARGET/engine-feedback/outbox" \
+         "$TARGET/records/sessions"
 
 # -----------------------------------------------------------------------------
 # 3. Copy engine-definition files (engine-manifest.md §3)
@@ -158,6 +160,7 @@ SPEC_FILES=(
   reference-validation.md
   read-contract.md
   retrieval-contract.md
+  records-contract.md
   engine-manifest.md
 )
 for spec in "${SPEC_FILES[@]}"; do
@@ -168,7 +171,7 @@ done
 cp "$SOURCE_ROOT/tools/validate.sh" "$TARGET/tools/validate.sh"
 chmod +x "$TARGET/tools/validate.sh"
 
-echo "    engine-definition files copied (13 files per engine-manifest §3)."
+echo "    engine-definition files copied (14 files per engine-manifest §3)."
 echo ""
 
 # -----------------------------------------------------------------------------
@@ -207,6 +210,8 @@ EOF
 
 echo "    engine-adjacent tooling copied (build_retrieval_index.py, retrieval_server.py,"
 echo "    aliases.yaml scaffold, .mcp.json, .gitignore with .cache/)."
+echo "    Substrate scripts carry PEP 723 inline-deps; uv resolves dependencies"
+echo "    automatically per 'uv run'. No pip+venv setup required."
 echo ""
 
 # -----------------------------------------------------------------------------
@@ -247,19 +252,30 @@ echo ""
 # 5. Scaffold empty development-provenance
 # -----------------------------------------------------------------------------
 
-echo "[5] Scaffolding development-provenance..."
+echo "[5] Scaffolding development-provenance + records-substrate..."
 
-cat > "$TARGET/SESSION-LOG.md" <<'EOF'
-# Session Log
+# Records-substrate per specifications/records-contract.md v1 §5 bootstrap obligations:
+# - records/ + records/sessions/ directories created (in mkdir step 2).
+# - records/sessions/index.md thin pointer-only file with header only (no rows).
+# Replaces pre-engine-v10 SESSION-LOG.md per read-contract.md v6 §1 item 5;
+# new workspaces are records-substrate-native at engine-v10+.
+cat > "$TARGET/records/sessions/index.md" <<'EOF'
+# Session Records — Index
 
-Thin one-line-per-session index. Canonical per-session detail lives in
-`provenance/NNN-title/03-close.md` per `specifications/read-contract.md` v4 §1
-and `specifications/workspace-structure.md` v5 §SESSION-LOG.md. This file is
-default-read surface and must remain under the per-file budget in
-`read-contract.md` §2.
+Thin pointer-only index per `specifications/records-contract.md` v1 §2.2. Each
+row points at a structured source record at `records/sessions/S<NNN>.md`;
+canonical session-close detail lives at `provenance/<NNN>-session/03-close.md`
+per the `anchor_close` field.
 
-| Session | Date | Title | One-sentence decision-surface summary |
-|---------|------|-------|---------------------------------------|
+This file is default-read surface per `specifications/read-contract.md` v6 §1
+item 5 (replacing the pre-v6 SESSION-LOG.md). It must remain under the per-file
+budget in `read-contract.md` §2.
+
+Authority discipline: source record (frontmatter) > index row. Validator check
+25 verifies index-row-record consistency; on mismatch, the record wins.
+
+| ID | Status | Title | Source record | Witness/path | Anchor session | Last status event |
+|----|--------|-------|---------------|--------------|----------------|-------------------|
 EOF
 
 cat > "$TARGET/open-issues/index.md" <<'EOF'
@@ -295,7 +311,9 @@ reference per `read-contract.md` §6.
   with frontmatter `status: resolved`.
 EOF
 
-echo "    SESSION-LOG.md + open-issues/index.md written; provenance/ empty."
+echo "    records/sessions/index.md + open-issues/index.md written; provenance/ empty."
+echo "    Records-substrate scaffolded per records-contract.md v1 §5; first session"
+echo "    record records/sessions/S001.md created at Session 001 close."
 echo ""
 
 # -----------------------------------------------------------------------------
@@ -499,14 +517,16 @@ Next steps for the operator:
      Replace each <<...>> placeholder with application-specific content.
      The brief is the primary input Session 001 will Read.
 
-  2. Install retrieval substrate dependencies (required by retrieval-contract.md §5):
-       cd $TARGET
-       pip install 'mcp[cli]' pyyaml
-       # OR, if uv is present:
-       # uv tool install pyyaml && uv tool install mcp
+  2. Ensure uv is installed (https://github.com/astral-sh/uv).
+       The substrate scripts (tools/retrieval_server.py, tools/build_retrieval_index.py)
+       carry PEP 723 inline metadata declaring their dependencies. Running them
+       via 'uv run' resolves and caches dependencies automatically — no separate
+       pip install or venv setup is required, and no per-workspace Python
+       environment to manage. Per CLAUDE.md §Tools operator-standing convention.
 
   3. Build the initial retrieval index:
-       python3 tools/build_retrieval_index.py
+       cd $TARGET
+       uv run tools/build_retrieval_index.py
        # Produces .cache/retrieval.db (gitignored). Run once here; subsequently
        # the MCP server (tools/retrieval_server.py) checks freshness on startup
        # and rebuilds on mtime drift. Smoke-test after populating the brief:
@@ -519,8 +539,8 @@ Next steps for the operator:
 
   5. Open Claude Code in the new workspace. The dispatcher reads MODE.md and
      loads prompts/application.md. The .mcp.json registers selvedge-retrieval
-     at project scope; Claude Code picks it up automatically once pip install
-     step 2 is complete. Session 001 begins per prompts/application.md.
+     at project scope (command: uv run); Claude Code picks it up automatically
+     once uv is installed (step 2). Session 001 begins per prompts/application.md.
 
   6. If engine/methodology friction arises during any session, write a feedback
      file to $TARGET/engine-feedback/outbox/ (see README there for schema).

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["pyyaml"]
+# ///
 """Build the retrieval index at .cache/retrieval.db for the current workspace.
 
 Implements the phase-1 contract in specifications/retrieval-contract.md v1:

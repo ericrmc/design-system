@@ -108,23 +108,23 @@ A session whose retrieval substrate is unavailable MAY proceed under prose-scan 
 When `tools/bootstrap-external-workspace.sh` initialises a new external-application workspace (per `engine-manifest.md` §6), it MUST additionally:
 
 1. Copy the engine-adjacent implementation files from the source self-dev workspace:
-   - `tools/build_retrieval_index.py`
-   - `tools/retrieval_server.py`
+   - `tools/build_retrieval_index.py` (carries PEP 723 inline metadata declaring `pyyaml` dependency)
+   - `tools/retrieval_server.py` (carries PEP 723 inline metadata declaring `mcp[cli]` + `pyyaml` dependencies)
    - `specifications/aliases.yaml` (scaffold with `schema_version: 1` + empty `aliases: []`; workspace-local aliases accumulate fresh in the external workspace)
    - `.mcp.json` (template; see §5.1 below for the required shape)
-2. Print operator instructions for dependency install:
+2. Print operator instructions for runtime install:
    ```
-   pip install 'mcp[cli]' pyyaml
-   # OR, if uv is present:
-   uv tool install pyyaml && uv tool install mcp
+   # Ensure uv is installed (https://github.com/astral-sh/uv).
+   # The substrate scripts carry PEP 723 inline metadata; uv resolves
+   # dependencies automatically per `uv run`. No pip+venv setup required.
    ```
-3. Build the initial index via `python3 tools/build_retrieval_index.py` (may be no-op on empty workspace).
+3. Build the initial index via `uv run tools/build_retrieval_index.py` (may be no-op on empty workspace).
 4. Validate that `search` and `resolve_id` work against the bootstrapped workspace via a smoke-test (e.g., `search("brief")` returns at least the workspace's `applications/001-<slug>/brief.md` once the brief is populated).
 
 The bootstrap contract does NOT require:
 - Git hooks installation.
 - An MCP server auto-launch.
-- Any network access.
+- Any network access (beyond uv's first-run dependency resolution; subsequent runs use cached deps).
 
 #### §5.1 `.mcp.json` template shape
 
@@ -135,15 +135,15 @@ Every workspace's `.mcp.json` that implements this contract declares a `selvedge
   "mcpServers": {
     "selvedge-retrieval": {
       "type": "stdio",
-      "command": "python3",
-      "args": ["tools/retrieval_server.py"],
+      "command": "uv",
+      "args": ["run", "tools/retrieval_server.py"],
       "env": {}
     }
   }
 }
 ```
 
-`.mcp.json` is committed to the workspace's git. Claude Code picks it up at project scope.
+`.mcp.json` is committed to the workspace's git. Claude Code picks it up at project scope. The `uv run` invocation resolves `tools/retrieval_server.py`'s PEP 723 inline-metadata dependencies (`mcp[cli]` + `pyyaml`) on first run and caches them for subsequent invocations. Per S059 D-210 minor amendment from prior `command: "python3"` shape (resolves S051-S058 MCP stdio transport unverified honest-limit chain by aligning runtime with operator standing instruction in CLAUDE.md §Tools).
 
 ### §6 Phase-2 gate (WX-50-1 retrieval-substrate-use recording)
 
@@ -254,5 +254,5 @@ Validator check 24 is deferred to phase-2 per §6; this §9 section is adequate 
 - **MCP API stability is uncertain over 2–5 year horizon.** FastMCP and the Anthropic Python SDK are under active development. Implementations MUST keep the tool surface small and standard (`search`, `resolve_id`) so that MCP API evolution can be accommodated with minor implementation edits.
 - **Silent-fallback risk in practice.** §3 declares silent fallback a contract violation, but implementations may develop silent-fallback surfaces in specific error modes that have not been anticipated. The WX-50-1 `fallbacks_due_to_missing_capability` field surfaces this.
 - **Aliases file is authoritative only for listed aliases.** For unlisted identifiers the `resolve_id` tool returns the first occurrence found; this is best-effort and may be non-authoritative for ambiguous identifiers. Alias hygiene grows incrementally; do not treat phase-1 `aliases.yaml` coverage as complete.
-- **External-workspace portability tax is permanent.** Every external-application workspace pays a `mcp[cli] + pyyaml` Python dependency install at bootstrap. This is acceptable per the Q6 scope expansion but is a real constraint on the methodology's reach into environments without Python; the §7.4 Substrate-N2 minority preserves the reframe.
+- **External-workspace portability tax is reduced but persistent.** Every external-application workspace pays a single-tool `uv` prerequisite at bootstrap (the substrate scripts carry PEP 723 inline metadata so uv resolves `mcp[cli]` + `pyyaml` automatically per `uv run`; no separate pip-install step or per-workspace venv to manage). This is materially less burdensome than the pre-S059 `pip install 'mcp[cli]' pyyaml` two-package install path, but is a real constraint on the methodology's reach into environments without Python or uv; the §7.4 Substrate-N2 minority preserves the broader reframe.
 - **No cross-workspace query composition.** A self-dev workspace's substrate cannot answer questions about an external-application's corpus, and vice versa. If cross-workspace queries become needed (e.g., "show every preserved minority across all Selvedge workspaces the operator runs"), that is a future contract-revision question.

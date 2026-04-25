@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["mcp[cli]", "pyyaml"]
+# ///
 """FastMCP stdio server exposing the phase-1 retrieval contract.
 
 Implements specifications/retrieval-contract.md v1 §2:
