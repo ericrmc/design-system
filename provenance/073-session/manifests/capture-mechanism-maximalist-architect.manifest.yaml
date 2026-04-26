@@ -1,0 +1,30 @@
+perspective: P1 — Capture-Mechanism-Maximalist Architect
+participant_kind: claude-subagent
+participant_identity: Claude (general-purpose subagent)
+model_family: claude
+model_id: claude-opus-4-7
+model_version: claude-opus-4-7[1m]
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: orchestrator
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/073-session/01-brief-shared.md + 01a-stance-P1.md
+delivered_at: 2026-04-26T08:00:00Z
+received_at: 2026-04-26T08:03:00Z
+raw_response_file: provenance/073-session/01a-perspective-capture-mechanism-maximalist-architect.md
+transport_notes: Launched via Claude Code Agent tool subagent_type=general-purpose; brief embedded directly in agent prompt; agent constrained to Write tool only with no workspace reads during independent phase.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: known-yes
+training_lineage_evidence_pointer: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown

@@ -1,0 +1,14 @@
+session: 073
+participants:
+  - perspective: P1 — Capture-Mechanism-Maximalist Architect
+    manifest: manifests/capture-mechanism-maximalist-architect.manifest.yaml
+    raw_response_file: 01a-perspective-capture-mechanism-maximalist-architect.md
+  - perspective: P2 — Minimum-Viable Conservator
+    manifest: manifests/minimum-viable-conservator.manifest.yaml
+    raw_response_file: 01b-perspective-minimum-viable-conservator.md
+  - perspective: P3 — Outsider Frame-Completion
+    manifest: manifests/outsider-frame-completion.manifest.yaml
+    raw_response_file: 01c-perspective-outsider-frame-completion.md
+  - perspective: P4 — Cross-Family Reviewer Laundering-Audit
+    manifest: manifests/cross-family-reviewer-laundering-audit.manifest.yaml
+    raw_response_file: 01d-perspective-cross-family-reviewer-laundering-audit.md

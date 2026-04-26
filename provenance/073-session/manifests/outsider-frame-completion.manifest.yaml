@@ -1,0 +1,30 @@
+perspective: P3 — Outsider Frame-Completion
+participant_kind: non-anthropic-model
+participant_identity: codex-cli (GPT-5.5 family)
+model_family: gpt
+model_id: codex-cli-default
+model_version: codex-cli 0.124.0
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: orchestrator
+participant_selection_method: pre-registered
+identity_known: true
+context_source: /tmp/s073-codex-p3-prompt.md (embedded brief content)
+delivered_at: 2026-04-26T08:00:00Z
+received_at: 2026-04-26T08:10:00Z
+raw_response_file: provenance/073-session/01c-perspective-outsider-frame-completion.md
+transport_notes: Launched via codex exec --skip-git-repo-check --sandbox read-only; prompt piped via stdin; output captured to /tmp/s073-p3-output.md and copied verbatim to provenance file. Independence-preservation per stdin-only context.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
