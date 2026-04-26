@@ -2,7 +2,7 @@
 title: Validation-Debt Lifecycle Ledger
 authoritative: true
 last-updated: 2026-04-26
-updated-by-session: 064
+updated-by-session: 067
 ---
 
 # Validation-Debt Lifecycle Ledger
@@ -24,7 +24,7 @@ Created S063 per D-228 + D-230 housekeeping bootstrap. Authoritative semantics a
 | id | introduced_session | owner_or_surface | next_action | review_by_session | status | escalation_disposition |
 |----|---------------------|-------------------|-------------|---------------------|--------|------------------------|
 | VD-001 | S051 | engine-substrate-runtime (resolved via uv-migration at S059 D-207 + D-210 + D-211 per EF-058-substrate-runtime-uv-migration-recommended-path) | check 26 mechanism deployed at S063 will detect future MCP-stdio-transport recurrence; substrate-aware variant validates cross-paraphrase robustness; first triggered application at S063 close confirms operational closure | S066 | resolved | n/a — chain closed operationally at S061 finding 13 + structurally addressed at S062 D-221 + check 26 mechanism deployed at S063 |
-| VD-002 | S064 | tools/validate.sh check 26 implementation — surfaced by S064 Tier 2.5 reviewer audit Finding 2 (codex CLI sandbox=read-only) | Refactor check 26 grep-fallback to write tempfiles only when invoked outside read-only sandbox, OR provide pre-computed check 26 output that reviewer can read without re-execution. The reviewer needs check 26 output for (α)-flag-coverage per check 27 sub-clause; in read-only sandbox the current `mktemp -d` + per-close text-extraction implementation cannot run. Option A: refactor to use in-memory awk + array-based n-gram comparison (no tempfiles). Option B: write check 26 results to `provenance/<NNN-session>/check-26-output.txt` during normal validate.sh run; reviewer reads pre-computed file. Option B is simpler but requires write access during validate.sh which is currently read-only by design. | S067 | open | n/a |
+| VD-002 | S064 | tools/validate.sh check 26 implementation — surfaced by S064 Tier 2.5 reviewer audit Finding 2 (codex CLI sandbox=read-only) | Refactor check 26 grep-fallback to write tempfiles only when invoked outside read-only sandbox, OR provide pre-computed check 26 output that reviewer can read without re-execution. The reviewer needs check 26 output for (α)-flag-coverage per check 27 sub-clause; in read-only sandbox the current `mktemp -d` + per-close text-extraction implementation cannot run. Option A: refactor to use in-memory awk + array-based n-gram comparison (no tempfiles). Option B: write check 26 results to `provenance/<NNN-session>/check-26-output.txt` during normal validate.sh run; reviewer reads pre-computed file. Option B is simpler but requires write access during validate.sh which is currently read-only by design. | S067 | resolved | Resolved at S067 per D-244 (Path L single-orchestrator implementation): Option A adopted; `tools/validate.sh` check 26 grep-fallback refactored to in-memory bash indexed arrays + here-string substring matching (no tempfile creation; preserves validate.sh read-only design property; preserves algorithmic equivalence). Bash 3.2 compatible. Validator post-refactor PASS at S067 close (1555 PASS / 0 FAIL post-records-row-write / 32 WARN; check 26 emits identical no-clusters-detected result vs pre-refactor). Reviewer at S067 close (Tier 2.5 (γ) audit per Layer 2 trigger (a)+(d) fire) verifies the refactor preserves semantics + closes VD-002 substantively. |
 
 ## Conventions
 

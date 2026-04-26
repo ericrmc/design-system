@@ -1,0 +1,32 @@
+---
+perspective: tier-2-reviewer
+participant_kind: non-anthropic-model
+participant_identity: Google Gemini (gemini-cli 0.38.1)
+model_family: gemini
+model_id: gemini-2.5-pro
+model_version: gemini-cli-0.38.1
+provider: google
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+training_lineage_evidence_pointer: "https://ai.google.dev/gemini-api/docs/models — provider model card asserts Google-trained Gemini family; no public claim of Claude-output distillation"
+participant_organisation: google
+claude_output_in_training: known-no
+participant_selected_by: case-steward-S067
+participant_selection_method: pre-registered
+identity_known: true
+context_source: /tmp/s067-reviewer-prompt.md
+delivered_at: 2026-04-26T12:25:00Z
+received_at: 2026-04-26T12:29:00Z
+raw_response_file: /tmp/s067-gemini-reviewer-output.log
+transport_notes: "Invoked via gemini-cli 0.38.1 with -y -p flag; YOLO mode for tool auto-approval; quota-throttling retries observed (multiple 'capacity exhausted' retries with 5-7 second backoffs per attempt; final audit produced after retry-and-recover; consistent with S063 first-of-record gemini quota-throttling pattern). Wall-clock duration ~25 minutes; estimated tokens ~35,000."
+output_edited_after_submission: false
+participation_shape: reviewer
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+---

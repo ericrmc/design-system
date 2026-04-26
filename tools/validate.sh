@@ -1221,7 +1221,7 @@ else
 fi
 echo ""
 
-# --- Check 26: Honest-limit text repetition (added engine-v11 Session 063 per D-228 + validation-approach.md v6 §Tier 2.5 + S062 D-221 Layer 1) ---
+# --- Check 26: Honest-limit text repetition (added engine-v11 Session 063 per D-228; refactored Session 067 per D-244 VD-002 closure to use in-memory bash arrays instead of tempfiles, enabling execution in read-only sandboxes per S064 Tier 2.5 reviewer audit Finding 2 + validation-approach.md v7 §Tier 2.5 + S062 D-221 Layer 1) ---
 #
 # This check verifies textual repetition of honest-limit content across the §2c
 # retention-window's 03-close.md files. It does not and cannot judge whether the
@@ -1231,10 +1231,18 @@ echo ""
 # for the genuine-vs-ceremonial distinction.
 #
 # Substrate-aware variant uses mcp__selvedge-retrieval__search; grep-based
-# fallback computes n-gram similarity (>=4-token shared sequences) per close.
-# Per multi-agent-deliberation.md v4 §Graceful Degradation: when preferred path
+# fallback computes phrase-signature similarity per close. Per
+# multi-agent-deliberation.md v4 §Graceful Degradation: when preferred path
 # unavailable, document the degradation, use the fallback, do not skip.
-echo "Check 26: honest-limit text repetition across §2c retention-window (validation-approach.md v6 §Tier 2.5 Layer 1)"
+#
+# Implementation note (S067 D-244 VD-002 closure): the grep-fallback is
+# implemented entirely in-memory using bash indexed arrays + here-strings
+# (no tempfile creation). This preserves algorithmic equivalence with the
+# prior tempfile form while enabling check 26 execution in read-only
+# sandboxes (codex CLI sandbox=read-only) where mktemp -d fails. Bash 3.2
+# compatible: indexed arrays + linear-scan seen-set + here-string substring
+# matching via grep -F.
+echo "Check 26: honest-limit text repetition across §2c retention-window (validation-approach.md v7 §Tier 2.5 Layer 1)"
 if [[ -z "$last_session_num" ]] || ! [[ "$last_session_num" =~ ^[0-9]+$ ]]; then
   echo "  (no provenance directories or unparseable session number; check 26 out-of-scope)"
 elif [[ $((10#$last_session_num)) -lt $REVIEWER_AUDIT_ADOPTION_SESSION ]]; then
@@ -1250,64 +1258,70 @@ else
   if [[ ${#recent_closes[@]} -lt 2 ]]; then
     pass "check 26 vacuous: <2 closes in retention window; cluster detection requires >=3"
   else
-    # Grep-based fallback: extract §8 honest-limit numbered items per close as candidate fragments,
-    # then count cross-close occurrences of canonical phrases.
-    # We use a coarse heuristic: extract bigrams/tetragrams from "honest limit" lines and check
-    # multi-close presence.
-    tmpdir=$(mktemp -d)
+    # In-memory grep-fallback: extract §8 honest-limit numbered items per close as candidate
+    # fragments, store in indexed array, then count cross-close occurrences of phrase signatures.
+    # No tempfile creation; safe in read-only sandboxes per VD-002 closure.
+    declare -a close_content=()
     cluster_count=0
-    declare -a cluster_fragments=()
     for cf in "${recent_closes[@]}"; do
-      sess_id=$(basename "$(dirname "$cf")" | sed -E 's/^([0-9]+).*/\1/')
-      # Extract lines from §8 honest limits section: between '## §8' and next '## §' header
-      awk '/^## §8/,/^## §[0-9]/' "$cf" 2>/dev/null \
+      # Extract lines from §8 honest limits section: between '## §8' and next '## §' header.
+      # `|| true` suppresses pipefail when grep finds no matches (set -euo pipefail is in
+      # effect at script scope); the original tempfile form used `|| true` on the redirect
+      # for the same reason.
+      content=$(awk '/^## §8/,/^## §[0-9]/' "$cf" 2>/dev/null \
         | grep -E '^[0-9]+\.|^- ' \
         | sed -E 's/^[0-9]+\. \*?\*?//; s/\*\*//g' \
-        | head -c 5000 \
-        > "$tmpdir/$sess_id.txt" 2>/dev/null || true
+        | head -c 5000 || true)
+      close_content+=("$content")
     done
 
-    # Detect honest-limit lines that recur across files. We use phrase fragments of first-50-chars
-    # taken from each close's honest-limit lines and check how many other closes contain a
-    # similar phrase (case-insensitive substring match). Bash 3.2-compatible: tempfile-based seen-set
-    # rather than associative array.
-    seen_file="$tmpdir/.seen-sigs"
-    : > "$seen_file"
-    for tf in "$tmpdir"/*.txt; do
-      [[ -f "$tf" ]] || continue
+    # Detect honest-limit lines that recur across closes. Phrase signatures are first-50-chars
+    # of each line (lowercased + whitespace-collapsed + non-alnum stripped); cross-close
+    # presence tested via case-insensitive substring match (grep -F over here-string).
+    # Bash 3.2-compatible: indexed array seen-set with linear-scan duplicate detection.
+    declare -a seen_sigs=()
+    for content in "${close_content[@]}"; do
+      [[ -z "$content" ]] && continue
       while IFS= read -r line; do
         [[ -z "$line" ]] && continue
         # Take first 50 chars (lowercased + whitespace-collapsed) as the phrase signature
-        sig=$(echo "$line" | tr '[:upper:]' '[:lower:]' | tr -s '[:space:]' ' ' | cut -c 1-50 | sed 's/[^a-z0-9 ]//g')
+        sig=$(printf '%s' "$line" | tr '[:upper:]' '[:lower:]' | tr -s '[:space:]' ' ' | cut -c 1-50 | sed 's/[^a-z0-9 ]//g')
         [[ ${#sig} -lt 20 ]] && continue
-        # Skip if we already reported this signature
-        if grep -qxF "$sig" "$seen_file" 2>/dev/null; then
+        # Skip if signature already reported this run (linear scan over indexed array;
+        # bash 3.2 lacks associative arrays).
+        already_seen=false
+        for prior_sig in "${seen_sigs[@]}"; do
+          if [[ "$prior_sig" == "$sig" ]]; then
+            already_seen=true
+            break
+          fi
+        done
+        if $already_seen; then
           continue
         fi
-        # Count how many closes (files) contain this signature
+        # Count how many closes contain this signature (case-insensitive substring match
+        # against in-memory content via here-string; no tempfile).
         match_count=0
-        for tf2 in "$tmpdir"/*.txt; do
-          [[ "$(basename "$tf2")" == ".seen-sigs" ]] && continue
-          if grep -qiF -- "$sig" "$tf2" 2>/dev/null; then
+        for other_content in "${close_content[@]}"; do
+          if grep -qiF -- "$sig" <<< "$other_content" 2>/dev/null; then
             match_count=$((match_count + 1))
           fi
         done
         if [[ $match_count -ge $HONEST_LIMIT_REPETITION_THRESHOLD_FAIL ]]; then
           fail "Check 26: honest-limit text recurs in $match_count closes (>= FAIL threshold $HONEST_LIMIT_REPETITION_THRESHOLD_FAIL): \"$sig...\""
-          echo "$sig" >> "$seen_file"
+          seen_sigs+=("$sig")
           cluster_count=$((cluster_count + 1))
         elif [[ $match_count -ge $HONEST_LIMIT_REPETITION_THRESHOLD_WARN ]]; then
           warn "Check 26: honest-limit text recurs in $match_count closes (>= WARN threshold $HONEST_LIMIT_REPETITION_THRESHOLD_WARN): \"$sig...\". NOTE: textual repetition; reviewer judges genuine-vs-ceremonial."
-          echo "$sig" >> "$seen_file"
+          seen_sigs+=("$sig")
           cluster_count=$((cluster_count + 1))
         fi
-      done < "$tf"
+      done <<< "$content"
     done
 
     if [[ $cluster_count -eq 0 ]]; then
-      pass "check 26: no honest-limit text clusters detected across ${#recent_closes[@]}-close retention window (substrate-aware variant deferred per Tier 2.5 fallback discipline; grep-fallback applied)"
+      pass "check 26: no honest-limit text clusters detected across ${#recent_closes[@]}-close retention window (substrate-aware variant deferred per Tier 2.5 fallback discipline; in-memory grep-fallback applied per S067 D-244 VD-002 closure)"
     fi
-    rm -rf "$tmpdir"
   fi
 fi
 echo ""
