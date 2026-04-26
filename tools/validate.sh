@@ -1498,6 +1498,60 @@ else
 fi
 echo ""
 
+# --- Check 29: Substrate-use evidence-probe (added engine-v13 Session 071 per D-264 (β)-phase) ---
+# Honest limit (mandatory inline per validation-approach.md v7 honest-limits discipline):
+#
+#   "This check verifies the session declares structured substrate-use evidence in
+#    00-assessment.md + 03-close.md per the (ε) hybrid β-phase discipline adopted at
+#    S071 D-263. It does not and cannot verify that the declared substrate exercise
+#    actually occurred — `producer_kind: agent-declared` per the measurement-authority
+#    separation reframe. Until the (γ) phase-3 digest arc lands at S072+ with
+#    harness-measured fields per VD-003 gating conditions, structured declaration is
+#    self-report and check 29 is WARN-only. The (γ) digest is the methodology's
+#    designed counter-pressure for actual substrate-use verification."
+#
+# Source: validation-approach.md §Tier 2.5 + S071 D-263 + S071 D-264.
+# Gate: session number >= CHECK_29_ADOPTION_SESSION (=71); current-session 00-assessment.md AND 03-close.md presence-gated.
+# Severity: WARN-only initially per S058 D-204 mechanism-rollout discipline.
+
+readonly CHECK_29_ADOPTION_SESSION=71
+
+echo "[Check 29] Substrate-use evidence-probe (00-assessment.md + 03-close.md structured declaration; WARN-only β-phase per S071 D-264)"
+if [[ $((10#$current_session_num)) -lt $CHECK_29_ADOPTION_SESSION ]]; then
+  echo "  (session $current_session_num < $CHECK_29_ADOPTION_SESSION; check 29 out-of-scope pre-adoption)"
+else
+  # Reuse current_session_dir from line 1080 (set to most-recent provenance/NNN-*/ at script open)
+  if [[ -z "${current_session_dir:-}" ]]; then
+    echo "  (current-session provenance directory absent; check 29 out-of-scope per presence-gating)"
+  else
+    assessment_file="$current_session_dir/00-assessment.md"
+    close_file="$current_session_dir/03-close.md"
+    check_29_warnings=()
+    # 00-assessment.md probe
+    if [[ ! -f "$assessment_file" ]]; then
+      check_29_warnings+=("00-assessment.md absent at $assessment_file (substrate_session_open declaration scope unverifiable)")
+    else
+      if ! grep -qE '(substrate[_-]session[_-]open|substrate use at .* session-open|substrate_calls_at_session_open|forward_references.*S0?[0-9]+)' "$assessment_file"; then
+        check_29_warnings+=("00-assessment.md missing substrate-use declaration (expected substrate_session_open + substrate_evidence fields OR explicit prose declaration of substrate exercise/non-availability/skip per S071 D-264 β-phase discipline)")
+      fi
+    fi
+    # 03-close.md probe (only if close exists; close is written at session-end so probe may be absent during mid-session validate runs)
+    if [[ -f "$close_file" ]]; then
+      if ! grep -qE '(substrate[_-]session[_-]open|substrate use at .* session-open|substrate_calls_at_session_open|forward_references.*S0?[0-9]+|read-discipline coverage|Substrate use)' "$close_file"; then
+        check_29_warnings+=("03-close.md missing substrate-use declaration mirror or read-discipline-coverage section per S071 D-264 β-phase discipline)")
+      fi
+    fi
+    if [[ ${#check_29_warnings[@]} -eq 0 ]]; then
+      pass "Check 29: substrate-use evidence-probe OK: structured/prose declaration present in 00-assessment.md (and 03-close.md when present)"
+    else
+      for w in "${check_29_warnings[@]}"; do
+        warn "Check 29: $w"
+      done
+    fi
+  fi
+fi
+echo ""
+
 # --- Summary ---
 echo "--- Tier 1 Summary ---"
 echo "Passed: $PASS  |  Failed: $FAIL  |  Warnings: $WARN"

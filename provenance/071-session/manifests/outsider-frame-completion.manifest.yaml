@@ -1,0 +1,30 @@
+perspective: outsider-frame-completion
+participant_kind: non-anthropic-model
+participant_identity: codex CLI / OpenAI gpt-5.5 reasoning-effort xhigh
+model_family: gpt-5.5
+model_id: gpt-5.5
+model_version: codex-cli-0.124.0
+provider: openai
+endpoint: codex-exec-cli-stdin-pipe
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+participant_selected_by: case-steward-orchestrator
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/071-session/01-brief-shared.md + provenance/071-session/01c-stance-brief-outsider-frame-completion.md (delivered via /tmp/s071-p3-prompt.md)
+delivered_at: 2026-04-26T16:11:00+10:00
+received_at: 2026-04-26T16:21:00+10:00
+raw_response_file: provenance/071-session/01c-perspective-outsider-frame-completion.md
+transport_notes: codex exec --skip-git-repo-check --sandbox read-only -o /tmp/s071-p3-final.log; cli-wrapper invocation per S062+S064 precedent; sandbox=read-only; output captured via -o flag to final-log file
+output_edited_after_submission: false
+participation_shape: perspective

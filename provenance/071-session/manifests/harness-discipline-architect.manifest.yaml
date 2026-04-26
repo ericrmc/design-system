@@ -1,0 +1,30 @@
+perspective: harness-discipline-architect
+participant_kind: claude-subagent
+participant_identity: Claude Opus 4.7 (1M context) via Agent tool subagent_type=general-purpose
+model_family: claude
+model_id: claude-opus-4-7
+model_version: 1M-context-research-preview
+provider: anthropic
+endpoint: claude-code-agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_organisation: anthropic
+claude_output_in_training: n/a
+training_lineage_evidence_pointer: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: n/a
+participant_selected_by: case-steward-orchestrator
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/071-session/01-brief-shared.md + provenance/071-session/01a-stance-brief-harness-discipline-architect.md
+delivered_at: 2026-04-26T16:11:00+10:00
+received_at: 2026-04-26T16:18:00+10:00
+raw_response_file: provenance/071-session/01a-perspective-harness-discipline-architect.md
+transport_notes: parallel-subagent-launch via Agent tool; isolated context; brief-immutable per commit 98448b6
+output_edited_after_submission: false
+participation_shape: perspective

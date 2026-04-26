@@ -1,0 +1,21 @@
+session: 071
+title: Phase-2 MAD on three-record joint-scope (EF-067 + EF-059 + EF-068-substrate-load-bearing)
+date: 2026-04-26
+mad_class: phase-2-execution
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 2
+oi004_qualifying_participants: [outsider-frame-completion, cross-family-reviewer-laundering-audit]
+participants:
+  - perspective: harness-discipline-architect
+    role: P1
+    manifest: manifests/harness-discipline-architect.manifest.yaml
+  - perspective: incrementalist-conservator
+    role: P2
+    manifest: manifests/incrementalist-conservator.manifest.yaml
+  - perspective: outsider-frame-completion
+    role: P3
+    manifest: manifests/outsider-frame-completion.manifest.yaml
+  - perspective: cross-family-reviewer-laundering-audit
+    role: P4
+    manifest: manifests/cross-family-reviewer-laundering-audit.manifest.yaml
