@@ -1240,10 +1240,15 @@ echo ""
 # Tier 2.5 cross-family reviewer is the methodology's designed counter-pressure
 # for the genuine-vs-ceremonial distinction.
 #
-# Substrate-aware variant uses mcp__selvedge-retrieval__search; grep-based
-# fallback computes phrase-signature similarity per close. Per
-# multi-agent-deliberation.md v4 §Graceful Degradation: when preferred path
-# unavailable, document the degradation, use the fallback, do not skip.
+# Substrate-aware branch (CHKD-2 evidence-consuming; added engine-v15 Session 075
+# per (γ-6) phase-3.1 implementation per S073 D-280 + §10.4-M33 P3 z9 reframe):
+# when provenance/<current-session>/harness-telemetry-digest.yaml is present,
+# the digest is the orchestrator-produced session-open evidence packet.
+# Validator consumes it (does NOT call MCP at runtime per §10.4-M33). When digest
+# absent AND 00-assessment.md substrate-evidence absent, the grep-based n-gram
+# fallback runs as today. Per multi-agent-deliberation.md v4 §Graceful
+# Degradation: when preferred path unavailable, document the degradation, use
+# the fallback, do not skip.
 #
 # Implementation note (S067 D-244 VD-002 closure): the grep-fallback is
 # implemented entirely in-memory using bash indexed arrays + here-strings
@@ -1252,7 +1257,31 @@ echo ""
 # sandboxes (codex CLI sandbox=read-only) where mktemp -d fails. Bash 3.2
 # compatible: indexed arrays + linear-scan seen-set + here-string substring
 # matching via grep -F.
-echo "Check 26: honest-limit text repetition across §2c retention-window (validation-approach.md v7 §Tier 2.5 Layer 1)"
+echo "Check 26: honest-limit text repetition across §2c retention-window (validation-approach.md v9 §Tier 2.5 Layer 1; CHKD-2 evidence-consuming substrate-aware branch added engine-v15 Session 075)"
+
+# Substrate-aware branch evidence probe (engine-v15 Session 075 per (γ-6) phase-3.1).
+# Look for digest at provenance/<current-session>/harness-telemetry-digest.yaml.
+# Per S073 D-280: validator consumes digest as evidence; does NOT require live MCP.
+digest_path=""
+digest_substrate_count=0
+if [[ -n "${current_session_dir:-}" ]] && [[ -d "$current_session_dir" ]]; then
+  digest_candidate="$current_session_dir/harness-telemetry-digest.yaml"
+  if [[ -f "$digest_candidate" ]]; then
+    digest_path="$digest_candidate"
+    # Count harness-measured substrate_calls entries in digest (in-memory grep).
+    # No YAML parser dependency: rely on the SCD-3 schema discipline that each
+    # substrate_call record begins with `  - tool_name:` indentation under
+    # `substrate_calls:`. Reconstructor (CM3) emits records under the same
+    # indentation pattern.
+    digest_substrate_count=$(awk '
+      /^substrate_calls:/ { in_section=1; next }
+      /^[a-zA-Z_]/ && in_section { in_section=0 }
+      in_section && /^  - tool_name:/ { count++ }
+      END { print count+0 }
+    ' "$digest_path" 2>/dev/null || echo 0)
+    echo "  (substrate-aware: digest consumed at $digest_path; substrate_calls=$digest_substrate_count; validator-as-evidence-consumer per §10.4-M33)"
+  fi
+fi
 if [[ -z "$last_session_num" ]] || ! [[ "$last_session_num" =~ ^[0-9]+$ ]]; then
   echo "  (no provenance directories or unparseable session number; check 26 out-of-scope)"
 elif [[ $((10#$last_session_num)) -lt $REVIEWER_AUDIT_ADOPTION_SESSION ]]; then
@@ -1330,7 +1359,11 @@ else
     done
 
     if [[ $cluster_count -eq 0 ]]; then
-      pass "check 26: no honest-limit text clusters detected across ${#recent_closes[@]}-close retention window (substrate-aware variant deferred per Tier 2.5 fallback discipline; in-memory grep-fallback applied per S067 D-244 VD-002 closure)"
+      if [[ -n "$digest_path" ]]; then
+        pass "check 26: no honest-limit text clusters detected across ${#recent_closes[@]}-close retention window (substrate-aware: digest at $digest_path consumed as evidence per CHKD-2 §10.4-M33; in-memory grep-fallback applied for cluster detection per S067 D-244)"
+      else
+        pass "check 26: no honest-limit text clusters detected across ${#recent_closes[@]}-close retention window (digest absent at $current_session_dir/harness-telemetry-digest.yaml; in-memory grep-fallback applied per S067 D-244 VD-002 closure + §Graceful Degradation)"
+      fi
     fi
   fi
 fi
@@ -1390,25 +1423,40 @@ else
         # - frontmatter scope_coverage_table (NEW v7 per S064 §10.4-M22 P1 audit-shape requirement)
         # - bootstrap-limited-confidence label (NEW v7 per Layer 6.5; required when session adopts Tier 2.5 mechanism revisions)
         check27_pass=true
-        if ! grep -qE '^## §2' "$audit_artefact" 2>/dev/null; then
-          fail "Check 27: $audit_artefact missing required §2 (α)-flag coverage section per validation-approach.md v7 §Tier 2.5 reviewer audit shape"
-          check27_pass=false
-        fi
-        if ! grep -qE '^## §7' "$audit_artefact" 2>/dev/null; then
-          fail "Check 27: $audit_artefact missing required §7 Next-session-shape critique section per validation-approach.md v7 §Tier 2.5 (NEW v7)"
-          check27_pass=false
-        fi
+        # Full required-section enforcement at v9 (added engine-v15 Session 075 per Codex
+        # S074 audit Finding F4 disposition: check 27 enforcement extended to match
+        # validation-approach.md §Tier 2.5 audit shape per (z7) reviewer-prompt-template
+        # v3 minimum-viable extension scope). Pre-v9, check 27 enforced only §2 + §7 +
+        # scope-coverage + bootstrap-label + google-provider; per F4 the spec required
+        # §1+§3+§4+§5+§6+§8 too. v9 closes that gap.
+        for section in "§1" "§2" "§3" "§4" "§5" "§6" "§7" "§8"; do
+          if ! grep -qE "^## ${section}" "$audit_artefact" 2>/dev/null; then
+            fail "Check 27: $audit_artefact missing required ${section} section per validation-approach.md v9 §Tier 2.5 reviewer audit shape (Codex-S074-F4 close: full §1-§8 enforcement)"
+            check27_pass=false
+          fi
+        done
+        # Tripartite §3 sub-section enforcement (added engine-v15 Session 075 per
+        # validation-approach.md v7 §10.4-M24 + Codex-S074-F4 close): §3 must
+        # decompose into §3a close correctness + §3b mechanism adequacy + §3c
+        # trajectory discipline.
+        for sub in "§3a" "§3b" "§3c"; do
+          if ! grep -qE "^## ${sub}|^### ${sub}" "$audit_artefact" 2>/dev/null; then
+            fail "Check 27: $audit_artefact missing tripartite §3 sub-section ${sub} per validation-approach.md v9 §Tier 2.5 §10.4-M24 tripartite distinction"
+            check27_pass=false
+          fi
+        done
         # Scope-coverage table check: scope_coverage_table or session_under_review_subjects with retention-window-closes
         if ! grep -qE '^scope_coverage_table:|retention-window-closes:' "$audit_artefact" 2>/dev/null; then
-          fail "Check 27: $audit_artefact missing scope_coverage_table or retention-window-closes in frontmatter per validation-approach.md v7 §Tier 2.5 minimum-evidence-packet (NEW v7)"
+          fail "Check 27: $audit_artefact missing scope_coverage_table or retention-window-closes in frontmatter per validation-approach.md v9 §Tier 2.5 minimum-evidence-packet"
           check27_pass=false
         fi
         # Bootstrap-limited-confidence label check: required when session adopts Tier 2.5 mechanism revisions.
-        # Approximation: if the close mentions D-233 / D-234 / engine-v12 / Tier 2.5 revision, the audit MUST carry
-        # bootstrap_status: limited-confidence in frontmatter per Layer 6.5.
-        if grep -qE 'D-233|D-234|engine-v12|Tier 2.5 revision|§Tier 2.5.*revis' "$current_close" 2>/dev/null; then
+        # Approximation: if the close mentions a Tier-2.5-revising decision (D-233/D-234/D-288/D-291), an
+        # engine-v bump, an explicit Tier 2.5 revision, or an audit-shape revision (added v9 Session 075 per
+        # Codex-S074-F4 close), the audit MUST carry bootstrap_status: limited-confidence per Layer 6.5.
+        if grep -qE 'D-233|D-234|D-288|D-291|engine-v1[2-9]|engine-v[2-9][0-9]|Tier 2.5 revision|§Tier 2.5.*revis|reviewer-prompt-template v[3-9]|audit-shape extension' "$current_close" 2>/dev/null; then
           if ! grep -qE '^bootstrap_status:[[:space:]]*limited-confidence' "$audit_artefact" 2>/dev/null; then
-            warn "Check 27: $audit_artefact appears to audit a session adopting Tier 2.5 mechanism revisions but lacks 'bootstrap_status: limited-confidence' frontmatter declaration per validation-approach.md v7 §Bootstrap-Paradox Layered Handling Layer 6.5 (NEW v7)"
+            warn "Check 27: $audit_artefact appears to audit a session adopting Tier 2.5 mechanism revisions but lacks 'bootstrap_status: limited-confidence' frontmatter declaration per validation-approach.md v9 §Bootstrap-Paradox Layered Handling Layer 6.5"
           fi
         fi
         # Excluded-reviewer-provider check (added v8 Session 074 per D-288 + D-289).
@@ -1424,7 +1472,7 @@ else
           fi
         fi
         if [[ "$check27_pass" == "true" ]]; then
-          pass "Check 27: $audit_artefact present with required sections (§2 + §7 + scope-coverage table per v7 audit shape)"
+          pass "Check 27: $audit_artefact present with required sections (§1-§8 + tripartite §3a/§3b/§3c + scope-coverage table per validation-approach.md v9 audit shape; Codex-S074-F4 close at engine-v15)"
         fi
       fi
     else

@@ -1,0 +1,594 @@
+---
+session: 075
+title: Harness-Telemetry Digest
+schema_version: SCD-3
+generated_at: 2026-04-26T10:24:06+00:00
+capture_adapter: claude-code-hook
+capture_adapter_version: v1
+capture_capabilities:
+  - tool_name
+  - tool_input_summary
+  - tool_result_status
+  - timestamp_iso8601
+unobserved_fields:
+  - wall_clock_token_count
+  - reviewer_invocation_wall_clock_seconds
+# Per §10.4-M34 P4 z-laundering-1: file-level frontmatter declares ADAPTER
+# capabilities only. Each record below carries its own producer_kind +
+# authority_level annotation; file-level header does NOT promote
+# agent-declared records to harness-measured via shape alone.
+---
+
+substrate_calls: []
+tool_calls:
+  - tool_name: "Bash"
+    input_summary: "command=rm /Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/...; description=Reset S075 digest for clean accumulation"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:24:06+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=completed; taskId=7"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:24:09+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=in_progress; taskId=9"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:24:11+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cp /Users/ericmccowan/Development/complex-systems-engine/specifications/validati...; description=Preserve v8 before revision"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:24:16+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; limit=10; offset=1"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:24:25+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=--- title: Validation Approach version: 8 status: superseded superseded-by: vali...; old_string=--- title: Validation Approach version..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:24:29+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=--- title: Validation Approach version: 9 status: active created: 2026-04-17 las...; old_string=--- title: Validation Approach version..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:24:42+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=**Version history.** v9 (Session 075) is a substantive revision implementing the...; old_string=**Version history.** v8 (Session 074 p..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:25:11+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=**Tier 2.5: Reviewer Discipline** is a triggered review at session close per the...; old_string=**Tier 2.5: Reviewer Discipline** is a..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:25:24+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=| 26 | Honest-limit text repetition cluster detection (substrate-aware branch CH...; old_string=| 26 | Honest-limit text repetition cl..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:25:54+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=### §(z6) Harness-Telemetry Digest (SCD-3 schema codified at v9 per S075 (γ-6) p...; old_string=### §(z6) Harness-Telemetry Digest (sp..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:27:39+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=awk '/^---$/{c++; next} c>=2' /Users/ericmccowan/Development/complex-systems-eng...; description=Check validation-approach.md word count"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:27:46+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=reviewer_prompt_template_version: <integer; v1 at S063; v2 at S064 (locked in at...; old_string=reviewer_prompt_template_version: <int..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:27:54+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=**(z7) Reviewer-prompt-template versioning + lock-in-after-n=2 (NEW v7 per S064 ...; old_string=**(z7) Reviewer-prompt-template versio..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:28:05+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=awk '/^---$/{c++; next} c>=2' /Users/ericmccowan/Development/complex-systems-eng...; description=Word count + section structure"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:28:17+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=### Tier 2.5: Cross-Family Reviewer Discipline (revised v7 per S064 D-233; revis...; old_string=### Tier 2.5: Cross-Family Reviewer Di..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:28:24+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=completed; taskId=9"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:28:27+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=completed; taskId=6"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:28:31+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=completed; taskId=8"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:28:34+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=in_progress; taskId=10"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:28:36+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani...; new_string=last-updated: 2026-04-26 updated-by-session: 075 supersedes: none ---; old_string=last-updated: 2026-04-26 updated-by-session: 074 sup..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:28:41+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani...; new_string=**`engine-v15`** (established Session 075 per D-NNN). Subsequent engine versions...; old_string=**`engine-v14`** (established Session ..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:28:47+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=grep -n \"build_retrieval_index\\|retrieval_server\\|digest_emitter\\|digest_reconst...; description=Find existing tool references in manifest"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:28:57+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani...; new_string=| engine-v13 | Session 071 | D-265 | Substantive (β-phase substrate-discipline; ...; old_string=| engine-v13 | Session 071 | D-265 | S..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:29:16+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani...; new_string=- **`engine-v15`** — established Session 075 via D-NNN. **Path-L (single-orchest...; old_string=- **`engine-v14`** — established Sessi..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:30:01+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=completed; taskId=10"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:30:04+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=in_progress; taskId=11"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:30:07+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=bash /Users/ericmccowan/Development/complex-systems-engine/tools/validate.sh 2>&...; description=Validator FAIL state"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:30:36+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=bash /Users/ericmccowan/Development/complex-systems-engine/tools/validate.sh 2>&...; description=Check for relevant warnings"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:31:04+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=grep -n \"S074 phase-3\\|at S074 phase\\|S074 phase-3.1\\|at S074 (phase\\|S073 D-282...; description=Find stale S074 phase-3 refs in workspace-structure"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:31:18+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=grep -nE \"S074|S075\" /Users/ericmccowan/Development/complex-systems-engine/speci...; description=Find S074/S075 refs in workspace-structure"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:31:22+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; limit=15; offset=1"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:31:42+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; new_string=last-updated: 2026-04-26 updated-by-session: 075 supersedes: workspace-structure...; old_string=last-updated: 2026-04-26 updated-by-se..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:31:46+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; new_string=- **§10.4-M31 P2 (γ-3) minimum-viable position dissent (Session 073).** Position...; old_string=- **§10.4-M31 P2 (γ-3) minimum-viable ..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:31:57+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; new_string=Reopen warrants: (a) future MAD adopts CHKD-1 substrate-required without evidenc...; old_string=Reopen warrants: (a) future MAD adopts..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:32:04+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; new_string=Reopen warrants: (a) future MAD adopts file-level-authority without per-section ...; old_string=Reopen warrants: (a) future MAD adopts..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:32:10+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; new_string=Reopen warrants: (a) γ phase-3 stage at S075-S076 collapses per-direction into o...; old_string=Reopen warrants: (a) γ phase-3 stage a..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:32:18+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=awk '/^---$/{c++; next} c>=2' /Users/ericmccowan/Development/complex-systems-eng...; description=workspace-structure word count"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:32:22+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; new_string=Reopen warrants: (a) (γ-6) cost at S075-S076 exceeds (γ-3) baseline by >50%; (b)...; old_string=Reopen warrants: (a) (γ-6) implementat..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:32:32+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; new_string=Reopen warrants: (a) future MAD adopts CHKD-1 substrate-required without evidenc...; old_string=Reopen warrants: (a) future MAD adopts..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:32:39+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; new_string=Reopen warrants: (a) future MAD adopts file-level-authority without per-section ...; old_string=Reopen warrants: (a) future MAD adopts..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:32:45+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; new_string=Reopen warrants: (a) γ phase-3 stage at S075-S076 collapses per-direction into o...; old_string=Reopen warrants: (a) γ phase-3 stage a..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:32:52+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=awk '/^---$/{c++; next} c>=2' /Users/ericmccowan/Development/complex-systems-eng...; description=Recheck workspace-structure word count"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:32:55+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace-s...; new_string=Reopen warrants: (a) γ stage at S075-S076 collapses per-direction; (b) future MA...; old_string=Reopen warrants: (a) γ phase-3 stage a..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:33:02+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=awk '/^---$/{c++; next} c>=2' /Users/ericmccowan/Development/complex-systems-eng...; description=Recheck workspace-structure word count"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:33:06+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=in_progress; taskId=13"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:33:21+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- session: 075 title: Session 075 assessment — Path-AS phase-3.1 implementatio...; file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/00-..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:35:24+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- session: 075 title: Session 075 decisions — Path-AS phase-3.1 implementation...; file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/02-..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:39:06+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- session: 075 title: Session 075 close — Path-AS phase-3.1 implementation per...; file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/03-..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:42:50+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- id: S075 status: closed title: Path-AS phase-3.1 implementation per (γ-6) st...; file_path=/Users/ericmccowan/Development/complex-systems-engine/records/sessions/S075.md"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:43:45+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/records/sessions/index.md; limit=6; offset=82"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:43:48+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/records/sessions/index.md; new_string=| [S075](S075.md) | closed | Path-AS phase-3.1 implementation per (γ-6) staged h...; old_string=| [S074](S074.md) | closed | Path-L per op..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:44:39+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=completed; taskId=13"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:44:41+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=in_progress; taskId=12"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:44:54+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=codex --version 2>&1 | head -3; which codex; description=Check codex CLI availability"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:44:59+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=You are the Tier 2.5 cross-family reviewer for Session 075 of the Selvedge engin...; file_path=/tmp/s075-reviewer-prompt.md"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:46:36+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=codex --help 2>&1 | head -30; description=Check codex CLI usage"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:46:39+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=codex exec --help 2>&1 | head -30; description=Check codex exec usage"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:46:42+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cat /tmp/s075-reviewer-prompt.md | codex exec --skip-git-repo-check --cd /Users/...; description=Invoke codex Tier 2.5 reviewer audit; timeout=600000"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:56:47+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=sleep 5; cat /private/tmp/claude-501/-Users-ericmccowan-Development-complex-syst...; description=Check codex output start"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:56:57+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=[[ -f /Users/ericmccowan/Development/complex-systems-engine/provenance/075-sessi...; description=Check audit file presence + codex output"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:57:04+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/04-...; limit=80; offset=1"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:57:07+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/04-...; limit=75; offset=80"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:57:12+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=grep -n \"D-NNN\" /Users/ericmccowan/Development/complex-systems-engine/specificat...; description=Find all D-NNN placeholders to replace"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:57:38+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani...; new_string=**`engine-v15`** (established Session 075 per D-298).; old_string=**`engine-v15`** (established Session 075 per D-NNN).; replace_all=F..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:57:42+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani...; new_string=| engine-v15 | Session 075 | D-298 | Substantive ((γ-6) phase-3.1 implementation...; old_string=| engine-v15 | Session 075 | D-NNN | S..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:57:48+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani...; new_string=- **`engine-v15`** — established Session 075 via D-298. **Path-AS phase-3.1 impl...; old_string=- **`engine-v15`** — established Sessi..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:58:00+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani...; limit=5; offset=158"
+    status: success
+    timestamp_iso8601: 2026-04-26T10:58:03+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani...; new_string=**Phase-3.2 remaining at S076 per S073 D-282 + S074 supersession-shifted schedul...; old_string=**Phase-3.2 remaining at S076 per S073..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:58:12+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=**Version history.** v9 (Session 075 per D-294) is a substantive revision implem...; old_string=**Version history.** v9 (Session 075) ..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:58:35+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=**Tier 2.5: Reviewer Discipline** is a triggered review at session close per the...; old_string=**Tier 2.5: Reviewer Discipline** is a..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:58:44+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-...; new_string=**S075 close = substantive v8 → v9 codifying SCD-3 schema + audit-shape extensio...; old_string=**S075 close = substantive v8 → v9 cod..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:58:50+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/tools/digest_emitter.py; new_string=\"\"\" Digest emitter — CM1 capture-adapter (Claude Code PostToolUse hook). Reads a...; old_string=\"\"\" Digest emitter — CM1 capture-adapter (Cl..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:58:59+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/tools/digest_emitter.py; new_string=Engine-v15 per Session 075 D-296 + D-298 (γ-6) phase-3.1 implementation.; old_string=Engine-v15 per Session 075 D-NNN (γ-6) phase-3.1 implem..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:59:04+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/02-...; new_string=**Non-Claude participation:** required per d023_3 (substantive revision to valid...; old_string=**Non-Claude participation:** required..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:59:26+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/02-...; new_string=**Non-Claude participation:** required per d023_3 (engine-definition spec substa...; old_string=**Non-Claude participation:** required..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:59:35+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/02-...; new_string=**Non-Claude participation:** satisfied per D-293 + D-294 upstream substantive d...; old_string=**Non-Claude participation:** satisfie..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:59:48+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/02-...; new_string=**Non-Claude participation:** satisfied per D-293 + D-294 upstream substantive d...; old_string=**Non-Claude participation:** satisfie..."
+    status: success
+    timestamp_iso8601: 2026-04-26T10:59:58+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/validation-debt/index.md"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:00:03+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/validation-debt/index.md; new_string=last-updated: 2026-04-26 updated-by-session: 075; old_string=last-updated: 2026-04-26 updated-by-session: 073; replace_all=False"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:00:07+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/validation-debt/index.md; new_string=| VD-003 | S071 | engine-feedback joint-scope (γ) phase-3 arc per S071 D-263 (ε)...; old_string=| VD-003 | S071 | engine-feedback joint-sco..."
+    status: success
+    timestamp_iso8601: 2026-04-26T11:00:59+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/INDEX.md; limit=5; offset=21"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:01:03+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/INDEX.md; new_string=**triaged-partially-resolved** (S071 phase-2 MAD per D-263 (ε) hybrid + D-264 β-...; old_string=**triaged-partially-resolved** (S071 phase-..."
+    status: success
+    timestamp_iso8601: 2026-04-26T11:01:24+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/INDEX.md; new_string=**triaged-partially-resolved** (S071 phase-2 MAD per D-263 (ε) hybrid + D-264 §T...; old_string=**triaged-partially-resolved** (S071 phase-..."
+    status: success
+    timestamp_iso8601: 2026-04-26T11:01:36+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/INDEX.md; new_string=**triaged-deferred-to-phase-3** (S071 phase-2 MAD per D-263 (ε) hybrid + D-268 (...; old_string=**triaged-deferred-to-phase-3** (S071 phase..."
+    status: success
+    timestamp_iso8601: 2026-04-26T11:01:49+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/03-...; new_string=14. **CM1 capture-adapter operationally validated at S075** via the harness-tele...; old_string=14. **CM1 capture-adapter operationall..."
+    status: success
+    timestamp_iso8601: 2026-04-26T11:02:04+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=bash /Users/ericmccowan/Development/complex-systems-engine/tools/validate.sh 2>&...; description=Verify validator state post-fixes"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:02:34+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/03-...; new_string=## §3 Validator state at close **Final validator post-close (post-codex-F0-F4 co...; old_string=## §3 Validator state at close **Final..."
+    status: success
+    timestamp_iso8601: 2026-04-26T11:03:03+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/075-session/03-...; new_string=**Tier 2.5 (γ) reviewer REQUIRED at S075 close** per (a) + (b) + (d) multiple fi...; old_string=**Tier 2.5 (γ) reviewer REQUIRED at S0..."
+    status: success
+    timestamp_iso8601: 2026-04-26T11:03:29+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=completed; taskId=11"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:03:32+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=completed; taskId=12"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:03:35+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=awk '/^---$/{c++; next} c>=2' /Users/ericmccowan/Development/complex-systems-eng...; description=Final word count + validator check"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:04:04+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=in_progress; taskId=14"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:04:09+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=git -C /Users/ericmccowan/Development/complex-systems-engine status --short 2>&1...; description=Git status before commit"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:04:13+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=git -C /Users/ericmccowan/Development/complex-systems-engine log --oneline -3; description=Check recent commit style"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:04:17+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+reviewer_invocations: []

@@ -4,7 +4,7 @@ version: 1
 status: active
 created: 2026-04-22
 last-updated: 2026-04-26
-updated-by-session: 074
+updated-by-session: 075
 supersedes: none
 ---
 
@@ -29,11 +29,11 @@ The engine is distinct from:
 
 ### 2. Current engine version
 
-**`engine-v14`** (established Session 074 per D-291).
+**`engine-v15`** (established Session 075 per D-298).
 
 Subsequent engine versions (`engine-v11`, `engine-v12`, `engine-v13`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
 
-### 3. Engine-definition files at `engine-v14`
+### 3. Engine-definition files at `engine-v15`
 
 The following files constitute the engine at the current version:
 
@@ -147,6 +147,17 @@ The eleven historical engine-version entries (engine-v1 through engine-v11) are 
 | engine-v12 | Session 064 | D-234 | First-of-record depth-0 preservation event; substantive validation-approach v6→v7 + 5 new minorities (45→50) |
 | engine-v13 | Session 071 | D-265 | Substantive (β-phase substrate-discipline; (ε) hybrid bounded-then-extended); 4 new minorities (50→54) |
 | engine-v14 | Session 074 | D-291 | Substantive (operator-directed; google reviewer-role exclusion; family-distinctness REMOVED from §Tier 2.5) |
+| engine-v15 | Session 075 | D-298 | Substantive ((γ-6) phase-3.1 implementation: SCD-3 digest schema + CM1+CM3 capture-adapter + check 26 substrate-aware branch + check 27 §1-§8 enforcement closing Codex-S074-F4 + reviewer-prompt-template v3) |
+
+- **`engine-v15`** — established Session 075 via D-298. **Path-AS phase-3.1 implementation (single-orchestrator implementation execution under Tier 2.5 reviewer-audit discipline) per S074 close §7 next-session-recommendation recovering S073 D-282 pre-ratification per S074 D-286 operator-directive supersession-then-resumption discipline.** No new MAD per S073 phase-2 MAD already adopting (γ-6) staged hybrid; phase-3.1 is implementation execution of S073 D-275 + per-direction dispositions D-276 through D-282. (S074 close §7 names this "Path-AS phase-3.1" in the audit-discipline-shape sense — substantive cross-spec scope + Tier 2.5 reviewer at close — not the Path-AS-MAD-execution sense; pattern reified at n=2 with S063 first-instance Path-L single-orchestrator phase-3 adoption per S062 D-221.)
+
+  Substantive: substantive revision to one engine-definition spec (`validation-approach.md` v8 → v9: SCD-3 harness-telemetry-digest schema codified in §(z6) with capture-adapter metadata + per-section field-level authority rules per §10.4-M34 P4 z-laundering-1 reframe; §Tier 2.5 audit-shape extended with reviewer-prompt-template v3 minimum-viable extension per S073 D-282 + (z7) lock-in-after-n=2; v8 preserved as `validation-approach-v8.md` `status: superseded`) + substantive update to one engine-definition tool (`tools/validate.sh`: new check 26 substrate-aware branch CHKD-2 evidence-consuming per S073 D-280 + §10.4-M33 P3 z9 reframe; check 27 enforcement extended to require all §1-§8 + tripartite §3a/§3b/§3c sub-sections closing Codex-S074-audit Finding F4 mechanism gap deferred to S075+ per S074 close §7) + new engine-adjacent capture-adapter tooling (`tools/digest_emitter.py` CM1 Claude Code hooks PostToolUse capture-adapter + `tools/digest_reconstructor.py` CM3 post-hoc bridge/comparator) + harness-config edit (`.claude/settings.json` PostToolUse hook configuration; not engine-definition per .mcp.json precedent at S071 D-264).
+
+  Engine-v15 is the fourteenth engine-v-bump overall and follows engine-v14 at preservation depth 0 (engine-v14 ratified S074 + engine-v15 immediately at S075 — second instance of adjacent-session engine-v-bump after engine-v11→v12 at S063→S064). §10.4-M25 P2 cadence-depth concern at engine-v15 reset to depth-0: future engine-v16 bump preservation forecast is engine-conventional within engine-v9 depth-8 second-longest precedent. §5.4 Session 022 engine-v-cadence minority does NOT re-escalate at this bump per content-driven-bump precedent chain extended through S075 (cadence concern separates from substantive-bump classification); however, second-of-record adjacent-session engine-v-bump warrants forward observation per §10.4-M25 P2 reopen warrant — engine-v16 at S076 would create three-engine-v-bumps-in-three-sessions pattern fully activating §5.4.
+
+  **Key consequence at v15 adoption**: the (γ-6) staged hybrid's phase-3.1 deliverables are now operational. The CM1 capture-adapter fires on every Claude Code PostToolUse hook event and writes harness-measured records to `provenance/<NNN-session>/harness-telemetry-digest.yaml` with the SCD-3 schema. The CM3 reconstructor produces post-hoc-reconstructed records as bridge/comparator. Check 26 substrate-aware branch consumes the digest when present (in-memory grep-fallback otherwise per §Graceful Degradation). Check 27 now mechanically enforces the full audit shape rather than the previous narrow §2+§7 subset. Reviewer-prompt-template v3 minimum-viable extension instructs reviewers to inspect the digest, distinguish per-record producer_kind/authority_level, apply REVD-2 quarantine semantics, and verify capture-adapter metadata coherence. The (z7) lock-in counter resets at v3; v3 needs n≥2 successful applications before next revision (forecast S076-S077 lock-in event).
+
+  **Phase-3.2 remaining at S076 per S073 D-282 + S074 supersession-shifted schedule**: minor extensions per per-direction discipline (RAD-3 D2.1 activation candidate at S076 review window; REVD-3 retrospective re-baseline candidate post-S076; SCD-3 expansion if SCD-2-first-tranche was adopted — not adopted at S075 per the v9 §(z6) full SCD-3 codification). VD-003 lifecycle row remains `in-progress` per S073 D-284 with `review_by_session: S076` unchanged; gating conditions (a) capture mechanism finalised (DISCHARGED at S073 D-276 + reified at S075 D-296) + (c) digest schema specified with producer_kind/authority_level (DISCHARGED at S075 D-294 v9 §(z6) substantive codification) + (b) observation window data on β-phase substrate-use (n=5 at S075 completes first triangulation per S071+S072+S073+S074+S075 chain; full review at S076 per VD-003 review_by_session adjudicates Hawthorne-effect-vs-durable-behavior-change distinction).
 
 - **`engine-v14`** — established Session 074 via D-291. **Operator-directed substantive bump** per §10.4-M10 written-warrant clause (c) operator-surfacing channel cumulative count n=10 → n=11 per S036/S057/S060/S061/S063/S064/S066/S068/S069/S072/**S074** chain. Path-L per operator-directed substantive amendment per S066 precedent extended to substantive-class engine-definition revision. **No MAD** per `multi-agent-deliberation.md` v4 §Opt-out (operator-directive: "no further MAD discussion on the merits of keeping Gemini because it is gone"). Single-agent operator-directed scope per S048 D-154 + S066 first-of-record precedent extended.
 

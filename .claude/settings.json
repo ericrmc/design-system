@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run $CLAUDE_PROJECT_DIR/tools/digest_emitter.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

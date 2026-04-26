@@ -1,11 +1,13 @@
 ---
 title: Validation Approach
-version: 9
-status: active
+version: 8
+status: superseded
+superseded-by: validation-approach.md (v9)
+superseded-in-session: 075
 created: 2026-04-17
 last-updated: 2026-04-26
-updated-by-session: 075
-supersedes: validation-approach-v8.md
+updated-by-session: 074
+supersedes: validation-approach-v7.md
 ---
 
 # Validation Approach
@@ -16,9 +18,7 @@ This specification defines how the methodology validates itself: what is checked
 
 **Scope notes (Session 009 D-056 + Session 017 D-074).** This specification covers **Workspace validation** as defined in `methodology-kernel.md` v6 §7. Domain validation is performed by domain-actors outside this specification's scope. The Tier 1 / Tier 2 / Tier 2.5 discipline applies equally to self-development and external-problem applications of the Selvedge engine.
 
-**Version history.** v9 (Session 075 per D-294) is a substantive revision implementing the (γ-6) phase-3.1 deliverables per S073 D-275 + S073 D-282 pre-ratification recovered per S074 D-286 operator-directive supersession-then-resumption. v9 (a) **codifies the SCD-3 harness-telemetry-digest schema** in §(z6) (replacing the v7+v8 DEFERRED-pointer language) with capture-adapter metadata + per-section field-level authority rules per §10.4-M34 P4 z-laundering-1 reframe; (b) **extends §Tier 2.5 audit shape** with reviewer-prompt-template v3 minimum-viable extension per S073 D-282 + (z7) lock-in-after-n=2 (digest-aware reviewer instructions; producer_kind/authority_level distinction; quarantine-semantics application; capture-adapter metadata check); (c) **closes the Codex-S074 audit Finding F4 mechanism gap** by extending check 27 enforcement to require all §1-§8 sections + tripartite §3a/§3b/§3c sub-sections (previously only §2+§7+scope-coverage were enforced); (d) records the new tooling: `tools/digest_emitter.py` (CM1 Claude Code PostToolUse hook capture-adapter; harness-measured authority; PreToolUse intentionally NOT configured per S075 D-296 to avoid duplicate records since PostToolUse event has tool_response field for status determination) + `tools/digest_reconstructor.py` (CM3 post-hoc bridge/comparator; post-hoc-reconstructed authority); (e) names the new check 26 substrate-aware branch (CHKD-2 evidence-consuming per S073 D-280 + §10.4-M33 P3 z9 reframe). v8 preserved as `validation-approach-v8.md` `status: superseded`.
-
-v8 (Session 074 per D-288) was a substantive revision per operator-direct directive at S074 open per §10.4-M10 written-warrant clause (c) operator-surfacing channel cumulative count n=10 → n=11. v8 (a) REMOVED the v7 §Tier 2.5 reviewer-family family-distinctness requirement; reviewer family MAY now overlap with orchestrator/perspectives' family at the organisation level, with mandatory `reviewer_overlap_with_recent_mad_perspectives:` field disclosure + counterweighting check (existing v7 discipline preserved); and (b) ADDED an explicit provider-exclusion clause: the `google` provider is permanently excluded from reviewer roles per operator-directive at S074. Empirical basis recorded at `engine-feedback/inbox/EF-073-gemini-excluded-and-reviewer-family-rule-relaxation.md`: sustained findings_count=0 pattern across S063+S067+S071+S073 Gemini reviewer audits (n=4) + S073 codex cross-check on identical input produced findings_count=2 with substantive findings. v8 preserved as `validation-approach-v8.md` `status: superseded`.
+**Version history.** v8 (Session 074 per D-288) is a substantive revision per operator-direct directive at S074 open per §10.4-M10 written-warrant clause (c) operator-surfacing channel cumulative count n=10 → n=11. v8 (a) **REMOVES** the v7 §Tier 2.5 reviewer-family family-distinctness requirement; reviewer family MAY now overlap with orchestrator/perspectives' family at the organisation level, with mandatory `reviewer_overlap_with_recent_mad_perspectives:` field disclosure + counterweighting check (existing v7 discipline preserved); and (b) **ADDS** an explicit provider-exclusion clause: the `google` provider is permanently excluded from reviewer roles per operator-directive at S074. Empirical basis recorded at `engine-feedback/inbox/EF-073-gemini-excluded-and-reviewer-family-rule-relaxation.md`: sustained findings_count=0 pattern across S063+S067+S071+S073 Gemini reviewer audits (n=4) + S073 codex cross-check on identical input produced findings_count=2 with substantive findings. Operator-directive: Claude and codex are operationally preferred reviewers despite family-overlap with orchestrator/perspectives. Existing S063+S067+S071+S073 Gemini audit records remain valid as historical artefacts; no future reviewer-role invocation of google is permitted. v7 preserved as `validation-approach-v7.md` `status: superseded`.
 
 v7 (Session 064 per D-233) was a substantive revision adopting operator audit findings from S063 resolving close + cross-family MAD synthesis at S064. v7 revised the §Tier 2.5 reviewer-family rule (relaxed from "no perspective in audited MAD" to "not orchestrator/close-author/primary-implementer/accountable-doer + cross-family at family + audit-scope-conditional family exclusion when self-validating own load-bearing claim"); revised the audit shape to require minimum-evidence-packet (retention-window closes + (z5) lifecycle ledger + active watchpoints + engine-feedback inbox + open-issues); added §7 Next-session-shape critique with P3's 5-condition affirmative-no-action-justification test; revised §(z5) Validation-Debt Lifecycle to make ledger **authoritative-not-witness**; added tripartite audit distinction (close correctness / mechanism adequacy / trajectory discipline); added Layer 6.5 bootstrap-limited-confidence labelling; added (z7) reviewer-prompt-template versioning + lock-in-after-n=2 discipline. Five new first-class minorities preserved §10.4-M21 through M25 (engine-wide 45 → 50). v6 (Session 063 per D-228) added §Tier 2.5 + §(z5) + §Bootstrap-Paradox + §Principled Asymmetry + checks 26+27+28 + Q10. v5-v1 history preserved per workspace-structure.md spec-versioning.
 
@@ -32,7 +32,7 @@ Validation has three tiers.
 
 **Tier 2: Guided Assessment** are questions printed by the validation tool for the agent or human conducting the session.
 
-**Tier 2.5: Reviewer Discipline** is a triggered review at session close per the layered structural mechanism of S062 D-221, revised at S064 D-233 per operator audit findings + revised at S074 D-288 per operator-directive (family-distinctness REMOVED; google provider EXCLUDED from reviewer roles) + extended at S075 D-294 per (γ-6) phase-3.1 implementation (reviewer-prompt-template v3 minimum-viable extension; harness-telemetry-digest reading; producer_kind/authority_level distinction; quarantine-semantics application; capture-adapter metadata check; full §1-§8 audit-shape enforcement closing Codex-S074-F4). At v9: the reviewer MAY be from a family overlapping with orchestrator/perspectives (with mandatory disclosure + counterweighting check per §Tier 2.5 reviewer-family rule clause-by-clause below); the reviewer MUST NOT be from the `google` provider per clause (d); the reviewer MUST inspect `provenance/<NNN-session>/harness-telemetry-digest.yaml` when present and apply per-record producer_kind/authority_level distinctions per §10.4-M34. Produces `provenance/<NNN-session>/04-tier-2-audit.md`; gated on the trigger set in §Tier 2.5 below. Tier 2.5 supplements Tier 2; does not replace it.
+**Tier 2.5: Reviewer Discipline** is a triggered review at session close per the layered structural mechanism of S062 D-221, revised at S064 D-233 per operator audit findings + revised at S074 D-288 per operator-directive (family-distinctness REMOVED; google provider EXCLUDED from reviewer roles). At v8: the reviewer MAY be from a family overlapping with orchestrator/perspectives (with mandatory disclosure + counterweighting check per §Tier 2.5 reviewer-family rule clause-by-clause below); the reviewer MUST NOT be from the `google` provider per v8 clause (d). Produces `provenance/<NNN-session>/04-tier-2-audit.md`; gated on the trigger set in §Tier 2.5 below. Tier 2.5 supplements Tier 2; does not replace it.
 
 ### Principled Asymmetry (per S062 D-221 §2.2 + §10.4-M17 + S064 D-233)
 
@@ -73,8 +73,8 @@ The MAD §Synthesis prohibition is alias-prevention; Tier 2.5 is noticing-failur
 | 22 | Archive-pack citation consistency | read-contract §6 | Fail | archive/ present |
 | 23 | MODE.md presence with recognised mode | workspace-structure §MODE.md | Fail | unconditional (engine-v7+) |
 | 25 | Records-substrate integrity | records-contract §3 | Fail | session ≥ 058 |
-| 26 | Honest-limit text repetition cluster detection (substrate-aware branch CHKD-2 evidence-consuming added v9 per S073 D-280 + §10.4-M33: digest-when-present consumed as evidence; grep-fallback when both digest and 00-assessment substrate-evidence absent per §Graceful Degradation). WARN at ≥3-cluster; FAIL at ≥6-cluster. | this spec §Tier 2.5 + §(z6) + S062 D-221 Layer 1 + S073 D-280 | Fail/Warn | session ≥ 063 |
-| 27 | Cross-family reviewer audit. When Layer 2 trigger fires, verify `provenance/<NNN-session>/04-tier-2-audit.md` exists; verify required sections per §Tier 2.5 audit shape: frontmatter scope-coverage table; §1 trigger basis; §2 (α)-flag coverage; §3 substantive evidence with tripartite §3a/§3b/§3c distinction; §4 disposition table; §5 stale-item escalation; §6 reviewer metrics; §7 next-session-shape critique; §8 reviewer-cost note; verify bootstrap-limited-confidence label per Layer 6.5 when applicable; verify `reviewer_provider:` not `google` per v8 clause (d). **At v9 (Codex-S074-F4 close)**: full §1-§8 + tripartite §3a/§3b/§3c presence enforced (pre-v9 only §2+§7+scope-coverage+bootstrap-label were enforced; F4 was acknowledged as a continuing mechanism-adequacy gap deferred to S075+ per S074 close §7). | this spec §Tier 2.5 + S062 D-221 Layer 3 + S064 D-233 + S075 (γ-6) | Fail | session ≥ 063 AND Layer 2 trigger met |
+| 26 | Honest-limit text repetition cluster detection (substrate-aware preferred / grep-fallback). WARN at ≥3-cluster; FAIL at ≥6-cluster. | this spec §Tier 2.5 + S062 D-221 Layer 1 | Fail/Warn | session ≥ 063 |
+| 27 | Cross-family reviewer audit. When Layer 2 trigger fires, verify `provenance/<NNN-session>/04-tier-2-audit.md` exists; verify required sections per §Tier 2.5 audit shape (frontmatter scope-coverage table; §1 trigger basis; §2 (α)-flag coverage; §3 substantive evidence with tripartite distinction; §4 disposition table; §5 stale-item escalation; §6 reviewer metrics; §7 next-session-shape critique; §8 reviewer-cost note); verify bootstrap-limited-confidence label per Layer 6.5 when applicable. (Sub-clauses revised v7.) | this spec §Tier 2.5 + S062 D-221 Layer 3 + S064 D-233 | Fail | session ≥ 063 AND Layer 2 trigger met |
 | 28 | (z5) Validation-debt lifecycle integrity. Required fields, status enum, well-formed review_by_session, no stale-without-rationale rows. **At v7 (S064)**: ledger is authoritative-not-witness per §(z5) revised semantics; check 28 additionally verifies frontmatter `authoritative: true` declaration when ledger is read by Tier 2.5 reviewer. | this spec §(z5) Validation-Debt Lifecycle + S062 D-221 Layer 4 + S064 D-233 §10.4-M24 | Fail | session ≥ 063 AND ledger exists |
 | 29 | Substrate-use evidence-probe (added engine-v13 Session 071 per D-264 (β)-phase). Inspects current session's `00-assessment.md` for `substrate_session_open: exercised \| unavailable \| skipped` + `substrate_evidence:` field presence (or prose declaration of substrate exercise/non-availability/skip); cross-checks `03-close.md` for mirror declaration when close-file present. WARN-only initially per S058 D-204 mechanism-rollout discipline. Per measurement-authority separation reframe (S071 §10.4-M28), structured declaration is `producer_kind: agent-declared` until backed by harness telemetry per (γ) phase-3 (z6) digest arc. | this spec §Tier 2.5 + S071 D-263 + S071 D-264 | Warn | session ≥ 071 AND current-session 00-assessment.md exists |
 
@@ -131,7 +131,7 @@ The validator prints these questions:
 9. **Read-contract adherence (paired with check 22)**.
 10. **Layered-mechanism engagement (paired with checks 26, 27, 28)**: Verify (a) §8 honest-limits sections were authored deliberately, distinguishing genuine new gaps from recurrences; for recurrences, was the (z5) lifecycle ledger row updated rather than the close re-recording? (b) if Layer 2 (γ) triggered, did the reviewer's audit substantively engage with the session's claims (decisions + close + (α)-flagged items + tripartite distinction), or was the audit ceremonial? (c) if a (z5) lifecycle item was closed/deferred, was disposition substantive (concrete next action or escalation rationale) or formulaic? Flag instances where the structural mechanism passed Tier 1 mechanically but the underlying discipline is not engaged.
 
-### Tier 2.5: Cross-Family Reviewer Discipline (revised v7 per S064 D-233; revised v8 per S074 D-288; extended v9 per S075 (γ-6))
+### Tier 2.5: Cross-Family Reviewer Discipline (revised v7 per S064 D-233)
 
 **Trigger set.** Tier 2.5 triggers when ANY of the following conditions is met at session close:
 
@@ -196,8 +196,7 @@ scope_coverage_table:  # NEW v7 per §10.4-M22 P1 audit-shape requirement
 findings_count: <integer>
 findings_dispositioned: <integer>
 duration_minutes: <integer>
-reviewer_prompt_template_version: <integer; v1 at S063; v2 at S064 (locked in at S067 per (z7) n=2); v3 candidate at S075 per (γ-6) minimum-viable extension; lock-in-after-n=2 counter resets at v3>  # extended v9
-harness_telemetry_digest_available: <true | false>  # NEW v9 per (γ-6) reviewer-prompt-template v3 minimum-viable extension
+reviewer_prompt_template_version: <integer; v1 at S063; v2 at S064; lock-in-after-n=2 per (z7)>  # NEW v7
 bootstrap_status: <none | limited-confidence>  # NEW v7 per Layer 6.5
 ---
 ```
@@ -229,7 +228,7 @@ Required sections (revised v7):
 
 **REVD-2 quarantine semantics extension (added v7 minor amendment per S073 D-279 + §10.4-M34 P4 z-laundering-1 reframe substantive adoption per `provenance/073-session/01-deliberation.md` §3.4)**. The (γ-6) staged hybrid adopted at S073 D-275 carries explicit quarantine semantics for the EF-067 reviewer self-report fields during the γ phase-3 implementation arc (S074-S076). Quarantine semantics: (a) self-report fields (`duration_minutes`, `reviewer_cost`) MUST be annotated with `producer_kind: agent-declared` + `authority_level: tertiary`; (b) self-report fields are explicitly excluded from §10.4-M25 P1 audit-cost-budget threshold arithmetic during quarantine; (c) harness-measured fields (`reviewer_invocation_wall_clock_seconds`, `reviewer_invocation_token_count`) are added in parallel via the (z6) digest schema at S074 phase-3.1 close; (d) reviewers may compare self-report-vs-harness-measured during quarantine for cross-session pattern observation, but threshold arithmetic operates only on harness-measured trajectory. REVD-3 retrospective re-baseline activates post-S076 VD-003 review when harness-measured baseline is established (n≥2 stable harness-measured observations at S074-S075); at REVD-3 the §10.4-M25 P1 threshold arithmetic re-activates against the harness-measured baseline; the current S063 self-report baseline (25 wall-clock minutes / ~45,000 tokens) is retired.
 
-**(z7) Reviewer-prompt-template versioning + lock-in-after-n=2 (NEW v7 per S064 §10.4-M21+M22+M24 convergent reframe; extended v9 per S075 (γ-6) phase-3.1)**: reviewer-prompt-templates are workspace-adjacent operational instruments subject to iteration. The first triggered application at S063 used template v1 (ad-hoc per /tmp/s063-reviewer-prompt.md); S064 close used template v2 (revised per S064 D-233 audit shape); v2 locked in at S067 per (z7) n=2 (S064 + S067 successful applications). **v3 candidate** applies at S075 close per the minimum-viable extension above (digest-aware reviewer instructions + per-record producer_kind/authority_level distinction + REVD-2 quarantine semantics + capture-adapter metadata check). The lock-in counter resets at v3; v3 needs n≥2 successful applications before next revision (forecast S076-S077). Templates lock-in after n=2 successful applications; subsequent revision requires explicit deliberation surface (Path PD or Path AS-MAD-execution depending on scope) per the (z7) discipline.
+**(z7) Reviewer-prompt-template versioning + lock-in-after-n=2 (NEW v7 per S064 §10.4-M21+M22+M24 convergent reframe)**: reviewer-prompt-templates are workspace-adjacent operational instruments subject to iteration. The first triggered application at S063 used template v1 (ad-hoc per /tmp/s063-reviewer-prompt.md); S064 close uses template v2 (revised per S064 D-233 audit shape). Templates lock-in after n=2 successful applications; subsequent revision requires explicit deliberation surface (Path PD or Path AS-MAD-execution depending on scope).
 
 ### §(z5) Validation-Debt Lifecycle (authoritative-not-witness; revised v7 per S064 D-233 §10.4-M24)
 
@@ -256,90 +255,29 @@ Required fields per row (unchanged from v6): `id`, `introduced_session`, `owner_
 
 **Records-family promotion** deferred per S062 §10.4-M18.
 
-### §(z6) Harness-Telemetry Digest (SCD-3 schema codified at v9 per S075 (γ-6) phase-3.1 implementation)
+### §(z6) Harness-Telemetry Digest (specified-deferred at v7+v8; γ phase-3 implementation arc activated S072+ per VD-003 + S073 D-275 (γ-6) direction adopted; phase-3.1 implementation DEFERRED to S075+ per S074 D-286 operator-directive supersession)
 
-The (γ) reviewer's audit packet specification names the harness-telemetry-digest section as required input when telemetry is available. The digest is produced by a **capture-adapter** that observes substrate calls + tool calls + reviewer invocations during the session and writes a structured record consumable by `tools/validate.sh` check 26 (substrate-aware branch) + the Tier 2.5 reviewer.
+The (γ) reviewer's audit packet specification names the harness-telemetry-digest section as required input when telemetry is available. Implementation deferred per S062 D-225 EF-059 with named activation preconditions.
 
-**Location.** `provenance/<NNN-session>/harness-telemetry-digest.yaml`. Engine-adjacent (not part of `engine-manifest.md` §3 file set per `engine-manifest.md` §3 boundary rule for per-session provenance). Default-read by exclusion (not enumerated in `read-contract.md` v6 §1); read at session-scope by Tier 2.5 reviewer + check 26 + future digest consumers.
+**Important scope clarification at v8 (per S074 D-288 + Codex-S074-audit Finding F3 correction)**: the v7 → v8 substantive revision is the **reviewer-family rule revision** (family-distinctness REMOVED + google-provider EXCLUDED clause (d) added) per S074 D-288 operator-directive, NOT the full (γ-6) digest implementation. The (γ-6) phase-3.1 implementation (CM1+CM3 capture + SCD-3 schema + check 26 substrate-aware branch + reviewer-prompt-template v3 minimum-viable extension; full §(z6) digest schema spec) is **DEFERRED to S075+ per S074 D-286 operator-directive supersession** of S073 D-282 pre-ratification. The implementation timeline below describes the **(γ-6) direction adopted at S073 D-275 with implementation now scheduled for S075+ recovery scope**, NOT actions completed at v8 adoption.
 
-**Capture mechanisms (per S073 D-276 + S075 (γ-6) phase-3.1 implementation):**
+**γ phase-3 implementation arc activation (S072-S076; phase-3.1 implementation DEFERRED to S075+ per S074 D-286)** per VD-003 lifecycle row + S071 D-263 (ε) hybrid + S073 D-275 (γ-6) portable-adapter-contract staged hybrid with measurement-authority quarantine discipline adopted (cross-family weighted convergence on 4-perspective two-family MAD per `provenance/073-session/01-deliberation.md`):
 
-- **CM1 — `tools/digest_emitter.py`** (Claude Code hooks PostToolUse). First capture-adapter; harness-measured authority. Configured in `.claude/settings.json` `hooks.PostToolUse`. Captures tool_name + truncated input_summary + status + ISO-8601 timestamp for every tool call; routes substrate calls (`mcp__selvedge-retrieval__*`) to the `substrate_calls:` section, other tools to `tool_calls:`. Each emitted record carries `producer_kind: harness-measured` + `authority_level: primary`.
-- **CM3 — `tools/digest_reconstructor.py`** (post-hoc bridge/comparator). Secondary authority. Reads `00-assessment.md` frontmatter (`substrate_session_open`, `substrate_evidence`) + scans 00-assessment / 02-decisions / 03-close prose for substrate-tool mentions. Each reconstructed record carries `producer_kind: post-hoc-reconstructed` + `authority_level: secondary`. When the CM1 digest already exists, the reconstructor writes the comparator at `harness-telemetry-digest-cm3.yaml` (sibling) for cross-validation; otherwise writes the primary digest path.
-- **CM2 — external telemetry wrapper.** Named portability end-state. Deferred to post-S076 review per VD-003 gating; activates when cross-harness-tool deployment becomes load-bearing.
-- **CM4 — in-session agent-declared.** Explicitly excluded per §10.4-M28 + §10.4-M34. Schema field-level authority rules (below) prevent agent-declared records from being promoted to harness-measured solely through digest shape.
+- **Capture mechanism (per S073 D-276; implementation deferred to S075+)**: CM1 (Claude Code hooks PreToolUse + PostToolUse) first capture-adapter at S075+ phase-3.1; CM3 (post-hoc transcript-reconstruction) secondary bridge/comparator at S075+; CM2 (external wrapper) named portability end-state deferred to post-S076 review; CM4 explicitly excluded.
 
-**SCD-3 schema (per S073 D-277 + §10.4-M34 P4 z-laundering-1 reframe substantive adoption).**
+- **Schema scope (per S073 D-277; implementation deferred to S075+)**: SCD-3 target schema with capture-adapter metadata fields (`capture_adapter`, `capture_adapter_version`, `capture_capabilities`, `unobserved_fields`) + per-section field-level authority rules (each schema section/record carries its own `producer_kind` + `authority_level`, NOT inherited from file-level) per §10.4-M34 P4 z-laundering-1 reframe substantive adoption. Explicit non-promotion rule: `agent-declared` cannot be promoted to `harness-measured` solely through digest shape. SCD-2 acceptable as first implementation tranche if S075+ staging requires; SCD-4 records-substrate promotion explicitly deferred per S062 §10.4-M18.
 
-Frontmatter declares the **adapter's** capabilities; it does NOT declare authority for individual records. Per-record annotations are load-bearing.
+- **Reviewer availability (per S073 D-278; implementation deferred to S075+)**: RAD-3 bridged transition. D2.1 (always-available-always-read) named end-state; D2.2 (available-at-best-effort) deployment-window default during (γ) rollout S075+-S076 inclusive (window adjusted per S074 deferral); D2.1 hard-precondition activation gated to S076 VD-003 review if capture has demonstrated durability (n≥2 stable digest-bearing reviewer audits at S075-S076).
 
-```yaml
----
-session: <NNN>
-title: Harness-Telemetry Digest
-schema_version: SCD-3
-generated_at: <ISO-8601 UTC>
-capture_adapter: <claude-code-hook | post-hoc-reconstruction | external-wrapper>
-capture_adapter_version: <semantic version e.g. v1>
-capture_capabilities:    # what this adapter observes
-  - <field_name>
-unobserved_fields:       # what this adapter cannot observe (portability disclosure)
-  - <field_name>
-# File-level frontmatter declares ADAPTER capabilities only. Each record below
-# carries its own producer_kind + authority_level annotation; file-level header
-# does NOT promote agent-declared records to harness-measured via shape alone.
----
+- **Reviewer self-report (per S073 D-279; implementation deferred to S075+)**: REVD-2 with quarantine semantics now → REVD-3 after stable harness measurement post-S076 review. Quarantine: self-report fields (`duration_minutes`, `reviewer_cost`) preserved with `producer_kind: agent-declared` + `authority_level: tertiary` annotation; explicitly excluded from §10.4-M25 P1 audit-cost-budget threshold arithmetic during quarantine (extending the v7 minor amendment per S071 D-264 EF-067 Direction C); harness-measured fields added in parallel via S075+ implementation; REVD-3 retrospective re-baseline activates post-S076 when harness-measured baseline established (n≥2 stable observations); §10.4-M25 P1 threshold arithmetic re-activates against harness-measured baseline; current S063 self-report baseline (25 wall-clock minutes / ~45,000 tokens) retired at REVD-3.
 
-substrate_session_open_declaration:    # mirrors 00-assessment.md frontmatter; carries the agent-declared shape explicitly
-  declared_state: <exercised | unavailable | skipped | absent>
-  evidence_summary: <prose ≤ 500 chars>
-  producer_kind: agent-declared
-  authority_level: tertiary
+- **Validator-as-evidence-consumer discipline (per S073 D-280 + §10.4-M33 P3 z9 reframe substantive adoption; implementation deferred to S075+)**: `tools/validate.sh` check 26 substrate-aware branch (deferred to S075+ phase-3.1 implementation per (γ-6) CHKD-2 evidence-consuming framing) inspects declared substrate evidence in `00-assessment.md` frontmatter (per check 29 β-phase) + digest record (when present) + falls back to grep-based n-gram fallback when both substrate-evidence and digest absent. Validator does NOT require live MCP substrate access at runtime.
 
-substrate_calls:    # invocations of mcp__selvedge-retrieval__* tools
-  - tool_name: <e.g. mcp__selvedge-retrieval__forward_references>
-    input_summary: <truncated; ≤ 240 chars>
-    status: <success | error | unknown>
-    timestamp_iso8601: <ISO-8601 UTC>
-    producer_kind: <harness-measured | post-hoc-reconstructed | agent-declared>
-    authority_level: <primary | secondary | tertiary>
+- **Engine-v cadence (per S073 D-281 EVD staged hybrid; revised per S074 D-291 supersession)**: S073 close = minor amendment to v7 codifying direction adopted (engine-v13 preserved). **S074 close = substantive v7 → v8 reviewer-family-rule revision per operator-directive (D-288); engine-v13 → engine-v14 ratified per D-291.** S075 phase-3.1 close = full (γ-6) implementation + substantive v8 → v9 codifying full (z6) digest schema spec + new `tools/validate.sh` check 26 substrate-aware branch + minor amendments to `read-contract.md` v6 + `retrieval-contract.md` v1 + `multi-agent-deliberation.md` v4 (template v3 ratification at template lock-in); **engine-v14 → engine-v15 candidate at S075 phase-3.1 close per substantive (γ-6) implementation bump**. S076 phase-3.2 + VD-003 review = full review per VD-003 lifecycle review_by_session.
 
-tool_calls:         # non-substrate tool invocations
-  - tool_name: <e.g. Edit, Bash, Write>
-    input_summary: <truncated>
-    status: <success | error | unknown>
-    timestamp_iso8601: <ISO-8601 UTC>
-    producer_kind: <harness-measured | post-hoc-reconstructed | agent-declared>
-    authority_level: <primary | secondary | tertiary>
+- **Reviewer-prompt-template extension scope (per S073 D-282; implementation deferred to S075+)**: minimum-viable extension at S075+ phase-3.1 (template v2 → v3 candidate per (z7) lock-in-after-n=2; instruct reviewers to inspect digest when present + flag absent-digest as honest-limit + distinguish primary/secondary/tertiary evidence per producer_kind/authority_level + apply quarantine semantics to self-report fields + check capture-adapter metadata) → full extension after n=2 successful digest-bearing reviews (forecast S076-S078). (z7) lock-in-after-n=2 discipline preserved.
 
-reviewer_invocations:  # (γ) Tier 2.5 reviewer launches at session close
-  - reviewer_provider: <openai | anthropic | local | ...>   # NOT google per v8 clause (d)
-    reviewer_kind: <codex | claude | other>
-    timestamp_start: <ISO-8601 UTC>
-    timestamp_end: <ISO-8601 UTC>
-    wall_clock_seconds: <integer>           # producer_kind controls authority
-    token_count: <integer or null>
-    producer_kind: <harness-measured | post-hoc-reconstructed | agent-declared>
-    authority_level: <primary | secondary | tertiary>
-```
-
-**Per-record authority semantics.** Per §10.4-M34 P4 z-laundering-1 reframe: a record's `producer_kind` is the load-bearing authority claim. Reviewer audits + check 26 + future digest consumers MUST consume `authority_level` per record (not infer from file-level frontmatter). Explicit non-promotion rule: `agent-declared` records CANNOT be promoted to `harness-measured` solely through digest shape (e.g., placing an agent-declared record under a CM1 file-level `capture_adapter: claude-code-hook` header does NOT promote it to primary authority).
-
-**Reviewer availability (RAD-3 bridged transition per S073 D-278).** D2.1 (always-available-always-read) named end-state; D2.2 (available-at-best-effort) is the v9 default during (γ) rollout S075-S076. D2.1 hard-precondition activation gated to S076 VD-003 review if capture has demonstrated durability (n≥2 stable digest-bearing reviewer audits at S075-S076).
-
-**Reviewer self-report quarantine (REVD-2 per S073 D-279 + §10.4-M34 P4 z-laundering-1 reframe).** During the (γ) phase-3 rollout window (S075-S076 inclusive), self-report fields (`duration_minutes`, `reviewer_cost` from the audit frontmatter) carry `producer_kind: agent-declared` + `authority_level: tertiary`. They are explicitly excluded from §10.4-M25 P1 audit-cost-budget threshold arithmetic during quarantine. Harness-measured fields (`reviewer_invocation_wall_clock_seconds`, `reviewer_invocation_token_count`) appear in the digest's `reviewer_invocations:` section in parallel — when an out-of-band capture wrapper is available; CM1 hooks do NOT capture these (the hook fires per tool-use, not per reviewer-launch). REVD-3 retrospective re-baseline activates post-S076 review when harness-measured reviewer-cost baseline established (n≥2 stable harness-measured observations); at REVD-3 the §10.4-M25 P1 threshold arithmetic re-activates against the harness-measured baseline and the S063 self-report baseline is retired.
-
-**Check 26 substrate-aware branch (CHKD-2 evidence-consuming per S073 D-280 + §10.4-M33 P3 z9 reframe).** When `provenance/<current-session>/harness-telemetry-digest.yaml` exists, `tools/validate.sh` check 26 consumes it (counts `substrate_calls:` records; logs digest-presence) and proceeds with in-memory grep-based cluster detection over the §2c retention-window's `03-close.md` `§8` honest-limit lines. When digest absent, the grep fallback runs unchanged per `multi-agent-deliberation.md` v4 §Graceful Degradation. The validator does NOT call MCP at runtime per §10.4-M33; it consumes evidence produced at session-open by the orchestrator.
-
-**Reviewer-prompt-template v3 minimum-viable extension (per S073 D-282 + (z7) lock-in-after-n=2; counter resets at v3 — v3 needs n≥2 successful applications before next revision).** Reviewers at v9 close MUST:
-
-1. Inspect `provenance/<NNN-session>/harness-telemetry-digest.yaml` when present; record digest presence in §6 frontmatter `harness_telemetry_digest_available:` field (or §6 prose if frontmatter not extended).
-2. When digest absent, name the absence as an honest-limit in §8 (or §X bootstrap section) — do not silently proceed.
-3. Distinguish per-record `producer_kind` + `authority_level` when citing digest evidence in §3a/§3b/§3c. Treat `agent-declared` records as tertiary; treat `harness-measured` records as primary; treat `post-hoc-reconstructed` records as secondary cross-validation.
-4. Apply REVD-2 quarantine semantics: do NOT cite reviewer self-report `duration_minutes` against §10.4-M25 P1 audit-cost-budget threshold arithmetic during the S075-S076 quarantine window. The §8 reviewer-cost note remains for cross-session pattern observation only.
-5. Verify capture-adapter metadata coherence: when the digest's `capture_adapter:` claims `claude-code-hook` (CM1), the `unobserved_fields:` enumeration MUST include the fields the adapter cannot capture (e.g., `wall_clock_token_count`, `reviewer_invocation_wall_clock_seconds`); cross-check that no `harness-measured` records claim authority for unobserved fields.
-
-Engine-v cadence summary (per S073 D-281 + S074 D-291 + S075 (γ-6) phase-3.1): S073 close = minor amendment to v7 codifying direction (engine-v13 preserved). S074 close = substantive v7 → v8 reviewer-family-rule revision per operator-directive (engine-v13 → engine-v14). **S075 close = substantive v8 → v9 codifying SCD-3 schema + audit-shape extension + check 27 §1-§8 + tripartite §3 enforcement + new tools/digest_emitter.py + tools/digest_reconstructor.py + check 26 substrate-aware branch (engine-v14 → engine-v15 ratified per S075 D-298).** S076 close = phase-3.2 minor extensions + VD-003 full review per VD-003 lifecycle row.
+The full `validation-approach.md` v8 → v9 substantive revision at **S075+ phase-3.1 close** codifies the (z6) digest schema spec + §Tier 2.5 audit-shape extension + §10 First-Class Minorities cross-reference for §10.4-M30 through §10.4-M35 (engine-wide minority count 54 → 60 at S073 close per S073 D-283; unchanged at S074 per single-agent operator-directed scope).
 
 ### §Bootstrap-Paradox Layered Handling (extended v7 with Layer 6.5)
 
