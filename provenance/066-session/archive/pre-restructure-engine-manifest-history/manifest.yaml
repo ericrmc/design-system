@@ -1,0 +1,18 @@
+---
+archive_id: 066-pre-restructure-engine-manifest-history
+originating_session: 17
+originating_path: specifications/engine-manifest.md
+migrated_in_session: 66
+kind: other-named
+total_bytes: 50126
+total_words: 5816
+chunk_count: 1
+chunk_boundary_rule: single-file
+source_hash_sha256: 043c00405dfe337d5e75114957d6eb84e74ca5f32810546b4ec5eb6943779e2d
+chunks:
+  - ordinal: 1
+    file: 00-source.md
+    line_range: "129-275 of pre-S066 specifications/engine-manifest.md"
+    chunk_hash_sha256: 043c00405dfe337d5e75114957d6eb84e74ca5f32810546b4ec5eb6943779e2d
+readers_note: Preserves the eleven §7 engine-version history entries (engine-v1 S017 through engine-v11 S063) verbatim from the pre-S066 specifications/engine-manifest.md. Migrated to remediate the 25K-token Read-tool ceiling crossing observed at S066 open. The current engine-version §7 entry (engine-v12 S064) remains inline at specifications/engine-manifest.md §7 along with a thin per-version index pointing at this archive-pack for the historical entries; future engine-version entries land inline as they are ratified.
+---
