@@ -4,7 +4,7 @@ version: 1
 status: active
 created: 2026-04-22
 last-updated: 2026-04-26
-updated-by-session: 071
+updated-by-session: 074
 supersedes: none
 ---
 
@@ -29,11 +29,11 @@ The engine is distinct from:
 
 ### 2. Current engine version
 
-**`engine-v13`** (established Session 071 per D-265).
+**`engine-v14`** (established Session 074 per D-291).
 
 Subsequent engine versions (`engine-v11`, `engine-v12`, `engine-v13`, ...) increment per the versioning discipline in §5. The current engine version is always named by this §2.
 
-### 3. Engine-definition files at `engine-v13`
+### 3. Engine-definition files at `engine-v14`
 
 The following files constitute the engine at the current version:
 
@@ -145,6 +145,20 @@ The eleven historical engine-version entries (engine-v1 through engine-v11) are 
 | engine-v10 | Session 058 | D-200 | Second MAD-adopted new spec (records-contract.md v1; substrate substantive) |
 | engine-v11 | Session 063 | D-228 | First two-session-arc adoption (S062 deliberation + S063 phase-3 implementation) |
 | engine-v12 | Session 064 | D-234 | First-of-record depth-0 preservation event; substantive validation-approach v6→v7 + 5 new minorities (45→50) |
+| engine-v13 | Session 071 | D-265 | Substantive (β-phase substrate-discipline; (ε) hybrid bounded-then-extended); 4 new minorities (50→54) |
+| engine-v14 | Session 074 | D-291 | Substantive (operator-directed; google reviewer-role exclusion; family-distinctness REMOVED from §Tier 2.5) |
+
+- **`engine-v14`** — established Session 074 via D-291. **Operator-directed substantive bump** per §10.4-M10 written-warrant clause (c) operator-surfacing channel cumulative count n=10 → n=11 per S036/S057/S060/S061/S063/S064/S066/S068/S069/S072/**S074** chain. Path-L per operator-directed substantive amendment per S066 precedent extended to substantive-class engine-definition revision. **No MAD** per `multi-agent-deliberation.md` v4 §Opt-out (operator-directive: "no further MAD discussion on the merits of keeping Gemini because it is gone"). Single-agent operator-directed scope per S048 D-154 + S066 first-of-record precedent extended.
+
+  Empirical basis recorded at `engine-feedback/inbox/EF-073-gemini-excluded-and-reviewer-family-rule-relaxation.md`: sustained Gemini reviewer `findings_count: 0` pattern across S063+S067+S071+S073 (n=4) + S073 codex cross-check on identical evidence packet produced `findings_count: 2` with substantive findings (`provenance/073-session/04-tier-2-audit-codex-cross-check.md`). Operator-policy authority on reviewer-family selection.
+
+  Substantive: substantive revision to one engine-definition spec (`validation-approach.md` v7 → v8: family-distinctness REMOVED from §Tier 2.5 reviewer-family rule + new clause (d) excluding google provider permanently from reviewer roles; v7 preserved as `validation-approach-v7.md` `status: superseded`) + substantive update to one engine-definition tool (`tools/validate.sh`: new `EXCLUDED_REVIEWER_PROVIDERS=google` + `EXCLUDED_REVIEWER_ADOPTION_SESSION=74` constants + check 27 sub-clause emits FAIL when `reviewer_provider: google` appears in any session 74+ audit artefact) + minor amendment to one engine-definition spec (`workspace-structure.md` v9 §10.4-M21 reopen-warrant (a) status update per Gemini findings_count=0 n=4 empirical vindication; v9 preserved per OI-002 minor classification).
+
+  Engine-v14 is the thirteenth engine-v-bump overall and follows engine-v13 at preservation depth 2 (S071 ratified + S072 first preservation + S073 second preservation). Engine-v14 reset depth to 0 at S074. §5.4 Session 022 engine-v-cadence minority does NOT re-escalate at this bump per content-driven-bump precedent chain S028+S033+S036+S048+S050+S058+S062+S063+S064+S071 extended through S074 (cadence concern separates from substantive-bump classification); 3-session gap S071 → S074 is engine-conventional. §10.4-M25 P2 cadence-depth concern at engine-v14 reset to depth-0: future engine-v15 bump preservation forecast is engine-conventional within engine-v9 depth-8 second-longest precedent.
+
+  Engine-v14 introduces **operator-directed-substantive-engine-definition-revision pattern reified at n=2** (S066 engine-manifest restructure per operator-surfaced priority directive minor-classified per OI-002 + **S074 validation-approach.md v7 → v8 substantive per operator-directive**). The S074 instance is the first-of-record substantive-class operator-directed engine-definition revision; S066 was minor-classified per OI-002 archive-pack-restructure-of-active-default-read-spec.
+
+  **Key consequence at v14 adoption**: Tier 2.5 (γ) reviewer mechanism's family-distinctness counter-pressure REMOVED; replaced by reviewer-overlap-disclosure-with-counterweighting-check counter-pressure preserved verbatim from v7. The empirical basis (Gemini findings_count=0 n=4 + codex cross-check findings_count=2) operationalises §10.4-M21 P2 reopen-warrant (a) sustained-pattern threshold n≥3 vindication. Reviewer-prompt-template v3 revision deferred to future Path-AS / Path-PD scope per (z7) lock-in-after-n=2 explicit-deliberation-surface requirement; not in S074 operator-directive scope. Reviewer at S074 close: codex per v8 family-overlap-permitted rule + operator-preference ("Claude and ChatGPT are better reasoning models").
 
 - **`engine-v13`** — established Session 071 via D-265. Cross-family-weighted phase-2 MAD on three-record joint-scope (EF-067 + EF-059 + EF-068-substrate-load-bearing) per S069 D-256 + S070 D-260 pre-ratification chain. (ε) hybrid bounded-then-extended adoption per cross-family weighted convergence (3-of-4 across families: P2 Claude + P3 codex + P4 codex on (ε) hybrid; P1 Claude dissent on full (γ) preserved as §10.4-M26 first-class minority). β-phase same-session-bounded per S058 D-199 precedent at S071 close + γ phase-3 arc deferred to S072+ multi-session per S062 D-220 precedent + named gating conditions per VD-003 lifecycle row review at S076. Preservation depth at engine-v12: 6 (S064 ratified + S065-S070 preserved; matched/exceeded engine-v10 mark; second-place behind engine-v7 (11) + engine-v9 (8); third-place behind those two). Engine-v13 reset depth to 0 at S071. Substantive: substantive revision to one engine-definition prompt (`prompts/development.md`) + new check in one engine-definition tool (`tools/validate.sh` check 29) + minor amendment to one engine-definition spec (`validation-approach.md` v7 §Tier 2.5 reviewer self-report honest-limit subsection + §10 cross-reference extension + §Gating Conventions check 29 constant + §Tier 1 table check 29 row + §Honest Limits check 29 entry; v7 preserved per OI-002 minor classification) + minor amendment to one engine-definition spec (`workspace-structure.md` v9 §10.4-M26 through §10.4-M29 minorities; v9 preserved per OI-002 minor) + harness-config edit (`.mcp.json` / Claude Code settings; not engine-definition).
 

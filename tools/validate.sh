@@ -56,6 +56,16 @@ readonly HONEST_LIMIT_REPETITION_THRESHOLD_WARN=3
 readonly HONEST_LIMIT_REPETITION_THRESHOLD_FAIL=6
 readonly LIFECYCLE_DEBT_STATUS_ENUM="open in-progress resolved deferred-with-rationale escalated"
 
+# Providers excluded from Tier 2.5 reviewer roles per validation-approach.md v8 §Tier 2.5
+# reviewer-family rule clause (d) (added Session 074 per D-288 operator-directive).
+# Empirical basis: sustained Gemini findings_count=0 pattern across S063+S067+S071+S073 (n=4)
+# + S073 codex cross-check on identical input produced findings_count=2 with substantive findings.
+# Existing S063+S067+S071+S073 Gemini audit records remain valid as historical artefacts;
+# no future reviewer-role invocation of google is permitted.
+# See engine-feedback/inbox/EF-073-gemini-excluded-and-reviewer-family-rule-relaxation.md.
+readonly EXCLUDED_REVIEWER_PROVIDERS="google"
+readonly EXCLUDED_REVIEWER_ADOPTION_SESSION=74
+
 WORKSPACE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PASS=0
 FAIL=0
@@ -1399,6 +1409,18 @@ else
         if grep -qE 'D-233|D-234|engine-v12|Tier 2.5 revision|§Tier 2.5.*revis' "$current_close" 2>/dev/null; then
           if ! grep -qE '^bootstrap_status:[[:space:]]*limited-confidence' "$audit_artefact" 2>/dev/null; then
             warn "Check 27: $audit_artefact appears to audit a session adopting Tier 2.5 mechanism revisions but lacks 'bootstrap_status: limited-confidence' frontmatter declaration per validation-approach.md v7 §Bootstrap-Paradox Layered Handling Layer 6.5 (NEW v7)"
+          fi
+        fi
+        # Excluded-reviewer-provider check (added v8 Session 074 per D-288 + D-289).
+        # Per validation-approach.md v8 §Tier 2.5 reviewer-family rule clause (d):
+        # google provider permanently excluded from reviewer roles per operator-directive at S074.
+        # Empirical basis: sustained Gemini findings_count=0 across S063+S067+S071+S073 (n=4)
+        # + S073 codex cross-check produced findings_count=2 on identical input.
+        # Pre-S074 audit records remain valid; this check applies forward from session 74.
+        if [[ $((10#$last_session_num)) -ge $EXCLUDED_REVIEWER_ADOPTION_SESSION ]]; then
+          if grep -qE '^reviewer_provider:[[:space:]]*google' "$audit_artefact" 2>/dev/null; then
+            fail "Check 27: $audit_artefact reviewer_provider: google is excluded per validation-approach.md v8 §Tier 2.5 reviewer-family rule clause (d) per S074 D-288 operator-directive. Acceptable providers: $PARTICIPANT_ORGANISATION_CLOSED_SET excluding $EXCLUDED_REVIEWER_PROVIDERS."
+            check27_pass=false
           fi
         fi
         if [[ "$check27_pass" == "true" ]]; then
