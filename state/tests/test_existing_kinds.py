@@ -629,3 +629,103 @@ def test_issue_work_item_unknown_issue_id_refused(clean_substrate, selvedge_cli)
     )
     assert res["rc"] != 0
     assert "E_NOT_FOUND" in res["err"]
+
+
+def _seed_engine_feedback(*, flag="observation", body="x"*40, disposition=None):
+    """Helper: insert one engine_feedback row tied to S001 with matching objects
+    row (mirrors the raw-SQL pattern used in S092 since there is no submit
+    handler for engine_feedback yet — see EF-S092-4 follow-up note)."""
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        cur = conn.execute(
+            "INSERT INTO engine_feedback (session_id, flag, body_md, disposition) VALUES (1, ?, ?, ?)",
+            (flag, body, disposition),
+        )
+        fid = cur.lastrowid
+        cur2 = conn.execute(
+            "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('engine_feedback', ?, ?)",
+            (fid, f"EF-S001-{fid}"),
+        )
+        oid = cur2.lastrowid
+        conn.execute("UPDATE engine_feedback SET object_id=? WHERE feedback_id=?", (oid, fid))
+        conn.commit()
+        return fid, f"EF-S001-{fid}"
+    finally:
+        conn.close()
+
+
+def _orient_json(selvedge_cli):
+    res = selvedge_cli(["orient", "--json"])
+    assert res["rc"] == 0, res
+    return res["out"]
+
+
+def test_orient_includes_untriaged_feedback_section_when_empty(clean_substrate, selvedge_cli):
+    packet = _orient_json(selvedge_cli)
+    assert "untriaged_feedback" in packet
+    assert "untriaged_feedback_total" in packet
+    assert "untriaged_feedback_truncated" in packet
+    assert packet["untriaged_feedback"] == []
+    assert packet["untriaged_feedback_total"] == 0
+    assert packet["untriaged_feedback_truncated"] is False
+
+
+def test_orient_surfaces_undisposed_feedback(clean_substrate, selvedge_cli):
+    fid, alias = _seed_engine_feedback(
+        flag="observation",
+        body="**bug heading**\n\nLong body that spans paragraphs and should not appear in the orient head.",
+    )
+    packet = _orient_json(selvedge_cli)
+    assert packet["untriaged_feedback_total"] == 1
+    row = packet["untriaged_feedback"][0]
+    assert row["alias"] == alias
+    assert row["flag"] == "observation"
+    assert isinstance(row["surfaced_in"], int) and row["surfaced_in"] >= 1
+    assert row["head"] == "**bug heading**"
+    assert "\n" not in row["head"]
+
+
+def test_orient_filters_disposed_feedback(clean_substrate, selvedge_cli):
+    _seed_engine_feedback(disposition="triaged-into-OI-001")
+    packet = _orient_json(selvedge_cli)
+    assert packet["untriaged_feedback_total"] == 0
+    assert packet["untriaged_feedback"] == []
+
+
+def test_orient_markdown_renders_feedback_table(clean_substrate):
+    _seed_engine_feedback(body="head with a | pipe inside should be escaped")
+    import os, subprocess
+    env = os.environ | {"SELVEDGE_WORKSPACE": str(WORKSPACE)}
+    proc = subprocess.run(
+        [str(WORKSPACE / "bin" / "selvedge"), "orient"],
+        capture_output=True, text=True, env=env,
+    )
+    assert proc.returncode == 0, proc.stderr
+    out = proc.stdout
+    assert "## Untriaged engine feedback (1 of 1)" in out
+    assert "| Alias | Flag | Surfaced | Head |" in out
+    assert "head with a \\| pipe inside should be escaped" in out
+
+
+def test_orient_head_skips_leading_blank_lines(clean_substrate, selvedge_cli):
+    _seed_engine_feedback(body="\n\n\nactual content after blank lines")
+    packet = _orient_json(selvedge_cli)
+    assert packet["untriaged_feedback"][0]["head"] == "actual content after blank lines"
+
+
+def test_orient_falls_back_when_feedback_object_missing(clean_substrate, selvedge_cli):
+    """A feedback row without a paired objects row (legacy / out-of-band write)
+    must still appear in orient with a synthetic alias rather than NULL."""
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        cur = conn.execute(
+            "INSERT INTO engine_feedback (session_id, flag, body_md) VALUES (1, 'observation', 'orphan row')"
+        )
+        fid = cur.lastrowid
+        conn.commit()
+    finally:
+        conn.close()
+    packet = _orient_json(selvedge_cli)
+    rows = [r for r in packet["untriaged_feedback"] if r["head"] == "orphan row"]
+    assert len(rows) == 1
+    assert rows[0]["alias"] == f"feedback_id={fid}"

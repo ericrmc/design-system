@@ -2179,6 +2179,34 @@ def _orient_sections(conn: sqlite3.Connection) -> dict:
             "ORDER BY review_finding_id"
         ).fetchall()
     ]
+    feedback_rows = conn.execute(
+        "SELECT ef.feedback_id, ef.flag, ef.body_md, "
+        "       o.citable_alias AS alias, "
+        "       s.workspace_session_no AS surfaced_in "
+        "FROM engine_feedback ef "
+        "LEFT JOIN objects o ON o.object_id=ef.object_id "
+        "JOIN sessions s ON s.session_id=ef.session_id "
+        "WHERE ef.disposition IS NULL "
+        "ORDER BY ef.feedback_id DESC"
+    ).fetchall()
+    out["untriaged_feedback_total"] = len(feedback_rows)
+    def _first_nonempty_line(text: str) -> str:
+        for line in (text or "").splitlines():
+            stripped = line.strip()
+            if stripped:
+                return stripped[:120]
+        return ""
+
+    out["untriaged_feedback"] = [
+        {
+            "alias": r["alias"] or f"feedback_id={r['feedback_id']}",
+            "flag": r["flag"],
+            "surfaced_in": r["surfaced_in"],
+            "head": _first_nonempty_line(r["body_md"]),
+        }
+        for r in feedback_rows[:20]
+    ]
+    out["untriaged_feedback_truncated"] = len(feedback_rows) > 20
     out["unapplied_migrations"] = []  # filled lazily below if needed
     return out
 
@@ -2264,6 +2292,26 @@ def _orient_markdown(packet: dict) -> str:
     if packet["open_findings"]:
         for r in packet["open_findings"]:
             lines.append(f"- [{r['severity']}] {r['finding']}")
+    else:
+        lines.append("(none)")
+    lines.append("")
+
+    fb_total = packet.get("untriaged_feedback_total", len(packet.get("untriaged_feedback", [])))
+    fb = packet.get("untriaged_feedback", [])
+    lines.append(f"## Untriaged engine feedback ({len(fb)} of {fb_total})")
+    lines.append("")
+    if fb:
+        lines.append("| Alias | Flag | Surfaced | Head |")
+        lines.append("|-------|------|----------|------|")
+        for r in fb:
+            surfaced = f"S{r['surfaced_in']:03d}" if r["surfaced_in"] is not None else ""
+            head = (r["head"] or "").replace("|", "\\|")
+            lines.append(f"| {r['alias']} | {r['flag']} | {surfaced} | {head} |")
+        if packet.get("untriaged_feedback_truncated"):
+            lines.append("")
+            lines.append(f"_{fb_total - len(fb)} more untriaged feedback rows elided. Run `bin/selvedge query \"SELECT feedback_id, flag, body_md FROM engine_feedback WHERE disposition IS NULL\"` for the full list._")
+        lines.append("")
+        lines.append("_Triage by setting `disposition` (e.g. `bin/selvedge query` UPDATE under __cli__) and citing the resulting issue or decision._")
     else:
         lines.append("(none)")
     lines.append("")
