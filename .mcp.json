@@ -1,10 +1,4 @@
 {
   "mcpServers": {
-    "selvedge-retrieval": {
-      "type": "stdio",
-      "command": "uv",
-      "args": ["run", "tools/retrieval_server.py"],
-      "env": {}
-    }
   }
 }
