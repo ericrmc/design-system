@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Selvedge structural validator (engine-v19, session 083).
+# Selvedge structural validator (engine-v20, session 084).
 #
 # File-presence check on the active engine-definition set, then delegate substrate
 # integrity to `selvedge validate --precommit`. Intended to gate git-commit.
@@ -18,7 +18,7 @@ fail()  { echo "  fail  $1"; FAIL=$((FAIL+1)); }
 
 require() { [ -e "$1" ] && ok "$1" || fail "$1 (required)"; }
 
-echo "== Selvedge validator (engine-v19) =="
+echo "== Selvedge validator (engine-v20) =="
 
 echo
 echo "Active engine-definition files:"

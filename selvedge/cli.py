@@ -1,6 +1,6 @@
 """Selvedge CLI — single-writer SQLite substrate.
 
-Implements the engine-v18 substrate per 078 D-1, D-3, D-8, D-9.
+Implements the engine-v20 substrate per 078 D-1/D-3/D-8/D-9 plus S084 Path A.
 
 Subcommands:
   init                 Initialise a fresh substrate. Applies migration 001 + any
@@ -243,13 +243,83 @@ def _strip_sql_comments(sql: str) -> str:
     return _BLOCK_COMMENT_RE.sub(" ", _LINE_COMMENT_RE.sub(" ", sql))
 
 
+# Per S084 D-1 (operator-ratified): a calibrated marker pair admits non-destructive
+# CHECK-relaxation table-recreation. The block must be bounded by literal markers
+# `-- T-15-CALIBRATED-BEGIN: <reason>` and `-- T-15-CALIBRATED-END`, the reason
+# must be present, and the body must contain at most one CREATE...new + INSERT
+# SELECT + DROP + RENAME sequence per block. The marker is preserved verbatim
+# in the migration; the runner's regex check exempts only what is between the
+# markers.
+_CALIBRATED_BLOCK_RE = re.compile(
+    r"--\s*T-15-CALIBRATED-BEGIN\s*:\s*(?P<reason>[^\n]+)\n(?P<body>.*?)\n\s*--\s*T-15-CALIBRATED-END",
+    re.DOTALL,
+)
+
+# Statements admitted inside a calibrated block (per S084 reviewer F1: structural
+# validation of block contents). Anything else inside a calibrated block is a
+# violation. The pattern is anchored to the start of a (possibly indented)
+# statement after stripping comments.
+_CALIBRATED_ALLOWED_STMT_RE = re.compile(
+    r"^\s*(CREATE\s+TABLE|INSERT\s+INTO|DROP\s+TABLE|ALTER\s+TABLE\s+\S+\s+RENAME\s+TO|"
+    r"CREATE\s+(UNIQUE\s+)?INDEX|CREATE\s+TRIGGER)\b",
+    re.IGNORECASE,
+)
+
+
+def _validate_calibrated_block(body: str) -> list[str]:
+    """Return a list of violations: statements inside a calibrated block that are
+    not the admitted recreation primitives. Comments are stripped first."""
+    cleaned = _strip_sql_comments(body)
+    violations: list[str] = []
+    # SQLite statements end at ";" outside string literals; for migration files
+    # we accept naive split because none of our DDL embeds semicolons in strings.
+    for raw in cleaned.split(";"):
+        stmt = raw.strip()
+        if not stmt:
+            continue
+        if not _CALIBRATED_ALLOWED_STMT_RE.match(stmt):
+            # Truncate to ~80 chars for the violation message.
+            snippet = " ".join(stmt.split())[:80]
+            violations.append(f"non-recreation statement in calibrated block: {snippet}")
+    return violations
+
+
+def _strip_calibrated_blocks(sql: str) -> tuple[str, list[str], list[str]]:
+    """Remove calibrated blocks from sql; return (stripped_sql, reasons, violations).
+
+    Per S084 D-2 (operator-ratified) the calibrated marker pair admits ONLY a
+    non-destructive table-recreation block (CREATE TABLE x_new + INSERT SELECT
+    + DROP TABLE x + ALTER TABLE x_new RENAME TO x, plus admitted index/trigger
+    creations). Other statements inside the block are violations and are
+    surfaced via the violations list.
+    """
+    reasons: list[str] = []
+    violations: list[str] = []
+
+    def _take(m: re.Match) -> str:
+        reasons.append(m.group("reason").strip())
+        violations.extend(_validate_calibrated_block(m.group("body")))
+        return " "
+
+    return _CALIBRATED_BLOCK_RE.sub(_take, sql), reasons, violations
+
+
 def _t15_violations(sql: str) -> list[str]:
-    cleaned = _strip_sql_comments(sql)
-    found: list[str] = []
+    # Strip calibrated blocks BEFORE comments so block markers (themselves --
+    # comments) survive long enough to be detected. Surface block-content
+    # violations alongside ordinary T-15 violations.
+    sql_minus_calibrated, _reasons, block_violations = _strip_calibrated_blocks(sql)
+    cleaned = _strip_sql_comments(sql_minus_calibrated)
+    found: list[str] = list(block_violations)
     for pat, label in T15_FORBIDDEN_PATTERNS:
         if pat.search(cleaned):
             found.append(label)
     return found
+
+
+def _calibrated_reasons(sql: str) -> list[str]:
+    _stripped, reasons, _violations = _strip_calibrated_blocks(sql)
+    return reasons
 
 
 _PLACEHOLDER_SHA = "COMPUTED-AT-APPLY-TIME"
@@ -797,6 +867,336 @@ def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     return {"spec_version_id": svid, "object_id": oid, "alias": alias, "refs": n_refs}
 
 
+# ---------------------------------------------------------------------------
+# Path A handlers (engine-v20+): atom + typed-link writers. Per S084 D-1,
+# new sessions write via these kinds; the legacy `decision` / `perspective`
+# kinds remain admitted for read/replay-test only.
+# ---------------------------------------------------------------------------
+
+
+def _atom_session_id(conn: sqlite3.Connection, session_no: int, require_open: bool = True) -> int:
+    """Resolve session_no -> session_id and (by default) refuse closed sessions
+    (per S084 reviewer F9: handlers that wrote atoms without checking status
+    relied on the T-06 trigger to refuse, surfacing as a constraint violation
+    rather than a clean E_REFUSAL_T06 from the handler)."""
+    sess = conn.execute(
+        "SELECT session_id, status FROM sessions WHERE session_no=?", (session_no,)
+    ).fetchone()
+    if sess is None:
+        raise SelvedgeError("E_NOT_FOUND", f"session_no={session_no}")
+    if require_open and sess["status"] != "open":
+        raise SelvedgeError("E_REFUSAL_T06", f"session {session_no} is {sess['status']}; writes refused")
+    return sess["session_id"]
+
+
+def _insert_atom(conn: sqlite3.Connection, role: str, session_id: int, atom_type: str, text: str) -> int:
+    _check_role_capability(conn, role, "text_atoms", "insert")
+    cur = conn.execute(
+        "INSERT INTO text_atoms (atom_type, text, created_session_id) VALUES (?,?,?)",
+        (atom_type, text, session_id),
+    )
+    aid = cur.lastrowid
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('text_atom', ?, NULL)",
+        (aid,),
+    )
+    return aid
+
+
+def _resolve_alias_to_object_id(conn: sqlite3.Connection, alias: str) -> int:
+    row = conn.execute("SELECT object_id FROM objects WHERE citable_alias=?", (alias,)).fetchone()
+    if row is None:
+        raise SelvedgeError("E_REFUSAL_T01", f"unresolved alias [{alias}]")
+    return row["object_id"]
+
+
+def _submit_assessment(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "assessments", "insert")
+    sess_id = _atom_session_id(conn, p["session_no"])
+    state_aid = _insert_atom(conn, role, sess_id, "assessment_item", p["state"])
+    cur = conn.execute(
+        "INSERT INTO assessments (session_id, state_atom_id) VALUES (?,?)",
+        (sess_id, state_aid),
+    )
+    aid = cur.lastrowid
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('assessment', ?, ?)",
+        (aid, f"A-S{p['session_no']:03d}"),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE assessments SET object_id=? WHERE assessment_id=?", (oid, aid))
+    _check_role_capability(conn, role, "assessment_agenda_items", "insert")
+    items_out = []
+    for ord_, item_text in enumerate(p.get("agenda", []), start=1):
+        item_aid = _insert_atom(conn, role, sess_id, "assessment_item", item_text)
+        conn.execute(
+            "INSERT INTO assessment_agenda_items (assessment_id, ord, item_atom_id) VALUES (?,?,?)",
+            (aid, ord_, item_aid),
+        )
+        items_out.append({"ord": ord_, "atom_id": item_aid})
+    return {"assessment_id": aid, "object_id": oid, "alias": f"A-S{p['session_no']:03d}", "agenda": items_out}
+
+
+def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "decisions_v2", "insert")
+    sess_id = _atom_session_id(conn, p["session_no"])
+    sess = conn.execute("SELECT status FROM sessions WHERE session_id=?", (sess_id,)).fetchone()
+    if sess["status"] == "closed":
+        raise SelvedgeError("E_REFUSAL_T06", f"session {p['session_no']} closed")
+    next_no = conn.execute(
+        "SELECT COALESCE(MAX(decision_no),0)+1 AS n FROM decisions_v2 WHERE session_id=?",
+        (sess_id,),
+    ).fetchone()["n"]
+    title_aid = _insert_atom(conn, role, sess_id, "title", p["title"])
+    cur = conn.execute(
+        "INSERT INTO decisions_v2 (session_id, decision_no, kind, title_atom_id, outcome_type, target_kind, target_key) "
+        "VALUES (?,?,?,?,?,?,?)",
+        (sess_id, next_no, p["kind"], title_aid, p["outcome_type"], p["target_kind"], p["target_key"]),
+    )
+    did = cur.lastrowid
+    alias = f"DV-S{p['session_no']:03d}-{next_no}"
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('decision_v2', ?, ?)",
+        (did, alias),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE decisions_v2 SET object_id=? WHERE decision_v2_id=?", (oid, did))
+
+    # supports
+    _check_role_capability(conn, role, "decision_supports", "insert")
+    for seq, s in enumerate(p.get("supports", []), start=1):
+        claim_aid = _insert_atom(conn, role, sess_id, "support_claim", s["claim"])
+        cited_oid = _resolve_alias_to_object_id(conn, s["cite"]) if s.get("cite") else None
+        conn.execute(
+            "INSERT INTO decision_supports (decision_v2_id, seq, basis, claim_atom_id, cited_object_id) "
+            "VALUES (?,?,?,?,?)",
+            (did, seq, s["basis"], claim_aid, cited_oid),
+        )
+
+    # effects
+    _check_role_capability(conn, role, "decision_effects", "insert")
+    for e in p.get("effects", []):
+        target_oid = _resolve_alias_to_object_id(conn, e["target"]) if e.get("target") else None
+        conn.execute(
+            "INSERT INTO decision_effects (decision_v2_id, effect_kind, target_object_id, target_descriptor) "
+            "VALUES (?,?,?,?)",
+            (did, e["effect_kind"], target_oid, e.get("target_descriptor")),
+        )
+
+    # alternatives + rejections
+    _check_role_capability(conn, role, "alternatives_v2", "insert")
+    _check_role_capability(conn, role, "alternative_rejections", "insert")
+    alts_out = []
+    for a in p.get("alternatives", []):
+        opt_aid = _insert_atom(conn, role, sess_id, "alternative_option", a["option"])
+        cur3 = conn.execute(
+            "INSERT INTO alternatives_v2 (decision_v2_id, label, option_atom_id) VALUES (?,?,?)",
+            (did, a["label"], opt_aid),
+        )
+        avid = cur3.lastrowid
+        alt_alias = f"{alias}-{a['label']}"
+        cur4 = conn.execute(
+            "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('alternative_v2', ?, ?)",
+            (avid, alt_alias),
+        )
+        a_oid = cur4.lastrowid
+        conn.execute("UPDATE alternatives_v2 SET object_id=? WHERE alternative_v2_id=?", (a_oid, avid))
+        for seq, r in enumerate(a.get("rejections", []), start=1):
+            rej_aid = _insert_atom(conn, role, sess_id, "rejection_reason", r["reason"])
+            cited_oid = _resolve_alias_to_object_id(conn, r["cite"]) if r.get("cite") else None
+            conn.execute(
+                "INSERT INTO alternative_rejections (alternative_v2_id, seq, basis, rejection_atom_id, cited_object_id) "
+                "VALUES (?,?,?,?,?)",
+                (avid, seq, r["basis"], rej_aid, cited_oid),
+            )
+        alts_out.append({"alternative_v2_id": avid, "alias": alt_alias})
+
+    return {"decision_v2_id": did, "object_id": oid, "alias": alias, "decision_no": next_no, "alternatives": alts_out}
+
+
+def _submit_perspective_position(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "perspective_positions", "insert")
+    delib = conn.execute(
+        "SELECT d.session_id FROM perspectives pe JOIN deliberations d ON d.deliberation_id = pe.deliberation_id "
+        "WHERE pe.perspective_id=?",
+        (p["perspective_id"],),
+    ).fetchone()
+    if delib is None:
+        raise SelvedgeError("E_NOT_FOUND", f"perspective_id={p['perspective_id']}")
+    sess_id = delib["session_id"]
+    pos_aid = _insert_atom(conn, role, sess_id, "perspective_position", p["position"])
+    cur = conn.execute(
+        "INSERT INTO perspective_positions (perspective_id, position_atom_id) VALUES (?,?)",
+        (p["perspective_id"], pos_aid),
+    )
+    pid = cur.lastrowid
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('perspective_position', ?, NULL)",
+        (pid,),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE perspective_positions SET object_id=? WHERE position_id=?", (oid, pid))
+    return {"position_id": pid, "object_id": oid}
+
+
+def _submit_perspective_claim(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "perspective_claims", "insert")
+    delib = conn.execute(
+        "SELECT d.session_id FROM perspectives pe JOIN deliberations d ON d.deliberation_id = pe.deliberation_id "
+        "WHERE pe.perspective_id=?",
+        (p["perspective_id"],),
+    ).fetchone()
+    if delib is None:
+        raise SelvedgeError("E_NOT_FOUND", f"perspective_id={p['perspective_id']}")
+    sess_id = delib["session_id"]
+    next_seq = conn.execute(
+        "SELECT COALESCE(MAX(seq),0)+1 AS n FROM perspective_claims WHERE perspective_id=?",
+        (p["perspective_id"],),
+    ).fetchone()["n"]
+    claim_aid = _insert_atom(conn, role, sess_id, "perspective_claim", p["claim"])
+    cited_oid = _resolve_alias_to_object_id(conn, p["cite"]) if p.get("cite") else None
+    cur = conn.execute(
+        "INSERT INTO perspective_claims (perspective_id, seq, section_kind, claim_atom_id, cited_object_id) "
+        "VALUES (?,?,?,?,?)",
+        (p["perspective_id"], next_seq, p["section_kind"], claim_aid, cited_oid),
+    )
+    pcid = cur.lastrowid
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('perspective_claim', ?, NULL)",
+        (pcid,),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE perspective_claims SET object_id=? WHERE claim_id=?", (oid, pcid))
+    return {"claim_id": pcid, "seq": next_seq, "object_id": oid}
+
+
+def _submit_review_finding(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "review_findings", "insert")
+    sess_id = _atom_session_id(conn, p["session_no"])
+    finding_aid = _insert_atom(conn, role, sess_id, "finding", p["finding"])
+    target_oid = _resolve_alias_to_object_id(conn, p["target"]) if p.get("target") else None
+    disp_aid = None
+    if p.get("disposition_text"):
+        disp_aid = _insert_atom(conn, role, sess_id, "finding", p["disposition_text"])
+    cur = conn.execute(
+        "INSERT INTO review_findings (session_id, iteration, severity, finding_atom_id, target_object_id, disposition, disposition_atom_id) "
+        "VALUES (?,?,?,?,?,?,?)",
+        (sess_id, p["iteration"], p["severity"], finding_aid, target_oid, p.get("disposition", "open"), disp_aid),
+    )
+    rfid = cur.lastrowid
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('review_finding', ?, ?)",
+        (rfid, f"RF-S{p['session_no']:03d}-{p['iteration']}-{rfid}"),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE review_findings SET object_id=? WHERE review_finding_id=?", (oid, rfid))
+    return {"review_finding_id": rfid, "object_id": oid}
+
+
+def _submit_finding_disposition(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "review_findings", "update")
+    rf = conn.execute(
+        "SELECT session_id FROM review_findings WHERE review_finding_id=?",
+        (p["review_finding_id"],),
+    ).fetchone()
+    if rf is None:
+        raise SelvedgeError("E_NOT_FOUND", f"review_finding_id={p['review_finding_id']}")
+    disp_aid = _insert_atom(conn, role, rf["session_id"], "finding", p["disposition_text"])
+    conn.execute(
+        "UPDATE review_findings SET disposition=?, disposition_atom_id=? WHERE review_finding_id=?",
+        (p["disposition"], disp_aid, p["review_finding_id"]),
+    )
+    return {"review_finding_id": p["review_finding_id"], "disposition": p["disposition"]}
+
+
+def _submit_close_record(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "close_records", "insert")
+    sess_id = _atom_session_id(conn, p["session_no"])
+    summary_aid = _insert_atom(conn, role, sess_id, "close_summary", p["summary"])
+    cur = conn.execute(
+        "INSERT INTO close_records (session_id, summary_atom_id) VALUES (?,?)",
+        (sess_id, summary_aid),
+    )
+    crid = cur.lastrowid
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('close_record', ?, ?)",
+        (crid, f"C-S{p['session_no']:03d}"),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE close_records SET object_id=? WHERE close_record_id=?", (oid, crid))
+    _check_role_capability(conn, role, "close_state_items", "insert")
+    items_out = []
+    for seq, item in enumerate(p.get("items", []), start=1):
+        item_aid = _insert_atom(conn, role, sess_id, "close_state_item", item["text"])
+        conn.execute(
+            "INSERT INTO close_state_items (close_record_id, seq, facet, item_atom_id) VALUES (?,?,?,?)",
+            (crid, seq, item["facet"], item_aid),
+        )
+        items_out.append({"seq": seq, "facet": item["facet"]})
+    return {"close_record_id": crid, "object_id": oid, "alias": f"C-S{p['session_no']:03d}", "items": items_out}
+
+
+def _submit_legacy_import(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "legacy_imports", "insert")
+    sess_id = _atom_session_id(conn, p["session_no"])
+    aid = _insert_atom(conn, role, sess_id, "legacy_import", p["text"])
+    cur = conn.execute(
+        "INSERT INTO legacy_imports (old_table, old_pk, atom_id, decomposition_status, decomposed_in_session_id) "
+        "VALUES (?,?,?,?,?)",
+        (p["old_table"], p["old_pk"], aid, p.get("decomposition_status", "unratified"), sess_id),
+    )
+    return {"legacy_import_id": cur.lastrowid, "atom_id": aid}
+
+
+def _submit_spec_section(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "spec_sections", "insert")
+    sess_id = _atom_session_id(conn, p["session_no"])
+    head_aid = _insert_atom(conn, role, sess_id, "title", p["heading"])
+    intent_aid = None
+    if p.get("intent"):
+        intent_aid = _insert_atom(conn, role, sess_id, "spec_section_intent", p["intent"])
+    cur = conn.execute(
+        "INSERT INTO spec_sections (spec_version_id, ord, heading_atom_id, intent_atom_id) "
+        "VALUES (?,?,?,?)",
+        (p["spec_version_id"], p["ord"], head_aid, intent_aid),
+    )
+    ssid = cur.lastrowid
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('spec_section', ?, NULL)",
+        (ssid,),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE spec_sections SET object_id=? WHERE spec_section_id=?", (oid, ssid))
+    return {"spec_section_id": ssid, "object_id": oid}
+
+
+def _submit_spec_clause(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "spec_clauses", "insert")
+    sess_id = _atom_session_id(conn, p["session_no"])
+    aid = _insert_atom(conn, role, sess_id, "spec_clause", p["clause"])
+    src_did = None
+    if p.get("source_decision_alias"):
+        oid = _resolve_alias_to_object_id(conn, p["source_decision_alias"])
+        row = conn.execute(
+            "SELECT decision_v2_id FROM decisions_v2 WHERE object_id=?", (oid,)
+        ).fetchone()
+        if row:
+            src_did = row["decision_v2_id"]
+    cur = conn.execute(
+        "INSERT INTO spec_clauses (spec_section_id, ord, clause_type, normative_level, clause_atom_id, source_decision_v2_id) "
+        "VALUES (?,?,?,?,?,?)",
+        (p["spec_section_id"], p["ord"], p["clause_type"], p["normative_level"], aid, src_did),
+    )
+    scid = cur.lastrowid
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('spec_clause', ?, NULL)",
+        (scid,),
+    )
+    oid2 = cur2.lastrowid
+    conn.execute("UPDATE spec_clauses SET object_id=? WHERE spec_clause_id=?", (oid2, scid))
+    return {"spec_clause_id": scid, "object_id": oid2}
+
+
 SUBMIT_HANDLERS = {
     "session-open": _submit_session_open,
     "session-close": _submit_session_close,
@@ -806,6 +1206,17 @@ SUBMIT_HANDLERS = {
     "perspective": _submit_perspective,
     "deliberation-seal": _submit_deliberation_seal,
     "synthesis-point": _submit_synthesis_point,
+    # Path A (engine-v20+):
+    "assessment": _submit_assessment,
+    "decision-record": _submit_decision_v2,
+    "perspective-position": _submit_perspective_position,
+    "perspective-claim": _submit_perspective_claim,
+    "review-finding": _submit_review_finding,
+    "finding-disposition": _submit_finding_disposition,
+    "close-record": _submit_close_record,
+    "legacy-import": _submit_legacy_import,
+    "spec-section": _submit_spec_section,
+    "spec-clause": _submit_spec_clause,
 }
 
 
@@ -1024,12 +1435,317 @@ def cmd_query(args) -> int:
 
 
 # ---------------------------------------------------------------------------
+# export — materialise markdown views from substrate rows (engine-v20+).
+# ---------------------------------------------------------------------------
+
+
+def _atom_text(conn: sqlite3.Connection, atom_id: Optional[int]) -> str:
+    if atom_id is None:
+        return ""
+    row = conn.execute("SELECT text FROM text_atoms WHERE atom_id=?", (atom_id,)).fetchone()
+    return row["text"] if row else ""
+
+
+def _export_session_provenance(conn: sqlite3.Connection, session_no: int, write: bool = False) -> dict:
+    sess = conn.execute(
+        "SELECT session_id, slug, mode, engine_version_at_open, engine_version_at_close, "
+        "       opened_at, closed_at, status FROM sessions WHERE session_no=?",
+        (session_no,),
+    ).fetchone()
+    if sess is None:
+        raise SelvedgeError("E_NOT_FOUND", f"session_no={session_no}")
+    sid = sess["session_id"]
+    out_dir = Path("provenance") / f"{session_no:03d}-{sess['slug']}"
+    files: dict[str, str] = {}
+
+    # 00-assessment.md
+    asm = conn.execute(
+        "SELECT assessment_id, state_atom_id FROM assessments WHERE session_id=?",
+        (sid,),
+    ).fetchone()
+    if asm:
+        items = conn.execute(
+            "SELECT ord, item_atom_id FROM assessment_agenda_items WHERE assessment_id=? ORDER BY ord",
+            (asm["assessment_id"],),
+        ).fetchall()
+        lines = [
+            "---",
+            f"session: {session_no:03d}",
+            f"title: {sess['slug']} — assessment",
+            f"engine_version_at_open: {sess['engine_version_at_open']}",
+            f"mode: {sess['mode']}",
+            "generated_by: selvedge export",
+            "---",
+            "",
+            "# Assessment",
+            "",
+            "## State at open",
+            "",
+            _atom_text(conn, asm["state_atom_id"]),
+            "",
+            "## Agenda",
+            "",
+        ]
+        for it in items:
+            lines.append(f"{it['ord']}. {_atom_text(conn, it['item_atom_id'])}")
+        lines.append("")
+        files["00-assessment.md"] = "\n".join(lines)
+
+    # 01-deliberation.md (one section per deliberation in this session)
+    delibs = conn.execute(
+        "SELECT deliberation_id, topic, sealed_at, synthesis_md FROM deliberations WHERE session_id=? ORDER BY deliberation_id",
+        (sid,),
+    ).fetchall()
+    if delibs:
+        lines = [
+            "---",
+            f"session: {session_no:03d}",
+            f"title: {sess['slug']} — deliberation",
+            "generated_by: selvedge export",
+            "---",
+            "",
+            "# Deliberation",
+            "",
+        ]
+        for d in delibs:
+            lines.append(f"## D-{d['deliberation_id']} — {d['topic']}")
+            lines.append("")
+            lines.append(f"sealed_at: {d['sealed_at']}")
+            lines.append("")
+            persp = conn.execute(
+                "SELECT perspective_id, label, family FROM perspectives WHERE deliberation_id=? ORDER BY perspective_id",
+                (d["deliberation_id"],),
+            ).fetchall()
+            for pe in persp:
+                lines.append(f"### {pe['label']} ({pe['family']})")
+                lines.append("")
+                pos = conn.execute(
+                    "SELECT position_atom_id FROM perspective_positions WHERE perspective_id=?",
+                    (pe["perspective_id"],),
+                ).fetchone()
+                if pos:
+                    lines.append(f"**Position.** {_atom_text(conn, pos['position_atom_id'])}")
+                    lines.append("")
+                claims = conn.execute(
+                    "SELECT seq, section_kind, claim_atom_id FROM perspective_claims WHERE perspective_id=? ORDER BY seq",
+                    (pe["perspective_id"],),
+                ).fetchall()
+                if claims:
+                    cur_section = None
+                    for c in claims:
+                        if c["section_kind"] != cur_section:
+                            cur_section = c["section_kind"]
+                            lines.append(f"**{cur_section}.**")
+                        lines.append(f"- {_atom_text(conn, c['claim_atom_id'])}")
+                    lines.append("")
+            if d["synthesis_md"]:
+                lines.append("### Synthesis")
+                lines.append("")
+                lines.append(d["synthesis_md"])
+                lines.append("")
+            sps = conn.execute(
+                "SELECT kind, label, summary FROM synthesis_points WHERE deliberation_id=? ORDER BY synthesis_point_id",
+                (d["deliberation_id"],),
+            ).fetchall()
+            if sps:
+                lines.append("### Synthesis points")
+                lines.append("")
+                for sp in sps:
+                    lines.append(f"- **{sp['kind']} {sp['label']}.** {sp['summary']}")
+                lines.append("")
+        files["01-deliberation.md"] = "\n".join(lines)
+
+    # 02-decisions.md (decisions_v2 first, then legacy decisions for backwards-readability)
+    dvs = conn.execute(
+        "SELECT decision_v2_id, decision_no, kind, title_atom_id, outcome_type, target_kind, target_key "
+        "FROM decisions_v2 WHERE session_id=? ORDER BY decision_no",
+        (sid,),
+    ).fetchall()
+    legacy_ds = conn.execute(
+        "SELECT decision_no, kind, title, body_md FROM decisions WHERE session_id=? ORDER BY decision_no",
+        (sid,),
+    ).fetchall()
+    if dvs or legacy_ds:
+        lines = [
+            "---",
+            f"session: {session_no:03d}",
+            f"title: {sess['slug']} — decisions",
+            "generated_by: selvedge export",
+            "---",
+            "",
+            "# Decisions",
+            "",
+        ]
+        for d in dvs:
+            lines.append(f"## D-{d['decision_no']}. {_atom_text(conn, d['title_atom_id'])}")
+            lines.append("")
+            lines.append(f"**Kind:** {d['kind']}.  **Outcome:** {d['outcome_type']} {d['target_kind']} `{d['target_key']}`.")
+            lines.append("")
+            sups = conn.execute(
+                "SELECT seq, basis, claim_atom_id, cited_object_id FROM decision_supports WHERE decision_v2_id=? ORDER BY seq",
+                (d["decision_v2_id"],),
+            ).fetchall()
+            if sups:
+                lines.append("**Why.**")
+                lines.append("")
+                for s in sups:
+                    cite = ""
+                    if s["cited_object_id"]:
+                        c = conn.execute("SELECT citable_alias FROM objects WHERE object_id=?", (s["cited_object_id"],)).fetchone()
+                        if c and c["citable_alias"]:
+                            cite = f" [{c['citable_alias']}]"
+                    lines.append(f"- ({s['basis']}) {_atom_text(conn, s['claim_atom_id'])}{cite}")
+                lines.append("")
+            effs = conn.execute(
+                "SELECT effect_kind, target_object_id, target_descriptor FROM decision_effects WHERE decision_v2_id=? "
+                "ORDER BY effect_id",
+                (d["decision_v2_id"],),
+            ).fetchall()
+            if effs:
+                lines.append("**Effects.**")
+                lines.append("")
+                for e in effs:
+                    target = e["target_descriptor"] or ""
+                    if e["target_object_id"]:
+                        c = conn.execute("SELECT citable_alias FROM objects WHERE object_id=?", (e["target_object_id"],)).fetchone()
+                        if c and c["citable_alias"]:
+                            target = c["citable_alias"]
+                    lines.append(f"- {e['effect_kind']} {target}")
+                lines.append("")
+            alts = conn.execute(
+                "SELECT alternative_v2_id, label, option_atom_id FROM alternatives_v2 WHERE decision_v2_id=? ORDER BY alternative_v2_id",
+                (d["decision_v2_id"],),
+            ).fetchall()
+            if alts:
+                lines.append("**Rejected alternatives.**")
+                lines.append("")
+                for a in alts:
+                    lines.append(f"- **{a['label']}.** {_atom_text(conn, a['option_atom_id'])}")
+                    rejs = conn.execute(
+                        "SELECT seq, basis, rejection_atom_id FROM alternative_rejections WHERE alternative_v2_id=? ORDER BY seq",
+                        (a["alternative_v2_id"],),
+                    ).fetchall()
+                    for r in rejs:
+                        lines.append(f"  - ({r['basis']}) {_atom_text(conn, r['rejection_atom_id'])}")
+                lines.append("")
+        if legacy_ds:
+            lines.append("## Legacy decisions (pre-v20)")
+            lines.append("")
+            for d in legacy_ds:
+                lines.append(f"### D-{d['decision_no']}. {d['title']}")
+                lines.append("")
+                lines.append(d["body_md"])
+                lines.append("")
+        files["02-decisions.md"] = "\n".join(lines)
+
+    # 04-review.md
+    rfs = conn.execute(
+        "SELECT iteration, severity, finding_atom_id, target_object_id, disposition, disposition_atom_id "
+        "FROM review_findings WHERE session_id=? ORDER BY iteration, review_finding_id",
+        (sid,),
+    ).fetchall()
+    if rfs:
+        lines = [
+            "---",
+            f"session: {session_no:03d}",
+            f"title: {sess['slug']} — review",
+            "generated_by: selvedge export",
+            "---",
+            "",
+            "# Reviewer audit",
+            "",
+        ]
+        cur_iter = None
+        for rf in rfs:
+            if rf["iteration"] != cur_iter:
+                cur_iter = rf["iteration"]
+                lines.append(f"## Iteration {cur_iter}")
+                lines.append("")
+            cite = ""
+            if rf["target_object_id"]:
+                c = conn.execute("SELECT citable_alias FROM objects WHERE object_id=?", (rf["target_object_id"],)).fetchone()
+                if c and c["citable_alias"]:
+                    cite = f" against `{c['citable_alias']}`"
+            lines.append(f"- **{rf['severity']}**{cite}: {_atom_text(conn, rf['finding_atom_id'])}")
+            disp_text = _atom_text(conn, rf["disposition_atom_id"]) if rf["disposition_atom_id"] is not None else "(no disposition recorded)"
+            lines.append(f"  - **{rf['disposition']}.** {disp_text}")
+        lines.append("")
+        files["04-review.md"] = "\n".join(lines)
+
+    # 03-close.md
+    cr = conn.execute(
+        "SELECT close_record_id, summary_atom_id FROM close_records WHERE session_id=?",
+        (sid,),
+    ).fetchone()
+    if cr:
+        items = conn.execute(
+            "SELECT seq, facet, item_atom_id FROM close_state_items WHERE close_record_id=? ORDER BY seq",
+            (cr["close_record_id"],),
+        ).fetchall()
+        lines = [
+            "---",
+            f"session: {session_no:03d}",
+            f"title: {sess['slug']} — close",
+            f"engine_version_at_close: {sess['engine_version_at_close']}",
+            f"mode: {sess['mode']}",
+            "generated_by: selvedge export",
+            "---",
+            "",
+            "# Close",
+            "",
+            "## Summary",
+            "",
+            _atom_text(conn, cr["summary_atom_id"]),
+            "",
+        ]
+        cur_facet = None
+        facet_titles = {
+            "what_was_done": "What was done",
+            "state_at_close": "State at close",
+            "open_issues": "Open issues",
+            "next_session_should": "What the next session should address",
+            "engine_version": "Engine version",
+            "validator_summary": "Validator at close",
+        }
+        for it in items:
+            if it["facet"] != cur_facet:
+                cur_facet = it["facet"]
+                lines.append(f"## {facet_titles.get(cur_facet, cur_facet)}")
+                lines.append("")
+            lines.append(f"- {_atom_text(conn, it['item_atom_id'])}")
+        lines.append("")
+        files["03-close.md"] = "\n".join(lines)
+
+    if write:
+        out_dir.mkdir(parents=True, exist_ok=True)
+        for name, content in files.items():
+            (out_dir / name).write_text(content)
+
+    return {"session_no": session_no, "out_dir": str(out_dir), "files_written": list(files.keys())}
+
+
+def cmd_export(args) -> int:
+    conn = sqlite3.connect(str(db_path()))
+    conn.row_factory = sqlite3.Row
+    try:
+        if args.session is not None:
+            result = _export_session_provenance(conn, args.session, write=args.write)
+            print(json.dumps(result, indent=2))
+        else:
+            print("export: pass --session <N>", file=sys.stderr)
+            return 2
+    finally:
+        conn.close()
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    parser = argparse.ArgumentParser(prog="selvedge", description="Selvedge substrate CLI (engine-v17)")
+    parser = argparse.ArgumentParser(prog="selvedge", description="Selvedge substrate CLI (engine-v20)")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     p_init = sub.add_parser("init", help="Initialise a fresh substrate (apply 001 + any later migrations).")
@@ -1072,6 +1788,11 @@ def main(argv: Optional[list[str]] = None) -> int:
     p_q.add_argument("sql")
     p_q.add_argument("--pretty", action="store_true")
     p_q.set_defaults(fn=cmd_query)
+
+    p_exp = sub.add_parser("export", help="Materialise markdown views from substrate rows (engine-v20+).")
+    p_exp.add_argument("--session", type=int, help="Session number to export.")
+    p_exp.add_argument("--write", action="store_true", help="Write files to disk (default: dry-run, print plan).")
+    p_exp.set_defaults(fn=cmd_export)
 
     args = parser.parse_args(argv)
     try:

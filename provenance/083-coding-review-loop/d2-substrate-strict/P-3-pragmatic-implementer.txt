@@ -1,0 +1,367 @@
+P-3 PRAGMATIC IMPLEMENTER — substrate-strict-write-path
+
+================================================================
+1. POSITION
+================================================================
+Keep body_md as a non-canonical "human gloss" column (NOT NULL → NULL-allowed,
+or kept as a render hint), and force the load-bearing structured content into
+two new typed-facet tables (decision_facets, alternative_facets) plus a
+spec_section / spec_claim pair — closed vocabularies, NOT NULL columns,
+length floors, and triggers asserting required facet rows exist before a
+row counts as "complete." Do NOT introduce a generic triples table; do NOT
+drop body_md; migrate the 13/21/5 prose-carrying rows lazily by marking them
+legacy=1 and re-authoring only when a future session has reason to touch them.
+
+================================================================
+2. SCHEMA DIFF — migration 003-substrate-strict-write-path.sql
+================================================================
+Additive only (T-15 compliant). All new tables STRICT. All facet rows are
+small (label + value), agent-author cheap, export-cheap.
+
+-- (a) Closed vocabularies as their own seed tables. Lookup-table pattern
+-- (same shape as role_write_capabilities) lets us evolve vocab via INSERT
+-- in future migrations without ALTER TABLE ... ADD CHECK.
+
+CREATE TABLE facet_kinds (
+    facet_kind   TEXT NOT NULL,
+    applies_to   TEXT NOT NULL CHECK (applies_to IN
+        ('decision','alternative','spec_section','spec_claim','review_finding')),
+    cardinality  TEXT NOT NULL CHECK (cardinality IN ('required-1','required-1+','optional-*')),
+    PRIMARY KEY (facet_kind, applies_to)
+) STRICT;
+
+INSERT INTO facet_kinds (facet_kind, applies_to, cardinality) VALUES
+    -- decisions
+    ('problem-statement','decision','required-1'),
+    ('chosen-option','decision','required-1'),
+    ('reason-carried','decision','required-1+'),
+    ('open-question','decision','optional-*'),
+    ('precedent-cite','decision','optional-*'),
+    -- alternatives (this is the prose hole the operator named)
+    ('why-rejected','alternative','required-1'),
+    ('cost-of-acceptance','alternative','required-1'),
+    ('precedent-cite','alternative','optional-*'),
+    -- spec
+    ('claim','spec_section','required-1+'),
+    ('applies-to','spec_claim','optional-*'),
+    -- review
+    ('severity','review_finding','required-1'),
+    ('what-breaks','review_finding','required-1'),
+    ('suggested-fix','review_finding','optional-*');
+
+-- (b) Decision facets: one row per (decision, facet_kind, ord). value_text
+-- has a length floor AND a length ceiling (forces tight prose, not essays).
+
+CREATE TABLE decision_facets (
+    decision_facet_id  INTEGER PRIMARY KEY,
+    decision_id        INTEGER NOT NULL REFERENCES decisions(decision_id),
+    facet_kind         TEXT NOT NULL,
+    ord                INTEGER NOT NULL DEFAULT 1,
+    value_text         TEXT NOT NULL CHECK (length(value_text) BETWEEN 8 AND 400),
+    UNIQUE (decision_id, facet_kind, ord)
+) STRICT;
+
+-- enforce closed vocabulary at write
+CREATE TRIGGER t17_decision_facets_kind_known
+BEFORE INSERT ON decision_facets
+FOR EACH ROW
+WHEN NOT EXISTS (
+    SELECT 1 FROM facet_kinds
+    WHERE facet_kind = NEW.facet_kind AND applies_to = 'decision'
+)
+BEGIN
+    SELECT RAISE(ABORT, 'E_REFUSAL_T17: unknown decision facet_kind');
+END;
+
+-- (c) Alternative facets: same pattern, this is the rejection_reason_md
+-- decomposition.
+
+CREATE TABLE alternative_facets (
+    alternative_facet_id  INTEGER PRIMARY KEY,
+    alternative_id        INTEGER NOT NULL REFERENCES decision_alternatives(alternative_id),
+    facet_kind            TEXT NOT NULL,
+    ord                   INTEGER NOT NULL DEFAULT 1,
+    value_text            TEXT NOT NULL CHECK (length(value_text) BETWEEN 8 AND 400),
+    UNIQUE (alternative_id, facet_kind, ord)
+) STRICT;
+
+CREATE TRIGGER t18_alternative_facets_kind_known
+BEFORE INSERT ON alternative_facets
+FOR EACH ROW
+WHEN NOT EXISTS (
+    SELECT 1 FROM facet_kinds
+    WHERE facet_kind = NEW.facet_kind AND applies_to = 'alternative'
+)
+BEGIN
+    SELECT RAISE(ABORT, 'E_REFUSAL_T18: unknown alternative facet_kind');
+END;
+
+-- (d) Spec sections + claims. spec_versions stays (it carries hash + status).
+-- spec_sections decomposes the file structurally; spec_claims carries the
+-- assertions. body_path stays for back-compat but a flag marks substrate-
+-- canonical specs (where the file is a generated export).
+
+ALTER TABLE spec_versions ADD COLUMN body_canonical_in_substrate INTEGER
+    NOT NULL DEFAULT 0 CHECK (body_canonical_in_substrate IN (0,1));
+
+CREATE TABLE spec_sections (
+    spec_section_id   INTEGER PRIMARY KEY,
+    spec_version_id   INTEGER NOT NULL REFERENCES spec_versions(spec_version_id),
+    ord               INTEGER NOT NULL,
+    heading           TEXT NOT NULL CHECK (length(heading) BETWEEN 2 AND 120),
+    intent_md         TEXT NOT NULL CHECK (length(intent_md) BETWEEN 16 AND 600),
+    object_id         INTEGER REFERENCES objects(object_id),
+    UNIQUE (spec_version_id, ord)
+) STRICT;
+
+CREATE TABLE spec_claims (
+    spec_claim_id     INTEGER PRIMARY KEY,
+    spec_section_id   INTEGER NOT NULL REFERENCES spec_sections(spec_section_id),
+    ord               INTEGER NOT NULL,
+    claim_text        TEXT NOT NULL CHECK (length(claim_text) BETWEEN 16 AND 400),
+    object_id         INTEGER REFERENCES objects(object_id),
+    UNIQUE (spec_section_id, ord)
+) STRICT;
+
+-- Extend objects.object_kind via new INSERT into a check-replacement... we
+-- cannot ALTER the CHECK. Pragmatic workaround: add a sibling table objects_v2
+-- is overkill. Instead, treat spec_section/spec_claim as addressable through
+-- their own citable_alias on the existing objects table by widening the CHECK
+-- via a new trigger that *additionally* admits the new kinds (the original
+-- CHECK still passes for old kinds; we cannot widen it without DROP). Better
+-- option: introduce an objects_extension table holding only the new kinds.
+-- I am declaring this as an OPEN QUESTION (see §7).
+
+-- (e) Review findings (S083 added review.md; lift those into substrate).
+
+CREATE TABLE review_findings (
+    review_finding_id  INTEGER PRIMARY KEY,
+    session_id         INTEGER NOT NULL REFERENCES sessions(session_id),
+    iteration          INTEGER NOT NULL CHECK (iteration BETWEEN 1 AND 4),
+    target_object_id   INTEGER REFERENCES objects(object_id),  -- what was reviewed
+    severity           TEXT NOT NULL CHECK (severity IN ('critical','high','medium','low')),
+    disposition        TEXT NOT NULL CHECK (disposition IN ('fixed','adjudicated','open')),
+    object_id          INTEGER REFERENCES objects(object_id)
+) STRICT;
+-- review_finding_facets: same facet pattern, holds what-breaks / suggested-fix /
+-- adjudication-reason; same trigger T-19.
+
+-- (f) Completeness assertion at session-close.
+-- T-02 currently: substantive decisions need ≥1 alternative.
+-- Add T-20: every alternative needs ≥1 row of every required facet_kind.
+
+CREATE TRIGGER t20_close_alternatives_have_required_facets
+BEFORE UPDATE OF status ON sessions
+FOR EACH ROW
+WHEN OLD.status = 'open' AND NEW.status = 'closed'
+ AND EXISTS (
+    SELECT 1
+    FROM decision_alternatives a
+    JOIN decisions d ON d.decision_id = a.decision_id
+    JOIN facet_kinds fk ON fk.applies_to = 'alternative' AND fk.cardinality LIKE 'required-%'
+    WHERE d.session_id = NEW.session_id
+      AND NOT EXISTS (
+        SELECT 1 FROM alternative_facets af
+        WHERE af.alternative_id = a.alternative_id AND af.facet_kind = fk.facet_kind
+      )
+ )
+BEGIN
+    SELECT RAISE(ABORT, 'E_REFUSAL_T20: close blocked: alternative missing a required facet (why-rejected, cost-of-acceptance)');
+END;
+
+-- An equivalent T-21 mirrors this for decision_facets. T-22 for spec_claims
+-- when body_canonical_in_substrate=1.
+
+-- (g) Soften rejection_reason_md NOT NULL post-migration is FORBIDDEN under
+-- T-15 (column drop). Keep the column; treat it as a denormalised summary
+-- equal to the why-rejected facet's first row. Add a CHECK at insert-time
+-- from CLI (not trigger) that the two agree on ord=1.
+
+================================================================
+3. CLI SURFACE
+================================================================
+New `selvedge submit` kinds and revised payloads. Existing kinds keep their
+JSON shape; the new structured fields move INTO the payload.
+
+NEW kinds:
+  - decision-facet              (lift, used inside decision payload)
+  - alternative-facet           (lift, used inside decision payload)
+  - spec-section
+  - spec-claim
+  - assessment                  (S083's 00-assessment.md content)
+  - review-finding
+  - review-finding-disposition
+
+REVISED kind: decision (back-compat shape with optional richer block):
+
+  selvedge submit decision @payload.json
+
+  {
+    "session_no": 4,
+    "kind": "substantive",
+    "title": "Operator-directed coding review loop in methodology v3",
+    "body_md": "Brief render-hint prose. May cite [D-S004-1].",
+    "facets": [
+      {"facet_kind":"problem-statement","value_text":"Reviewer findings vanish unless tied to a structural close-gate."},
+      {"facet_kind":"chosen-option","value_text":"Loop until medium+ findings clear or halt at iter=4."},
+      {"facet_kind":"reason-carried","value_text":"Constraints §2: prevention must be structural."},
+      {"facet_kind":"reason-carried","value_text":"Constraints §5: detection without feedback does not correct."}
+    ],
+    "alternatives": [
+      {
+        "label":"single-pass-only",
+        "summary":"One reviewer pass, no loop.",
+        "rejection_reason_md":"single pass cannot enforce convergence",  // legacy column
+        "facets":[
+          {"facet_kind":"why-rejected","value_text":"single pass admits a finding by recording it; no convergence guarantee"},
+          {"facet_kind":"cost-of-acceptance","value_text":"reviewer findings remain advisory; close gate is bypassable"}
+        ]
+      }
+    ],
+    "refs": []
+  }
+
+The CLI handler (extending _submit_decision in cli.py:578) writes the
+decisions row, then for each alternative writes decision_alternatives AND
+its alternative_facets rows in the same transaction; if any required
+facet_kind is missing the CLI raises E_VALIDATION before INSERT.
+
+`selvedge export` (NEW command):
+  selvedge export specs --to specifications/   # regenerates *.md from spec_sections+spec_claims
+  selvedge export provenance --session 83      # regenerates 02-decisions.md, etc.
+
+Export uses Jinja-style templates checked into selvedge/templates/. Output
+is byte-stable given identical inputs (sort by ord, fixed line endings).
+
+================================================================
+4. SPEC CONTENT IN SUBSTRATE — granularity
+================================================================
+Granularity: H2 section + claim (paragraph-level), NOT sentence-level.
+Sentence-level is too fine: methodology.md has ~120 sentences, agent-author
+cost would dominate. Section-level is too coarse: facets hide. Paragraph =
+"claim" lands well (methodology.md's preservation section has 4 claims;
+constraints.md has roughly 5 numbered constraints, each one claim).
+
+Decomposition for the three load-bearing spec files:
+  methodology.md:    ~9 H2 sections × ~3 claims = ~27 spec_claims
+  workspace.md:      ~6 sections × ~3 = ~18 claims
+  constraints.md:    ~5 sections × ~3 = ~15 claims
+  engine-manifest.md: STAYS file-canonical (it is enumeration + version
+                     history; substrate decomposition adds no strictness
+                     and the round-trip cost is high). Set
+                     body_canonical_in_substrate=0.
+
+Link types (reuse existing refs.relation; widen via migration):
+  ALTER refs CHECK to admit: 'cites','supersedes','responds-to','depends-on','closes',
+                              'applies-to','derived-from','restates'
+  (pragmatic: 3 new relations cover spec/claim cross-link without a new table.)
+  T-15 BLOCKS this — same hole as objects.object_kind. See §7 OPEN QUESTIONS.
+  Workaround: refs_relation_extra table (new, additive) with same shape,
+  joined at read time. Ugly but T-15-clean.
+
+Round-trip: byte-identical for methodology.md and workspace.md if export
+templates pin: section ordering by ord, claim ordering by ord, fixed
+front-matter, no trailing whitespace. Validator gains a round-trip check:
+`selvedge export specs --diff` exits non-zero on drift.
+
+================================================================
+5. MIGRATION OF EXISTING ROWS
+================================================================
+13 decisions + 21 alternatives + 5 perspectives currently carry body_md /
+rejection_reason_md prose. Plan:
+
+  (a) Add `legacy_prose` INTEGER NOT NULL DEFAULT 0 column to decisions,
+      decision_alternatives, perspectives. Backfill = 1 for rows present at
+      migration 003 apply time (one-shot UPDATE inside migration 003;
+      T-06 admits this because the trigger fires only for closed sessions
+      and we are running this from `selvedge migrate --apply` which writes
+      via __cli__ — but T-06 IS active for closed sessions. So we cannot
+      backfill closed-session rows. Solution: backfill via a new
+      shadow column `legacy_prose` populated by trigger at INSERT, plus
+      an exemption: rows with object_id < (SELECT MAX(object_id) FROM
+      objects WHERE created_at < migration-003-apply-time) are legacy.
+      Even simpler: a VIEW v_legacy_rows that computes legacy at read.
+      I prefer the VIEW: zero writes, no T-06 conflict.)
+
+  (b) T-20/T-21 close-gate triggers EXEMPT legacy=1 rows via
+      WHERE a.alternative_id NOT IN (SELECT alternative_id FROM v_legacy_rows).
+      New rows from S084+ MUST carry full facets.
+
+  (c) Re-authoring is opportunistic. A future session that touches a legacy
+      decision (cites it, supersedes it, builds on it) MAY back-decompose
+      it; not required. The 21 alternatives are mostly from S078–S082
+      methodology work; their rejection_reason_md is generally tight (the
+      ≥16 char floor was binding). They are not the prose-hole the operator
+      was naming.
+
+  (d) Spec versions: methodology.md v3, workspace.md, constraints.md need
+      one-time decomposition by an S084 specifier-agent into spec_sections
+      + spec_claims, with body_canonical_in_substrate=1 set at completion.
+      engine-manifest.md stays file-canonical. The decomposition is
+      ~60 INSERTs total; agent-author cost is one focused session.
+
+================================================================
+6. WHAT I WOULD NOT DO
+================================================================
+  - **Generic triples table** (subject, predicate, object). Operator named
+    it as a candidate. I refuse: predicates become a free-text vocabulary
+    drift sink within two sessions. The closed `facet_kinds` lookup table
+    is the same data shape with the vocab pinned. Triples-with-checked-
+    predicates IS facet_kinds; calling it triples invites generality we
+    do not need.
+
+  - **Drop body_md.** T-15 blocks it anyway, but even allowed I would
+    keep it as the render hint. Forcing all prose through facets makes
+    the agent-author write 5+ rows for what is sometimes one paragraph
+    of context. Body_md becomes the optional gloss; facets are the
+    contract.
+
+  - **Per-claim git-tracking** (one file per claim). Round-trip cost
+    explodes; review diffs become unreadable.
+
+  - **Sentence-level granularity.** Author cost > prose-discipline gain.
+
+  - **Strict NOT NULL on body_md for new rows.** Make body_md NULL-
+    permitted post-003; require facets instead. (Cannot drop NOT NULL
+    via T-15. So: keep NOT NULL, accept that body_md will sometimes be
+    a one-line gloss — agent-author cost: ~5 sec.)
+
+  - **Live-rewrite the 13 closed-session decisions.** T-06 protects them;
+    legacy=1 + view is the clean path.
+
+================================================================
+7. OPEN QUESTIONS FOR OPERATOR RATIFICATION
+================================================================
+  Q1. objects.object_kind CHECK widening. Adding 'spec_section',
+      'spec_claim', 'review_finding' to the addressable kinds requires
+      a CHECK widening that T-15 forbids. Two options:
+        (i)  objects_v2 sibling table + UNION view (clean, ugly schema)
+        (ii) interpret T-15 as forbidding *destructive* widening only,
+             and admit CHECK-relaxation as additive (operator ratifies
+             this reading, recorded as a calibration in S084).
+      My preference: (ii) with explicit ratification, because (i)
+      poisons every JOIN against objects.
+
+  Q2. body_canonical_in_substrate=1 for engine-manifest.md? I argued no.
+      Operator may want yes for total-substrate purity. If yes, ~40
+      version-history claims become INSERT lines.
+
+  Q3. Facet length ceiling 400 chars. Is this tight enough? Constraints
+      §2 prose has paragraphs longer than that. May need a `claim_long`
+      column or relax to 800.
+
+  Q4. Spec round-trip byte-identity. Is operator OK with a normalised
+      output (CRLF→LF, trailing-newline-required, two-blank-lines-
+      between-H2)? If yes, current spec files need a one-shot
+      reformat at S084 open.
+
+  Q5. legacy_prose via VIEW vs column. View avoids T-06; column is more
+      query-friendly. I lean view.
+
+  Q6. Review-findings: S083 04-review.md is markdown today. Lifting it
+      into substrate at S084 means the S083 close itself will not be
+      decomposed (legacy). Acceptable?
+
+================================================================
+END P-3
+================================================================
