@@ -1,5 +1,5 @@
 ---
-session: 005
+session: 084
 title: substrate-only-write-path — assessment
 engine_version_at_open: engine-v19
 mode: self-development

@@ -1,5 +1,5 @@
 ---
-session: 005
+session: 084
 title: substrate-only-write-path — deliberation
 generated_by: selvedge export
 ---

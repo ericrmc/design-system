@@ -1,5 +1,5 @@
 ---
-session: 005
+session: 084
 title: substrate-only-write-path — decisions
 generated_by: selvedge export
 ---
@@ -31,7 +31,7 @@ generated_by: selvedge export
 
 **Why.**
 
-- (operator_directive) Operator ratified Path A (P-1 strictest) at S084 ratification step. [DV-S005-1]
+- (operator_directive) Operator ratified Path A (P-1 strictest) at S084 ratification step. [DV-S084-1]
 - (deliberation) Deliberation 3 surfaced three load-bearing positions; operator chose strictest after weighing tradeoffs.
 - (constraint) constraints.md S1 says structured state belongs in a database refusing malformed input.
 - (review_finding) S083 close itself authored four markdown files before noting the substrate gap; same failure mode as constraints S1.

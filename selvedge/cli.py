@@ -613,30 +613,51 @@ def _record_refs(
 
 
 def _submit_session_open(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    """Open a session in the substrate.
+
+    Engine-v20+: the caller does NOT pass session_no or workspace_session_no.
+    The substrate auto-computes:
+      - session_no = max(existing) + 1 (the substrate counter)
+      - workspace_session_no = session_no + init_session_offset (from
+        workspace_metadata; 0 for fresh workspaces, 79 for this one which
+        retrofitted onto pre-substrate session log)
+    The caller passes only slug, mode, workspace_id, engine_version_at_open.
+    """
     _check_role_capability(conn, role, "sessions", "insert")
+    sno_row = conn.execute("SELECT COALESCE(MAX(session_no),0)+1 AS n FROM sessions").fetchone()
+    sno = sno_row["n"]
+    offset_row = conn.execute(
+        "SELECT value FROM workspace_metadata WHERE key='init_session_offset'"
+    ).fetchone()
+    offset = int(offset_row["value"]) if offset_row else 0
+    wno = sno + offset
     cur = conn.execute(
-        "INSERT INTO sessions (session_no, slug, mode, workspace_id, engine_version_at_open, status) "
-        "VALUES (?,?,?,?,?, 'open')",
-        (p["session_no"], p["slug"], p["mode"], p["workspace_id"], p["engine_version_at_open"]),
+        "INSERT INTO sessions (session_no, workspace_session_no, slug, mode, workspace_id, engine_version_at_open, status) "
+        "VALUES (?,?,?,?,?,?, 'open')",
+        (sno, wno, p["slug"], p["mode"], p["workspace_id"], p["engine_version_at_open"]),
     )
     sid = cur.lastrowid
     cur2 = conn.execute(
         "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('session', ?, ?)",
-        (sid, f"S{p['session_no']:03d}"),
+        (sid, f"S{wno:03d}"),
     )
     oid = cur2.lastrowid
-    return {"session_id": sid, "object_id": oid}
+    return {"session_id": sid, "object_id": oid, "workspace_session_no": wno, "session_no": sno}
 
 
 def _submit_session_close(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    """Close the open session. session_no is optional; defaults to the unique open session."""
     _check_role_capability(conn, role, "sessions", "update")
-    sid = conn.execute(
-        "SELECT session_id FROM sessions WHERE session_no = ?",
-        (p["session_no"],),
-    ).fetchone()
-    if sid is None:
-        raise SelvedgeError("E_NOT_FOUND", f"session_no={p['session_no']}")
-    sid = sid["session_id"]
+    if "session_no" in p:
+        row = conn.execute(
+            "SELECT session_id FROM sessions WHERE session_no=? OR workspace_session_no=? LIMIT 1",
+            (p["session_no"], p["session_no"]),
+        ).fetchone()
+        if row is None:
+            raise SelvedgeError("E_NOT_FOUND", f"session ref={p['session_no']}")
+        sid = row["session_id"]
+    else:
+        sid = _current_session(conn)["session_id"]
     conn.execute(
         "UPDATE sessions SET status='closed', engine_version_at_close=?, "
         "closed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE session_id=?",
@@ -874,19 +895,58 @@ def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
 # ---------------------------------------------------------------------------
 
 
-def _atom_session_id(conn: sqlite3.Connection, session_no: int, require_open: bool = True) -> int:
-    """Resolve session_no -> session_id and (by default) refuse closed sessions
-    (per S084 reviewer F9: handlers that wrote atoms without checking status
-    relied on the T-06 trigger to refuse, surfacing as a constraint violation
-    rather than a clean E_REFUSAL_T06 from the handler)."""
+def _current_session(conn: sqlite3.Connection) -> sqlite3.Row:
+    """Return the unique open session row. Raises if none or multiple are open.
+
+    Engine-v20+: handlers default to the current open session so callers do
+    not need to pass session_no. There should normally be exactly one open
+    session at a time.
+    """
+    rows = conn.execute(
+        "SELECT session_id, session_no, workspace_session_no, status FROM sessions WHERE status='open'"
+    ).fetchall()
+    if not rows:
+        raise SelvedgeError("E_NO_OPEN_SESSION", "no open session; submit session-open first")
+    if len(rows) > 1:
+        raise SelvedgeError(
+            "E_MULTIPLE_OPEN_SESSIONS",
+            f"{len(rows)} open sessions; close all but one before submitting writes",
+        )
+    return rows[0]
+
+
+def _atom_session_id(conn: sqlite3.Connection, session_no: int | None = None, require_open: bool = True) -> int:
+    """Resolve session_no -> session_id (or default to the current open session).
+
+    Per S084 reviewer F9: handlers should fail-fast with E_REFUSAL_T06 rather
+    than relying on the T-06 trigger to surface a raw constraint violation.
+
+    Per operator at S084 close: if `session_no` is None, default to the
+    unique open session so the caller does not need to know the number.
+    """
+    if session_no is None:
+        return _current_session(conn)["session_id"]
     sess = conn.execute(
-        "SELECT session_id, status FROM sessions WHERE session_no=?", (session_no,)
+        "SELECT session_id, status FROM sessions WHERE session_no=? OR workspace_session_no=?",
+        (session_no, session_no),
     ).fetchone()
     if sess is None:
-        raise SelvedgeError("E_NOT_FOUND", f"session_no={session_no}")
+        raise SelvedgeError("E_NOT_FOUND", f"session ref={session_no}")
     if require_open and sess["status"] != "open":
         raise SelvedgeError("E_REFUSAL_T06", f"session {session_no} is {sess['status']}; writes refused")
     return sess["session_id"]
+
+
+def _session_workspace_no(conn: sqlite3.Connection, session_id: int) -> int:
+    """Look up workspace_session_no for alias formatting; falls back to
+    session_no if workspace_session_no is NULL (pre-005 historical rows)."""
+    row = conn.execute(
+        "SELECT COALESCE(workspace_session_no, session_no) AS wno FROM sessions WHERE session_id=?",
+        (session_id,),
+    ).fetchone()
+    if row is None:
+        raise SelvedgeError("E_NOT_FOUND", f"session_id={session_id}")
+    return row["wno"]
 
 
 def _insert_atom(conn: sqlite3.Connection, role: str, session_id: int, atom_type: str, text: str) -> int:
@@ -912,16 +972,18 @@ def _resolve_alias_to_object_id(conn: sqlite3.Connection, alias: str) -> int:
 
 def _submit_assessment(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "assessments", "insert")
-    sess_id = _atom_session_id(conn, p["session_no"])
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    wno = _session_workspace_no(conn, sess_id)
     state_aid = _insert_atom(conn, role, sess_id, "assessment_item", p["state"])
     cur = conn.execute(
         "INSERT INTO assessments (session_id, state_atom_id) VALUES (?,?)",
         (sess_id, state_aid),
     )
     aid = cur.lastrowid
+    alias = f"A-S{wno:03d}"
     cur2 = conn.execute(
         "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('assessment', ?, ?)",
-        (aid, f"A-S{p['session_no']:03d}"),
+        (aid, alias),
     )
     oid = cur2.lastrowid
     conn.execute("UPDATE assessments SET object_id=? WHERE assessment_id=?", (oid, aid))
@@ -934,15 +996,13 @@ def _submit_assessment(conn: sqlite3.Connection, p: dict, role: str) -> dict:
             (aid, ord_, item_aid),
         )
         items_out.append({"ord": ord_, "atom_id": item_aid})
-    return {"assessment_id": aid, "object_id": oid, "alias": f"A-S{p['session_no']:03d}", "agenda": items_out}
+    return {"assessment_id": aid, "object_id": oid, "alias": alias, "agenda": items_out}
 
 
 def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "decisions_v2", "insert")
-    sess_id = _atom_session_id(conn, p["session_no"])
-    sess = conn.execute("SELECT status FROM sessions WHERE session_id=?", (sess_id,)).fetchone()
-    if sess["status"] == "closed":
-        raise SelvedgeError("E_REFUSAL_T06", f"session {p['session_no']} closed")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    wno = _session_workspace_no(conn, sess_id)
     next_no = conn.execute(
         "SELECT COALESCE(MAX(decision_no),0)+1 AS n FROM decisions_v2 WHERE session_id=?",
         (sess_id,),
@@ -954,7 +1014,7 @@ def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
         (sess_id, next_no, p["kind"], title_aid, p["outcome_type"], p["target_kind"], p["target_key"]),
     )
     did = cur.lastrowid
-    alias = f"DV-S{p['session_no']:03d}-{next_no}"
+    alias = f"DV-S{wno:03d}-{next_no}"
     cur2 = conn.execute(
         "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('decision_v2', ?, ?)",
         (did, alias),
@@ -1072,7 +1132,8 @@ def _submit_perspective_claim(conn: sqlite3.Connection, p: dict, role: str) -> d
 
 def _submit_review_finding(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "review_findings", "insert")
-    sess_id = _atom_session_id(conn, p["session_no"])
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    wno = _session_workspace_no(conn, sess_id)
     finding_aid = _insert_atom(conn, role, sess_id, "finding", p["finding"])
     target_oid = _resolve_alias_to_object_id(conn, p["target"]) if p.get("target") else None
     disp_aid = None
@@ -1086,7 +1147,7 @@ def _submit_review_finding(conn: sqlite3.Connection, p: dict, role: str) -> dict
     rfid = cur.lastrowid
     cur2 = conn.execute(
         "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('review_finding', ?, ?)",
-        (rfid, f"RF-S{p['session_no']:03d}-{p['iteration']}-{rfid}"),
+        (rfid, f"RF-S{wno:03d}-{p['iteration']}-{rfid}"),
     )
     oid = cur2.lastrowid
     conn.execute("UPDATE review_findings SET object_id=? WHERE review_finding_id=?", (oid, rfid))
@@ -1111,16 +1172,18 @@ def _submit_finding_disposition(conn: sqlite3.Connection, p: dict, role: str) ->
 
 def _submit_close_record(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "close_records", "insert")
-    sess_id = _atom_session_id(conn, p["session_no"])
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    wno = _session_workspace_no(conn, sess_id)
     summary_aid = _insert_atom(conn, role, sess_id, "close_summary", p["summary"])
     cur = conn.execute(
         "INSERT INTO close_records (session_id, summary_atom_id) VALUES (?,?)",
         (sess_id, summary_aid),
     )
     crid = cur.lastrowid
+    alias = f"C-S{wno:03d}"
     cur2 = conn.execute(
         "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('close_record', ?, ?)",
-        (crid, f"C-S{p['session_no']:03d}"),
+        (crid, alias),
     )
     oid = cur2.lastrowid
     conn.execute("UPDATE close_records SET object_id=? WHERE close_record_id=?", (oid, crid))
@@ -1133,12 +1196,12 @@ def _submit_close_record(conn: sqlite3.Connection, p: dict, role: str) -> dict:
             (crid, seq, item["facet"], item_aid),
         )
         items_out.append({"seq": seq, "facet": item["facet"]})
-    return {"close_record_id": crid, "object_id": oid, "alias": f"C-S{p['session_no']:03d}", "items": items_out}
+    return {"close_record_id": crid, "object_id": oid, "alias": alias, "items": items_out}
 
 
 def _submit_legacy_import(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "legacy_imports", "insert")
-    sess_id = _atom_session_id(conn, p["session_no"])
+    sess_id = _atom_session_id(conn, p.get("session_no"))
     aid = _insert_atom(conn, role, sess_id, "legacy_import", p["text"])
     cur = conn.execute(
         "INSERT INTO legacy_imports (old_table, old_pk, atom_id, decomposition_status, decomposed_in_session_id) "
@@ -1150,7 +1213,7 @@ def _submit_legacy_import(conn: sqlite3.Connection, p: dict, role: str) -> dict:
 
 def _submit_spec_section(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "spec_sections", "insert")
-    sess_id = _atom_session_id(conn, p["session_no"])
+    sess_id = _atom_session_id(conn, p.get("session_no"))
     head_aid = _insert_atom(conn, role, sess_id, "title", p["heading"])
     intent_aid = None
     if p.get("intent"):
@@ -1172,7 +1235,7 @@ def _submit_spec_section(conn: sqlite3.Connection, p: dict, role: str) -> dict:
 
 def _submit_spec_clause(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "spec_clauses", "insert")
-    sess_id = _atom_session_id(conn, p["session_no"])
+    sess_id = _atom_session_id(conn, p.get("session_no"))
     aid = _insert_atom(conn, role, sess_id, "spec_clause", p["clause"])
     src_did = None
     if p.get("source_decision_alias"):
@@ -1446,16 +1509,26 @@ def _atom_text(conn: sqlite3.Connection, atom_id: Optional[int]) -> str:
     return row["text"] if row else ""
 
 
-def _export_session_provenance(conn: sqlite3.Connection, session_no: int, write: bool = False) -> dict:
+def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write: bool = False) -> dict:
+    """Export a session by EITHER substrate session_no OR workspace_session_no.
+
+    Looks up the session row via either column; uses workspace_session_no for
+    the provenance directory name (e.g. provenance/084-<slug>/) so the file
+    layout matches workspace conventions, not substrate counters.
+    """
     sess = conn.execute(
-        "SELECT session_id, slug, mode, engine_version_at_open, engine_version_at_close, "
-        "       opened_at, closed_at, status FROM sessions WHERE session_no=?",
-        (session_no,),
+        "SELECT session_id, session_no, workspace_session_no, slug, mode, "
+        "       engine_version_at_open, engine_version_at_close, "
+        "       opened_at, closed_at, status FROM sessions "
+        "WHERE workspace_session_no=? OR session_no=? LIMIT 1",
+        (session_ref, session_ref),
     ).fetchone()
     if sess is None:
-        raise SelvedgeError("E_NOT_FOUND", f"session_no={session_no}")
+        raise SelvedgeError("E_NOT_FOUND", f"session ref={session_ref} (tried workspace_session_no and session_no)")
     sid = sess["session_id"]
-    out_dir = Path("provenance") / f"{session_no:03d}-{sess['slug']}"
+    workspace_no = sess["workspace_session_no"] or sess["session_no"]
+    session_no = sess["session_no"]
+    out_dir = Path("provenance") / f"{workspace_no:03d}-{sess['slug']}"
     files: dict[str, str] = {}
 
     # 00-assessment.md
@@ -1470,7 +1543,7 @@ def _export_session_provenance(conn: sqlite3.Connection, session_no: int, write:
         ).fetchall()
         lines = [
             "---",
-            f"session: {session_no:03d}",
+            f"session: {workspace_no:03d}",
             f"title: {sess['slug']} — assessment",
             f"engine_version_at_open: {sess['engine_version_at_open']}",
             f"mode: {sess['mode']}",
@@ -1499,7 +1572,7 @@ def _export_session_provenance(conn: sqlite3.Connection, session_no: int, write:
     if delibs:
         lines = [
             "---",
-            f"session: {session_no:03d}",
+            f"session: {workspace_no:03d}",
             f"title: {sess['slug']} — deliberation",
             "generated_by: selvedge export",
             "---",
@@ -1568,7 +1641,7 @@ def _export_session_provenance(conn: sqlite3.Connection, session_no: int, write:
     if dvs or legacy_ds:
         lines = [
             "---",
-            f"session: {session_no:03d}",
+            f"session: {workspace_no:03d}",
             f"title: {sess['slug']} — decisions",
             "generated_by: selvedge export",
             "---",
@@ -1647,7 +1720,7 @@ def _export_session_provenance(conn: sqlite3.Connection, session_no: int, write:
     if rfs:
         lines = [
             "---",
-            f"session: {session_no:03d}",
+            f"session: {workspace_no:03d}",
             f"title: {sess['slug']} — review",
             "generated_by: selvedge export",
             "---",
@@ -1684,7 +1757,7 @@ def _export_session_provenance(conn: sqlite3.Connection, session_no: int, write:
         ).fetchall()
         lines = [
             "---",
-            f"session: {session_no:03d}",
+            f"session: {workspace_no:03d}",
             f"title: {sess['slug']} — close",
             f"engine_version_at_close: {sess['engine_version_at_close']}",
             f"mode: {sess['mode']}",
@@ -1721,7 +1794,7 @@ def _export_session_provenance(conn: sqlite3.Connection, session_no: int, write:
         for name, content in files.items():
             (out_dir / name).write_text(content)
 
-    return {"session_no": session_no, "out_dir": str(out_dir), "files_written": list(files.keys())}
+    return {"session_no": session_no, "workspace_session_no": workspace_no, "out_dir": str(out_dir), "files_written": list(files.keys())}
 
 
 def cmd_export(args) -> int:
