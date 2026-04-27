@@ -347,3 +347,39 @@ def test_migrate_against_nonexistent_substrate_returns_rc2(tmp_path):
         res = _run_in(env, sub)
         assert res["rc"] == 2, f"{sub}: expected rc=2, got rc={res['rc']}: {res}"
         assert "no substrate" in res["err"].lower() or "selvedge init" in res["err"].lower()
+
+
+def test_apply_refuses_migration_missing_schema_migrations_insert(tmp_substrate):
+    """A migration whose body forgets the
+    `INSERT INTO schema_migrations (name, sha256) VALUES (?, 'COMPUTED-AT-APPLY-TIME')`
+    line would otherwise apply silently — the runner's UPDATE would touch zero
+    rows and the migration would re-apply on every subsequent invocation. The
+    post-apply rowcount check (S092 / OI-S090-3) catches this and rolls back."""
+    mig = tmp_substrate["mig_dir"] / "002-no-insert.sql"
+    mig.write_text(
+        "BEGIN;\n"
+        "CREATE TRIGGER tmp_no_insert BEFORE INSERT ON sessions\n"
+        "FOR EACH ROW WHEN 0 BEGIN SELECT 1; END;\n"
+        # Note: deliberately missing the schema_migrations INSERT.
+        "COMMIT;\n"
+    )
+
+    res = _run_in(tmp_substrate["env"], ["migrate", "--apply"])
+    assert res["rc"] == 3, res
+    assert "E_MIGRATION_FAILED" in res["err"]
+    assert "schema_migrations row absent" in res["err"]
+
+    # Substrate should have been restored: no row for the migration, and the
+    # trigger created mid-apply must not survive on the post-restore substrate.
+    conn = sqlite3.connect(str(tmp_substrate["db"]))
+    try:
+        n = conn.execute(
+            "SELECT COUNT(*) FROM schema_migrations WHERE name='002-no-insert.sql'"
+        ).fetchone()[0]
+        assert n == 0
+        bad = conn.execute(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='trigger' AND name='tmp_no_insert'"
+        ).fetchone()[0]
+        assert bad == 0
+    finally:
+        conn.close()

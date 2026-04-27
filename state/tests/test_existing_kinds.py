@@ -463,3 +463,169 @@ def test_t06_closed_decision_immutable_via_sql(clean_substrate, selvedge_cli):
         assert "E_REFUSAL_T06" in str(exc.value)
     finally:
         conn.close()
+
+
+def _seed_issue_and_work_item(selvedge_cli, *, alias="OI-S001-1", priority="MEDIUM"):
+    """Helper: create one issue (via submit issue) and one work_item (via direct
+    SQL since work_items.insert is __cli__-permitted but lacks a submit kind)
+    and return (issue_id, work_item_id)."""
+    res = selvedge_cli(
+        [
+            "submit",
+            "issue",
+            "--payload",
+            json.dumps(
+                {
+                    "session_no": 1,
+                    "citable_alias": alias,
+                    "title": "pytest seed issue for issue-work-item linkage",
+                    "priority": priority,
+                }
+            ),
+        ]
+    )
+    assert res["out"]["ok"], res
+    iid = res["out"]["result"]["issue_id"]
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        cur = conn.execute(
+            "INSERT INTO work_items (session_id, kind, payload_json, status) "
+            "VALUES (1, 'issue_resolution', '{}', 'queued')"
+        )
+        conn.commit()
+        wid = cur.lastrowid
+    finally:
+        conn.close()
+    return iid, wid
+
+
+def test_issue_work_item_happy_path_inserts_link(clean_substrate, selvedge_cli, db):
+    iid, wid = _seed_issue_and_work_item(selvedge_cli)
+    res = selvedge_cli(
+        [
+            "submit",
+            "issue-work-item",
+            "--payload",
+            json.dumps({"session_no": 1, "issue_id": iid, "work_item_id": wid}),
+        ]
+    )
+    assert res["out"]["ok"], res
+    row = db.execute(
+        "SELECT issue_id, work_item_id, relation FROM issue_work_items WHERE issue_work_item_id=?",
+        (res["out"]["result"]["issue_work_item_id"],),
+    ).fetchone()
+    assert row["issue_id"] == iid
+    assert row["work_item_id"] == wid
+    assert row["relation"] == "resolves"
+
+
+def test_issue_work_item_resolves_alias(clean_substrate, selvedge_cli):
+    iid, wid = _seed_issue_and_work_item(selvedge_cli, alias="OI-S001-2")
+    res = selvedge_cli(
+        [
+            "submit",
+            "issue-work-item",
+            "--payload",
+            json.dumps(
+                {
+                    "session_no": 1,
+                    "citable_alias": "OI-S001-2",
+                    "work_item_id": wid,
+                    "relation": "informs",
+                }
+            ),
+        ]
+    )
+    assert res["out"]["ok"], res
+    assert res["out"]["result"]["issue_id"] == iid
+    assert res["out"]["result"]["relation"] == "informs"
+
+
+def test_issue_work_item_t24_refuses_resolve_with_queued_link(clean_substrate, selvedge_cli):
+    iid, wid = _seed_issue_and_work_item(selvedge_cli, alias="OI-S001-3")
+    selvedge_cli(
+        [
+            "submit",
+            "issue-work-item",
+            "--payload",
+            json.dumps({"session_no": 1, "issue_id": iid, "work_item_id": wid}),
+        ]
+    )
+    # T-24 refuses moving issue to resolved while linked work_item is queued.
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        with pytest.raises(sqlite3.IntegrityError) as exc:
+            conn.execute("UPDATE issues SET status='resolved' WHERE issue_id=?", (iid,))
+        assert "E_REFUSAL_T24" in str(exc.value)
+    finally:
+        conn.close()
+
+
+def test_issue_work_item_unknown_work_item_refused(clean_substrate, selvedge_cli):
+    iid, _wid = _seed_issue_and_work_item(selvedge_cli, alias="OI-S001-4")
+    res = selvedge_cli(
+        [
+            "submit",
+            "issue-work-item",
+            "--payload",
+            json.dumps({"session_no": 1, "issue_id": iid, "work_item_id": 999999}),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "E_NOT_FOUND" in res["err"]
+
+
+def test_t25_lease_renewal_monotonic_refuses_backwards(clean_substrate):
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        conn.execute(
+            "INSERT INTO work_items (session_id, kind, payload_json, status, leased_by, leased_at, lease_expires_at) "
+            "VALUES (1, 'review', '{}', 'leased', 'tester', "
+            "strftime('%Y-%m-%dT%H:%M:%fZ','now'), '2099-01-01T00:00:00.000Z')"
+        )
+        conn.commit()
+        wid = conn.execute("SELECT MAX(work_item_id) AS w FROM work_items").fetchone()[0]
+        # Backwards renewal refused.
+        with pytest.raises(sqlite3.IntegrityError) as exc:
+            conn.execute(
+                "UPDATE work_items SET lease_expires_at='2098-01-01T00:00:00.000Z' WHERE work_item_id=?",
+                (wid,),
+            )
+        assert "E_REFUSAL_T25" in str(exc.value)
+        # Equal value also refused (strictly forward).
+        with pytest.raises(sqlite3.IntegrityError) as exc:
+            conn.execute(
+                "UPDATE work_items SET lease_expires_at='2099-01-01T00:00:00.000Z' WHERE work_item_id=?",
+                (wid,),
+            )
+        assert "E_REFUSAL_T25" in str(exc.value)
+        # Forward renewal admitted.
+        conn.execute(
+            "UPDATE work_items SET lease_expires_at='2099-06-01T00:00:00.000Z' WHERE work_item_id=?",
+            (wid,),
+        )
+        conn.commit()
+        # Releasing the lease (NEW.status != 'leased') unaffected by T-25.
+        conn.execute(
+            "UPDATE work_items SET status='completed', lease_expires_at=NULL, completed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE work_item_id=?",
+            (wid,),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def test_issue_work_item_unknown_issue_id_refused(clean_substrate, selvedge_cli):
+    _iid, wid = _seed_issue_and_work_item(selvedge_cli, alias="OI-S001-5")
+    res = selvedge_cli(
+        [
+            "submit",
+            "issue-work-item",
+            "--payload",
+            json.dumps({"session_no": 1, "issue_id": 999999, "work_item_id": wid}),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "E_NOT_FOUND" in res["err"]

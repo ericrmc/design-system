@@ -388,10 +388,16 @@ def _apply_pending(path: Path, pending: list[dict]) -> list[tuple[str, str]]:
         try:
             try:
                 conn.executescript(sql)
-                conn.execute(
+                cur = conn.execute(
                     "UPDATE schema_migrations SET sha256 = ? WHERE name = ?",
                     (sha, name),
                 )
+                if cur.rowcount != 1:
+                    raise RuntimeError(
+                        f"schema_migrations row absent for {name} after apply; "
+                        f"migration SQL must include "
+                        f"INSERT INTO schema_migrations (name, sha256) VALUES (?, 'COMPUTED-AT-APPLY-TIME')"
+                    )
                 conn.commit()
             except Exception as e:
                 # Pre-close failure: restore from backup (D-8 tier 1).
@@ -1440,6 +1446,31 @@ def _submit_issue_note(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     return {"note_id": cur.lastrowid, "issue_id": iid, "seq": next_seq}
 
 
+def _submit_issue_work_item(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "issue_work_items", "insert")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    iid = int(p["issue_id"]) if "issue_id" in p else _resolve_issue_alias(conn, p["citable_alias"])
+    if "issue_id" in p and conn.execute(
+        "SELECT 1 FROM issues WHERE issue_id=?", (iid,)
+    ).fetchone() is None:
+        raise SelvedgeError("E_NOT_FOUND", f"issue_id={iid}")
+    wid = int(p["work_item_id"])
+    if conn.execute("SELECT 1 FROM work_items WHERE work_item_id=?", (wid,)).fetchone() is None:
+        raise SelvedgeError("E_NOT_FOUND", f"work_item_id={wid}")
+    relation = p.get("relation", "resolves")
+    cur = conn.execute(
+        "INSERT INTO issue_work_items (issue_id, work_item_id, relation, created_session_id) "
+        "VALUES (?,?,?,?)",
+        (iid, wid, relation, sess_id),
+    )
+    return {
+        "issue_work_item_id": cur.lastrowid,
+        "issue_id": iid,
+        "work_item_id": wid,
+        "relation": relation,
+    }
+
+
 SUBMIT_HANDLERS = {
     "session-open": _submit_session_open,
     "session-close": _submit_session_close,
@@ -1465,6 +1496,7 @@ SUBMIT_HANDLERS = {
     "issue-disposition": _submit_issue_disposition,
     "issue-link": _submit_issue_link,
     "issue-note": _submit_issue_note,
+    "issue-work-item": _submit_issue_work_item,
 }
 
 
