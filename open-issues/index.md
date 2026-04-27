@@ -26,7 +26,6 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-083-001](OI-083-001.md) | MEDIUM | open | Substrate enforcement of the coding review loop |
 | [OI-083-002](OI-083-002.md) | LOW | open | Worked rubric for the coding review loop's severity taxonomy |
 | [OI-086-001](OI-086-001.md) | MEDIUM | open | spec_clause source_decision_v2_id traceability is unenforced (and unused) |
-| [OI-086-002](OI-086-002.md) | MEDIUM | open | spec_versions has no constraint preventing two simultaneously-active versions per spec_id |
 | [OI-086-003](OI-086-003.md) | MEDIUM | open | decision_supports / alternative_rejections allow NULL cited_object_id on cite-required bases |
 | [OI-086-004](OI-086-004.md) | MEDIUM | open | legacy_imports.decomposition_status does not track actual decomposition coverage |
 | [OI-S088-1](OI-S088-1.md) | LOW | open | Atom_type conflation: issue dispositions and links reuse rejection_reason atom_type. |
@@ -37,6 +36,7 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S090-2](OI-S090-2.md) | MEDIUM | open | pytest coverage for Path A handlers + export round-trip |
 | [OI-S090-3](OI-S090-3.md) | MEDIUM | open | Migrate runner post-apply schema_migrations existence check |
 | [OI-S090-5](OI-S090-5.md) | MEDIUM | open | Substrate-driven spec content authoring path (markdown body editing remains the only option) |
+| [OI-S091-1](OI-S091-1.md) | LOW | open | Migration 011 encodes engine-v24 as a snapshot; future fresh workspaces start one or more versions stale |
 
 ## Resolved
 
@@ -51,4 +51,5 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-080-001](resolved/OI-080-001.md) | S088 | T-06 missing trigger on deliberations UPDATE; T-13 admits non-NULL→other-non-NULL on sealed_at |
 | [OI-085-001](resolved/OI-085-001.md) | S088 | Re-decompose prompt-development v2 + prompt-application v2 + engine-manifest v20 into spec_clauses |
 | [OI-085-002](resolved/OI-085-002.md) | S090 | Structural restriction of markdown authoring (no more honest tool use) |
+| [OI-086-002](resolved/OI-086-002.md) | S091 | spec_versions has no constraint preventing two simultaneously-active versions per spec_id |
 | [OI-S090-4](resolved/OI-S090-4.md) | S090 | _submit_spec_version handler order trips T-03 on update |

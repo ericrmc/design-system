@@ -927,6 +927,30 @@ def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
             (oid, prev_oid, p.get("supersedes_reason_md") or "spec_version supersession"),
         )
         n_refs += 1
+
+    # OI-S091: keep workspace_metadata.current_engine_version coherent with the
+    # active engine-manifest spec_version. Migration 007 seeded the metadata at
+    # engine-v20; bumps in S087/S088/S089/S090 did not propagate, so by S091
+    # the metadata had drifted four versions behind. The handler now updates
+    # atomically inside the same transaction as the insert. Migration 011
+    # seeded the __cli__ UPDATE capability on workspace_metadata.
+    if p["spec_id"] == "engine-manifest":
+        _check_role_capability(conn, role, "workspace_metadata", "update")
+        upd = conn.execute(
+            "UPDATE workspace_metadata SET value = ? WHERE key = 'current_engine_version'",
+            (f"engine-v{p['version']}",),
+        )
+        # Assert the invariant migration 007 is supposed to maintain. If the
+        # row is absent the UPDATE silently affects 0 rows, which would
+        # reproduce the exact silent-drift bug this handler change was written
+        # to prevent.
+        if upd.rowcount != 1:
+            raise SelvedgeError(
+                "E_VALIDATION",
+                f"workspace_metadata.current_engine_version row missing or duplicated "
+                f"(rowcount={upd.rowcount}); migrations may be incomplete",
+            )
+
     return {"spec_version_id": svid, "object_id": oid, "alias": alias, "refs": n_refs}
 
 

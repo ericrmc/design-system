@@ -277,6 +277,72 @@ def test_spec_version_supersedes_flips_prev_to_superseded(clean_substrate, selve
         v2.unlink(missing_ok=True)
 
 
+def test_engine_manifest_bump_updates_workspace_metadata(clean_substrate, selvedge_cli, db):
+    """OI-S091 regression: when spec_id='engine-manifest', the handler must
+    propagate the new version into workspace_metadata.current_engine_version
+    atomically. Migration 007 seeded this row; bumps in S087-S090 did not
+    propagate, leaving the metadata four versions stale at S091 open."""
+    body_dir = WORKSPACE / "state" / "tests" / "spec-bodies"
+    body_dir.mkdir(parents=True, exist_ok=True)
+    body = body_dir / "engine-manifest-coherence.md"
+    body.write_text("engine-manifest coherence fixture\n")
+    body_rel = body.relative_to(WORKSPACE).as_posix()
+    sha = hashlib.sha256(body.read_bytes()).hexdigest()
+
+    before = db.execute(
+        "SELECT value FROM workspace_metadata WHERE key='current_engine_version'"
+    ).fetchone()
+    assert before is not None, "fixture should have current_engine_version seeded"
+
+    try:
+        r = selvedge_cli(
+            [
+                "submit", "spec-version", "--payload",
+                json.dumps({
+                    "session_no": 1, "spec_id": "engine-manifest",
+                    "version": 999, "body_path": body_rel, "body_sha256": sha,
+                }),
+            ]
+        )
+        assert r["out"]["ok"], r
+
+        after = db.execute(
+            "SELECT value FROM workspace_metadata WHERE key='current_engine_version'"
+        ).fetchone()
+        assert after["value"] == "engine-v999", (
+            f"expected current_engine_version='engine-v999' after engine-manifest bump, "
+            f"got {after['value']!r}"
+        )
+
+        # Non-engine-manifest specs must NOT touch the metadata. Submit a
+        # different spec_id and confirm the value is unchanged.
+        other = body_dir / "other-coherence.md"
+        other.write_text("other spec body\n")
+        other_rel = other.relative_to(WORKSPACE).as_posix()
+        other_sha = hashlib.sha256(other.read_bytes()).hexdigest()
+        try:
+            r2 = selvedge_cli(
+                [
+                    "submit", "spec-version", "--payload",
+                    json.dumps({
+                        "session_no": 1, "spec_id": "other-fixture",
+                        "version": 1, "body_path": other_rel, "body_sha256": other_sha,
+                    }),
+                ]
+            )
+            assert r2["out"]["ok"], r2
+            still = db.execute(
+                "SELECT value FROM workspace_metadata WHERE key='current_engine_version'"
+            ).fetchone()
+            assert still["value"] == "engine-v999", (
+                f"non-engine-manifest spec must not change current_engine_version; got {still['value']!r}"
+            )
+        finally:
+            other.unlink(missing_ok=True)
+    finally:
+        body.unlink(missing_ok=True)
+
+
 def test_spec_version_two_active_refused_by_t03(clean_substrate, selvedge_cli, db):
     """T-03 must refuse a direct INSERT of a second active row for the same spec_id.
     Confirms the unique partial index is the structural guarantee that the handler
