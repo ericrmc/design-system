@@ -429,7 +429,13 @@ def test_t13_refuses_resealing_to_other_timestamp(open_deliberation, selvedge_cl
     """Migration 002 (S082) tightened T-13 from `NEW.sealed_at IS NULL` to
     `NEW.sealed_at IS NOT OLD.sealed_at`. Any change to a non-NULL sealed_at
     is now refused, including a re-seal at a different timestamp. This test
-    was the second strict xfail pinning OI-080-001 pre-S082."""
+    was the second strict xfail pinning OI-080-001 pre-S082.
+
+    Asserts on migration 002's specific error text (`is immutable once non-NULL`)
+    so a regression that reverted T-13 to migration 001's wording (which
+    *would* admit this UPDATE silently — `pytest.raises` would then fail
+    correctly, but the assertion text-match prevents a future T-13 rewrite
+    from drifting the error message without intent)."""
     did = open_deliberation
     selvedge_cli(
         [
@@ -455,8 +461,60 @@ def test_t13_refuses_resealing_to_other_timestamp(open_deliberation, selvedge_cl
                 (did,),
             )
         assert "E_REFUSAL_T13" in str(exc.value)
+        assert "immutable once non-NULL" in str(exc.value), (
+            "T-13 must surface the migration-002 wording; a regression that "
+            "reverts to migration 001's `cannot be set back to NULL` text "
+            "would silently admit non-NULL→other-non-NULL writes."
+        )
     finally:
         conn.close()
+
+
+def test_t13_admits_idempotent_same_value_sealed_at_write(open_deliberation, selvedge_cli, db):
+    """Migration 002's tightened T-13 condition is `NEW.sealed_at IS NOT
+    OLD.sealed_at`. For OLD='X' NEW='X', `'X' IS NOT 'X'` is false, so the
+    trigger does not fire. A no-op update must be admitted (this is the
+    third row of the truth table the migration documents). Without this
+    test, a regression that strengthened the condition to `<>` (which would
+    fire on same-value writes due to SQLite's NULL handling) would not be
+    caught — the workspace's CLI never writes same-value, so no integration
+    test would surface the regression."""
+    did = open_deliberation
+    selvedge_cli(
+        [
+            "submit",
+            "perspective",
+            "--payload",
+            json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
+        ]
+    )
+    selvedge_cli(
+        [
+            "submit",
+            "deliberation-seal",
+            "--payload",
+            json.dumps({"deliberation_id": did}),
+        ]
+    )
+    sealed_at = db.execute(
+        "SELECT sealed_at FROM deliberations WHERE deliberation_id=?", (did,)
+    ).fetchone()["sealed_at"]
+    assert sealed_at is not None
+
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        # Same-value write: OLD.sealed_at == NEW.sealed_at; trigger must not fire.
+        conn.execute(
+            "UPDATE deliberations SET sealed_at = ? WHERE deliberation_id = ?",
+            (sealed_at, did),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    after = db.execute(
+        "SELECT sealed_at FROM deliberations WHERE deliberation_id=?", (did,)
+    ).fetchone()["sealed_at"]
+    assert after == sealed_at
 
 
 def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cli):

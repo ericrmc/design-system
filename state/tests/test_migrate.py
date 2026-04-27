@@ -249,11 +249,101 @@ def test_failure_mid_apply_restores_from_backup(tmp_substrate):
         "INSERT INTO schema_migrations (name, sha256) VALUES ('002-broken.sql', 'COMPUTED-AT-APPLY-TIME');\n"
         "COMMIT;\n"
     )
+
+    # Capture pre-apply state for restore verification.
+    db_path = tmp_substrate["db"]
+    pre_table_count = sqlite3.connect(str(db_path)).execute(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type='table'"
+    ).fetchone()[0]
+
     res = _run_in(tmp_substrate["env"], ["migrate", "--apply"])
     assert res["rc"] == 3
     assert "E_MIGRATION_FAILED" in res["err"]
+
     # schema_migrations should not have a row for the broken migration.
+    conn = sqlite3.connect(str(db_path))
+    try:
+        n = conn.execute("SELECT COUNT(*) FROM schema_migrations WHERE name='002-broken.sql'").fetchone()[0]
+        assert n == 0
+        # The substrate must be functionally identical to its pre-apply state.
+        post_table_count = conn.execute(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='table'"
+        ).fetchone()[0]
+        assert post_table_count == pre_table_count
+        # The bad trigger must not exist on the post-restore substrate.
+        bad = conn.execute(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='trigger' AND name='bad_trigger'"
+        ).fetchone()[0]
+        assert bad == 0
+    finally:
+        conn.close()
+
+    # The .pre-migrate-backup file must remain on disk (operator can inspect it
+    # post-mortem; runner does not auto-delete on failure).
+    backup = db_path.with_suffix(".sqlite.pre-migrate-backup")
+    assert backup.exists(), "post-failure: backup file should remain for operator inspection"
+
+
+def test_apply_replaces_placeholder_sha_with_real_hash(tmp_substrate):
+    """Defensive test against drift-detection bypass: if the runner stored the
+    placeholder string `COMPUTED-AT-APPLY-TIME` indefinitely, the drift check
+    would silently treat every applied migration as 'never drifts' (the
+    placeholder branch in `_migration_state` short-circuits the sha compare).
+    Verify the real sha256 lands in `schema_migrations` post-apply."""
+    import hashlib as _h
+
+    mig = tmp_substrate["mig_dir"] / "002-placeholder.sql"
+    mig_body = (
+        "BEGIN;\n"
+        "CREATE TRIGGER tmp_placeholder BEFORE INSERT ON sessions\n"
+        "FOR EACH ROW WHEN 0 BEGIN SELECT 1; END;\n"
+        "INSERT INTO schema_migrations (name, sha256) VALUES ('002-placeholder.sql', 'COMPUTED-AT-APPLY-TIME');\n"
+        "COMMIT;\n"
+    )
+    mig.write_text(mig_body)
+    expected_sha = _h.sha256(mig_body.encode()).hexdigest()
+
+    res = _run_in(tmp_substrate["env"], ["migrate", "--apply"])
+    assert res["rc"] == 0, res
+
     conn = sqlite3.connect(str(tmp_substrate["db"]))
-    n = conn.execute("SELECT COUNT(*) FROM schema_migrations WHERE name='002-broken.sql'").fetchone()[0]
-    conn.close()
-    assert n == 0
+    try:
+        recorded = conn.execute(
+            "SELECT sha256 FROM schema_migrations WHERE name='002-placeholder.sql'"
+        ).fetchone()[0]
+    finally:
+        conn.close()
+    assert recorded != "COMPUTED-AT-APPLY-TIME", (
+        "post-apply: runner must replace the placeholder with the real sha256; "
+        "leaving the placeholder would silently disable drift detection"
+    )
+    assert recorded == expected_sha
+
+
+def test_apply_with_no_pending_is_a_clean_noop(tmp_substrate):
+    """After `init` (which auto-applies migrations), a fresh `--apply` must
+    return ok with `applied: []` and not error on the empty-pending path."""
+    res = _run_in(tmp_substrate["env"], ["migrate", "--apply"])
+    assert res["rc"] == 0, res
+    assert res["out"]["ok"] is True
+    assert res["out"]["applied"] == []
+
+
+def test_migrate_against_nonexistent_substrate_returns_rc2(tmp_path):
+    """Running migrate before init should fail cleanly with rc=2 and a clear
+    operator-readable message, not crash with an unhandled exception."""
+    (tmp_path / "MODE.md").write_text("---\nmode: self-development\nworkspace_id: tmp\n---\n")
+    mig_dir = tmp_path / "migrations"
+    mig_dir.mkdir()
+    shutil.copy(WORKSPACE / "state" / "migrations" / "001-initial.sql", mig_dir / "001-initial.sql")
+    db = tmp_path / "absent.sqlite"
+    assert not db.exists()
+    env = {
+        "SELVEDGE_WORKSPACE": str(tmp_path),
+        "SELVEDGE_DB_PATH": str(db),
+        "SELVEDGE_MIGRATIONS_DIR": str(mig_dir),
+    }
+    for sub in (["migrate", "--status"], ["migrate", "--dry-run"], ["migrate", "--apply"]):
+        res = _run_in(env, sub)
+        assert res["rc"] == 2, f"{sub}: expected rc=2, got rc={res['rc']}: {res}"
+        assert "no substrate" in res["err"].lower() or "selvedge init" in res["err"].lower()

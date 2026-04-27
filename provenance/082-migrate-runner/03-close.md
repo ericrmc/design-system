@@ -40,7 +40,7 @@ S082 shipped the `selvedge migrate` runner deferred at S079 close, applied migra
 - **Active engine version:** `engine-v18` (provisional per 078 D-5; first version-bump since v17 ratification at 079; bug-fix + validator-tightening admitted under the gate per the manifest's clarified §Versioning prose).
 - **Substrate at close:** sessions=3, deliberations=2, perspectives=5, synthesis_points=5, decisions=11 (8 + S082's 3), decision_alternatives=15 (12 + S082's 3 on D-1), refs=7 (4 + S082's 3), migrations=2 (001 + 002).
 - **Validator:** `tools/validate.sh` 16 ok / 0 fail at close (17 ok at the same commit landing this file).
-- **Tests:** `pytest state/tests/` **43 passed, 0 xfailed** (was 27 + 2 xfailed at S081 close; +14 from `test_migrate.py`; the 2 xfails flipped and are now passing under their renamed function names). `bash state/tests/round_trip.sh` 9/9 pass. `bash state/tests/concurrency.sh` PASS (15 surviving submits + 1 killed; integrity ok; no orphans).
+- **Tests:** `pytest state/tests/` **47 passed, 0 xfailed** (was 27 + 2 xfailed at S081 close; +18 from `test_migrate.py` and post-review hardening; the 2 xfails flipped and are now passing under their renamed function names; +4 from a post-close adversarial-reviewer pass that surfaced load-bearing test gaps — see §Post-close reviewer pass). `bash state/tests/round_trip.sh` 9/9 pass. `bash state/tests/concurrency.sh` PASS (15 surviving submits + 1 killed; integrity ok; no orphans).
 - **Open issues:** active count 15 → 14 (OI-080-001 closed). The resolved-table count grows by 1.
 - **Engine-feedback:** EF-079-002 triaged and resolved at S082; `engine-feedback/triage/` gains one row. EF-079-001 (T-12 application-layer) remains in inbox awaiting its own activation trigger (a future writer role landing).
 
@@ -83,6 +83,22 @@ Three candidates, in priority order:
 6. **The release gate clarification was opportunistic.** S082's §Versioning prose adjustment ("the gate constrains *what kind* of change can ship; it does not exempt qualifying changes from the bump rule") corrects a tension between the v17 manifest's optimistic "engine-v17 → engine-v18 is not anticipated until after the first external-problem trial completes" line and the same manifest's §Versioning rule that substrate migrations bump the version. The correction is consistent with what S080 and S081 did (mechanism-implementing-existing-schema kept v17; this session's substrate migration earns v18) but it is a manifest revision, not just an enumeration update. Recorded as part of D-1 rather than as its own decision because the rule it codifies is what the manifest already implies; the new text resolves an inconsistency, not introduces one.
 
 7. **The migrate runner has no `selvedge validate --precommit` integration.** A future session adding "warn if pending migrations exist at validate time" is admitted under the gate as mechanism-implementing-existing.
+
+## Post-close reviewer pass
+
+After the initial close commit (`624e70c`), an adversarial Explore subagent was convened to audit `state/tests/test_migrate.py`, the flipped xfails in `state/tests/test_deliberation_kinds.py`, and the migrate runner in `selvedge/cli.py`. Verdict: BLOCKING (close should be reviewed before push) with three critical findings and several coverage-gap notes. The orchestrator's adjudication and remediation:
+
+| Reviewer finding | Disposition |
+|---|---|
+| **Critical 1.** "T-13 test passes against migration 001 alone (UPDATE succeeds silently because `NEW.sealed_at IS NULL` is false)." | **Disagree on slip-through claim.** Against migration 001 the UPDATE succeeds *silently* (no exception), so `pytest.raises(sqlite3.IntegrityError)` would fail with "DID NOT RAISE", correctly failing the test. The test does verify migration 002 ran. **Agree on hardening:** strengthened the assertion to require migration 002's specific error text (`immutable once non-NULL`) so a future regression that drifted the wording would be caught. |
+| **Critical 2.** "Drift detection bypassed if runner stored placeholder sha forever (`recorded == _PLACEHOLDER_SHA` short-circuits drift compare)." | **Agreed real gap.** Added `test_apply_replaces_placeholder_sha_with_real_hash` which writes a migration containing the placeholder, applies it, and asserts the recorded sha256 is the real hash, not the placeholder. Verified against production substrate (both 001 and 002 carry real sha256s). |
+| **Critical 3.** "No test for idempotent same-value `sealed_at` write (migration 002 prose claims this is admitted; no test exercises it)." | **Agreed real gap.** Added `test_t13_admits_idempotent_same_value_sealed_at_write` to `test_deliberation_kinds.py`. Reads the sealed_at value, writes it back via direct SQL, asserts the trigger does not fire and the value is preserved. |
+| Important: backup-restore test only checked `schema_migrations`, not the substrate state. | Strengthened `test_failure_mid_apply_restores_from_backup`: now captures pre-apply table count, asserts post-apply table count matches, asserts the bad trigger does not exist post-restore, and asserts the `.pre-migrate-backup` file remains for operator inspection. |
+| Important: `cmd_migrate` rc=2 path (no substrate) untested. | Added `test_migrate_against_nonexistent_substrate_returns_rc2` covering `--status`, `--dry-run`, `--apply` against an absent DB. |
+| Important: `--apply` with zero pending untested as a standalone path. | Added `test_apply_with_no_pending_is_a_clean_noop`. |
+| Nits 9–11 (WAL/SHM cleanup, brittle name assertion, T-06 scope). | Acknowledged; not addressed (low-impact; pytest's `tmp_path` handles WAL cleanup; the name-list assertion is intentional for fixture sanity; T-06 reviewer-confirmed "no gap"). |
+
+Pytest count: 43 → 47 (4 new defensive tests). All pass. The reviewer's BLOCKING verdict is downgraded to ADVISORY-resolved by these additions; the load-bearing gaps (placeholder bypass, idempotent same-value, regression-resistant T-13 wording) are now closed by tests, not just by the implementation.
 
 ## Validator at close
 
