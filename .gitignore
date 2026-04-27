@@ -6,3 +6,15 @@ entities.json
 # Retrieval substrate (adopted S050 per D-170 / retrieval-contract.md v1 §4).
 # Cache is workspace-local and regenerable from markdown via tools/build_retrieval_index.py.
 .cache/
+
+# Selvedge substrate (engine-v17, session 079).
+# selvedge.sqlite is workspace state, not engine-definition — see specifications/engine-manifest.md.
+state/selvedge.sqlite
+state/selvedge.sqlite-*
+state/selvedge.sqlite.*backup
+state/tests/round-trip-spec/
+__pycache__/
+*.pyc
+
+# Claude Code scheduled-tasks lockfile (per-process; not project state).
+.claude/scheduled_tasks.lock

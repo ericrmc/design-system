@@ -1,10 +1,10 @@
 ---
 title: Methodology
-version: 1
+version: 2
 status: active
 created: 2026-04-27
-updated-by-session: 076
-supersedes: methodology-kernel.md, identity.md, multi-agent-deliberation.md, validation-approach.md
+updated-by-session: 079
+supersedes: methodology-v1 (engine-v16); per 078 D-7
 ---
 
 # Methodology
@@ -65,27 +65,14 @@ If a multi-agent deliberation would otherwise be triggered but is not performed 
 
 ## When to review at close
 
-A separate **reviewer** audits the session at close when:
-
-- The session changed engine-definition files (specifications, prompts, tools).
-- A structural validation check warned or failed.
-- The operator requests a review.
-
-The reviewer must not be the session's orchestrator, the close author, or the primary implementer of the work being audited. The reviewer reads the session's record (assessment, deliberation if any, decisions, close, produced artefacts) and produces an audit at `provenance/NNN-<slug>/04-review.md` reporting:
-
-1. **Close correctness** — does the close accurately record what was decided, what was produced, and what state the workspace is in?
-2. **Mechanism adequacy** — did the methodology's mechanisms function as designed for this session?
-3. **Trajectory discipline** — across the recent sessions, is the methodology doing substantive work or accumulating ceremony?
-
-A reviewer's findings are inputs to subsequent sessions. The reviewer does not fix problems; the next session does.
+Close-time review is superseded until the substrate distinguishes prevention from audit; D-2 conditional re-introduction governs (per 078 D-7 step 1; prior text archived at `archive/specifications/methodology-v1-removed-sections.md`).
 
 ## Validation senses
 
-A session's Validate activity may operate at three senses:
+A session's Validate activity may operate at two senses:
 
 - **Workspace validation** — the session's artefacts are internally consistent, do not contradict active specifications, and accurately describe the workspace as it is. Workspace validation applies to every session.
 - **Domain validation** — when a session produces an artefact intended for use outside the workspace, and a domain-actor is available, the domain-actor reports whether the artefact functioned for its intended use. The session records the report.
-- **Provisional reference substitute** — when a session produces an external-intent artefact and no domain-actor is available, the session may compare its artefact to a sealed reference under blind conditions. This is a provisional substitute for domain validation, not an equal third sense; an artefact validated this way carries the label `validation: reference-provisional` and is qualified by the cross-family pretraining-recoverability of the reference.
 
 ## Preservation
 
@@ -105,14 +92,3 @@ The engine-feedback pathway is what allowed the operator's interventions across 
 The methodology evolves by applying its own process to itself. Changes to this kernel pass through the same Read → Assess → Convene → Deliberate → Decide → Produce → Validate → Record → Close as any other artefact. The kernel is revised when the process it describes no longer matches the process actually followed, or when a better process is discovered.
 
 The self-hosting property has limits. A self-applied methodology with no problem outside itself loses the falsification signal that keeps work substantive. The methodology that survives contact with a real complex-systems-design problem will be different from the one that has only been applied to itself, and only the former is the methodology Selvedge originally set out to build. Self-development is the bootstrap, not the destination.
-
-## What this kernel does not say
-
-This kernel intentionally does not specify:
-
-- A retrieval substrate, a records substrate, or any database schema. The next two sessions will design these.
-- Multi-agent orchestration patterns beyond the deliberation pattern above. The next two sessions will design distributed-context-agent architectures.
-- A read budget or a default-read surface. The seventy-five-session engine accumulated a closed-enumeration default-read that grew until it consumed half the agent's context window; the successor design will not repeat that mistake.
-- An audit-shape for reviewer outputs beyond the three reporting axes above. The next two sessions will redesign the audit shape against the actual database substrate.
-
-These omissions are deliberate. The kernel here is the minimum that allows session 077 to run. Session 077 will deliberate on what the next-generation engine should add.

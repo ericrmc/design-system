@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Selvedge CLI shim. Resolves to the Python package next to this script.
+set -e
+DIR="$(cd "$(dirname "$0")/.." && pwd)"
+exec python3 -m selvedge.cli "$@"

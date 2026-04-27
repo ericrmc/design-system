@@ -1,10 +1,10 @@
 ---
 title: Workspace structure
-version: 1
+version: 2
 status: active
 created: 2026-04-27
-updated-by-session: 076
-supersedes: workspace-structure.md, read-contract.md, records-contract.md, retrieval-contract.md
+updated-by-session: 079
+supersedes: workspace-v1 (engine-v16); per 078 D-7
 ---
 
 # Workspace structure
@@ -24,40 +24,7 @@ External workspaces inherit only the engine-definition files. They do not inheri
 
 ## Top-level layout
 
-```
-PROMPT.md                       # entry point (engine-definition)
-MODE.md                         # workspace-identity
-CLAUDE.md                       # harness instructions (per-workspace, optional)
-prompts/                        # engine-definition
-  development.md
-  application.md
-specifications/                 # engine-definition
-  methodology.md
-  constraints.md
-  workspace.md
-  engine-manifest.md
-tools/                          # engine-definition
-  validate.sh
-applications/                   # application
-  NNN-<slug>/
-    brief.md
-    <produced artefacts>
-provenance/                     # provenance
-  NNN-<slug>/
-    00-assessment.md
-    01-deliberation.md          # when applicable
-    02-decisions.md
-    03-close.md
-    04-review.md                # when applicable
-engine-feedback/                # operator-mediated, optional
-  EF-<session>-<slug>.md
-open-issues/                    # workspace-scope, optional
-  OI-<id>-<slug>.md
-  index.md
-archive/                        # superseded files; not loaded by the engine
-```
-
-This layout will likely change in the successor design (sessions 077–078) when the database substrate replaces some of the directory-based bookkeeping. Until then, the layout above is what an active workspace looks like.
+The manifest defines engine-definition files; session records live under `provenance/`; structured state lives in `state/selvedge.sqlite` (per engine-v17); generated exports are not the source of truth once the substrate exists. (Per 078 D-7 step 5; the prior enumerated tree is archived at `archive/specifications/workspace-v1-removed-sections.md`.)
 
 ## Sessions
 
@@ -123,13 +90,3 @@ Engine-feedback flows operator-mediated from external-problem workspaces back in
 Files no longer part of the active engine but preserved for historical reference live under `archive/`. Examples: superseded specification versions, retired tools, deliberation records that have outgrown context budgets.
 
 Archive content is not loaded by the engine. It is read by humans or by future sessions on explicit reference.
-
-## What this file does not say
-
-This workspace specification intentionally does not specify:
-
-- A read budget or default-read enumeration. The seventy-five-session engine accumulated a closed-enumeration default-read whose growth consumed half the agent's context window at session-open; the successor design will not repeat that arrangement. Until the successor lands, sessions read what they need and record what they read in the assessment.
-- A retrieval substrate, alias resolution, or cross-reference index. The next two sessions will design the database substrate that replaces these.
-- Cross-session counters, decision-IDs across sessions, or other structured state currently maintained in narrative form. These will move to the database substrate when the successor design provides one.
-
-These omissions are deliberate. The minimum here is what allows session 077 to run.
