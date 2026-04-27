@@ -1,10 +1,10 @@
 ---
 title: Engine Manifest
-version: 20
+version: 21
 status: active
 created: 2026-04-27
-updated-by-session: 084
-supersedes: engine-manifest v19 (engine-v19); per 084 D-2 (operator-directed Path A: substrate-only write path); v19 per 083 D-2 (coding review loop); v18 per 082 D-1 (substrate migration 002 + selvedge migrate runner); v17 per 078 D-7 + D-11
+updated-by-session: 087
+supersedes: engine-manifest v20 (engine-v20); per 087 D-1 (migration 008 widens T-06 to admit body_canonical_in_substrate flips on closed-session spec_version rows); v20 per 084 D-2 (operator-directed Path A: substrate-only write path); v19 per 083 D-2 (coding review loop); v18 per 082 D-1 (substrate migration 002 + selvedge migrate runner); v17 per 078 D-7 + D-11
 ---
 
 # Engine Manifest
@@ -12,6 +12,10 @@ supersedes: engine-manifest v19 (engine-v19); per 084 D-2 (operator-directed Pat
 This file enumerates the loadable Selvedge engine at the current commit. The engine is the file set listed below plus the substrate; loading the engine means having these files available, the substrate initialised, and the `selvedge` CLI on PATH.
 
 ## Current engine version
+
+`engine-v21` (established Session 087 — migration 008 widens T-06 to admit `body_canonical_in_substrate` flips on closed-session spec_version rows, unblocking cross-session decomposition completion).
+
+`engine-v21` ships migration 008 (`state/migrations/008-widen-t06-for-canonical-flag.sql`). The original T-06 trigger on `spec_versions` UPDATE refused all non-status mutations of closed-session rows. Decomposition completion (`body_canonical_in_substrate` 0 → 1) is a per-session activity that legitimately spans sessions: a row's creation session may register a pointer-only spec_version, and a later session may complete the substrate decomposition. The widened trigger admits flag transitions in both directions while continuing to refuse content edits (`body_path`, `body_sha256`, etc.) on closed-session rows. The migration also performs a one-time backfill, flipping the flag to 1 on the three v2 rows whose decomposition completed in session 087: `engine-manifest v20`, `prompt-application v2`, `prompt-development v2`.
 
 `engine-v20` (established Session 084 — Path A substrate-only write path per operator direction).
 
@@ -52,6 +56,10 @@ Substrate (engine-definition; not read as prose):
 | `state/migrations/002-tighten-deliberation-immutability.sql` | Closes OI-080-001 (per 082 D-1 + D-2): adds T-06 trigger pair on `deliberations` UPDATE/DELETE for closed sessions; tightens T-13 to refuse any change-in-place to a non-NULL `sealed_at`. Activated by the `selvedge migrate` runner shipped in the same session. |
 | `state/migrations/003-substrate-strict-write-path.sql` | Path A schema (per 084 D-2): adds text_atoms, decisions_v2, decision_supports, decision_effects, alternatives_v2, alternative_rejections, spec_sections, spec_clauses, spec_clause_links, assessments, assessment_agenda_items, perspective_positions, perspective_claims, review_findings, close_records, close_state_items, legacy_imports. T-17/T-18/T-19/T-20 close-gate triggers. T-15-CALIBRATED markers widen objects.object_kind and refs.relation. |
 | `state/migrations/004-text-atoms-cr-guard.sql` | T-21 trigger on text_atoms: refuses CR (\\r) in atom text (per S084 reviewer F6). |
+| `state/migrations/005-workspace-session-numbering.sql` | Per-workspace session numbering (S084). |
+| `state/migrations/006-workspace-metadata.sql` | `workspace_metadata` key/value table (S084). |
+| `state/migrations/007-workspace-invariants.sql` | Workspace-invariant slug immutability + metadata refusals (S084). |
+| `state/migrations/008-widen-t06-for-canonical-flag.sql` | Widens T-06 to admit `body_canonical_in_substrate` flips on closed-session spec_version rows; one-time backfill of the three v2 rows whose decomposition completed in S087 (per 087 D-1). |
 | `selvedge/` (Python package) | The CLI implementation. Includes the `migrate` subcommand (engine-v18+) with `--status`, `--dry-run`, `--apply`; T-15 pre-check; sha256 drift detection; 078 D-8 tier-1 rollback via `.pre-migrate-backup`. |
 | `bin/selvedge` | Shell shim. |
 | `state/selvedge.sqlite` | Per-workspace; not under VCS. Created by `selvedge init`, which now chains `selvedge migrate` so a fresh init applies all known migrations (engine-v18+). |
@@ -73,4 +81,4 @@ The engine version increments when any file in the active set above changes subs
 
 ## Engine-version history
 
-`engine-v1` through `engine-v15` ran for 75 self-development sessions and are preserved in git history. `engine-v16` (session 076) was the trim-restart that reduced the active surface to ~430 non-blank lines. `engine-v17` (session 079) applies the 078 D-7 cut, lands the SQLite substrate, and introduces the `selvedge` CLI as the only writer of structured state. `engine-v18` (session 082) adds migration 002 (closes OI-080-001 by adding T-06 trigger pair on `deliberations` UPDATE/DELETE and tightening T-13 to refuse any change-in-place to a non-NULL `sealed_at`) and ships the `selvedge migrate` runner that activates T-15 enforcement (the runner deferral was named at S079 close per `engine-feedback/inbox/EF-079-002-T15-deferred.md`). `engine-v19` (session 083) introduces the coding review loop in methodology v3 and updates both prompts to invoke it. `engine-v20` (session 084) ships Path A: substrate becomes the only writable surface for session state and specifications; markdown becomes a generated export. Migrations 003 + 004; T-17 through T-21 added; T-15 calibrated marker introduced; `bin/selvedge export` materialises provenance markdown from substrate rows; both prompts rewritten to require CLI-only writes.
+`engine-v1` through `engine-v15` ran for 75 self-development sessions and are preserved in git history. `engine-v16` (session 076) was the trim-restart that reduced the active surface to ~430 non-blank lines. `engine-v17` (session 079) applies the 078 D-7 cut, lands the SQLite substrate, and introduces the `selvedge` CLI as the only writer of structured state. `engine-v18` (session 082) adds migration 002 (closes OI-080-001 by adding T-06 trigger pair on `deliberations` UPDATE/DELETE and tightening T-13 to refuse any change-in-place to a non-NULL `sealed_at`) and ships the `selvedge migrate` runner that activates T-15 enforcement (the runner deferral was named at S079 close per `engine-feedback/inbox/EF-079-002-T15-deferred.md`). `engine-v19` (session 083) introduces the coding review loop in methodology v3 and updates both prompts to invoke it. `engine-v20` (session 084) ships Path A: substrate becomes the only writable surface for session state and specifications; markdown becomes a generated export. Migrations 003 + 004; T-17 through T-21 added; T-15 calibrated marker introduced; `bin/selvedge export` materialises provenance markdown from substrate rows; both prompts rewritten to require CLI-only writes. `engine-v21` (session 087) ships migration 008: widens T-06 to admit `body_canonical_in_substrate` flips on closed-session spec_version rows, with a one-time backfill of the three v2 rows whose decomposition completed in S087 (`engine-manifest v20`, `prompt-application v2`, `prompt-development v2`). The widened trigger continues to refuse content edits on closed-session rows; only the canonicalisation marker is now mutable across sessions.

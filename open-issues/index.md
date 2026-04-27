@@ -26,14 +26,13 @@ This file is the default-read surface entry point per `specifications/read-contr
 | [OI-081-001](OI-081-001.md) | Replace table-count budget with derived-only check? | Session 081 | Open — LOW (post-gate); blocked on 078 D-5 release gate; carries P-2-adversarial minority from S081 deliberation |
 | [OI-083-001](OI-083-001-coding-review-substrate-enforcement.md) | Substrate enforcement of the coding review loop | Session 083 | Open — MEDIUM; mechanism is operator-policed at v19; substrate gate deferred to future session |
 | [OI-083-002](OI-083-002-coding-review-severity-taxonomy.md) | Worked rubric for the coding review loop's severity taxonomy | Session 083 | Open — LOW; needs 2–3 real code-producing sessions of empirical signal first |
-| [OI-085-001](OI-085-001.md) | Re-decompose prompt-development v2 + prompt-application v2 + engine-manifest v20 into spec_clauses | Session 085 | Open — MEDIUM; body_canonical_in_substrate=0 until decomposition; F1 of S086 audit folds here |
 | [OI-085-002](OI-085-002-structural-markdown-restriction.md) | Structural restriction of markdown authoring (substrate-canonical paths) | Session 085 | Open — HIGH; harness-hook fix; F6 and F7 of S086 audit fold into precondition #2 |
 | [OI-086-001](OI-086-001-spec-clause-source-decision-not-null.md) | spec_clause source_decision_v2_id traceability is unenforced and unused | Session 086 | Open — MEDIUM; covers F2 + F3 of S086 audit; deferred under DV-S086-1 |
 | [OI-086-002](OI-086-002-single-active-spec-version-per-spec-id.md) | Single-active spec_version per spec_id is orchestrator-only, not schema-enforced | Session 086 | Open — MEDIUM; covers F4 of S086 audit; deferred under DV-S086-1 |
 | [OI-086-003](OI-086-003-cited-object-id-not-null-on-cite-required-bases.md) | cited_object_id NOT NULL on cite-requiring decision_supports / alternative_rejections bases | Session 086 | Open — MEDIUM; covers F5 of S086 audit; deferred under DV-S086-1 |
 | [OI-086-004](OI-086-004-legacy-imports-decomposition-status-semantics.md) | legacy_imports.decomposition_status does not reflect actual decomposition coverage | Session 086 | Open — MEDIUM; covers F8 of S086 audit; deferred under DV-S086-1 |
 
-Active count: **22** (OI-016 is hybrid-state: in the resolved table and carrying active triggers; kept in active list for operational reachability; OI-079-001 also hybrid — resolved-table entry below, kept active here for the OI-081-001 follow-up linkage). OI-080-001 closed at S082; moved to resolved. S085 surfaced OI-085-001 + OI-085-002; S086 surfaced OI-086-001..004 from the substrate-invariant audit.
+Active count: **21** (OI-016 is hybrid-state: in the resolved table and carrying active triggers; kept in active list for operational reachability; OI-079-001 also hybrid — resolved-table entry below, kept active here for the OI-081-001 follow-up linkage). OI-080-001 closed at S082; moved to resolved. S085 surfaced OI-085-001 + OI-085-002; S086 surfaced OI-086-001..004 from the substrate-invariant audit. OI-085-001 resolved at S087 (engine-v21 ships migration 008 + redecomposition).
 
 ## Resolved issues
 
@@ -46,6 +45,7 @@ Active count: **22** (OI-016 is hybrid-state: in the resolved table and carrying
 | [OI-017](resolved/OI-017.md) | Engine-vs-methodology reframing | 2026-04-22 | 017 |
 | [OI-079-001](OI-079-001.md) | Table-budget calibration: 17 vs 078 D-10's ≤16 | 2026-04-27 | 081 (file kept in active dir for OI-081-001 linkage) |
 | [OI-080-001](resolved/OI-080-001.md) | T-06 missing on `deliberations` UPDATE; T-13 admits sealed_at re-timing | 2026-04-27 | 082 (migration 002 + selvedge migrate runner shipped; xfails flipped) |
+| [OI-085-001](resolved/OI-085-001.md) | Re-decompose prompt-development v2 + prompt-application v2 + engine-manifest v20 into spec_clauses | 2026-04-27 | 087 (migration 008 widens T-06; three v2 rows flipped to body_canonical_in_substrate=1; engine v20→v21) |
 
 ## Conventions
 
