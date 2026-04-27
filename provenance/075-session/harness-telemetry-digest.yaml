@@ -591,4 +591,334 @@ tool_calls:
     timestamp_iso8601: 2026-04-26T11:04:17+00:00
     producer_kind: harness-measured
     authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=git add \\ engine-feedback/INDEX.md \\ records/sessions/index.md \\ records/session...; description=Stage S075 close artefacts"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:04:25+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=git -C /Users/ericmccowan/Development/complex-systems-engine commit -m \"$(cat <<...; description=Commit S075 close artefacts"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:05:39+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=git -C /Users/ericmccowan/Development/complex-systems-engine push 2>&1 | tail -1...; description=Push S075 close to remote"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:05:46+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "TaskUpdate"
+    input_summary: "status=completed; taskId=14"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:05:49+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=git -C /Users/ericmccowan/Development/complex-systems-engine log --oneline -3 | ...; description=Final state check"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:06:19+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- id: EF-075-reviewer-side-substrate-use source_workspace_id: selvedge-self-de...; file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/inbox/EF-0..."
+    status: success
+    timestamp_iso8601: 2026-04-26T11:27:12+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/INDEX.md; new_string=## Status summary - **New** (inbox, not yet triaged): 1 - **Triaged** (triage-re...; old_string=## Status summary - **New** (inbox, not yet..."
+    status: success
+    timestamp_iso8601: 2026-04-26T11:27:27+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=bash /Users/ericmccowan/Development/complex-systems-engine/tools/validate.sh 2>&...; description=Verify validator clean post-EF-075 filing"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:27:57+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=git add engine-feedback/INDEX.md engine-feedback/inbox/EF-075-reviewer-side-subs...; description=Commit and push EF-075 intake"
+    status: success
+    timestamp_iso8601: 2026-04-26T11:28:09+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- id: EF-075-reviewer-cost-not-optimization-target source_workspace_id: selved...; file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/inbox/EF-0..."
+    status: success
+    timestamp_iso8601: 2026-04-26T12:01:17+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/INDEX.md; new_string=## Status summary - **New** (inbox, not yet triaged): 2 - **Triaged** (triage-re...; old_string=## Status summary - **New** (inbox, not yet..."
+    status: success
+    timestamp_iso8601: 2026-04-26T12:01:36+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=bash /Users/ericmccowan/Development/complex-systems-engine/tools/validate.sh 2>&...; description=Validate, commit, and push EF-075-cost-reframe intake"
+    status: success
+    timestamp_iso8601: 2026-04-26T12:02:20+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- id: EF-075-integrity-by-construction-not-after-the-fact-detection source_wor...; file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/inbox/EF-0..."
+    status: success
+    timestamp_iso8601: 2026-04-26T12:11:36+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Edit"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/INDEX.md; new_string=## Status summary - **New** (inbox, not yet triaged): 3 - **Triaged** (triage-re...; old_string=## Status summary - **New** (inbox, not yet..."
+    status: success
+    timestamp_iso8601: 2026-04-26T12:11:59+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=bash /Users/ericmccowan/Development/complex-systems-engine/tools/validate.sh 2>&...; description=Validate, commit, push EF-075 integrity-by-construction intake"
+    status: success
+    timestamp_iso8601: 2026-04-26T12:12:41+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=ls /Users/ericmccowan/Development/ 2>&1 | grep -i complex; description=Find complex-system-commentary directory"
+    status: success
+    timestamp_iso8601: 2026-04-26T20:16:16+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-commentary/src/pages/models.astro"
+    status: success
+    timestamp_iso8601: 2026-04-26T20:16:19+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=ls /Users/ericmccowan/Development/complex-systems-commentary/src/pages/ 2>&1 ech...; description=Check correct paths (commentary not commentary)"
+    status: success
+    timestamp_iso8601: 2026-04-26T20:18:21+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=grep -rli \"database\\|sqlite\\|postgres\\|sql\\b\" /Users/ericmccowan/Development/com...; description=Find database-related workspace references"
+    status: success
+    timestamp_iso8601: 2026-04-26T20:18:41+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cd /Users/ericmccowan/Development/complex-systems-engine for s in 046 047 048 04...; description=Skim word counts and ceremony markers across last 30 closes"
+    status: success
+    timestamp_iso8601: 2026-04-26T22:38:46+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cd /Users/ericmccowan/Development/complex-systems-engine echo \"=== S046 sections...; description=Compare close-file section structure across the trajectory"
+    status: success
+    timestamp_iso8601: 2026-04-26T22:39:26+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cd /Users/ericmccowan/Development/complex-systems-engine for s in 030 035 040 04...; description=Check earlier closes for when template started crystallizing"
+    status: success
+    timestamp_iso8601: 2026-04-26T22:39:36+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cd /Users/ericmccowan/Development/complex-systems-engine echo \"=== When did Gree...; description=Verify Greek-letter onset, counter-proliferation, EF chronology"
+    status: success
+    timestamp_iso8601: 2026-04-26T22:40:42+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cd /Users/ericmccowan/Development/complex-systems-engine echo \"=== Earliest 'sub...; description=Find earliest mentions of substrate, MCP, indexing"
+    status: success
+    timestamp_iso8601: 2026-04-26T23:30:05+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cd /Users/ericmccowan/Development/complex-systems-engine echo \"=== S014 outsider...; description=Trace operator-surfacing of MCP/substrate/index"
+    status: success
+    timestamp_iso8601: 2026-04-26T23:30:13+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cd /Users/ericmccowan/Development/complex-systems-engine echo \"=== S014 Outsider...; description=Targeted check of S014 + S016 + S049"
+    status: success
+    timestamp_iso8601: 2026-04-26T23:30:19+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/014-oi016-resol...; limit=60; offset=1"
+    status: success
+    timestamp_iso8601: 2026-04-26T23:30:23+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cd /Users/ericmccowan/Development/complex-systems-engine grep -n \"MCP\\|substrate...; description=Find MCP/substrate mentions in S014 outsider"
+    status: success
+    timestamp_iso8601: 2026-04-26T23:30:27+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cd /Users/ericmccowan/Development/complex-systems-engine # Use awk to pull only ...; description=Pull MCP mentions cleanly from S014, plus S016 reframing"
+    status: success
+    timestamp_iso8601: 2026-04-26T23:30:37+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/inbox/EF-0...; limit=60; offset=1"
+    status: success
+    timestamp_iso8601: 2026-04-26T23:30:55+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=cd /Users/ericmccowan/Development/complex-systems-engine echo \"=== S049 design-s...; description=Find first MCP introduction and attribution"
+    status: success
+    timestamp_iso8601: 2026-04-26T23:31:10+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/applications/075-selvedge-..."
+    status: success
+    timestamp_iso8601: 2026-04-27T00:59:57+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani..."
+    status: success
+    timestamp_iso8601: 2026-04-27T00:59:58+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=ls -la /Users/ericmccowan/Development/complex-systems-engine/; description=List top-level project structure"
+    status: success
+    timestamp_iso8601: 2026-04-27T00:59:59+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/PROMPT.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:00:26+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/MODE.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:00:26+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=ls /Users/ericmccowan/Development/complex-systems-engine/specifications/ /Users/...; description=List specs, prompts, tools, and 075-restart application"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:00:29+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=ls /Users/ericmccowan/Development/complex-systems-engine/applications/ /Users/er...; description=List applications and recent provenance"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:00:29+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/engine-feedback/INDEX.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:04+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/methodology..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:06+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/multi-agent..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:07+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/validation-..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:07+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/records-con..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:08+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/retrieval-c..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:08+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/read-contra..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:08+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/prompts/development.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:08+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/prompts/application.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:08+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/reference-v..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:08+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Agent"
+    input_summary: "description=Survey active specs for essence; prompt=I am restarting the Selvedge engine in /Users/ericmccowan/Development/complex-sy...; subagent_type=Explore"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:54+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=ls /Users/ericmccowan/Development/complex-systems-engine/specifications/ | grep ...; description=List active specs (no superseded versions)"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:54+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=wc -l /Users/ericmccowan/Development/complex-systems-engine/specifications/*.md ...; description=Show file sizes of specs and prompts"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:02:54+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/prompts/development.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:04:04+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/prompts/application.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:04:05+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/methodology..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:04:05+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/identity.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:04:06+00:00
+    producer_kind: harness-measured
+    authority_level: primary
 reviewer_invocations: []

@@ -1,0 +1,108 @@
+---
+session: 076
+title: Harness-Telemetry Digest
+schema_version: SCD-3
+generated_at: 2026-04-27T01:07:11+00:00
+capture_adapter: claude-code-hook
+capture_adapter_version: v1
+capture_capabilities:
+  - tool_name
+  - tool_input_summary
+  - tool_result_status
+  - timestamp_iso8601
+unobserved_fields:
+  - wall_clock_token_count
+  - reviewer_invocation_wall_clock_seconds
+# Per §10.4-M34 P4 z-laundering-1: file-level frontmatter declares ADAPTER
+# capabilities only. Each record below carries its own producer_kind +
+# authority_level annotation; file-level header does NOT promote
+# agent-declared records to harness-measured via shape alone.
+---
+
+substrate_calls: []
+tool_calls:
+  - tool_name: "Bash"
+    input_summary: "command=mkdir -p /Users/ericmccowan/Development/complex-systems-engine/provenance/076-en...; description=Create session 076 dir, tools archive dir, specs archive dir"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:07:11+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- session: 076 title: Engine Restart Brief date: 2026-04-27 captured-by: orche...; file_path=/Users/ericmccowan/Development/complex-systems-engine/provenance/076-engine-rest..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:07:31+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- title: Methodology version: 1 status: active created: 2026-04-27 updated-by-...; file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/methodology..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:08:30+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- title: Constraints — what 75 sessions taught us version: 1 status: active cr...; file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/constraints..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:09:42+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- title: Workspace structure version: 1 status: active created: 2026-04-27 upd...; file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/workspace.m..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:10:20+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=--- title: Engine Manifest version: 16 status: active created: 2026-04-27 update...; file_path=/Users/ericmccowan/Development/complex-systems-engine/specifications/engine-mani..."
+    status: success
+    timestamp_iso8601: 2026-04-27T01:10:42+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=# Selvedge engine — dispatcher You are about to execute the **Selvedge engine** ...; file_path=/Users/ericmccowan/Development/complex-systems-engine/PROMPT.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:10:55+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=# Self-development application You are running the Selvedge engine on its own de...; file_path=/Users/ericmccowan/Development/complex-systems-engine/prompts/development.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:11:19+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=# External-problem application You are running the Selvedge engine against a non...; file_path=/Users/ericmccowan/Development/complex-systems-engine/prompts/application.md"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:11:43+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Read"
+    input_summary: "file_path=/Users/ericmccowan/Development/complex-systems-engine/tools/validate.sh; limit=30"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:12:01+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=mkdir -p archive/pre-restart/specifications archive/pre-restart/tools archive/pr...; description=Archive identity and methodology-kernel files"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:12:04+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Write"
+    input_summary: "content=#!/usr/bin/env bash # Selvedge minimal structural validator. # # Reports presenc...; file_path=/Users/ericmccowan/Development/complex-systems-engine/tools/validate.sh"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:12:20+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=git mv specifications/multi-agent-deliberation.md archive/pre-restart/specificat...; description=Archive multi-agent-deliberation and validation-approach files"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:12:22+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+  - tool_name: "Bash"
+    input_summary: "command=git mv specifications/workspace-structure.md archive/pre-restart/specifications/...; description=Archive workspace-structure, contracts, reference-validation, aliases"
+    status: success
+    timestamp_iso8601: 2026-04-27T01:12:26+00:00
+    producer_kind: harness-measured
+    authority_level: primary
+reviewer_invocations: []
