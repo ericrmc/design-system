@@ -1,10 +1,10 @@
 ---
 title: Engine Manifest
-version: 17
+version: 18
 status: active
 created: 2026-04-27
-updated-by-session: 081
-supersedes: engine-manifest v16 (engine-v16); per 078 D-7 + D-11; minor enumeration correction per 081 D-1
+updated-by-session: 082
+supersedes: engine-manifest v17 (engine-v17); per 082 D-1 (substrate migration 002 + selvedge migrate runner); minor enumeration correction at v17 per 081 D-1; v17 itself per 078 D-7 + D-11
 ---
 
 # Engine Manifest
@@ -13,11 +13,11 @@ This file enumerates the loadable Selvedge engine at the current commit. The eng
 
 ## Current engine version
 
-`engine-v17` (established Session 079 — the substrate vertical-slice landing).
+`engine-v18` (established Session 082 — `selvedge migrate` runner shipped + migration 002 closes OI-080-001 structurally).
 
-`engine-v17` is the first engine version with a database-backed substrate (`state/selvedge.sqlite`, `state/migrations/001-initial.sql`, the `selvedge` CLI). The engine-v16 → engine-v17 transition applies the 078 D-7 cut to the active spec surface and adds the substrate; per 078 D-12, engine-v17 is smaller than engine-v16 by active-spec line count and adds enforcement (not ceremony) at the substrate layer.
+`engine-v18` ships the migration-runner code path deferred at engine-v17 per `engine-feedback/inbox/EF-079-002-T15-deferred.md`. T-15 (no `DROP TABLE` / `DROP COLUMN` / `ALTER ... DROP` in migrations) is now active enforcement against any migration applied via `selvedge migrate --dry-run` and `--apply`. Migration 002 (`state/migrations/002-tighten-deliberation-immutability.sql`) closes OI-080-001 by adding the missing T-06 trigger pair on `deliberations` UPDATE/DELETE and tightening T-13 from `NEW.sealed_at IS NULL` to `NEW.sealed_at IS NOT OLD.sealed_at` (refuses any change-in-place to a non-NULL `sealed_at`). Per §Versioning, a substrate migration triggers an engine-version bump.
 
-`engine-v17` is **provisional** per 078 D-5: no methodology-expanding self-development sessions modify engine-v17 active spec content between 079 and the close of the first external-problem trial of 30 sessions. Bug-fix and validator-tightening sessions are admitted; new active-spec content is not.
+`engine-v18` remains **provisional** per 078 D-5: no methodology-expanding self-development sessions modify active spec content between 079 and the close of the first external-problem trial of 30 sessions. Bug-fix and validator-tightening sessions are admitted (S082 is one); new active-spec content is not.
 
 ## Engine-definition file set
 
@@ -39,9 +39,10 @@ Substrate (engine-definition; not read as prose):
 | Path | Role |
 |------|------|
 | `state/migrations/001-initial.sql` | Schema for sessions, objects, decisions, decision_alternatives, spec_versions, perspectives, deliberations, synthesis_points, refs, commitments, engine_feedback, work_items, role_write_capabilities, read_log, subtraction_log, schema_migrations, agent_runs (17 tables; 16 per 078 D-10 + synthesis_points calibrated breach per 081 D-1 with cause: T-14 enforcement has no other structural home; `objects` is the citable_alias indirection table powering T-01). Encodes refusals T-01..T-16 (per 078 D-3). |
-| `selvedge/` (Python package) | The CLI implementation. |
+| `state/migrations/002-tighten-deliberation-immutability.sql` | Closes OI-080-001 (per 082 D-1 + D-2): adds T-06 trigger pair on `deliberations` UPDATE/DELETE for closed sessions; tightens T-13 to refuse any change-in-place to a non-NULL `sealed_at`. Activated by the `selvedge migrate` runner shipped in the same session. |
+| `selvedge/` (Python package) | The CLI implementation. Includes the `migrate` subcommand (engine-v18+) with `--status`, `--dry-run`, `--apply`; T-15 pre-check; sha256 drift detection; 078 D-8 tier-1 rollback via `.pre-migrate-backup`. |
 | `bin/selvedge` | Shell shim. |
-| `state/selvedge.sqlite` | Per-workspace; not under VCS. Created by `selvedge init`. |
+| `state/selvedge.sqlite` | Per-workspace; not under VCS. Created by `selvedge init`, which now chains `selvedge migrate` so a fresh init applies all known migrations (engine-v18+). |
 
 ## What is not part of the engine
 
@@ -56,8 +57,8 @@ Substrate (engine-definition; not read as prose):
 
 ## Versioning
 
-The engine version increments when any file in the active set above changes substantively, including a substrate migration. Typo corrections and formatting do not bump. Engine-version increments are recorded in the session's `02-decisions.md`. Per 078 D-5 release gate, engine-v17 → engine-v18 is not anticipated until after the first external-problem trial completes.
+The engine version increments when any file in the active set above changes substantively, including a substrate migration. Typo corrections and formatting do not bump. Engine-version increments are recorded in the session's `02-decisions.md`. The 078 D-5 release gate constrains *what kind* of change can ship; it does not exempt qualifying changes from the bump rule. Bug-fix and validator-tightening sessions admitted under the gate (which add migrations like 002) bump the engine version normally.
 
 ## Engine-version history
 
-`engine-v1` through `engine-v15` ran for 75 self-development sessions and are preserved in git history. `engine-v16` (session 076) was the trim-restart that reduced the active surface to ~430 non-blank lines. `engine-v17` (session 079) applies the 078 D-7 cut, lands the SQLite substrate, and introduces the `selvedge` CLI as the only writer of structured state.
+`engine-v1` through `engine-v15` ran for 75 self-development sessions and are preserved in git history. `engine-v16` (session 076) was the trim-restart that reduced the active surface to ~430 non-blank lines. `engine-v17` (session 079) applies the 078 D-7 cut, lands the SQLite substrate, and introduces the `selvedge` CLI as the only writer of structured state. `engine-v18` (session 082) adds migration 002 (closes OI-080-001 by adding T-06 trigger pair on `deliberations` UPDATE/DELETE and tightening T-13 to refuse any change-in-place to a non-NULL `sealed_at`) and ships the `selvedge migrate` runner that activates T-15 enforcement (the runner deferral was named at S079 close per `engine-feedback/inbox/EF-079-002-T15-deferred.md`).

@@ -25,6 +25,11 @@ PRIMARY_DB = WORKSPACE / "state" / "selvedge.sqlite"
 BACKUP_DB = WORKSPACE / "state" / "selvedge.sqlite.pytest-backup"
 BIN = WORKSPACE / "bin" / "selvedge"
 
+# Make the in-tree `selvedge` package importable so unit tests can call helpers
+# (e.g., the T-15 parser) directly without going through the CLI subprocess.
+if str(WORKSPACE) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE))
+
 
 @pytest.fixture(scope="session", autouse=True)
 def _snapshot_primary():
@@ -76,6 +81,13 @@ def clean_substrate():
             sidecar.unlink()
     init = _run_cli(["init", "--force"])
     assert init["rc"] == 0, init
+    # `selvedge init` chains the migrate runner since engine-v18 (S082); this
+    # call is a defence-in-depth no-op that proves the substrate is fully
+    # migrated before any test row is written. If a future migration regresses
+    # init's auto-apply, this surfaces it at fixture-time rather than via a
+    # mid-test trigger absence.
+    migrate = _run_cli(["migrate", "--apply"])
+    assert migrate["rc"] == 0, migrate
     open_res = _run_cli(
         [
             "submit",

@@ -378,12 +378,11 @@ def test_t14_minority_with_one_source_admitted(open_deliberation, selvedge_cli, 
     assert row["kind"] == "minority"
 
 
-def test_t06_deliberations_update_unprotected_xfail(open_deliberation, selvedge_cli):
-    """Documents the OI-080-001 hole: T-06 has no trigger on deliberations UPDATE.
-    A closed-session deliberation's `topic` and `synthesis_md` can be mutated by
-    any direct-SQL writer. Marked xfail so the suite turns green when a future
-    session ships migration 002 to add the missing trigger; failing will signal
-    the issue is closed and this test should be flipped/removed."""
+def test_t06_closed_deliberation_topic_immutable(open_deliberation, selvedge_cli):
+    """Migration 002 (S082) added T-06 triggers on `deliberations` UPDATE/DELETE.
+    A closed-session deliberation's `topic` and `synthesis_md` are now refused
+    by direct SQL writers. This test was the strict xfail pinning OI-080-001
+    pre-S082; it flips to a pass post-migration 002 and OI-080-001 closes."""
     did = open_deliberation
     selvedge_cli(
         [
@@ -414,7 +413,7 @@ def test_t06_deliberations_update_unprotected_xfail(open_deliberation, selvedge_
             "submit",
             "session-close",
             "--payload",
-            json.dumps({"session_no": 1, "engine_version_at_close": "engine-v17"}),
+            json.dumps({"session_no": 1, "engine_version_at_close": "engine-v18"}),
         ]
     )
     conn = sqlite3.connect(str(PRIMARY_DB))
@@ -426,18 +425,11 @@ def test_t06_deliberations_update_unprotected_xfail(open_deliberation, selvedge_
         conn.close()
 
 
-# Mark the xfail at registration time so it shows up in -rx output.
-test_t06_deliberations_update_unprotected_xfail = pytest.mark.xfail(
-    reason="OI-080-001: T-06 missing trigger on deliberations UPDATE; awaits selvedge migrate runner.",
-    strict=True,
-)(test_t06_deliberations_update_unprotected_xfail)
-
-
-def test_t13_permits_resealing_to_other_timestamp_xfail(open_deliberation, selvedge_cli):
-    """Documents the OI-080-001 secondary hole: T-13 only refuses non-NULL→NULL
-    on sealed_at. A direct UPDATE that sets sealed_at to a different non-NULL
-    timestamp is admitted. Marked xfail; closes when migration 002 tightens
-    the trigger to refuse any change-in-place."""
+def test_t13_refuses_resealing_to_other_timestamp(open_deliberation, selvedge_cli):
+    """Migration 002 (S082) tightened T-13 from `NEW.sealed_at IS NULL` to
+    `NEW.sealed_at IS NOT OLD.sealed_at`. Any change to a non-NULL sealed_at
+    is now refused, including a re-seal at a different timestamp. This test
+    was the second strict xfail pinning OI-080-001 pre-S082."""
     did = open_deliberation
     selvedge_cli(
         [
@@ -465,12 +457,6 @@ def test_t13_permits_resealing_to_other_timestamp_xfail(open_deliberation, selve
         assert "E_REFUSAL_T13" in str(exc.value)
     finally:
         conn.close()
-
-
-test_t13_permits_resealing_to_other_timestamp_xfail = pytest.mark.xfail(
-    reason="OI-080-001 (b): T-13 admits non-NULL→other-non-NULL changes to sealed_at.",
-    strict=True,
-)(test_t13_permits_resealing_to_other_timestamp_xfail)
 
 
 def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cli):

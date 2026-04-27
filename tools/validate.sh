@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Selvedge structural validator (engine-v17, session 079).
+# Selvedge structural validator (engine-v18, session 082).
 #
 # File-presence check on the active engine-definition set, then delegate substrate
 # integrity to `selvedge validate --precommit`. Intended to gate git-commit.
@@ -18,7 +18,7 @@ fail()  { echo "  fail  $1"; FAIL=$((FAIL+1)); }
 
 require() { [ -e "$1" ] && ok "$1" || fail "$1 (required)"; }
 
-echo "== Selvedge validator (engine-v17) =="
+echo "== Selvedge validator (engine-v18) =="
 
 echo
 echo "Active engine-definition files:"
@@ -31,6 +31,7 @@ require "specifications/workspace.md"
 require "specifications/engine-manifest.md"
 require "tools/validate.sh"
 require "state/migrations/001-initial.sql"
+require "state/migrations/002-tighten-deliberation-immutability.sql"
 require "selvedge/cli.py"
 require "bin/selvedge"
 

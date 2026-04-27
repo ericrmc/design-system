@@ -1,9 +1,14 @@
 """Selvedge CLI — single-writer SQLite substrate.
 
-Implements the engine-v17 substrate per 078 D-1, D-3, D-9.
+Implements the engine-v18 substrate per 078 D-1, D-3, D-8, D-9.
 
 Subcommands:
-  init                 Apply migration 001 to a fresh substrate.
+  init                 Initialise a fresh substrate. Applies migration 001 + any
+                       additive migrations beyond it (002, …) via the migrate runner.
+  migrate              Apply pending migrations against an existing substrate.
+                       --status   list applied + pending
+                       --dry-run  parse + T-15 check, no writes
+                       --apply    apply each pending in lex order, in-transaction
   id-allocate          Allocate an object_id in-transaction (typed).
   submit               Write a row to the substrate; refuses on T-01..T-16.
                        Kinds: session-open, session-close, decision, spec-version,
@@ -17,6 +22,9 @@ Single-writer: every write opens its own connection, BEGIN IMMEDIATE, short tx.
 Structured errors:
   E_WRITE_BUSY     SQLite lock contention; retry per --retry-budget.
   E_REFUSAL_T<NN>  Substrate refusal (raised by trigger or application-layer parse).
+  E_REFUSAL_T15    Migration contains DROP TABLE / DROP COLUMN / ALTER ... DROP.
+  E_MIGRATION_DRIFT  Migration file sha256 differs from the row in schema_migrations.
+  E_MIGRATION_FAILED Migration apply errored; substrate restored from .pre-migrate-backup.
   E_STALE_SCHEMA   submit's schema_version doesn't match current migration.
   E_SCHEMA_MIGRATING  in-flight migration; queue the write.
   E_NOT_FOUND      referenced object_id / alias does not resolve.
@@ -32,6 +40,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import sqlite3
 import sys
 import time
@@ -78,10 +87,14 @@ def workspace_root() -> Path:
 
 
 def db_path() -> Path:
+    if override := os.environ.get("SELVEDGE_DB_PATH"):
+        return Path(override).resolve()
     return workspace_root() / "state" / "selvedge.sqlite"
 
 
 def migrations_dir() -> Path:
+    if override := os.environ.get("SELVEDGE_MIGRATIONS_DIR"):
+        return Path(override).resolve()
     return workspace_root() / "state" / "migrations"
 
 
@@ -176,6 +189,9 @@ def cmd_init(args) -> int:
         return 2
     if path.exists():
         path.unlink()
+    for sidecar in [path.with_suffix(".sqlite-wal"), path.with_suffix(".sqlite-shm")]:
+        if sidecar.exists():
+            sidecar.unlink()
     migration = migrations_dir() / "001-initial.sql"
     if not migration.exists():
         print(f"missing migration: {migration}", file=sys.stderr)
@@ -196,6 +212,219 @@ def cmd_init(args) -> int:
         conn.close()
     print(f"initialised {path}")
     print(f"migration: 001-initial.sql sha256={sha}")
+
+    # Apply any additive migrations beyond 001 (engine-v18+: 002, …).
+    pending = _migration_state(path)["pending"]
+    if pending:
+        applied_now = _apply_pending(path, pending)
+        for name, sha_applied in applied_now:
+            print(f"migration: {name} sha256={sha_applied}")
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# migrate (079 EF-079-002 / 078 D-3 T-15 / 078 D-8 tier-1 rollback)
+# ---------------------------------------------------------------------------
+
+# T-15 forbids destructive DDL in migrations. ADD-only schema discipline; trigger,
+# index, and view drops are admitted (they re-shape enforcement, not data).
+T15_FORBIDDEN_PATTERNS = [
+    (re.compile(r"\bDROP\s+TABLE\b", re.IGNORECASE), "DROP TABLE"),
+    (re.compile(r"\bDROP\s+COLUMN\b", re.IGNORECASE), "DROP COLUMN"),
+    (re.compile(r"\bALTER\s+TABLE\b[^;]*\bDROP\b", re.IGNORECASE | re.DOTALL), "ALTER TABLE … DROP"),
+]
+
+# Strip SQL comments so DDL keywords inside comments don't trip T-15.
+_LINE_COMMENT_RE = re.compile(r"--[^\n]*")
+_BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
+
+
+def _strip_sql_comments(sql: str) -> str:
+    return _BLOCK_COMMENT_RE.sub(" ", _LINE_COMMENT_RE.sub(" ", sql))
+
+
+def _t15_violations(sql: str) -> list[str]:
+    cleaned = _strip_sql_comments(sql)
+    found: list[str] = []
+    for pat, label in T15_FORBIDDEN_PATTERNS:
+        if pat.search(cleaned):
+            found.append(label)
+    return found
+
+
+_PLACEHOLDER_SHA = "COMPUTED-AT-APPLY-TIME"
+
+
+def _migration_state(path: Path) -> dict:
+    """Inspect the substrate's schema_migrations against files on disk.
+
+    Returns a dict with:
+      applied:  list of {name, sha256_recorded} from schema_migrations
+      pending:  list of {name, path, sha256_file, sql} for files not yet applied
+      drift:    list of {name, sha256_recorded, sha256_file} for mismatches
+    """
+    if not path.exists():
+        raise SelvedgeError("E_NO_SUBSTRATE", f"no substrate at {path}; run `selvedge init` first")
+    conn = sqlite3.connect(str(path))
+    conn.row_factory = sqlite3.Row
+    try:
+        applied_rows = conn.execute("SELECT name, sha256 FROM schema_migrations ORDER BY migration_id").fetchall()
+    finally:
+        conn.close()
+    applied_by_name = {r["name"]: r["sha256"] for r in applied_rows}
+    files = sorted(migrations_dir().glob("*.sql"))
+    applied: list[dict] = [{"name": r["name"], "sha256_recorded": r["sha256"]} for r in applied_rows]
+    pending: list[dict] = []
+    drift: list[dict] = []
+    for f in files:
+        sql = f.read_text()
+        sha = hashlib.sha256(sql.encode()).hexdigest()
+        recorded = applied_by_name.get(f.name)
+        if recorded is None:
+            pending.append({"name": f.name, "path": f, "sha256_file": sha, "sql": sql})
+            continue
+        if recorded == _PLACEHOLDER_SHA or recorded == sha:
+            continue
+        drift.append({"name": f.name, "sha256_recorded": recorded, "sha256_file": sha})
+    return {"applied": applied, "pending": pending, "drift": drift}
+
+
+def _apply_pending(path: Path, pending: list[dict]) -> list[tuple[str, str]]:
+    """Apply each pending migration in order. Returns list of (name, sha256).
+
+    Raises SelvedgeError on T-15 violation or apply failure. On apply failure,
+    restores the substrate from a pre-migrate backup (078 D-8 tier-1 rollback)
+    and re-raises with E_MIGRATION_FAILED.
+    """
+    if not pending:
+        return []
+    backup = path.with_suffix(".sqlite.pre-migrate-backup")
+    if backup.exists():
+        backup.unlink()
+    shutil.copy(path, backup)
+
+    applied: list[tuple[str, str]] = []
+    for m in pending:
+        name = m["name"]
+        sql = m["sql"]
+        sha = m["sha256_file"]
+        violations = _t15_violations(sql)
+        if violations:
+            raise SelvedgeError(
+                "E_REFUSAL_T15",
+                f"{name}: contains forbidden DDL ({', '.join(violations)})",
+            )
+        conn = sqlite3.connect(str(path))
+        try:
+            try:
+                conn.executescript(sql)
+                conn.execute(
+                    "UPDATE schema_migrations SET sha256 = ? WHERE name = ?",
+                    (sha, name),
+                )
+                conn.commit()
+            except Exception as e:
+                # Pre-close failure: restore from backup (D-8 tier 1).
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+                # Drop WAL/SHM sidecars before restoring the file.
+                for sidecar in [path.with_suffix(".sqlite-wal"), path.with_suffix(".sqlite-shm")]:
+                    if sidecar.exists():
+                        sidecar.unlink()
+                shutil.copy(backup, path)
+                raise SelvedgeError("E_MIGRATION_FAILED", f"{name}: {e}; substrate restored from backup") from e
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
+        applied.append((name, sha))
+    return applied
+
+
+def cmd_migrate(args) -> int:
+    path = db_path()
+    if not path.exists():
+        print(f"no substrate at {path}; run `selvedge init` first", file=sys.stderr)
+        return 2
+    try:
+        state = _migration_state(path)
+    except SelvedgeError as e:
+        print(json.dumps({"ok": False, "code": e.code, "detail": e.detail}), file=sys.stderr)
+        return 3
+
+    if state["drift"]:
+        print(
+            json.dumps(
+                {
+                    "ok": False,
+                    "code": "E_MIGRATION_DRIFT",
+                    "detail": "migration file sha256 differs from schema_migrations row(s)",
+                    "drift": state["drift"],
+                }
+            ),
+            file=sys.stderr,
+        )
+        return 3
+
+    if args.status:
+        print(
+            json.dumps(
+                {
+                    "ok": True,
+                    "applied": state["applied"],
+                    "pending": [{"name": m["name"], "sha256": m["sha256_file"]} for m in state["pending"]],
+                },
+                indent=2,
+            )
+        )
+        return 0
+
+    # Both --dry-run and --apply check T-15 first.
+    parse_errors: list[dict] = []
+    for m in state["pending"]:
+        violations = _t15_violations(m["sql"])
+        if violations:
+            parse_errors.append({"name": m["name"], "violations": violations})
+    if parse_errors:
+        print(
+            json.dumps(
+                {"ok": False, "code": "E_REFUSAL_T15", "errors": parse_errors},
+                indent=2,
+            ),
+            file=sys.stderr,
+        )
+        return 3
+
+    if args.dry_run:
+        print(
+            json.dumps(
+                {
+                    "ok": True,
+                    "dry_run": True,
+                    "would_apply": [
+                        {"name": m["name"], "sha256": m["sha256_file"]} for m in state["pending"]
+                    ],
+                },
+                indent=2,
+            )
+        )
+        return 0
+
+    # apply
+    try:
+        applied_now = _apply_pending(path, state["pending"])
+    except SelvedgeError as e:
+        print(json.dumps({"ok": False, "code": e.code, "detail": e.detail}), file=sys.stderr)
+        return 3
+    print(
+        json.dumps(
+            {"ok": True, "applied": [{"name": n, "sha256": s} for n, s in applied_now]},
+            indent=2,
+        )
+    )
     return 0
 
 
@@ -803,9 +1032,16 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(prog="selvedge", description="Selvedge substrate CLI (engine-v17)")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    p_init = sub.add_parser("init", help="Apply migration 001 to a fresh substrate.")
+    p_init = sub.add_parser("init", help="Initialise a fresh substrate (apply 001 + any later migrations).")
     p_init.add_argument("--force", action="store_true", help="Overwrite existing substrate.")
     p_init.set_defaults(fn=cmd_init)
+
+    p_mig = sub.add_parser("migrate", help="Apply pending migrations against an existing substrate.")
+    mode = p_mig.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--status", action="store_true", help="List applied + pending migrations.")
+    mode.add_argument("--dry-run", action="store_true", help="Parse migrations + T-15 check, no writes.")
+    mode.add_argument("--apply", dest="apply_", action="store_true", help="Apply pending migrations in lex order.")
+    p_mig.set_defaults(fn=cmd_migrate)
 
     p_idalloc = sub.add_parser("id-allocate", help="Allocate an objects row.")
     p_idalloc.add_argument("--kind", required=True)
