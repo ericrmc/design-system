@@ -1296,6 +1296,120 @@ def _submit_spec_clause(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     return {"spec_clause_id": scid, "object_id": oid2}
 
 
+def _resolve_issue_alias(conn: sqlite3.Connection, alias: str) -> int:
+    row = conn.execute(
+        "SELECT issue_id FROM issues WHERE citable_alias=?", (alias,)
+    ).fetchone()
+    if row is None:
+        raise SelvedgeError("E_NOT_FOUND", f"issue alias [{alias}] not registered")
+    return row["issue_id"]
+
+
+def _submit_issue(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "issues", "insert")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    surfaced_id = _atom_session_id(conn, p.get("surfaced_session_no"), require_open=False) \
+        if p.get("surfaced_session_no") is not None else sess_id
+    if p.get("status") not in (None, "open"):
+        raise SelvedgeError(
+            "E_VALIDATION",
+            "issue must be created with status='open'; transitions to other statuses go through submit issue-disposition",
+        )
+    title_aid = _insert_atom(conn, role, sess_id, "title", p["title"])
+    summary_aid = None
+    if p.get("summary"):
+        summary_aid = _insert_atom(conn, role, sess_id, "claim", p["summary"])
+    body_aid = None
+    if p.get("body"):
+        body_aid = _insert_atom(conn, role, sess_id, "legacy_import", p["body"])
+    cur = conn.execute(
+        "INSERT INTO issues (citable_alias, surfaced_session_id, title_atom_id, summary_atom_id, body_atom_id, priority, status) "
+        "VALUES (?,?,?,?,?,?, 'open')",
+        (
+            p["citable_alias"],
+            surfaced_id,
+            title_aid,
+            summary_aid,
+            body_aid,
+            p["priority"],
+        ),
+    )
+    iid = cur.lastrowid
+    return {"issue_id": iid, "citable_alias": p["citable_alias"]}
+
+
+def _submit_issue_disposition(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "issue_dispositions", "insert")
+    _check_role_capability(conn, role, "issues", "update")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    if "issue_id" in p:
+        iid = int(p["issue_id"])
+    else:
+        iid = _resolve_issue_alias(conn, p["citable_alias"])
+    cur_row = conn.execute(
+        "SELECT status FROM issues WHERE issue_id=?", (iid,)
+    ).fetchone()
+    if cur_row is None:
+        raise SelvedgeError("E_NOT_FOUND", f"issue_id={iid}")
+    from_status = cur_row["status"]
+    to_status = p["to_status"]
+    if from_status == to_status:
+        raise SelvedgeError("E_VALIDATION", f"to_status equals from_status ({from_status}); no-op refused")
+    reason_aid = _insert_atom(conn, role, sess_id, "rejection_reason", p["reason"])
+    next_seq = conn.execute(
+        "SELECT COALESCE(MAX(seq),0)+1 AS n FROM issue_dispositions WHERE issue_id=?", (iid,)
+    ).fetchone()["n"]
+    cur = conn.execute(
+        "INSERT INTO issue_dispositions (issue_id, seq, from_status, to_status, reason_atom_id, session_id) "
+        "VALUES (?,?,?,?,?,?)",
+        (iid, next_seq, from_status, to_status, reason_aid, sess_id),
+    )
+    did = cur.lastrowid
+    if to_status in ("resolved", "superseded"):
+        conn.execute(
+            "UPDATE issues SET status=?, resolved_session_id=?, resolved_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') "
+            "WHERE issue_id=?",
+            (to_status, sess_id, iid),
+        )
+    else:
+        conn.execute(
+            "UPDATE issues SET status=?, resolved_session_id=NULL, resolved_at=NULL WHERE issue_id=?",
+            (to_status, iid),
+        )
+    return {"disposition_id": did, "issue_id": iid, "from_status": from_status, "to_status": to_status}
+
+
+def _submit_issue_link(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "issue_links", "insert")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    src = int(p["source_issue_id"]) if "source_issue_id" in p else _resolve_issue_alias(conn, p["source_alias"])
+    tgt = int(p["target_issue_id"]) if "target_issue_id" in p else _resolve_issue_alias(conn, p["target_alias"])
+    reason_aid = None
+    if p.get("reason"):
+        reason_aid = _insert_atom(conn, role, sess_id, "rejection_reason", p["reason"])
+    cur = conn.execute(
+        "INSERT INTO issue_links (source_issue_id, target_issue_id, relation, reason_atom_id, session_id) "
+        "VALUES (?,?,?,?,?)",
+        (src, tgt, p["relation"], reason_aid, sess_id),
+    )
+    return {"link_id": cur.lastrowid, "source_issue_id": src, "target_issue_id": tgt, "relation": p["relation"]}
+
+
+def _submit_issue_note(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "issue_notes", "insert")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    iid = int(p["issue_id"]) if "issue_id" in p else _resolve_issue_alias(conn, p["citable_alias"])
+    note_aid = _insert_atom(conn, role, sess_id, "claim", p["note"])
+    next_seq = conn.execute(
+        "SELECT COALESCE(MAX(seq),0)+1 AS n FROM issue_notes WHERE issue_id=?", (iid,)
+    ).fetchone()["n"]
+    cur = conn.execute(
+        "INSERT INTO issue_notes (issue_id, seq, note_atom_id, session_id) VALUES (?,?,?,?)",
+        (iid, next_seq, note_aid, sess_id),
+    )
+    return {"note_id": cur.lastrowid, "issue_id": iid, "seq": next_seq}
+
+
 SUBMIT_HANDLERS = {
     "session-open": _submit_session_open,
     "session-close": _submit_session_close,
@@ -1316,6 +1430,11 @@ SUBMIT_HANDLERS = {
     "legacy-import": _submit_legacy_import,
     "spec-section": _submit_spec_section,
     "spec-clause": _submit_spec_clause,
+    # Issues (engine-v22+):
+    "issue": _submit_issue,
+    "issue-disposition": _submit_issue_disposition,
+    "issue-link": _submit_issue_link,
+    "issue-note": _submit_issue_note,
 }
 
 
