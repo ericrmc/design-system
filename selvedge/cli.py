@@ -6,6 +6,8 @@ Subcommands:
   init                 Apply migration 001 to a fresh substrate.
   id-allocate          Allocate an object_id in-transaction (typed).
   submit               Write a row to the substrate; refuses on T-01..T-16.
+                       Kinds: session-open, session-close, decision, spec-version,
+                       deliberation-open, perspective, deliberation-seal, synthesis-point.
   validate --precommit Run substrate integrity checks + spec hashes + ref resolution.
   subtract-eligibility Deterministic eligibility report for the human reviewer-subtractor.
   recover              Reset expired work_item leases to 'queued'.
@@ -387,6 +389,126 @@ def _submit_decision(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     return {"decision_id": did, "object_id": oid, "alias": alias, "decision_no": next_no, "refs": n_refs}
 
 
+def _session_open_or_die(conn: sqlite3.Connection, session_no: int) -> sqlite3.Row:
+    sess = conn.execute(
+        "SELECT session_id, status FROM sessions WHERE session_no=?",
+        (session_no,),
+    ).fetchone()
+    if sess is None:
+        raise SelvedgeError("E_NOT_FOUND", f"session_no={session_no}")
+    if sess["status"] != "open":
+        raise SelvedgeError("E_REFUSAL_T06", f"session {session_no} is {sess['status']}; deliberation work requires an open session")
+    return sess
+
+
+def _submit_deliberation_open(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "deliberations", "insert")
+    sess = _session_open_or_die(conn, p["session_no"])
+    cur = conn.execute(
+        "INSERT INTO deliberations (session_id, topic, sealed_at, synthesis_md) VALUES (?,?,NULL,NULL)",
+        (sess["session_id"], p["topic"]),
+    )
+    did = cur.lastrowid
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('deliberation', ?, NULL)",
+        (did,),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE deliberations SET object_id=? WHERE deliberation_id=?", (oid, did))
+    return {"deliberation_id": did, "object_id": oid, "session_id": sess["session_id"]}
+
+
+def _submit_perspective(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "perspectives", "insert")
+    delib = conn.execute(
+        "SELECT d.deliberation_id, d.session_id, d.sealed_at, s.status "
+        "FROM deliberations d JOIN sessions s ON s.session_id = d.session_id "
+        "WHERE d.deliberation_id=?",
+        (p["deliberation_id"],),
+    ).fetchone()
+    if delib is None:
+        raise SelvedgeError("E_NOT_FOUND", f"deliberation_id={p['deliberation_id']}")
+    if delib["status"] != "open":
+        raise SelvedgeError("E_REFUSAL_T06", f"deliberation belongs to a {delib['status']} session")
+    # T-05 will fire at INSERT-time if sealed; we let the trigger raise rather than pre-checking.
+    cur = conn.execute(
+        "INSERT INTO perspectives (deliberation_id, label, family, body_md) VALUES (?,?,?,?)",
+        (p["deliberation_id"], p["label"], p["family"], p["body_md"]),
+    )
+    pid = cur.lastrowid
+    alias = f"P-{p['deliberation_id']}-{p['label']}"
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('perspective', ?, ?)",
+        (pid, alias),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE perspectives SET object_id=? WHERE perspective_id=?", (oid, pid))
+    _check_role_capability(conn, role, "refs", "insert")
+    n_refs = _record_refs(conn, source_object_id=oid, body_md=p["body_md"], extra_refs=p.get("refs", []) or [])
+    return {"perspective_id": pid, "object_id": oid, "alias": alias, "refs": n_refs}
+
+
+def _submit_deliberation_seal(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "deliberations", "update")
+    delib = conn.execute(
+        "SELECT d.deliberation_id, d.sealed_at, s.status "
+        "FROM deliberations d JOIN sessions s ON s.session_id = d.session_id "
+        "WHERE d.deliberation_id=?",
+        (p["deliberation_id"],),
+    ).fetchone()
+    if delib is None:
+        raise SelvedgeError("E_NOT_FOUND", f"deliberation_id={p['deliberation_id']}")
+    if delib["status"] != "open":
+        raise SelvedgeError("E_REFUSAL_T06", f"deliberation belongs to a {delib['status']} session")
+    if delib["sealed_at"] is not None:
+        raise SelvedgeError("E_ALREADY_SEALED", f"deliberation {p['deliberation_id']} already sealed at {delib['sealed_at']}")
+    conn.execute(
+        "UPDATE deliberations SET sealed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now'), synthesis_md=? "
+        "WHERE deliberation_id=?",
+        (p.get("synthesis_md"), p["deliberation_id"]),
+    )
+    sealed = conn.execute(
+        "SELECT sealed_at FROM deliberations WHERE deliberation_id=?",
+        (p["deliberation_id"],),
+    ).fetchone()
+    return {"deliberation_id": p["deliberation_id"], "sealed_at": sealed["sealed_at"]}
+
+
+def _submit_synthesis_point(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "synthesis_points", "insert")
+    delib = conn.execute(
+        "SELECT d.deliberation_id, d.sealed_at, s.status "
+        "FROM deliberations d JOIN sessions s ON s.session_id = d.session_id "
+        "WHERE d.deliberation_id=?",
+        (p["deliberation_id"],),
+    ).fetchone()
+    if delib is None:
+        raise SelvedgeError("E_NOT_FOUND", f"deliberation_id={p['deliberation_id']}")
+    if delib["status"] != "open":
+        raise SelvedgeError("E_REFUSAL_T06", f"deliberation belongs to a {delib['status']} session")
+    if delib["sealed_at"] is None:
+        raise SelvedgeError("E_NOT_SEALED", f"synthesis points require a sealed deliberation; {p['deliberation_id']} is open")
+    sources = p.get("source_perspectives") or []
+    sources_json = json.dumps([int(x) for x in sources])
+    cur = conn.execute(
+        "INSERT INTO synthesis_points (deliberation_id, kind, label, summary, source_perspectives, body_md) "
+        "VALUES (?,?,?,?,?,?)",
+        (p["deliberation_id"], p["kind"], p["label"], p["summary"], sources_json, p.get("body_md")),
+    )
+    spid = cur.lastrowid
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('synthesis_point', ?, NULL)",
+        (spid,),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE synthesis_points SET object_id=? WHERE synthesis_point_id=?", (oid, spid))
+    n_refs = 0
+    if p.get("body_md"):
+        _check_role_capability(conn, role, "refs", "insert")
+        n_refs = _record_refs(conn, source_object_id=oid, body_md=p["body_md"])
+    return {"synthesis_point_id": spid, "object_id": oid, "refs": n_refs}
+
+
 def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "spec_versions", "insert")
     sess = conn.execute(
@@ -451,6 +573,10 @@ SUBMIT_HANDLERS = {
     "session-close": _submit_session_close,
     "decision": _submit_decision,
     "spec-version": _submit_spec_version,
+    "deliberation-open": _submit_deliberation_open,
+    "perspective": _submit_perspective,
+    "deliberation-seal": _submit_deliberation_seal,
+    "synthesis-point": _submit_synthesis_point,
 }
 
 

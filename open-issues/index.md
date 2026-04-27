@@ -22,8 +22,9 @@ This file is the default-read surface entry point per `specifications/read-contr
 | [OI-016](OI-016.md) | Domain-validation pathway under user unavailability | Session 013 | **Resolved — provisionally-v2** (Session 033 per D-106/D-107/D-108; kernel v5→v6 + reference-validation v2→v3 substantive; engine-v5→v6; re-opens on (a) §9 trigger 7 re-fire at n=3 / (b) label-discipline violation / (c) scope-reversal); counter at 2-of-3 (Session 018 + 032) |
 | [OI-018](OI-018.md) | Revisit engine-manifest.md §5 bump-trigger criteria | Session 023 | Open — deferred; §5.4 cadence minority activated Session 023 (activated-not-escalated; R9 window aged out Session 026; §5.4 not re-escalated by Session 028 engine-v5 bump per 3-of-4 convergence) |
 | [OI-019](OI-019.md) | Path-selection work-channel and warrant-surface diversity | Session 043 | Open — five-perspective cross-family deliberation at S043 Path PSD produced 4-of-5 convergence that something forward should change but no 3-of-5 convergence on specific mechanism; seed perspectives at provenance/043-session-assessment/ |
+| [OI-080-001](OI-080-001.md) | T-06 missing on `deliberations` UPDATE; T-13 admits sealed_at re-timing | Session 080 | **Open — HIGH**; blocked on `selvedge migrate` runner (per EF-079-002); two strict xfail tests pin current behaviour |
 
-Active count: **13** (OI-016 is hybrid-state: in the resolved table and carrying active triggers; kept in active list for operational reachability).
+Active count: **14** (OI-016 is hybrid-state: in the resolved table and carrying active triggers; kept in active list for operational reachability).
 
 ## Resolved issues
 

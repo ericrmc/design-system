@@ -1,0 +1,16 @@
+[project]
+name = "selvedge"
+version = "0.1.0"
+description = "Selvedge substrate CLI (engine-v17)."
+requires-python = ">=3.11"
+
+[project.scripts]
+selvedge = "selvedge.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["state/tests"]
+python_files = ["test_*.py"]
+addopts = "-q"
