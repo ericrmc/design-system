@@ -1108,11 +1108,53 @@ def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     # effects
     _check_role_capability(conn, role, "decision_effects", "insert")
     for e in p.get("effects", []):
-        target_oid = _resolve_alias_to_object_id(conn, e["target"]) if e.get("target") else None
+        target_oid: Optional[int] = None
+        target_iid: Optional[int] = None
+        if e["effect_kind"] == "closes_issue":
+            # DV-S098-1 / engine-v28: closes_issue dispatches the issue
+            # disposition before the decision_effects row is inserted, so
+            # t28_closes_issue_target_resolved sees status='resolved' and
+            # passes. Identity is conveyed via target (issue alias) → target_issue_id.
+            if not e.get("target"):
+                raise SelvedgeError(
+                    "E_VALIDATION",
+                    "closes_issue effect requires target naming the issue alias (e.g. OI-016)",
+                )
+            descriptor = e.get("target_descriptor")
+            if not descriptor:
+                raise SelvedgeError(
+                    "E_VALIDATION",
+                    "closes_issue effect requires target_descriptor as the closure reason (becomes the disposition reason atom)",
+                )
+            if not (8 <= len(descriptor) <= 120):
+                # decision_effects.target_descriptor CHECK is 2-120; reason_atom CHECK is 8-240.
+                # The intersection (8-120) is the operative range; fail fast with a clearer message
+                # than the column-level CHECK violation.
+                raise SelvedgeError(
+                    "E_VALIDATION",
+                    "closes_issue target_descriptor must be 8-120 characters (becomes the disposition reason atom)",
+                )
+            target_iid = _resolve_issue_alias(conn, e["target"])
+            cur_status = conn.execute(
+                "SELECT status FROM issues WHERE issue_id=?", (target_iid,)
+            ).fetchone()
+            if cur_status["status"] not in ("resolved", "superseded"):
+                _submit_issue_disposition(
+                    conn,
+                    {
+                        "citable_alias": e["target"],
+                        "to_status": "resolved",
+                        "reason": descriptor,
+                        "session_no": p.get("session_no"),
+                    },
+                    role,
+                )
+        elif e.get("target"):
+            target_oid = _resolve_alias_to_object_id(conn, e["target"])
         conn.execute(
-            "INSERT INTO decision_effects (decision_v2_id, effect_kind, target_object_id, target_descriptor) "
-            "VALUES (?,?,?,?)",
-            (did, e["effect_kind"], target_oid, e.get("target_descriptor")),
+            "INSERT INTO decision_effects (decision_v2_id, effect_kind, target_object_id, target_issue_id, target_descriptor) "
+            "VALUES (?,?,?,?,?)",
+            (did, e["effect_kind"], target_oid, target_iid, e.get("target_descriptor")),
         )
 
     # alternatives + rejections
@@ -2001,7 +2043,7 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
                     lines.append(f"- ({s['basis']}) {_atom_text(conn, s['claim_atom_id'])}{cite}")
                 lines.append("")
             effs = conn.execute(
-                "SELECT effect_kind, target_object_id, target_descriptor FROM decision_effects WHERE decision_v2_id=? "
+                "SELECT effect_kind, target_object_id, target_issue_id, target_descriptor FROM decision_effects WHERE decision_v2_id=? "
                 "ORDER BY effect_id",
                 (d["decision_v2_id"],),
             ).fetchall()
@@ -2009,12 +2051,22 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
                 lines.append("**Effects.**")
                 lines.append("")
                 for e in effs:
-                    target = e["target_descriptor"] or ""
+                    descriptor = e["target_descriptor"] or ""
+                    alias = ""
                     if e["target_object_id"]:
                         c = conn.execute("SELECT citable_alias FROM objects WHERE object_id=?", (e["target_object_id"],)).fetchone()
                         if c and c["citable_alias"]:
-                            target = c["citable_alias"]
-                    lines.append(f"- {e['effect_kind']} {target}")
+                            alias = c["citable_alias"]
+                    elif e["target_issue_id"]:
+                        c = conn.execute("SELECT citable_alias FROM issues WHERE issue_id=?", (e["target_issue_id"],)).fetchone()
+                        if c and c["citable_alias"]:
+                            alias = c["citable_alias"]
+                    if alias and descriptor:
+                        lines.append(f"- {e['effect_kind']} {alias} — {descriptor}")
+                    elif alias:
+                        lines.append(f"- {e['effect_kind']} {alias}")
+                    else:
+                        lines.append(f"- {e['effect_kind']} {descriptor}")
                 lines.append("")
             alts = conn.execute(
                 "SELECT alternative_v2_id, label, option_atom_id FROM alternatives_v2 WHERE decision_v2_id=? ORDER BY alternative_v2_id",
