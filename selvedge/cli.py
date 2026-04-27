@@ -1446,6 +1446,43 @@ def _submit_issue_note(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     return {"note_id": cur.lastrowid, "issue_id": iid, "seq": next_seq}
 
 
+def _submit_engine_feedback(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    """Insert one engine_feedback row + objects row + refs (engine-v26+).
+
+    Replaces the raw-SQL pattern used for EF-S092-1..4 (which the surfacing
+    feedback flagged as a substrate-only-writes violation). Alias is
+    `EF-S<wno>-<idx>` where idx is the next ordinal among feedback rows
+    surfaced under the same workspace_session_no.
+    """
+    _check_role_capability(conn, role, "engine_feedback", "insert")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    wno = _session_workspace_no(conn, sess_id)
+    flag = p["flag"]
+    body_md = p["body_md"]
+    disposition = p.get("disposition")
+    cur = conn.execute(
+        "INSERT INTO engine_feedback (session_id, flag, body_md, disposition) VALUES (?,?,?,?)",
+        (sess_id, flag, body_md, disposition),
+    )
+    fid = cur.lastrowid
+    idx = conn.execute(
+        "SELECT COUNT(*) AS n FROM engine_feedback ef "
+        "JOIN sessions s ON s.session_id=ef.session_id "
+        "WHERE COALESCE(s.workspace_session_no, s.session_no)=?",
+        (wno,),
+    ).fetchone()["n"]
+    alias = _alias_for_engine_feedback(wno, idx)
+    cur2 = conn.execute(
+        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('engine_feedback', ?, ?)",
+        (fid, alias),
+    )
+    oid = cur2.lastrowid
+    conn.execute("UPDATE engine_feedback SET object_id=? WHERE feedback_id=?", (oid, fid))
+    _check_role_capability(conn, role, "refs", "insert")
+    n_refs = _record_refs(conn, source_object_id=oid, body_md=body_md)
+    return {"feedback_id": fid, "object_id": oid, "alias": alias, "flag": flag, "refs": n_refs}
+
+
 def _submit_issue_work_item(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "issue_work_items", "insert")
     sess_id = _atom_session_id(conn, p.get("session_no"))
@@ -1497,6 +1534,7 @@ SUBMIT_HANDLERS = {
     "issue-link": _submit_issue_link,
     "issue-note": _submit_issue_note,
     "issue-work-item": _submit_issue_work_item,
+    "engine-feedback": _submit_engine_feedback,
 }
 
 
@@ -2010,8 +2048,20 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
         out_dir.mkdir(parents=True, exist_ok=True)
         for name, content in files.items():
             (out_dir / name).write_text(content)
-
-    return {"session_no": session_no, "workspace_session_no": workspace_no, "out_dir": str(out_dir), "files_written": list(files.keys())}
+        return {
+            "dry_run": False,
+            "session_no": session_no,
+            "workspace_session_no": workspace_no,
+            "out_dir": str(out_dir),
+            "files_written": list(files.keys()),
+        }
+    return {
+        "dry_run": True,
+        "session_no": session_no,
+        "workspace_session_no": workspace_no,
+        "out_dir": str(out_dir),
+        "files_planned": list(files.keys()),
+    }
 
 
 def _export_issues(conn: sqlite3.Connection, write: bool = False) -> dict:
@@ -2101,13 +2151,40 @@ def _export_issues(conn: sqlite3.Connection, write: bool = False) -> dict:
         idx_lines.append("")
     files["open-issues/index.md"] = "\n".join(idx_lines).rstrip() + "\n"
 
+    # Compute reconciliation: files currently on disk under open-issues/ that
+    # are not in the substrate's target set must be deleted (or, in dry-run,
+    # reported as `files_to_delete`). Without this, an open->resolved
+    # transition leaves the stale top-level path next to the new resolved/
+    # path — flagged in EF-S092-2.
+    target_paths = {Path(pp).resolve() for pp in files.keys()}
+    on_disk: list[Path] = []
+    oi = Path("open-issues")
+    if oi.exists():
+        on_disk.extend(p for p in oi.glob("*.md"))
+        resolved_dir = oi / "resolved"
+        if resolved_dir.exists():
+            on_disk.extend(p for p in resolved_dir.glob("*.md"))
+    stale = sorted(str(p) for p in on_disk if p.resolve() not in target_paths)
+
     if write:
         for path_str, content in files.items():
             p = Path(path_str)
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(content)
-
-    return {"issues_exported": len(rows), "files_written": sorted(files.keys())}
+        for s in stale:
+            Path(s).unlink()
+        return {
+            "dry_run": False,
+            "issues_exported": len(rows),
+            "files_written": sorted(files.keys()),
+            "files_deleted": stale,
+        }
+    return {
+        "dry_run": True,
+        "issues_exported": len(rows),
+        "files_planned": sorted(files.keys()),
+        "files_to_delete": stale,
+    }
 
 
 def _orient_sections(conn: sqlite3.Connection) -> dict:
