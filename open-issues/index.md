@@ -25,7 +25,6 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-081-001](OI-081-001.md) | LOW | open | Should the table-count budget (078 D-10) be replaced by a derived-only check? |
 | [OI-083-001](OI-083-001.md) | MEDIUM | open | Substrate enforcement of the coding review loop |
 | [OI-083-002](OI-083-002.md) | LOW | open | Worked rubric for the coding review loop's severity taxonomy |
-| [OI-085-002](OI-085-002.md) | HIGH | open | Structural restriction of markdown authoring (no more honest tool use) |
 | [OI-086-001](OI-086-001.md) | MEDIUM | open | spec_clause source_decision_v2_id traceability is unenforced (and unused) |
 | [OI-086-002](OI-086-002.md) | MEDIUM | open | spec_versions has no constraint preventing two simultaneously-active versions per spec_id |
 | [OI-086-003](OI-086-003.md) | MEDIUM | open | decision_supports / alternative_rejections allow NULL cited_object_id on cite-required bases |
@@ -34,6 +33,10 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S089-1](OI-S089-1.md) | MEDIUM | open | Implement submit issue-work-item CLI handler. |
 | [OI-S089-2](OI-S089-2.md) | LOW | open | T-25 explicit lease-renewal trigger on work_items. |
 | [OI-S089-3](OI-S089-3.md) | LOW | open | Consider decomposition_status column on issues if LEFT JOIN dispatch query proves awkward. |
+| [OI-S090-1](OI-S090-1.md) | MEDIUM | open | Cross-reference linking pass for spec_clause_links (empty) |
+| [OI-S090-2](OI-S090-2.md) | MEDIUM | open | pytest coverage for Path A handlers + export round-trip |
+| [OI-S090-3](OI-S090-3.md) | MEDIUM | open | Migrate runner post-apply schema_migrations existence check |
+| [OI-S090-5](OI-S090-5.md) | MEDIUM | open | Substrate-driven spec content authoring path (markdown body editing remains the only option) |
 
 ## Resolved
 
@@ -47,3 +50,5 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-079-001](resolved/OI-079-001.md) | S088 | D-10 table budget of 16 vs the actual 17 in migration 001 (objects + synthesis_points). |
 | [OI-080-001](resolved/OI-080-001.md) | S088 | T-06 missing trigger on deliberations UPDATE; T-13 admits non-NULL→other-non-NULL on sealed_at |
 | [OI-085-001](resolved/OI-085-001.md) | S088 | Re-decompose prompt-development v2 + prompt-application v2 + engine-manifest v20 into spec_clauses |
+| [OI-085-002](resolved/OI-085-002.md) | S090 | Structural restriction of markdown authoring (no more honest tool use) |
+| [OI-S090-4](resolved/OI-S090-4.md) | S090 | _submit_spec_version handler order trips T-03 on update |

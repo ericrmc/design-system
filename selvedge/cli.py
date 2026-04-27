@@ -883,6 +883,28 @@ def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     if real_sha != body_sha256:
         raise SelvedgeError("E_REFUSAL_T04", f"body_sha256 mismatch: declared {body_sha256[:8]}…, file is {real_sha[:8]}…")
 
+    # OI-S090-4: flip prev active to superseded BEFORE inserting the new active row.
+    # T-03 (unique index t03_spec_versions_one_active) refuses two simultaneously-active
+    # rows for the same spec_id. The previous order (insert-then-flip) tripped on every
+    # supersession in S087/S088/S089.
+    prev_oid = None
+    prev_row = None
+    if prev := p.get("supersedes"):
+        _check_role_capability(conn, role, "refs", "insert")
+        _check_role_capability(conn, role, "spec_versions", "update")
+        prev_oid = _resolve_alias(conn, prev)
+        if prev_oid is None:
+            raise SelvedgeError("E_REFUSAL_T01", f"unresolved supersedes alias [{prev}]")
+        prev_row = conn.execute(
+            "SELECT sv.spec_version_id FROM spec_versions sv JOIN objects o ON o.object_id = sv.object_id WHERE o.object_id=?",
+            (prev_oid,),
+        ).fetchone()
+        if prev_row:
+            conn.execute(
+                "UPDATE spec_versions SET status='superseded' WHERE spec_version_id=?",
+                (prev_row["spec_version_id"],),
+            )
+
     cur = conn.execute(
         "INSERT INTO spec_versions (spec_id, version, body_path, body_sha256, status, session_id) "
         "VALUES (?,?,?,?, 'active', ?)",
@@ -897,24 +919,8 @@ def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     oid = cur2.lastrowid
     conn.execute("UPDATE spec_versions SET object_id=? WHERE spec_version_id=?", (oid, svid))
 
-    # Optional: supersedes ref to a prior spec_version alias.
     n_refs = 0
-    if prev := p.get("supersedes"):
-        _check_role_capability(conn, role, "refs", "insert")
-        prev_oid = _resolve_alias(conn, prev)
-        if prev_oid is None:
-            raise SelvedgeError("E_REFUSAL_T01", f"unresolved supersedes alias [{prev}]")
-        # Mark the prior version superseded.
-        _check_role_capability(conn, role, "spec_versions", "update")
-        prev_row = conn.execute(
-            "SELECT sv.spec_version_id FROM spec_versions sv JOIN objects o ON o.object_id = sv.object_id WHERE o.object_id=?",
-            (prev_oid,),
-        ).fetchone()
-        if prev_row:
-            conn.execute(
-                "UPDATE spec_versions SET status='superseded' WHERE spec_version_id=?",
-                (prev_row["spec_version_id"],),
-            )
+    if prev_oid is not None:
         conn.execute(
             "INSERT INTO refs (source_object_id, target_object_id, relation, allow_superseded, reason_md) "
             "VALUES (?,?, 'supersedes', 1, ?)",

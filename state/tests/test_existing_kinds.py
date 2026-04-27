@@ -227,6 +227,93 @@ def test_spec_version_hash_mismatch_refused(clean_substrate, selvedge_cli):
         body_path.unlink(missing_ok=True)
 
 
+def test_spec_version_supersedes_flips_prev_to_superseded(clean_substrate, selvedge_cli, db):
+    """OI-S090-4 regression: handler must flip prev to superseded BEFORE inserting
+    the new active row, or T-03 (unique partial index on active rows per spec_id)
+    refuses the insert. Tripped in S087, S088, S089."""
+    body_dir = WORKSPACE / "state" / "tests" / "spec-bodies"
+    body_dir.mkdir(parents=True, exist_ok=True)
+    v1 = body_dir / "supersede-v1.md"
+    v2 = body_dir / "supersede-v2.md"
+    v1.write_text("supersede fixture v1\n")
+    v2.write_text("supersede fixture v2\n")
+    v1_rel = v1.relative_to(WORKSPACE).as_posix()
+    v2_rel = v2.relative_to(WORKSPACE).as_posix()
+    v1_sha = hashlib.sha256(v1.read_bytes()).hexdigest()
+    v2_sha = hashlib.sha256(v2.read_bytes()).hexdigest()
+    try:
+        r1 = selvedge_cli(
+            [
+                "submit", "spec-version", "--payload",
+                json.dumps({
+                    "session_no": 1, "spec_id": "supersede-fixture",
+                    "version": 1, "body_path": v1_rel, "body_sha256": v1_sha,
+                }),
+            ]
+        )
+        assert r1["out"]["ok"], r1
+        v1_alias = r1["out"]["result"]["alias"]
+
+        r2 = selvedge_cli(
+            [
+                "submit", "spec-version", "--payload",
+                json.dumps({
+                    "session_no": 1, "spec_id": "supersede-fixture",
+                    "version": 2, "body_path": v2_rel, "body_sha256": v2_sha,
+                    "supersedes": v1_alias,
+                    "supersedes_reason_md": "regression test for OI-S090-4 handler reorder",
+                }),
+            ]
+        )
+        assert r2["out"]["ok"], r2
+        assert r2["out"]["result"]["refs"] == 1
+
+        rows = db.execute(
+            "SELECT version, status FROM spec_versions WHERE spec_id='supersede-fixture' ORDER BY version"
+        ).fetchall()
+        assert [(r["version"], r["status"]) for r in rows] == [(1, "superseded"), (2, "active")]
+    finally:
+        v1.unlink(missing_ok=True)
+        v2.unlink(missing_ok=True)
+
+
+def test_spec_version_two_active_refused_by_t03(clean_substrate, selvedge_cli, db):
+    """T-03 must refuse a direct INSERT of a second active row for the same spec_id.
+    Confirms the unique partial index is the structural guarantee that the handler
+    reorder relies on."""
+    body_dir = WORKSPACE / "state" / "tests" / "spec-bodies"
+    body_dir.mkdir(parents=True, exist_ok=True)
+    body = body_dir / "t03-fixture.md"
+    body.write_text("t03 fixture body\n")
+    body_rel = body.relative_to(WORKSPACE).as_posix()
+    sha = hashlib.sha256(body.read_bytes()).hexdigest()
+    try:
+        r1 = selvedge_cli(
+            [
+                "submit", "spec-version", "--payload",
+                json.dumps({
+                    "session_no": 1, "spec_id": "t03-fixture",
+                    "version": 1, "body_path": body_rel, "body_sha256": sha,
+                }),
+            ]
+        )
+        assert r1["out"]["ok"], r1
+
+        conn = sqlite3.connect(str(PRIMARY_DB))
+        try:
+            with pytest.raises(sqlite3.IntegrityError):
+                conn.execute(
+                    "INSERT INTO spec_versions (spec_id, version, body_path, body_sha256, status, session_id) "
+                    "VALUES ('t03-fixture', 2, ?, ?, 'active', 1)",
+                    (body_rel, sha),
+                )
+                conn.commit()
+        finally:
+            conn.close()
+    finally:
+        body.unlink(missing_ok=True)
+
+
 def test_session_close_after_unresolved_workitems_refused(clean_substrate, selvedge_cli, db):
     """T-11 demonstrator. We can't insert a work_item via the CLI yet (no
     submit kind), so we go via direct sqlite3 with the __cli__ capability
