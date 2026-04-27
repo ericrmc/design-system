@@ -3,8 +3,8 @@ title: Engine Manifest
 version: 17
 status: active
 created: 2026-04-27
-updated-by-session: 079
-supersedes: engine-manifest v16 (engine-v16); per 078 D-7 + D-11
+updated-by-session: 081
+supersedes: engine-manifest v16 (engine-v16); per 078 D-7 + D-11; minor enumeration correction per 081 D-1
 ---
 
 # Engine Manifest
@@ -38,7 +38,7 @@ Substrate (engine-definition; not read as prose):
 
 | Path | Role |
 |------|------|
-| `state/migrations/001-initial.sql` | Schema for sessions, decisions, alternatives, refs, perspectives, deliberations, spec_versions, commitments, engine_feedback, work_items, role_write_capabilities, read_log, subtraction_log, schema_migrations, agent_runs (≤16 tables per 078 D-10). Encodes refusals T-01..T-16 (per 078 D-3). |
+| `state/migrations/001-initial.sql` | Schema for sessions, objects, decisions, decision_alternatives, spec_versions, perspectives, deliberations, synthesis_points, refs, commitments, engine_feedback, work_items, role_write_capabilities, read_log, subtraction_log, schema_migrations, agent_runs (17 tables; 16 per 078 D-10 + synthesis_points calibrated breach per 081 D-1 with cause: T-14 enforcement has no other structural home; `objects` is the citable_alias indirection table powering T-01). Encodes refusals T-01..T-16 (per 078 D-3). |
 | `selvedge/` (Python package) | The CLI implementation. |
 | `bin/selvedge` | Shell shim. |
 | `state/selvedge.sqlite` | Per-workspace; not under VCS. Created by `selvedge init`. |
