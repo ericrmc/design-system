@@ -10,7 +10,7 @@ priority: MEDIUM
 
 ## Surfaced
 
-S083 D-1 introduces the coding review loop (`specifications/methodology.md` v3 §When to review §Coding review loop): any session producing, modifying, or deleting executable logic must invoke a reviewer subagent, address every medium-or-higher finding, and repeat until clean. The mechanism is currently operator-policed; the substrate does not yet refuse a coding session that closes without a clean reviewer pass or an explicit halted-state record.
+S083 D-2 (substrate D-S004-2) introduces the coding review loop (`specifications/methodology.md` v3 §When to review §Coding review loop): any session producing, modifying, or deleting executable logic must invoke a reviewer subagent, address every medium-or-higher finding, and repeat until clean. The mechanism is currently operator-policed; the substrate does not yet refuse a coding session that closes without a clean reviewer pass or an explicit halted-state record.
 
 ## Why it matters
 

@@ -4,7 +4,7 @@ version: 19
 status: active
 created: 2026-04-27
 updated-by-session: 083
-supersedes: engine-manifest v18 (engine-v18); per 083 D-1 (operator-directed coding review loop in methodology v3); v18 per 082 D-1 (substrate migration 002 + selvedge migrate runner); enumeration correction at v17 per 081 D-1; v17 itself per 078 D-7 + D-11
+supersedes: engine-manifest v18 (engine-v18); per 083 D-2 (operator-directed coding review loop in methodology v3, with no-deliberation exception at 083 D-1); v18 per 082 D-1 (substrate migration 002 + selvedge migrate runner); enumeration correction at v17 per 081 D-1; v17 itself per 078 D-7 + D-11
 ---
 
 # Engine Manifest
@@ -17,7 +17,7 @@ This file enumerates the loadable Selvedge engine at the current commit. The eng
 
 `engine-v19` adds a structural reviewer mechanism for code-producing sessions: a reviewer subagent, distinct from the implementer, audits any change to executable code (Python under `selvedge/`, SQL under `state/migrations/`, shell under `bin/` or `tools/`), and the loop continues until the reviewer reports no medium-or-higher findings remain. The pre-existing engine-definition close review is retained as a single-pass mechanism. Both are documented in `specifications/methodology.md` §When to review and wired into `prompts/development.md` and `prompts/application.md`.
 
-The change is operator-directed and is recorded as a deliberate exception to the 078 D-5 release gate. Specifically, the gate's clause forbidding methodology-expanding self-development sessions from modifying active spec content between Session 079 and the close of the first external-problem trial of 30 sessions is overridden for this revision by operator directive (recorded in S083 D-2, with the reason). Per `specifications/methodology.md` §When to convene multiple agents (when multi-agent deliberation is otherwise triggered but not performed because the decision is operator-directed, the reason is recorded), no cross-family deliberation was convened on the loop's design details; this is recorded as deferred to a future session once the mechanism has been exercised against real code-producing sessions.
+The change is operator-directed and is recorded as a deliberate exception to the 078 D-5 release gate. Specifically, the gate's clause forbidding methodology-expanding self-development sessions from modifying active spec content between Session 079 and the close of the first external-problem trial of 30 sessions is overridden for this revision by operator directive (recorded in S083 D-2 / substrate D-S004-2 R-1.3, with the reason). Per `specifications/methodology.md` §When to convene multiple agents (when multi-agent deliberation is otherwise triggered but not performed because the decision is operator-directed, the reason is recorded), no cross-family deliberation was convened on the loop's design details; the procedural exception itself is recorded at S083 D-1 / substrate D-S004-1, and a future cross-family review of the loop's design details is deferred until the mechanism has been exercised against real code-producing sessions.
 
 `engine-v19` remains **provisional** in the same sense `engine-v18` was: no further methodology-expanding self-development sessions modify active spec content between 083 and the close of the first external-problem trial of 30 sessions, except where operator-directed. Bug-fix and validator-tightening sessions remain admitted.
 

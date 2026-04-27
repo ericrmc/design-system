@@ -4,7 +4,7 @@ version: 3
 status: active
 created: 2026-04-27
 updated-by-session: 083
-supersedes: workspace-v2 (engine-v17/v18); per 083 D-1 (04-review.md scope expanded for coding review loop)
+supersedes: workspace-v2 (engine-v17/v18); per 083 D-2 (04-review.md scope expanded for coding review loop)
 ---
 
 # Workspace structure

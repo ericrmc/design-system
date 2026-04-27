@@ -4,6 +4,7 @@ title: Coding review loop — close
 date: 2026-04-27
 engine_version_at_close: engine-v19
 mode: self-development
+substrate_session_no: 4
 ---
 
 # Close
@@ -28,7 +29,7 @@ S083 added a structural reviewer mechanism to the engine kernel: any session tha
 
 - **Active engine version:** `engine-v19` (provisional in the same sense v18 was; further methodology-expanding changes remain gated by 078 D-5 except where operator-directed).
 - **Methodology:** v3. The kernel now has a structural reviewer mechanism distinct from validation, with a defined termination condition.
-- **Substrate at close:** unchanged from S082 (no migration). sessions=3, deliberations=2, perspectives=5, synthesis_points=5, decisions=11, decision_alternatives=15, refs=7, migrations=2.
+- **Substrate at close:** sessions=4 (S083 opened as substrate session 4 with citable alias S004 and closed at engine-v19); deliberations=2; perspectives=5; synthesis_points=5; decisions=13 (11 + S083's 2: D-S004-1 procedural no-deliberation, D-S004-2 substantive coding review loop with the v18 → v19 bump bundled per S082 precedent); decision_alternatives=21 (15 + S083's 6: 2 on D-S004-1, 4 on D-S004-2 including R-1.3 the gate-override rejection reason); refs=9 (7 + S083's 2: D-S004-2 → D-S004-1 procedural cite, D-S004-2 → D-S003-1 precedent cite); migrations=2.
 - **Validator:** `tools/validate.sh` 16 ok / 0 fail at this commit (17 ok at the same commit landing this file).
 - **Open issues:** active count 14 → 16; two new entries (OI-083-001 substrate enforcement, OI-083-002 severity taxonomy).
 - **Engine-feedback inbox:** unchanged (EF-079-001 T-12 still awaiting writer-role activation; EF-079-002 already triaged at S082).
@@ -39,7 +40,7 @@ Unchanged from S082. The new reviewer mechanism is *prevention via process*, not
 
 ## Override of the 078 D-5 release gate
 
-Recorded explicitly. The gate's clause forbidding methodology-expanding self-development sessions from modifying active spec content between Session 079 and the close of the first external-problem trial of 30 sessions is overridden for this revision by operator directive. The decision record (S083 D-2) names the override with reason; the manifest's §Current engine version re-cites it. No multi-agent deliberation was convened (the decision is operator-directed; cross-family review of the loop's design details is deferred to a future session once the mechanism has been exercised against real code-producing sessions).
+Recorded explicitly in markdown and in the substrate. The gate's clause forbidding methodology-expanding self-development sessions from modifying active spec content between Session 079 and the close of the first external-problem trial of 30 sessions is overridden for this revision by operator directive. S083 D-2 (substrate D-S004-2) is the substantive decision; its rejection reason for alternative R-1.3 ("defer under the gate") names the override and the operator's authority to lift a self-imposed constraint. S083 D-1 (substrate D-S004-1) records the procedural exception for not convening multi-agent deliberation. The manifest's §Current engine version re-cites both. Cross-family review of the loop's design details is deferred to a future session once the mechanism has been exercised against real code-producing sessions.
 
 ## What S084 should address
 
