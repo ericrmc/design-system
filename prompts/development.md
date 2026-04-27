@@ -24,7 +24,12 @@ When the work changes how the methodology works (a kernel revision, a deliberati
 - At least one perspective is adversarial.
 - Synthesis preserves dissent.
 
-When the session changes engine-definition files or a structural validation check warns or fails, follow `specifications/methodology.md` §When to review at close: a separate reviewer (not the orchestrator, not the close author, not the primary implementer) audits the close at `provenance/NNN-<slug>/04-review.md`.
+Two reviewer mechanisms apply (see `specifications/methodology.md` §When to review):
+
+- **Coding review loop.** If the session produces, modifies, or deletes executable logic (Python under `selvedge/`, SQL migrations, shell logic under `bin/` or `tools/`, or any other artefact whose execution behaviour the change alters), invoke a reviewer subagent — a distinct agent, not the implementer — to audit the change. Address every medium-or-higher finding (fix or explicitly adjudicate with a substantive reason in `04-review.md`), then re-invoke the reviewer. Repeat until the reviewer reports no medium-or-higher findings remain, or the loop reaches the four-iteration deadlock threshold defined in the methodology spec (in which case the session halts rather than closes). The Agent tool with `subagent_type=Explore` and an adversarial prompt is the default invocation; another comparable subagent is acceptable when better-suited. Version strings, banner text, comments, and documentation changes are out of scope for the loop.
+- **Engine-definition close review.** If the session changes any engine-definition file (per `engine-manifest.md`), or a structural validation check warns or fails, a separate reviewer audits the close at `provenance/NNN-<slug>/04-review.md`. This is a single-pass audit, not a loop.
+
+A session that triggers both records both: the loop's iterations and the close audit.
 
 ## Cautions for self-development
 

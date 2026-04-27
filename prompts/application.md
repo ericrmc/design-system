@@ -20,6 +20,14 @@ State your assessment. Determine what this session should advance. Convene persp
 
 When the decision touches the methodology itself (you encountered a kernel gap, a spec is unclear, a tool failed), do **not** revise the engine in this workspace. Record an engine-feedback file at `engine-feedback/EF-<session>-<slug>.md` and continue with the application's work. Engine-feedback is transported by the operator back to the source workspace.
 
+## Review
+
+If the session produces, modifies, or deletes executable logic (any artefact whose execution behaviour the change alters), follow `specifications/methodology.md` §When to review §Coding review loop: invoke a reviewer subagent — distinct from the implementer — to audit the change. Address every medium-or-higher finding (fix or explicitly adjudicate in `04-review.md` with a substantive reason). Re-invoke the reviewer. Repeat until no medium-or-higher findings remain. The session does not close until that condition is met or the loop halts at the four-iteration deadlock threshold (per the methodology spec). The Agent tool with `subagent_type=Explore` and an adversarial prompt is the default invocation.
+
+If a structural validation check warns or fails, record whether the warning is engine-definition-related (report to `engine-feedback/` per §Engine-feedback) or application-scoped (fix before close).
+
+The coding review loop applies to external-problem sessions exactly as it does to self-development sessions; the only difference is that its findings live with the application, not with the engine.
+
 ## Validate
 
 Three senses apply per `specifications/methodology.md`:

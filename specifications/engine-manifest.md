@@ -1,10 +1,10 @@
 ---
 title: Engine Manifest
-version: 18
+version: 19
 status: active
 created: 2026-04-27
-updated-by-session: 082
-supersedes: engine-manifest v17 (engine-v17); per 082 D-1 (substrate migration 002 + selvedge migrate runner); minor enumeration correction at v17 per 081 D-1; v17 itself per 078 D-7 + D-11
+updated-by-session: 083
+supersedes: engine-manifest v18 (engine-v18); per 083 D-1 (operator-directed coding review loop in methodology v3); v18 per 082 D-1 (substrate migration 002 + selvedge migrate runner); enumeration correction at v17 per 081 D-1; v17 itself per 078 D-7 + D-11
 ---
 
 # Engine Manifest
@@ -13,11 +13,13 @@ This file enumerates the loadable Selvedge engine at the current commit. The eng
 
 ## Current engine version
 
-`engine-v18` (established Session 082 — `selvedge migrate` runner shipped + migration 002 closes OI-080-001 structurally).
+`engine-v19` (established Session 083 — methodology v3 introduces the coding review loop per operator direction).
 
-`engine-v18` ships the migration-runner code path deferred at engine-v17 per `engine-feedback/inbox/EF-079-002-T15-deferred.md`. T-15 (no `DROP TABLE` / `DROP COLUMN` / `ALTER ... DROP` in migrations) is now active enforcement against any migration applied via `selvedge migrate --dry-run` and `--apply`. Migration 002 (`state/migrations/002-tighten-deliberation-immutability.sql`) closes OI-080-001 by adding the missing T-06 trigger pair on `deliberations` UPDATE/DELETE and tightening T-13 from `NEW.sealed_at IS NULL` to `NEW.sealed_at IS NOT OLD.sealed_at` (refuses any change-in-place to a non-NULL `sealed_at`). Per §Versioning, a substrate migration triggers an engine-version bump.
+`engine-v19` adds a structural reviewer mechanism for code-producing sessions: a reviewer subagent, distinct from the implementer, audits any change to executable code (Python under `selvedge/`, SQL under `state/migrations/`, shell under `bin/` or `tools/`), and the loop continues until the reviewer reports no medium-or-higher findings remain. The pre-existing engine-definition close review is retained as a single-pass mechanism. Both are documented in `specifications/methodology.md` §When to review and wired into `prompts/development.md` and `prompts/application.md`.
 
-`engine-v18` remains **provisional** per 078 D-5: no methodology-expanding self-development sessions modify active spec content between 079 and the close of the first external-problem trial of 30 sessions. Bug-fix and validator-tightening sessions are admitted (S082 is one); new active-spec content is not.
+The change is operator-directed and is recorded as a deliberate exception to the 078 D-5 release gate. Specifically, the gate's clause forbidding methodology-expanding self-development sessions from modifying active spec content between Session 079 and the close of the first external-problem trial of 30 sessions is overridden for this revision by operator directive (recorded in S083 D-2, with the reason). Per `specifications/methodology.md` §When to convene multiple agents (when multi-agent deliberation is otherwise triggered but not performed because the decision is operator-directed, the reason is recorded), no cross-family deliberation was convened on the loop's design details; this is recorded as deferred to a future session once the mechanism has been exercised against real code-producing sessions.
+
+`engine-v19` remains **provisional** in the same sense `engine-v18` was: no further methodology-expanding self-development sessions modify active spec content between 083 and the close of the first external-problem trial of 30 sessions, except where operator-directed. Bug-fix and validator-tightening sessions remain admitted.
 
 ## Engine-definition file set
 
@@ -61,4 +63,4 @@ The engine version increments when any file in the active set above changes subs
 
 ## Engine-version history
 
-`engine-v1` through `engine-v15` ran for 75 self-development sessions and are preserved in git history. `engine-v16` (session 076) was the trim-restart that reduced the active surface to ~430 non-blank lines. `engine-v17` (session 079) applies the 078 D-7 cut, lands the SQLite substrate, and introduces the `selvedge` CLI as the only writer of structured state. `engine-v18` (session 082) adds migration 002 (closes OI-080-001 by adding T-06 trigger pair on `deliberations` UPDATE/DELETE and tightening T-13 to refuse any change-in-place to a non-NULL `sealed_at`) and ships the `selvedge migrate` runner that activates T-15 enforcement (the runner deferral was named at S079 close per `engine-feedback/inbox/EF-079-002-T15-deferred.md`).
+`engine-v1` through `engine-v15` ran for 75 self-development sessions and are preserved in git history. `engine-v16` (session 076) was the trim-restart that reduced the active surface to ~430 non-blank lines. `engine-v17` (session 079) applies the 078 D-7 cut, lands the SQLite substrate, and introduces the `selvedge` CLI as the only writer of structured state. `engine-v18` (session 082) adds migration 002 (closes OI-080-001 by adding T-06 trigger pair on `deliberations` UPDATE/DELETE and tightening T-13 to refuse any change-in-place to a non-NULL `sealed_at`) and ships the `selvedge migrate` runner that activates T-15 enforcement (the runner deferral was named at S079 close per `engine-feedback/inbox/EF-079-002-T15-deferred.md`). `engine-v19` (session 083) introduces the coding review loop in methodology v3 and updates both prompts to invoke it.

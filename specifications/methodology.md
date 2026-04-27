@@ -1,10 +1,10 @@
 ---
 title: Methodology
-version: 2
+version: 3
 status: active
 created: 2026-04-27
-updated-by-session: 079
-supersedes: methodology-v1 (engine-v16); per 078 D-7
+updated-by-session: 083
+supersedes: methodology-v2 (engine-v17/v18); per 083 D-1 (operator-directed coding review loop)
 ---
 
 # Methodology
@@ -63,9 +63,38 @@ The synthesis of perspectives **is not itself a decision**. It feeds Decide. Syn
 
 If a multi-agent deliberation would otherwise be triggered but is not performed (because the workspace lacks a non-Claude provider, because the decision is operator-directed, because the cost is unwarranted for this scope), the reason is recorded in the session's decision record.
 
-## When to review at close
+## When to review
 
-Close-time review is superseded until the substrate distinguishes prevention from audit; D-2 conditional re-introduction governs (per 078 D-7 step 1; prior text archived at `archive/specifications/methodology-v1-removed-sections.md`).
+Two reviewer mechanisms apply, distinguished by what the session produced.
+
+### Coding review loop
+
+When a session produces, modifies, or deletes **executable logic** — Python under `selvedge/`, SQL under `state/migrations/`, shell logic under `bin/` or `tools/`, or any other artefact whose execution behaviour the change alters — a reviewer subagent audits the change before the session closes. The reviewer is a distinct agent (separate context, not the implementer, not the close author) invoked with the changed files and the relevant context.
+
+Out of scope (does **not** trigger the loop, though may still trigger the engine-definition close review below): version strings and banner text, comments and docstrings, file headers, README-equivalent prose, and shell-script changes that touch only documentation lines. The test is whether the change can alter execution behaviour. A change that only renames a variable for clarity but preserves identical behaviour is in scope (the reviewer can confirm equivalence quickly); a change that updates a comment or a version banner is not.
+
+The reviewer reports findings classified by severity: **critical**, **high**, **medium**, **low**. Critical and high findings indicate a defect that, if shipped, would break the engine or the substrate; medium findings indicate a correctness, safety, or coverage gap that a future session should not have to clean up; low findings are nits.
+
+For every medium-or-higher finding the implementer either:
+
+- **Fixes** the finding (preferred), or
+- **Adjudicates** the finding explicitly: records the reason for not fixing in the session's `04-review.md`, with enough detail and specific argument that a future reviewer — not this one, not the implementer — could independently judge whether the call was sound. A bare assertion of disagreement is not adjudication; the reason must engage the finding's substance. Adjudications are subject to subsequent audit by the engine-definition close reviewer or by the next session that touches the same code.
+
+The reviewer is then re-invoked against the updated changeset. The loop continues until the reviewer reports no medium-or-higher findings remain unresolved.
+
+**Termination and deadlock.** The session does not close until the reviewer's final pass returns clean of medium-or-higher findings. If the loop reaches a fourth iteration without converging — the reviewer keeps surfacing new medium+ issues, or the implementer adjudicates findings the next reviewer pass re-raises — the implementer halts the loop, records the unresolved findings and the iteration history in `04-review.md`, opens `OI-<session>-<slug>-findings-unresolved.md` with the full transcript, and closes the session in a halted state. A halted session is not a normal close; the next session reopens the work as its first agenda item.
+
+The mechanism is structural, not advisory: a coding session that closes without a clean reviewer pass (or an explicit halted-state record) is invalid and the next session must reopen the work. The substrate does not yet enforce this; until it does, the discipline is operator-policed and recorded in `04-review.md`.
+
+The severity taxonomy (critical / high / medium / low) admits classifier disagreement at its boundaries, especially between medium and low. A worked rubric is deferred until two or three code-producing sessions have exercised the loop and produced empirical examples to calibrate against; until then the implementer and reviewer note any classification disagreement in `04-review.md`, and the implementer treats genuinely-borderline findings as medium for the purpose of the loop's termination condition. The deferral is tracked under `OI-083-002-coding-review-severity-taxonomy.md`.
+
+This responds to constraints §2 (models treat failure as cheap; prevention must be structural) and §5 (detection without a feedback loop into prevention does not correct anything). The loop is the structural feedback path: a finding that is not addressed before close has not been detected, only noted.
+
+### Engine-definition close review
+
+When a session changes any engine-definition file (per `engine-manifest.md`) — including spec text, prompts, or the manifest itself — a separate reviewer audits the close at `04-review.md`, regardless of whether the change involved code. This is a single-pass audit, not a loop; its scope is whether the engine remains coherent after the change.
+
+A session that triggers both mechanisms records both: the coding review loop's iterations and the engine-definition close review.
 
 ## Validation senses
 

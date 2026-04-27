@@ -24,8 +24,10 @@ This file is the default-read surface entry point per `specifications/read-contr
 | [OI-019](OI-019.md) | Path-selection work-channel and warrant-surface diversity | Session 043 | Open — five-perspective cross-family deliberation at S043 Path PSD produced 4-of-5 convergence that something forward should change but no 3-of-5 convergence on specific mechanism; seed perspectives at provenance/043-session-assessment/ |
 | [OI-079-001](OI-079-001.md) | Table-budget calibration: 17 vs 078 D-10's ≤16 | Session 079 (backfilled S081) | **Resolved S081 D-1** (ratify 17 via existing breach clause; manifest enumeration aligned 15→17); minority forward as OI-081-001 |
 | [OI-081-001](OI-081-001.md) | Replace table-count budget with derived-only check? | Session 081 | Open — LOW (post-gate); blocked on 078 D-5 release gate; carries P-2-adversarial minority from S081 deliberation |
+| [OI-083-001](OI-083-001-coding-review-substrate-enforcement.md) | Substrate enforcement of the coding review loop | Session 083 | Open — MEDIUM; mechanism is operator-policed at v19; substrate gate deferred to future session |
+| [OI-083-002](OI-083-002-coding-review-severity-taxonomy.md) | Worked rubric for the coding review loop's severity taxonomy | Session 083 | Open — LOW; needs 2–3 real code-producing sessions of empirical signal first |
 
-Active count: **14** (OI-016 is hybrid-state: in the resolved table and carrying active triggers; kept in active list for operational reachability; OI-079-001 also hybrid — resolved-table entry below, kept active here for the OI-081-001 follow-up linkage). OI-080-001 closed at S082; moved to resolved.
+Active count: **16** (OI-016 is hybrid-state: in the resolved table and carrying active triggers; kept in active list for operational reachability; OI-079-001 also hybrid — resolved-table entry below, kept active here for the OI-081-001 follow-up linkage). OI-080-001 closed at S082; moved to resolved.
 
 ## Resolved issues
 

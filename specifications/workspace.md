@@ -1,10 +1,10 @@
 ---
 title: Workspace structure
-version: 2
+version: 3
 status: active
 created: 2026-04-27
-updated-by-session: 079
-supersedes: workspace-v1 (engine-v16); per 078 D-7
+updated-by-session: 083
+supersedes: workspace-v2 (engine-v17/v18); per 083 D-1 (04-review.md scope expanded for coding review loop)
 ---
 
 # Workspace structure
@@ -39,7 +39,7 @@ Required files per session:
 Conditional files:
 
 - `01-deliberation.md` — the synthesis of multi-agent deliberation when one was performed. Per-perspective records (one file per perspective) may sit alongside.
-- `04-review.md` — the close-time reviewer's audit, when one was performed.
+- `04-review.md` — the reviewer's audit, when one was performed. Holds the engine-definition close review (single-pass) and/or the coding review loop's final pass; per-iteration records of the coding review loop may sit alongside as `04-review-iter-N.md`. The file lists iterations in order, names each medium-or-higher finding, and records its disposition (fixed in commit X / adjudicated, with reason).
 
 A session may add other files (raw perspective records, design-space surveys, draft artefacts) as the work warrants. The four files above are the load-bearing surface.
 
