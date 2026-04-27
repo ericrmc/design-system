@@ -1,35 +1,41 @@
-# Selvedge engine — dispatcher (engine-v20)
+# Selvedge engine — dispatcher (engine-v23)
 
 You are about to execute the **Selvedge engine** against a workspace. This file determines which executable prompt applies and points at it.
 
-## First, orient via the substrate
+## First, orient
 
-The substrate at `state/selvedge.sqlite` is the canonical source of workspace state under engine-v20. Run:
+Run:
 
 ```sh
-bin/selvedge query "SELECT key, value FROM workspace_metadata"
+bin/selvedge orient
 ```
 
-This returns `workspace_id`, `mode`, `current_engine_version`, `init_session_offset`, and `schema_version_at_init`. These are workspace-level invariants set once at init; you do not pass them on every CLI call.
+That single command prints workspace metadata, recent close-records, forward references (`next_session_should` items from prior sessions), open issues by priority, in-flight work_items, active spec versions, deferred decisions, and open review findings. It is a live read of the substrate; nothing materializes to disk. Use `--json` if you need the structured form.
 
-If the substrate file is missing or `workspace_metadata` is empty, fall back to `MODE.md` (the legacy marker) and ask the operator before proceeding — the workspace may need `bin/selvedge init` or migration application.
+If you need the substrate schema:
+
+```sh
+bin/selvedge schema           # all tables, formatted summary with parsed CHECK enums
+bin/selvedge schema issues    # one table
+bin/selvedge schema --raw     # raw DDL from sqlite_master
+```
+
+If `bin/selvedge orient` fails (substrate missing or `workspace_metadata` empty), fall back to `MODE.md` and ask the operator — the workspace may need `bin/selvedge init` or migration application.
 
 ## Read the active engine spec
 
-The engine's active specification set is small. The markdown is the human-readable export of substrate rows (`spec_sections` + `spec_clauses`); read whichever surface fits your task:
+The active spec set is small (see `specifications/engine-manifest.md`). The markdown files are exports of substrate rows; read whichever surface fits your task:
 
-- `specifications/methodology.md` — what the engine does in a session: the three layers, the nine activities, when to convene multiple agents, when to review at close, validation senses, preservation, engine-feedback, self-hosting.
-- `specifications/constraints.md` — what 75 sessions of self-development taught us about LLM agents and what the successor design must compensate for.
-- `specifications/workspace.md` — file classes, session structure, decisions, specifications discipline.
+- `specifications/methodology.md` — what the engine does in a session.
+- `specifications/constraints.md` — what 75 sessions of self-development taught us.
+- `specifications/workspace.md` — file classes, session structure, specifications discipline.
 - `specifications/engine-manifest.md` — what files constitute the loadable engine at the current version.
 
-Or query the substrate directly:
+Substrate-direct equivalent (clauses-only):
 
 ```sh
-bin/selvedge query "SELECT s.spec_id, sc.ord, sc.clause_type, sc.normative_level, ta.text FROM spec_clauses sc JOIN spec_sections ss ON ss.spec_section_id=sc.spec_section_id JOIN spec_versions sv ON sv.spec_version_id=ss.spec_version_id JOIN text_atoms ta ON ta.atom_id=sc.clause_atom_id WHERE sv.status='active' ORDER BY sv.spec_id, ss.ord, sc.ord"
+bin/selvedge query "SELECT sv.spec_id, sc.ord, sc.clause_type, sc.normative_level, ta.text FROM spec_clauses sc JOIN spec_sections ss ON ss.spec_section_id=sc.spec_section_id JOIN spec_versions sv ON sv.spec_version_id=ss.spec_version_id JOIN text_atoms ta ON ta.atom_id=sc.clause_atom_id WHERE sv.status='active' ORDER BY sv.spec_id, ss.ord, sc.ord"
 ```
-
-The engine version is `current_engine_version` in `workspace_metadata`.
 
 ## Dispatch
 
