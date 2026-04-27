@@ -6,17 +6,22 @@ The substrate at `state/selvedge.sqlite` is the only writable surface for sessio
 
 ## 1. Read
 
-Run `bin/selvedge query` to inspect the workspace state, then read the markdown surface for the active engine.
-
-```sh
-bin/selvedge query "SELECT key, value FROM workspace_metadata"
-bin/selvedge query "SELECT session_no, workspace_session_no, slug, status, engine_version_at_close FROM sessions ORDER BY session_no DESC LIMIT 5"
-bin/selvedge query "SELECT review_finding_id, severity, disposition FROM review_findings WHERE disposition='open'"
-```
+Run `bin/selvedge orient` first. It prints workspace metadata, recent close-records, **undisposed forward-references with `FR-S<wno>-<seq>` identifiers**, open issues by priority, in-flight work_items, active specs, deferred decisions, open review findings, and untriaged engine-feedback — a single live read of the substrate.
 
 Then read whatever the session needs: `specifications/methodology.md`, the most recent close in `provenance/`, any open issues, engine-feedback. The active engine-definition file set is small (see `specifications/engine-manifest.md`).
 
 You do **not** need to read the full provenance back-catalogue. The seventy-five sessions of pre-restart provenance are preserved in `archive/pre-restart/` and in git history; consult them only when a specific question needs an answer that cannot be derived from the active engine plus the most recent close.
+
+## 1.5 Self-driving dispatch (when the operator's prompt is open-ended)
+
+When the operator's prompt is empty, generic (`continue`, `next`, `keep going`), or otherwise unprescriptive about *what* to do, **propose an agenda before opening the session** drawn from the orient packet, in this priority order:
+
+1. **HIGH-priority open issues** — surface any HIGH and propose them.
+2. **Untriaged engine-feedback** — observations carrying NULL disposition often name specific gaps; the smallest is usually the cheapest leverage.
+3. **Undisposed forward-references** — these are the prior session's explicit ask. Prefer the most recent (largest `S<wno>`) unless older ones name HIGH-priority issues.
+4. **Deferred decisions** — surface but do not act on them without explicit operator confirmation.
+
+State the proposed item to the operator, wait for ratification or redirect, then proceed. If the operator's prompt *does* prescribe specific work, do that work — do not override with the queue.
 
 ## 2. Open the session
 
@@ -128,6 +133,39 @@ If the loop reaches a fourth iteration without converging, halt the session: ope
 ## 8. Record — provenance committed to the substrate
 
 Already done by every prior `submit`. Run `bin/selvedge query` to confirm row counts before close.
+
+## 8.5 Close-time reflection (mandatory)
+
+Before submitting `close-record`, do two things:
+
+1. **Author at least one `engine_feedback` row** capturing what reduced friction this session and what surfaced as friction. Successes worth reinforcing belong here as much as corrections — both signals decay if they only live in working memory. Use `flag` ∈ `observation | reframe | calibration | blocker`.
+
+   ```sh
+   bin/selvedge submit engine-feedback --payload '{
+     "flag": "observation",
+     "body_md": "**<headline>** — what reduced friction; what surfaced as friction; proposed remedy if obvious."
+   }'
+   ```
+
+2. **Dispose forward-references this session addressed.** Run `bin/selvedge orient` and for each `FR-S<wno>-<seq>` the session resolved, submit a disposition citing the resolving decision/spec/handler:
+
+   ```sh
+   bin/selvedge submit forward-reference-disposition --payload '{
+     "target_session": <wno>, "seq": <n>,
+     "note": "addressed by DV-S<NNN>-<n> (<short reason>)"
+   }'
+   ```
+
+   Disposition removes the item from `orient`'s queue. Without this, the same forward-reference re-surfaces every session.
+
+3. **Dispose engine-feedback rows this session addressed** (if any), citing the resolving decision:
+
+   ```sh
+   bin/selvedge submit engine-feedback-disposition --payload '{
+     "alias": "EF-S<NNN>-<n>",
+     "disposition": "addressed-by-DV-S<NNN>-<n> (<short reason>)"
+   }'
+   ```
 
 ## 9. Close
 

@@ -1446,6 +1446,80 @@ def _submit_issue_note(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     return {"note_id": cur.lastrowid, "issue_id": iid, "seq": next_seq}
 
 
+def _submit_engine_feedback_disposition(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    """Update engine_feedback.disposition (engine-v27+, EF-S096-2 remedy).
+
+    Closes the substrate-only-writes loop on engine_feedback that engine-v26
+    only half-closed: the insert path landed at S094, but transitioning a
+    feedback row's disposition still required raw SQL until this handler.
+    """
+    _check_role_capability(conn, role, "engine_feedback", "update")
+    _atom_session_id(conn, p.get("session_no"))
+    if "feedback_id" in p:
+        fid = int(p["feedback_id"])
+    elif "alias" in p:
+        oid = _resolve_alias(conn, p["alias"])
+        if oid is None:
+            raise SelvedgeError("E_REFUSAL_T01", f"unresolved alias [{p['alias']}]")
+        row = conn.execute(
+            "SELECT feedback_id FROM engine_feedback WHERE object_id=?", (oid,)
+        ).fetchone()
+        if row is None:
+            raise SelvedgeError("E_NOT_FOUND", f"alias {p['alias']} is not engine_feedback")
+        fid = row["feedback_id"]
+    else:
+        raise SelvedgeError("E_VALIDATION", "engine-feedback-disposition requires feedback_id or alias")
+    upd = conn.execute(
+        "UPDATE engine_feedback SET disposition=? WHERE feedback_id=?",
+        (p["disposition"], fid),
+    )
+    if upd.rowcount != 1:
+        raise SelvedgeError("E_NOT_FOUND", f"feedback_id={fid}")
+    return {"feedback_id": fid, "disposition": p["disposition"]}
+
+
+def _submit_forward_reference_disposition(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    """Mark a close_state_items row with facet='next_session_should' as resolved
+    (engine-v27+, EF-S096-1 strong remedy).
+
+    Target identified by (target_session, seq) where target_session is the
+    workspace_session_no of the session whose close-record carries the item.
+    Rejected by T-26 if the target's facet isn't next_session_should.
+    """
+    _check_role_capability(conn, role, "forward_reference_dispositions", "insert")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    target_wno = int(p["target_session"])
+    seq = int(p["seq"])
+    row = conn.execute(
+        "SELECT csi.state_item_id "
+        "FROM close_state_items csi "
+        "JOIN close_records cr ON cr.close_record_id=csi.close_record_id "
+        "JOIN sessions s ON s.session_id=cr.session_id "
+        "WHERE COALESCE(s.workspace_session_no, s.session_no)=? "
+        "  AND csi.seq=? AND csi.facet='next_session_should'",
+        (target_wno, seq),
+    ).fetchone()
+    if row is None:
+        raise SelvedgeError(
+            "E_NOT_FOUND",
+            f"forward-reference target_session={target_wno} seq={seq} "
+            f"(must be a next_session_should close_state_item)",
+        )
+    note_aid = None
+    if p.get("note"):
+        note_aid = _insert_atom(conn, role, sess_id, "claim", p["note"])
+    cur = conn.execute(
+        "INSERT INTO forward_reference_dispositions (state_item_id, resolved_session_id, note_atom_id) "
+        "VALUES (?,?,?)",
+        (row["state_item_id"], sess_id, note_aid),
+    )
+    return {
+        "disposition_id": cur.lastrowid,
+        "state_item_id": row["state_item_id"],
+        "ref": f"FR-S{target_wno:03d}-{seq}",
+    }
+
+
 def _submit_engine_feedback(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     """Insert one engine_feedback row + objects row + refs (engine-v26+).
 
@@ -1535,6 +1609,8 @@ SUBMIT_HANDLERS = {
     "issue-note": _submit_issue_note,
     "issue-work-item": _submit_issue_work_item,
     "engine-feedback": _submit_engine_feedback,
+    "engine-feedback-disposition": _submit_engine_feedback_disposition,
+    "forward-reference-disposition": _submit_forward_reference_disposition,
 }
 
 
@@ -2206,18 +2282,34 @@ def _orient_sections(conn: sqlite3.Connection) -> dict:
             "ORDER BY s.session_no DESC LIMIT 3"
         ).fetchall()
     ]
-    next_should = []
-    for cr in out["recent_close_records"]:
-        rows = conn.execute(
-            "SELECT ta.text AS text FROM close_state_items csi "
-            "JOIN text_atoms ta ON ta.atom_id=csi.item_atom_id "
-            "WHERE csi.close_record_id=? AND csi.facet='next_session_should' "
-            "ORDER BY csi.seq",
-            (cr["close_record_id"],),
-        ).fetchall()
-        for r in rows:
-            next_should.append({"from_session": f"S{cr['workspace_session_no']:03d}", "text": r["text"]})
-    out["next_session_should"] = next_should
+    # Forward references: every undisposed close_state_item with
+    # facet='next_session_should' across the full history. Disposition rows
+    # in forward_reference_dispositions (migration 013, engine-v27 / EF-S096-1)
+    # remove the item from the queue. Capped at 30 with truncation flag, in
+    # parallel to open_issues/engine_feedback.
+    fr_rows = conn.execute(
+        "SELECT csi.seq, csi.state_item_id, ta.text AS text, "
+        "       COALESCE(s.workspace_session_no, s.session_no) AS wno "
+        "FROM close_state_items csi "
+        "JOIN text_atoms ta ON ta.atom_id=csi.item_atom_id "
+        "JOIN close_records cr ON cr.close_record_id=csi.close_record_id "
+        "JOIN sessions s ON s.session_id=cr.session_id "
+        "WHERE csi.facet='next_session_should' "
+        "  AND NOT EXISTS (SELECT 1 FROM forward_reference_dispositions frd "
+        "                  WHERE frd.state_item_id=csi.state_item_id) "
+        "ORDER BY s.session_no DESC, csi.seq"
+    ).fetchall()
+    out["next_session_should_total"] = len(fr_rows)
+    out["next_session_should"] = [
+        {
+            "from_session": f"S{r['wno']:03d}",
+            "seq": r["seq"],
+            "ref": f"FR-S{r['wno']:03d}-{r['seq']}",
+            "text": r["text"],
+        }
+        for r in fr_rows[:30]
+    ]
+    out["next_session_should_truncated"] = len(fr_rows) > 30
     open_issues_rows = conn.execute(
         "SELECT i.citable_alias, i.priority, i.status, ta.text AS title "
         "FROM issues i JOIN text_atoms ta ON ta.atom_id=i.title_atom_id "
@@ -2311,11 +2403,15 @@ def _orient_markdown(packet: dict) -> str:
         lines.append("(no closed sessions)")
         lines.append("")
 
-    lines.append("## Forward references from prior sessions (`next_session_should`)")
+    fr_total = packet.get("next_session_should_total", len(packet["next_session_should"]))
+    lines.append(f"## Forward references ({len(packet['next_session_should'])} of {fr_total} undisposed)")
     lines.append("")
     if packet["next_session_should"]:
         for item in packet["next_session_should"]:
-            lines.append(f"- ({item['from_session']}) {item['text']}")
+            lines.append(f"- {item['ref']} {item['text']}")
+        if packet.get("next_session_should_truncated"):
+            lines.append("")
+            lines.append(f"_{fr_total - len(packet['next_session_should'])} more elided. Dispose via `bin/selvedge submit forward-reference-disposition --payload '{{\"target_session\": <wno>, \"seq\": <n>, \"note\": \"...\"}}'`._")
     else:
         lines.append("(none)")
     lines.append("")
@@ -2388,7 +2484,7 @@ def _orient_markdown(packet: dict) -> str:
             lines.append("")
             lines.append(f"_{fb_total - len(fb)} more untriaged feedback rows elided. Run `bin/selvedge query \"SELECT feedback_id, flag, body_md FROM engine_feedback WHERE disposition IS NULL\"` for the full list._")
         lines.append("")
-        lines.append("_Triage by setting `disposition` (e.g. `bin/selvedge query` UPDATE under __cli__) and citing the resulting issue or decision._")
+        lines.append("_Triage via `bin/selvedge submit engine-feedback-disposition --payload '{\"alias\": \"EF-...\", \"disposition\": \"...\"}'`._")
     else:
         lines.append("(none)")
     lines.append("")
