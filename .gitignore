@@ -16,5 +16,11 @@ state/tests/round-trip-spec/
 __pycache__/
 *.pyc
 
+# pytest / coverage artifacts (regenerable; not project state).
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
 # Claude Code scheduled-tasks lockfile (per-process; not project state).
 .claude/scheduled_tasks.lock

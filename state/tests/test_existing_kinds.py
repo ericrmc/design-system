@@ -18,7 +18,8 @@ from conftest import PRIMARY_DB, WORKSPACE
 def test_session_open_creates_session_and_object(clean_substrate, db):
     sid = clean_substrate
     row = db.execute(
-        "SELECT session_no, slug, status FROM sessions WHERE session_id=?", (sid,)
+        "SELECT session_no, workspace_session_no, slug, status FROM sessions WHERE session_id=?",
+        (sid,),
     ).fetchone()
     assert row["session_no"] == 1
     assert row["status"] == "open"
@@ -27,29 +28,27 @@ def test_session_open_creates_session_and_object(clean_substrate, db):
         (sid,),
     ).fetchone()
     assert obj["object_kind"] == "session"
-    assert obj["alias"] == "S001"
+    # engine-v20+: alias derives from workspace_session_no (= session_no +
+    # init_session_offset), not session_no directly.
+    assert obj["alias"] == f"S{row['workspace_session_no']:03d}"
 
 
-def test_t10_session_must_be_contiguous(clean_substrate, selvedge_cli):
-    res = selvedge_cli(
-        [
-            "submit",
-            "session-open",
-            "--payload",
-            json.dumps(
-                {
-                    "session_no": 5,
-                    "slug": "skip",
-                    "mode": "self-development",
-                    "workspace_id": "selvedge-self-development",
-                    "engine_version_at_open": "engine-v17",
-                }
-            ),
-        ],
-        expect_ok=False,
-    )
-    assert res["rc"] != 0
-    assert "E_REFUSAL_T10" in res["err"]
+def test_t10_session_must_be_contiguous(clean_substrate, db):
+    """T-10 trigger refuses non-contiguous session_no. Engine-v20+ session-open
+    handler ignores caller-supplied session_no (uses MAX+1), so T-10 is only
+    reachable via direct SQL — exercised here to keep the trigger covered."""
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        with pytest.raises(sqlite3.IntegrityError) as exc:
+            conn.execute(
+                "INSERT INTO sessions (session_no, workspace_session_no, slug, mode, "
+                "workspace_id, engine_version_at_open, status) "
+                "VALUES (5, 5, 'skip', 'self-development', 'selvedge-self-development', "
+                "'engine-v17', 'open')"
+            )
+        assert "E_REFUSAL_T10" in str(exc.value)
+    finally:
+        conn.close()
 
 
 def test_decision_with_alternative_creates_alias(clean_substrate, selvedge_cli, db):

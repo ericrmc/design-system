@@ -46,10 +46,47 @@ def _snapshot_primary():
             shutil.move(BACKUP_DB, PRIMARY_DB)
 
 
+_TESTS_DIR = Path(__file__).resolve().parent
+
+
+def _coverage_active() -> bool:
+    """True iff a coverage measurement is in progress in this pytest run.
+    Detection is via `coverage.Coverage.current()` because pytest-cov 7.x no
+    longer exports a COV_CORE_* env marker we can sniff."""
+    try:
+        import coverage  # type: ignore
+    except ImportError:
+        return False
+    return coverage.Coverage.current() is not None
+
+
+def _coverage_subprocess_env() -> dict:
+    """Return env additions that make CLI subprocess invocations contribute to
+    coverage measurement. The shim in `state/tests/sitecustomize.py` calls
+    `coverage.process_startup()` when COVERAGE_PROCESS_START is set."""
+    if not _coverage_active():
+        return {}
+    extra = {"COVERAGE_PROCESS_START": str(WORKSPACE / "pyproject.toml")}
+    existing = os.environ.get("PYTHONPATH", "")
+    parts = [str(_TESTS_DIR)]
+    if existing:
+        parts.append(existing)
+    extra["PYTHONPATH"] = os.pathsep.join(parts)
+    return extra
+
+
 def _run_cli(args: list[str], *, expect_ok: bool = True, input_payload: dict | None = None) -> dict:
-    env = os.environ | {"SELVEDGE_WORKSPACE": str(WORKSPACE)}
+    env = os.environ | {"SELVEDGE_WORKSPACE": str(WORKSPACE)} | _coverage_subprocess_env()
+    # Under coverage, route through the venv's interpreter (which has the
+    # `coverage` package installed and the sitecustomize shim on PYTHONPATH)
+    # rather than the bash shim's `python3`, which resolves to system Python
+    # and would not contribute to the coverage report.
+    if _coverage_active():
+        cmd = [sys.executable, "-m", "selvedge.cli", *args]
+    else:
+        cmd = [str(BIN), *args]
     proc = subprocess.run(
-        [str(BIN), *args],
+        cmd,
         capture_output=True,
         text=True,
         env=env,
