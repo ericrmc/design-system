@@ -133,6 +133,11 @@ def clean_substrate():
                     "mode": "self-development",
                     "workspace_id": "selvedge-self-development",
                     "engine_version_at_open": "engine-v17",
+                    # Default fixture kind is spec_only so close paths do not
+                    # require a clean review_pass via t30 (engine-v31, S104).
+                    # Tests that need to exercise coding-review semantics open
+                    # their own kind=coding session.
+                    "kind": "spec_only",
                 }
             ),
         ]

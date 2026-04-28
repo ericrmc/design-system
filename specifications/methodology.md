@@ -1,10 +1,10 @@
 ---
 title: Methodology
-version: 3
+version: 4
 status: active
 created: 2026-04-27
-updated-by-session: 083
-supersedes: methodology-v2 (engine-v17/v18); per 083 D-2 (operator-directed coding review loop)
+updated-by-session: 104
+supersedes: methodology-v3 (engine-v19); per S104 DV-S104-1..4,7 (substrate enforcement of the coding review loop)
 ---
 
 # Methodology
@@ -84,7 +84,7 @@ The reviewer is then re-invoked against the updated changeset. The loop continue
 
 **Termination and deadlock.** The session does not close until the reviewer's final pass returns clean of medium-or-higher findings. If the loop reaches a fourth iteration without converging — the reviewer keeps surfacing new medium+ issues, or the implementer adjudicates findings the next reviewer pass re-raises — the implementer halts the loop, records the unresolved findings and the iteration history in `04-review.md`, opens `OI-<session>-<slug>-findings-unresolved.md` with the full transcript, and closes the session in a halted state. A halted session is not a normal close; the next session reopens the work as its first agenda item.
 
-The mechanism is structural, not advisory: a coding session that closes without a clean reviewer pass (or an explicit halted-state record) is invalid and the next session must reopen the work. The substrate does not yet enforce this; until it does, the discipline is operator-policed and recorded in `04-review.md`.
+The mechanism is structural, not advisory: a coding session that closes without a clean reviewer pass (or an explicit halted-state record) is invalid and the next session must reopen the work. The substrate enforces this since engine-v31 (S104, closing OI-083-001): the operator declares `sessions.kind` at open (default `coding`, alternatives `spec_only` and `meta`; immutable post-open via T-29). The `review_passes` table records each reviewer iteration with outcome ∈ {clean, findings, nonconverged} and an operator-asserted `head_sha` for staleness audit. T-30 refuses close on a coding session unless the latest review_pass is outcome=clean, or outcome=nonconverged with `halt_issue_id NOT NULL` (the halt path). T-20 is narrowed: open medium+ findings still refuse normal close, but admit the halt path so unresolved findings are recorded honestly rather than force-adjudicated. Halted-as-status-value (a third value on `sessions.status`) is deferred to OI-S104-3 because admitting it would require a calibrated rebuild of the heavily-FK'd `sessions` table; halt is currently encoded by the review_pass row's outcome on a `status='closed'` session.
 
 The severity taxonomy (critical / high / medium / low) admits classifier disagreement at its boundaries, especially between medium and low. A worked rubric is deferred until two or three code-producing sessions have exercised the loop and produced empirical examples to calibrate against; until then the implementer and reviewer note any classification disagreement in `04-review.md`, and the implementer treats genuinely-borderline findings as medium for the purpose of the loop's termination condition. The deferral is tracked under `OI-083-002-coding-review-severity-taxonomy.md`.
 

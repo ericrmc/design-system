@@ -647,6 +647,12 @@ def _submit_session_open(conn: sqlite3.Connection, p: dict, role: str) -> dict:
         )
     if "slug" not in p or not p["slug"]:
         raise SelvedgeError("E_VALIDATION", "session-open requires slug")
+    kind = p.get("kind", "coding")
+    if kind not in ("coding", "spec_only", "meta"):
+        raise SelvedgeError(
+            "E_VALIDATION",
+            f"session-open kind must be one of coding, spec_only, meta; got {kind!r}",
+        )
     workspace_id = _meta(conn, "workspace_id")
     mode = _meta(conn, "mode")
     eng_ver = _meta(conn, "current_engine_version")
@@ -660,9 +666,9 @@ def _submit_session_open(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     offset = int(_meta(conn, "init_session_offset", "0"))
     wno = sno + offset
     cur = conn.execute(
-        "INSERT INTO sessions (session_no, workspace_session_no, slug, mode, workspace_id, engine_version_at_open, status) "
-        "VALUES (?,?,?,?,?,?, 'open')",
-        (sno, wno, p["slug"], mode, workspace_id, eng_ver),
+        "INSERT INTO sessions (session_no, workspace_session_no, slug, mode, workspace_id, engine_version_at_open, status, kind) "
+        "VALUES (?,?,?,?,?,?, 'open', ?)",
+        (sno, wno, p["slug"], mode, workspace_id, eng_ver, kind),
     )
     sid = cur.lastrowid
     cur2 = conn.execute(
@@ -679,6 +685,7 @@ def _submit_session_open(conn: sqlite3.Connection, p: dict, role: str) -> dict:
         "mode": mode,
         "workspace_id": workspace_id,
         "engine_version_at_open": eng_ver,
+        "kind": kind,
     }
 
 
@@ -1317,6 +1324,68 @@ def _submit_review_finding(conn: sqlite3.Connection, p: dict, role: str) -> dict
     return {"review_finding_id": rfid, "object_id": oid}
 
 
+def _submit_review_pass(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    """Record a terminal review-pass row (engine-v31, S104 D-2/D-4).
+
+    Required: iteration (1-4), outcome ('clean' | 'findings' | 'nonconverged'),
+    head_sha (operator-asserted; substrate format-checks but cannot verify
+    truth), summary (one-line atom).
+
+    For outcome='nonconverged' the caller must also pass halt_issue_alias
+    (resolved to issue_id), per t_review_pass_nonconverged_requires_halt_issue.
+
+    The close-gate (t30) inspects the LATEST iteration's outcome per session;
+    submit successive iterations as the loop runs (1, 2, 3, 4 max).
+    """
+    _check_role_capability(conn, role, "review_passes", "insert")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    wno = _session_workspace_no(conn, sess_id)
+    iteration = int(p["iteration"])
+    if not (1 <= iteration <= 4):
+        raise SelvedgeError(
+            "E_VALIDATION",
+            f"review-pass iteration must be 1-4 (the methodology halts the loop at iter 4); got {iteration}",
+        )
+    outcome = p["outcome"]
+    if outcome not in ("clean", "findings", "nonconverged"):
+        raise SelvedgeError(
+            "E_VALIDATION",
+            f"review-pass outcome must be one of clean, findings, nonconverged; got {outcome!r}",
+        )
+    head_sha = p.get("head_sha", "").strip()
+    if not (7 <= len(head_sha) <= 64):
+        raise SelvedgeError(
+            "E_VALIDATION",
+            "review-pass head_sha must be 7-64 chars (typically the abbreviated or full git HEAD sha at the moment the reviewer ran)",
+        )
+    if not all(c in "0123456789abcdefABCDEF" for c in head_sha):
+        raise SelvedgeError(
+            "E_VALIDATION",
+            f"review-pass head_sha must be hex characters; got {head_sha!r}",
+        )
+    if outcome == "nonconverged" and not p.get("halt_issue_alias"):
+        raise SelvedgeError(
+            "E_VALIDATION",
+            "review-pass outcome=nonconverged requires halt_issue_alias (the OI-... issue tracking the unresolved findings per methodology halt-state)",
+        )
+    summary_aid = _insert_atom(conn, role, sess_id, "finding", p["summary"])
+    halt_issue_id = None
+    if p.get("halt_issue_alias"):
+        halt_issue_id = _resolve_issue_alias(conn, p["halt_issue_alias"])
+    cur = conn.execute(
+        "INSERT INTO review_passes (session_id, iteration, outcome, head_sha, summary_atom_id, halt_issue_id) "
+        "VALUES (?,?,?,?,?,?)",
+        (sess_id, iteration, outcome, head_sha, summary_aid, halt_issue_id),
+    )
+    rpid = cur.lastrowid
+    return {
+        "review_pass_id": rpid,
+        "session_workspace_no": wno,
+        "iteration": iteration,
+        "outcome": outcome,
+    }
+
+
 def _submit_finding_disposition(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "review_findings", "update")
     rf = conn.execute(
@@ -1688,6 +1757,7 @@ SUBMIT_HANDLERS = {
     "perspective-position": _submit_perspective_position,
     "perspective-claim": _submit_perspective_claim,
     "review-finding": _submit_review_finding,
+    "review-pass": _submit_review_pass,
     "finding-disposition": _submit_finding_disposition,
     "close-record": _submit_close_record,
     "legacy-import": _submit_legacy_import,
@@ -2149,7 +2219,12 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
         "FROM review_findings WHERE session_id=? ORDER BY iteration, review_finding_id",
         (sid,),
     ).fetchall()
-    if rfs:
+    rps = conn.execute(
+        "SELECT iteration, outcome, head_sha, summary_atom_id, halt_issue_id "
+        "FROM review_passes WHERE session_id=? ORDER BY iteration",
+        (sid,),
+    ).fetchall()
+    if rfs or rps:
         lines = [
             "---",
             f"session: {workspace_no:03d}",
@@ -2174,6 +2249,18 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
             lines.append(f"- **{rf['severity']}**{cite}: {_atom_text(conn, rf['finding_atom_id'])}")
             disp_text = _atom_text(conn, rf["disposition_atom_id"]) if rf["disposition_atom_id"] is not None else "(no disposition recorded)"
             lines.append(f"  - **{rf['disposition']}.** {disp_text}")
+        if rps:
+            lines.append("")
+            lines.append("## Terminal passes")
+            lines.append("")
+            for rp in rps:
+                halt = ""
+                if rp["halt_issue_id"]:
+                    h = conn.execute("SELECT alias FROM issues WHERE issue_id=?", (rp["halt_issue_id"],)).fetchone()
+                    if h and h["alias"]:
+                        halt = f" (halt issue `{h['alias']}`)"
+                lines.append(f"- **iteration {rp['iteration']}** — {rp['outcome']}{halt} @ `{rp['head_sha'][:12]}`")
+                lines.append(f"  - {_atom_text(conn, rp['summary_atom_id'])}")
         lines.append("")
         files["04-review.md"] = "\n".join(lines)
 
