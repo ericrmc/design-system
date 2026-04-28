@@ -30,8 +30,6 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-086-004](OI-086-004.md) | MEDIUM | open | legacy_imports.decomposition_status does not track actual decomposition coverage |
 | [OI-S088-1](OI-S088-1.md) | LOW | open | Atom_type conflation: issue dispositions and links reuse rejection_reason atom_type. |
 | [OI-S090-1](OI-S090-1.md) | MEDIUM | open | Cross-reference linking pass for spec_clause_links (empty) |
-| [OI-S090-2](OI-S090-2.md) | MEDIUM | open | pytest coverage for Path A handlers + export round-trip |
-| [OI-S090-5](OI-S090-5.md) | MEDIUM | open | Substrate-driven spec content authoring path (markdown body editing remains the only option) |
 | [OI-S091-1](OI-S091-1.md) | LOW | open | Migration 011 encodes engine-v24 as a snapshot; future fresh workspaces start one or more versions stale |
 
 ## Resolved
@@ -51,5 +49,10 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S089-1](resolved/OI-S089-1.md) | S092 | Implement submit issue-work-item CLI handler. |
 | [OI-S089-2](resolved/OI-S089-2.md) | S092 | T-25 explicit lease-renewal trigger on work_items. |
 | [OI-S089-3](resolved/OI-S089-3.md) | S092 | Consider decomposition_status column on issues if LEFT JOIN dispatch query proves awkward. |
+| [OI-S090-2](resolved/OI-S090-2.md) | S103 | pytest coverage for Path A handlers + export round-trip |
 | [OI-S090-3](resolved/OI-S090-3.md) | S092 | Migrate runner post-apply schema_migrations existence check |
 | [OI-S090-4](resolved/OI-S090-4.md) | S090 | _submit_spec_version handler order trips T-03 on update |
+| [OI-S090-5](resolved/OI-S090-5.md) | S099 | Substrate-driven spec content authoring path (markdown body editing remains the only option) |
+| [OI-S098-1](resolved/OI-S098-1.md) | S098 | Smoke-test closes_issue handler dispatch |
+| [OI-S098-2](resolved/OI-S098-2.md) | S098 | Smoke-test t28 trigger refusal path |
+| [OI-S101-1](resolved/OI-S101-1.md) | S102 | Rename objects.citable_alias to objects.alias for query ergonomics |

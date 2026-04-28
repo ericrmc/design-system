@@ -867,16 +867,13 @@ def test_orient_filters_disposed_feedback(clean_substrate, selvedge_cli):
     assert packet["untriaged_feedback"] == []
 
 
-def test_orient_markdown_renders_feedback_table(clean_substrate):
+def test_orient_markdown_renders_feedback_table(clean_substrate, selvedge_cli):
     _seed_engine_feedback(body="head with a | pipe inside should be escaped")
-    import os, subprocess
-    env = os.environ | {"SELVEDGE_WORKSPACE": str(WORKSPACE)}
-    proc = subprocess.run(
-        [str(WORKSPACE / "bin" / "selvedge"), "orient"],
-        capture_output=True, text=True, env=env,
-    )
-    assert proc.returncode == 0, proc.stderr
-    out = proc.stdout
+    res = selvedge_cli(["orient"])
+    assert res["rc"] == 0, res
+    # The non-JSON form returns markdown; conftest's parser falls back to
+    # {"_raw": <stdout>} for non-JSON output.
+    out = res["out"]["_raw"] if isinstance(res["out"], dict) else "\n".join(res["out"])
     assert "## Untriaged engine feedback (1 of 1)" in out
     assert "| Alias | Flag | Surfaced | Head |" in out
     assert "head with a \\| pipe inside should be escaped" in out

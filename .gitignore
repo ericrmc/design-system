@@ -13,6 +13,7 @@ state/selvedge.sqlite
 state/selvedge.sqlite-*
 state/selvedge.sqlite.*backup
 state/tests/round-trip-spec/
+state/tests/spec-bodies/
 __pycache__/
 *.pyc
 
