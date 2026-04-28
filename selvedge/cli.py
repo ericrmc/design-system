@@ -75,6 +75,10 @@ ALIAS_RE = re.compile(
     r")\]"
 )
 
+# Issue-alias regex used by orient FR-rot annotation. Matches the three
+# alias shapes in current use: OI-NNN, OI-NNN-NNN, OI-S<wno>-<seq>.
+FR_ISSUE_CITE_RE = re.compile(r"\bOI-(?:S\d{3}-\d+|\d{3}(?:-\d+)?)\b")
+
 
 def workspace_root() -> Path:
     if root := os.environ.get(WORKSPACE_ROOT_ENV):
@@ -2407,6 +2411,37 @@ def _orient_sections(conn: sqlite3.Connection) -> dict:
         for r in fr_rows[:30]
     ]
     out["next_session_should_truncated"] = len(fr_rows) > 30
+    # Rot annotation: each FR text is scanned for OI- issue aliases via
+    # regex; cites whose target issue is resolved/superseded or absent
+    # become a `rot` list on the FR. Live cites (open/in_progress/blocked)
+    # produce no annotation. No structured-citation table — annotation is
+    # a derivation of the FR text, computed at orient time only. (DV-S101-1.)
+    fr_cite_aliases: list[str] = []
+    fr_cites: list[list[str]] = []
+    for item in out["next_session_should"]:
+        item["rot"] = []
+        seen: list[str] = []
+        for m in FR_ISSUE_CITE_RE.findall(item["text"]):
+            if m not in seen:
+                seen.append(m)
+            if m not in fr_cite_aliases:
+                fr_cite_aliases.append(m)
+        fr_cites.append(seen)
+    if fr_cite_aliases:
+        placeholders = ",".join("?" * len(fr_cite_aliases))
+        status_rows = conn.execute(
+            f"SELECT citable_alias, status FROM issues WHERE citable_alias IN ({placeholders})",
+            tuple(fr_cite_aliases),
+        ).fetchall()
+        status_by_alias = {r["citable_alias"]: r["status"] for r in status_rows}
+        LIVE_STATUSES = {"open", "in_progress", "blocked"}
+        for item, cites in zip(out["next_session_should"], fr_cites):
+            for alias in cites:
+                status = status_by_alias.get(alias)
+                if status is None:
+                    item["rot"].append({"alias": alias, "status": "absent"})
+                elif status not in LIVE_STATUSES:
+                    item["rot"].append({"alias": alias, "status": status})
     open_issues_rows = conn.execute(
         "SELECT i.citable_alias, i.priority, i.status, ta.text AS title "
         "FROM issues i JOIN text_atoms ta ON ta.atom_id=i.title_atom_id "
@@ -2505,7 +2540,11 @@ def _orient_markdown(packet: dict) -> str:
     lines.append("")
     if packet["next_session_should"]:
         for item in packet["next_session_should"]:
-            lines.append(f"- {item['ref']} {item['text']}")
+            suffix = ""
+            if item.get("rot"):
+                parts = [f"{r['alias']}: {r['status']}" for r in item["rot"]]
+                suffix = f" [rot: {', '.join(parts)}]"
+            lines.append(f"- {item['ref']} {item['text']}{suffix}")
         if packet.get("next_session_should_truncated"):
             lines.append("")
             lines.append(f"_{fr_total - len(packet['next_session_should'])} more elided. Dispose via `bin/selvedge submit forward-reference-disposition --payload '{{\"target_session\": <wno>, \"seq\": <n>, \"note\": \"...\"}}'`._")
