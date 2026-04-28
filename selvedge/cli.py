@@ -521,7 +521,7 @@ def cmd_id_allocate(args) -> int:
 
     def do(conn):
         conn.execute(
-            "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES (?,?,?)",
+            "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES (?,?,?)",
             (args.kind, args.typed_row_id, args.alias),
         )
         return conn.execute("SELECT last_insert_rowid() AS rid").fetchone()["rid"]
@@ -544,7 +544,7 @@ def cmd_id_allocate(args) -> int:
 
 def _resolve_alias(conn: sqlite3.Connection, alias: str) -> Optional[int]:
     row = conn.execute(
-        "SELECT object_id FROM objects WHERE citable_alias = ?",
+        "SELECT object_id FROM objects WHERE alias = ?",
         (alias,),
     ).fetchone()
     return row["object_id"] if row else None
@@ -666,7 +666,7 @@ def _submit_session_open(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     )
     sid = cur.lastrowid
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('session', ?, ?)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('session', ?, ?)",
         (sid, f"S{wno:03d}"),
     )
     oid = cur2.lastrowid
@@ -733,7 +733,7 @@ def _submit_decision(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     did = cur.lastrowid
     alias = _alias_for_decision(sess["session_no"], next_no)
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('decision', ?, ?)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('decision', ?, ?)",
         (did, alias),
     )
     oid = cur2.lastrowid
@@ -776,7 +776,7 @@ def _submit_deliberation_open(conn: sqlite3.Connection, p: dict, role: str) -> d
     )
     did = cur.lastrowid
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('deliberation', ?, NULL)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('deliberation', ?, NULL)",
         (did,),
     )
     oid = cur2.lastrowid
@@ -804,7 +804,7 @@ def _submit_perspective(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     pid = cur.lastrowid
     alias = f"P-{p['deliberation_id']}-{p['label']}"
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('perspective', ?, ?)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('perspective', ?, ?)",
         (pid, alias),
     )
     oid = cur2.lastrowid
@@ -863,7 +863,7 @@ def _submit_synthesis_point(conn: sqlite3.Connection, p: dict, role: str) -> dic
     )
     spid = cur.lastrowid
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('synthesis_point', ?, NULL)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('synthesis_point', ?, NULL)",
         (spid,),
     )
     oid = cur2.lastrowid
@@ -958,7 +958,7 @@ def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     svid = cur.lastrowid
     alias = _alias_for_spec(p["spec_id"], p["version"])
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('spec_version', ?, ?)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('spec_version', ?, ?)",
         (svid, alias),
     )
     oid = cur2.lastrowid
@@ -1078,14 +1078,14 @@ def _insert_atom(conn: sqlite3.Connection, role: str, session_id: int, atom_type
     )
     aid = cur.lastrowid
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('text_atom', ?, NULL)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('text_atom', ?, NULL)",
         (aid,),
     )
     return aid
 
 
 def _resolve_alias_to_object_id(conn: sqlite3.Connection, alias: str) -> int:
-    row = conn.execute("SELECT object_id FROM objects WHERE citable_alias=?", (alias,)).fetchone()
+    row = conn.execute("SELECT object_id FROM objects WHERE alias=?", (alias,)).fetchone()
     if row is None:
         raise SelvedgeError("E_REFUSAL_T01", f"unresolved alias [{alias}]")
     return row["object_id"]
@@ -1103,7 +1103,7 @@ def _submit_assessment(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     aid = cur.lastrowid
     alias = f"A-S{wno:03d}"
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('assessment', ?, ?)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('assessment', ?, ?)",
         (aid, alias),
     )
     oid = cur2.lastrowid
@@ -1137,7 +1137,7 @@ def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     did = cur.lastrowid
     alias = f"DV-S{wno:03d}-{next_no}"
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('decision_v2', ?, ?)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('decision_v2', ?, ?)",
         (did, alias),
     )
     oid = cur2.lastrowid
@@ -1191,7 +1191,7 @@ def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
                 _submit_issue_disposition(
                     conn,
                     {
-                        "citable_alias": e["target"],
+                        "alias": e["target"],
                         "to_status": "resolved",
                         "reason": descriptor,
                         "session_no": p.get("session_no"),
@@ -1219,7 +1219,7 @@ def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
         avid = cur3.lastrowid
         alt_alias = f"{alias}-{a['label']}"
         cur4 = conn.execute(
-            "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('alternative_v2', ?, ?)",
+            "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('alternative_v2', ?, ?)",
             (avid, alt_alias),
         )
         a_oid = cur4.lastrowid
@@ -1254,7 +1254,7 @@ def _submit_perspective_position(conn: sqlite3.Connection, p: dict, role: str) -
     )
     pid = cur.lastrowid
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('perspective_position', ?, NULL)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('perspective_position', ?, NULL)",
         (pid,),
     )
     oid = cur2.lastrowid
@@ -1285,7 +1285,7 @@ def _submit_perspective_claim(conn: sqlite3.Connection, p: dict, role: str) -> d
     )
     pcid = cur.lastrowid
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('perspective_claim', ?, NULL)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('perspective_claim', ?, NULL)",
         (pcid,),
     )
     oid = cur2.lastrowid
@@ -1309,7 +1309,7 @@ def _submit_review_finding(conn: sqlite3.Connection, p: dict, role: str) -> dict
     )
     rfid = cur.lastrowid
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('review_finding', ?, ?)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('review_finding', ?, ?)",
         (rfid, f"RF-S{wno:03d}-{p['iteration']}-{rfid}"),
     )
     oid = cur2.lastrowid
@@ -1345,7 +1345,7 @@ def _submit_close_record(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     crid = cur.lastrowid
     alias = f"C-S{wno:03d}"
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('close_record', ?, ?)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('close_record', ?, ?)",
         (crid, alias),
     )
     oid = cur2.lastrowid
@@ -1388,7 +1388,7 @@ def _submit_spec_section(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     )
     ssid = cur.lastrowid
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('spec_section', ?, NULL)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('spec_section', ?, NULL)",
         (ssid,),
     )
     oid = cur2.lastrowid
@@ -1415,7 +1415,7 @@ def _submit_spec_clause(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     )
     scid = cur.lastrowid
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('spec_clause', ?, NULL)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('spec_clause', ?, NULL)",
         (scid,),
     )
     oid2 = cur2.lastrowid
@@ -1425,7 +1425,7 @@ def _submit_spec_clause(conn: sqlite3.Connection, p: dict, role: str) -> dict:
 
 def _resolve_issue_alias(conn: sqlite3.Connection, alias: str) -> int:
     row = conn.execute(
-        "SELECT issue_id FROM issues WHERE citable_alias=?", (alias,)
+        "SELECT issue_id FROM issues WHERE alias=?", (alias,)
     ).fetchone()
     if row is None:
         raise SelvedgeError("E_NOT_FOUND", f"issue alias [{alias}] not registered")
@@ -1450,10 +1450,10 @@ def _submit_issue(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     if p.get("body"):
         body_aid = _insert_atom(conn, role, sess_id, "legacy_import", p["body"])
     cur = conn.execute(
-        "INSERT INTO issues (citable_alias, surfaced_session_id, title_atom_id, summary_atom_id, body_atom_id, priority, status) "
+        "INSERT INTO issues (alias, surfaced_session_id, title_atom_id, summary_atom_id, body_atom_id, priority, status) "
         "VALUES (?,?,?,?,?,?, 'open')",
         (
-            p["citable_alias"],
+            p["alias"],
             surfaced_id,
             title_aid,
             summary_aid,
@@ -1462,7 +1462,7 @@ def _submit_issue(conn: sqlite3.Connection, p: dict, role: str) -> dict:
         ),
     )
     iid = cur.lastrowid
-    return {"issue_id": iid, "citable_alias": p["citable_alias"]}
+    return {"issue_id": iid, "alias": p["alias"]}
 
 
 def _submit_issue_disposition(conn: sqlite3.Connection, p: dict, role: str) -> dict:
@@ -1472,7 +1472,7 @@ def _submit_issue_disposition(conn: sqlite3.Connection, p: dict, role: str) -> d
     if "issue_id" in p:
         iid = int(p["issue_id"])
     else:
-        iid = _resolve_issue_alias(conn, p["citable_alias"])
+        iid = _resolve_issue_alias(conn, p["alias"])
     cur_row = conn.execute(
         "SELECT status FROM issues WHERE issue_id=?", (iid,)
     ).fetchone()
@@ -1525,7 +1525,7 @@ def _submit_issue_link(conn: sqlite3.Connection, p: dict, role: str) -> dict:
 def _submit_issue_note(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "issue_notes", "insert")
     sess_id = _atom_session_id(conn, p.get("session_no"))
-    iid = int(p["issue_id"]) if "issue_id" in p else _resolve_issue_alias(conn, p["citable_alias"])
+    iid = int(p["issue_id"]) if "issue_id" in p else _resolve_issue_alias(conn, p["alias"])
     note_aid = _insert_atom(conn, role, sess_id, "claim", p["note"])
     next_seq = conn.execute(
         "SELECT COALESCE(MAX(seq),0)+1 AS n FROM issue_notes WHERE issue_id=?", (iid,)
@@ -1638,7 +1638,7 @@ def _submit_engine_feedback(conn: sqlite3.Connection, p: dict, role: str) -> dic
     ).fetchone()["n"]
     alias = _alias_for_engine_feedback(wno, idx)
     cur2 = conn.execute(
-        "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('engine_feedback', ?, ?)",
+        "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('engine_feedback', ?, ?)",
         (fid, alias),
     )
     oid = cur2.lastrowid
@@ -1651,7 +1651,7 @@ def _submit_engine_feedback(conn: sqlite3.Connection, p: dict, role: str) -> dic
 def _submit_issue_work_item(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     _check_role_capability(conn, role, "issue_work_items", "insert")
     sess_id = _atom_session_id(conn, p.get("session_no"))
-    iid = int(p["issue_id"]) if "issue_id" in p else _resolve_issue_alias(conn, p["citable_alias"])
+    iid = int(p["issue_id"]) if "issue_id" in p else _resolve_issue_alias(conn, p["alias"])
     if "issue_id" in p and conn.execute(
         "SELECT 1 FROM issues WHERE issue_id=?", (iid,)
     ).fetchone() is None:
@@ -2086,9 +2086,9 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
                 for s in sups:
                     cite = ""
                     if s["cited_object_id"]:
-                        c = conn.execute("SELECT citable_alias FROM objects WHERE object_id=?", (s["cited_object_id"],)).fetchone()
-                        if c and c["citable_alias"]:
-                            cite = f" [{c['citable_alias']}]"
+                        c = conn.execute("SELECT alias FROM objects WHERE object_id=?", (s["cited_object_id"],)).fetchone()
+                        if c and c["alias"]:
+                            cite = f" [{c['alias']}]"
                     lines.append(f"- ({s['basis']}) {_atom_text(conn, s['claim_atom_id'])}{cite}")
                 lines.append("")
             effs = conn.execute(
@@ -2103,13 +2103,13 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
                     descriptor = e["target_descriptor"] or ""
                     alias = ""
                     if e["target_object_id"]:
-                        c = conn.execute("SELECT citable_alias FROM objects WHERE object_id=?", (e["target_object_id"],)).fetchone()
-                        if c and c["citable_alias"]:
-                            alias = c["citable_alias"]
+                        c = conn.execute("SELECT alias FROM objects WHERE object_id=?", (e["target_object_id"],)).fetchone()
+                        if c and c["alias"]:
+                            alias = c["alias"]
                     elif e["target_issue_id"]:
-                        c = conn.execute("SELECT citable_alias FROM issues WHERE issue_id=?", (e["target_issue_id"],)).fetchone()
-                        if c and c["citable_alias"]:
-                            alias = c["citable_alias"]
+                        c = conn.execute("SELECT alias FROM issues WHERE issue_id=?", (e["target_issue_id"],)).fetchone()
+                        if c and c["alias"]:
+                            alias = c["alias"]
                     if alias and descriptor:
                         lines.append(f"- {e['effect_kind']} {alias} — {descriptor}")
                     elif alias:
@@ -2168,9 +2168,9 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
                 lines.append("")
             cite = ""
             if rf["target_object_id"]:
-                c = conn.execute("SELECT citable_alias FROM objects WHERE object_id=?", (rf["target_object_id"],)).fetchone()
-                if c and c["citable_alias"]:
-                    cite = f" against `{c['citable_alias']}`"
+                c = conn.execute("SELECT alias FROM objects WHERE object_id=?", (rf["target_object_id"],)).fetchone()
+                if c and c["alias"]:
+                    cite = f" against `{c['alias']}`"
             lines.append(f"- **{rf['severity']}**{cite}: {_atom_text(conn, rf['finding_atom_id'])}")
             disp_text = _atom_text(conn, rf["disposition_atom_id"]) if rf["disposition_atom_id"] is not None else "(no disposition recorded)"
             lines.append(f"  - **{rf['disposition']}.** {disp_text}")
@@ -2242,7 +2242,7 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
 
 
 def _export_issues(conn: sqlite3.Connection, write: bool = False) -> dict:
-    """Materialise open-issues/<citable_alias>.md from the issues substrate table.
+    """Materialise open-issues/<alias>.md from the issues substrate table.
 
     One file per issue. Open issues land in `open-issues/`; resolved/superseded
     in `open-issues/resolved/`. Frontmatter mirrors the pre-S088 markdown shape
@@ -2250,7 +2250,7 @@ def _export_issues(conn: sqlite3.Connection, write: bool = False) -> dict:
     body atom if present, else the summary atom, else empty.
     """
     rows = conn.execute(
-        "SELECT i.issue_id, i.citable_alias, i.priority, i.status, "
+        "SELECT i.issue_id, i.alias, i.priority, i.status, "
         "       i.surfaced_session_id, i.resolved_session_id, i.resolved_at, "
         "       ta_t.text AS title, ta_s.text AS summary, ta_b.text AS body, "
         "       sf.workspace_session_no AS surfaced_wno, "
@@ -2261,17 +2261,17 @@ def _export_issues(conn: sqlite3.Connection, write: bool = False) -> dict:
         "LEFT JOIN text_atoms ta_b ON ta_b.atom_id=i.body_atom_id "
         "JOIN sessions sf ON sf.session_id=i.surfaced_session_id "
         "LEFT JOIN sessions sr ON sr.session_id=i.resolved_session_id "
-        "ORDER BY i.citable_alias"
+        "ORDER BY i.alias"
     ).fetchall()
 
     files: dict[str, str] = {}
     for r in rows:
         is_terminal = r["status"] in ("resolved", "superseded")
         rel = "resolved" if is_terminal else ""
-        path = Path("open-issues") / rel / f"{r['citable_alias']}.md" if rel else \
-               Path("open-issues") / f"{r['citable_alias']}.md"
+        path = Path("open-issues") / rel / f"{r['alias']}.md" if rel else \
+               Path("open-issues") / f"{r['alias']}.md"
         lines = ["---",
-                 f"id: {r['citable_alias']}",
+                 f"id: {r['alias']}",
                  f"status: {r['status']}",
                  f"priority: {r['priority']}",
                  f"surfaced-in-session: {r['surfaced_wno'] or ''}"]
@@ -2316,7 +2316,7 @@ def _export_issues(conn: sqlite3.Connection, write: bool = False) -> dict:
         idx_lines.append("| Alias | Priority | Status | Title |")
         idx_lines.append("|-------|----------|--------|-------|")
         for r in open_rows:
-            idx_lines.append(f"| [{r['citable_alias']}]({r['citable_alias']}.md) | {r['priority']} | {r['status']} | {r['title']} |")
+            idx_lines.append(f"| [{r['alias']}]({r['alias']}.md) | {r['priority']} | {r['status']} | {r['title']} |")
         idx_lines.append("")
     if closed_rows:
         idx_lines.append("## Resolved")
@@ -2324,7 +2324,7 @@ def _export_issues(conn: sqlite3.Connection, write: bool = False) -> dict:
         idx_lines.append("| Alias | Resolved-in | Title |")
         idx_lines.append("|-------|-------------|-------|")
         for r in closed_rows:
-            idx_lines.append(f"| [{r['citable_alias']}](resolved/{r['citable_alias']}.md) | S{r['resolved_wno']:03d} | {r['title']} |")
+            idx_lines.append(f"| [{r['alias']}](resolved/{r['alias']}.md) | S{r['resolved_wno']:03d} | {r['title']} |")
         idx_lines.append("")
     files["open-issues/index.md"] = "\n".join(idx_lines).rstrip() + "\n"
 
@@ -2430,10 +2430,10 @@ def _orient_sections(conn: sqlite3.Connection) -> dict:
     if fr_cite_aliases:
         placeholders = ",".join("?" * len(fr_cite_aliases))
         status_rows = conn.execute(
-            f"SELECT citable_alias, status FROM issues WHERE citable_alias IN ({placeholders})",
+            f"SELECT alias, status FROM issues WHERE alias IN ({placeholders})",
             tuple(fr_cite_aliases),
         ).fetchall()
-        status_by_alias = {r["citable_alias"]: r["status"] for r in status_rows}
+        status_by_alias = {r["alias"]: r["status"] for r in status_rows}
         LIVE_STATUSES = {"open", "in_progress", "blocked"}
         for item, cites in zip(out["next_session_should"], fr_cites):
             for alias in cites:
@@ -2443,7 +2443,7 @@ def _orient_sections(conn: sqlite3.Connection) -> dict:
                 elif status not in LIVE_STATUSES:
                     item["rot"].append({"alias": alias, "status": status})
     open_issues_rows = conn.execute(
-        "SELECT i.citable_alias, i.priority, i.status, ta.text AS title "
+        "SELECT i.alias, i.priority, i.status, ta.text AS title "
         "FROM issues i JOIN text_atoms ta ON ta.atom_id=i.title_atom_id "
         "WHERE i.status IN ('open','in_progress','blocked') "
         "ORDER BY CASE i.priority WHEN 'HIGH' THEN 0 WHEN 'MEDIUM' THEN 1 ELSE 2 END, "
@@ -2482,7 +2482,7 @@ def _orient_sections(conn: sqlite3.Connection) -> dict:
     ]
     feedback_rows = conn.execute(
         "SELECT ef.feedback_id, ef.flag, ef.body_md, "
-        "       o.citable_alias AS alias, "
+        "       o.alias, "
         "       s.workspace_session_no AS surfaced_in "
         "FROM engine_feedback ef "
         "LEFT JOIN objects o ON o.object_id=ef.object_id "
@@ -2559,10 +2559,10 @@ def _orient_markdown(packet: dict) -> str:
         lines.append("| Alias | Priority | Status | Title |")
         lines.append("|-------|----------|--------|-------|")
         for r in packet["open_issues"]:
-            lines.append(f"| {r['citable_alias']} | {r['priority']} | {r['status']} | {r['title']} |")
+            lines.append(f"| {r['alias']} | {r['priority']} | {r['status']} | {r['title']} |")
         if packet.get("open_issues_truncated"):
             lines.append("")
-            lines.append(f"_{total - len(packet['open_issues'])} more issues elided. Run `bin/selvedge query \"SELECT citable_alias, priority, status FROM issues WHERE status IN ('open','in_progress','blocked')\"` for the full list._")
+            lines.append(f"_{total - len(packet['open_issues'])} more issues elided. Run `bin/selvedge query \"SELECT alias, priority, status FROM issues WHERE status IN ('open','in_progress','blocked')\"` for the full list._")
     else:
         lines.append("(none)")
     lines.append("")

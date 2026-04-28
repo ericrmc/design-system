@@ -23,11 +23,11 @@ def test_session_open_creates_session_and_object(clean_substrate, db):
     assert row["session_no"] == 1
     assert row["status"] == "open"
     obj = db.execute(
-        "SELECT object_kind, citable_alias FROM objects WHERE object_kind='session' AND typed_row_id=?",
+        "SELECT object_kind, alias FROM objects WHERE object_kind='session' AND typed_row_id=?",
         (sid,),
     ).fetchone()
     assert obj["object_kind"] == "session"
-    assert obj["citable_alias"] == "S001"
+    assert obj["alias"] == "S001"
 
 
 def test_t10_session_must_be_contiguous(clean_substrate, selvedge_cli):
@@ -653,7 +653,7 @@ def _seed_issue_and_work_item(selvedge_cli, *, alias="OI-S001-1", priority="MEDI
             json.dumps(
                 {
                     "session_no": 1,
-                    "citable_alias": alias,
+                    "alias": alias,
                     "title": "pytest seed issue for issue-work-item linkage",
                     "priority": priority,
                 }
@@ -705,7 +705,7 @@ def test_issue_work_item_resolves_alias(clean_substrate, selvedge_cli):
             json.dumps(
                 {
                     "session_no": 1,
-                    "citable_alias": "OI-S001-2",
+                    "alias": "OI-S001-2",
                     "work_item_id": wid,
                     "relation": "informs",
                 }
@@ -819,7 +819,7 @@ def _seed_engine_feedback(*, flag="observation", body="x"*40, disposition=None):
         )
         fid = cur.lastrowid
         cur2 = conn.execute(
-            "INSERT INTO objects (object_kind, typed_row_id, citable_alias) VALUES ('engine_feedback', ?, ?)",
+            "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES ('engine_feedback', ?, ?)",
             (fid, f"EF-S001-{fid}"),
         )
         oid = cur2.lastrowid

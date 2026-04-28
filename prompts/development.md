@@ -29,7 +29,7 @@ State the proposed item to the operator, wait for ratification or redirect, then
 bin/selvedge submit session-open --payload '{"slug": "<kebab-case-name>"}'
 ```
 
-That is the entire payload. The substrate auto-fills `workspace_id`, `mode`, `engine_version_at_open`, `session_no`, `workspace_session_no`, and the citable_alias `S<NNN>`. The substrate refuses opening if another session is already open (E_SESSION_ALREADY_OPEN). T-23 makes slug immutable after open — pick it carefully.
+That is the entire payload. The substrate auto-fills `workspace_id`, `mode`, `engine_version_at_open`, `session_no`, `workspace_session_no`, and the alias `S<NNN>`. The substrate refuses opening if another session is already open (E_SESSION_ALREADY_OPEN). T-23 makes slug immutable after open — pick it carefully.
 
 ## 3. Submit the assessment
 
