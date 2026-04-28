@@ -17,6 +17,9 @@ Subcommands:
   subtract-eligibility Deterministic eligibility report for the human reviewer-subtractor.
   recover              Reset expired work_item leases to 'queued'.
   query                Read-only convenience query for round-trip / debugging.
+  monitor-external     Read a peer Selvedge workspace (status, next-input) and
+                       harvest its engine-feedback files into THIS substrate
+                       (engine-v31, DV-S106-3).
 
 Single-writer: every write opens its own connection, BEGIN IMMEDIATE, short tx.
 Structured errors:
@@ -44,6 +47,7 @@ import shutil
 import sqlite3
 import sys
 import time
+import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Optional
@@ -2827,6 +2831,478 @@ def cmd_export(args) -> int:
 
 
 # ---------------------------------------------------------------------------
+# monitor-external (engine-v31, OI-S106-2 / DV-S106-3)
+#
+# Three subcommands operate against a peer Selvedge workspace given by
+# --workspace <path>. `status` and `next-input` read the peer's substrate
+# read-only via SQLite URI. `harvest-ef` reads the peer's engine-feedback/
+# markdown files and copies them into THIS workspace's substrate via the
+# existing `submit engine-feedback` handler. The tool is generic across
+# external workspaces; per DV-S106-3 if next-input or harvest-ef goes unused
+# at the S009 retrospective, the unused subcommands are deleted rather than
+# deprecated.
+# ---------------------------------------------------------------------------
+
+
+_EF_FILENAME_RE = re.compile(
+    r"^EF-(?P<session>\d+)-(?P<slug>[A-Za-z0-9_\-]+)\.md$"
+)
+# Flag annotation parser: matches a "Flag: <value>" line in the file's first
+# annotation window. Tightened per S108 review F-86: the previous regex used
+# MULTILINE without windowing, so an EF body containing the substring
+# `flag: observation` mid-paragraph would override the file's intent. We now
+# scan only the first 8 non-empty lines; an EF that wants its flag honoured
+# puts it in a frontmatter-like header, not buried in prose.
+_EF_FLAG_RE = re.compile(
+    r"^\s*flag\s*[:=]\s*(observation|reframe|calibration|blocker)\s*$",
+    re.IGNORECASE,
+)
+_EF_FLAG_HEADER_LINES = 8
+
+
+def _me_validate_external(workspace_arg: str) -> tuple[Path, Path]:
+    """Resolve and validate an external workspace path. Refuse if it points at
+    THIS workspace (so harvest-ef cannot accidentally write to its source).
+
+    Per S108 review F-87, the self-vs-peer guard uses inode equality
+    (`Path.samefile`) so it survives macOS case-insensitive filesystems and
+    symlinks where two distinct path strings refer to the same directory.
+    """
+    if not workspace_arg:
+        raise SelvedgeError("E_BAD_ARG", "--workspace is required")
+    root = Path(workspace_arg).expanduser().resolve()
+    if not root.exists():
+        raise SelvedgeError("E_NO_WORKSPACE", f"path does not exist: {root}")
+    if not root.is_dir():
+        raise SelvedgeError("E_NO_WORKSPACE", f"not a directory: {root}")
+    if not (root / "MODE.md").exists():
+        raise SelvedgeError("E_NO_WORKSPACE", f"missing MODE.md: {root}")
+    db = root / "state" / "selvedge.sqlite"
+    if not db.exists():
+        raise SelvedgeError("E_NO_WORKSPACE", f"missing substrate: {db}")
+    try:
+        self_root = workspace_root()
+    except SelvedgeError:
+        self_root = None
+    if self_root is not None and self_root.exists() and root.samefile(self_root):
+        raise SelvedgeError(
+            "E_REFUSAL_SELF",
+            f"--workspace points at this workspace ({root}); "
+            "monitor-external requires a peer workspace",
+        )
+    return root, db
+
+
+def _me_open_external_ro(db: Path) -> sqlite3.Connection:
+    """Open the external substrate read-only via a SQLite URI.
+
+    Per S108 review F-83, the path component is URL-quoted because SQLite's
+    URI parser treats `?`, `#`, and `&` as URI delimiters; a peer workspace
+    whose absolute path contains those characters would otherwise fail to
+    open with a misleading "no such table" error.
+    """
+    quoted = urllib.parse.quote(str(db), safe="/")
+    conn = sqlite3.connect(f"file:{quoted}?mode=ro", uri=True)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def _me_iso_utc(ts: float) -> str:
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(ts))
+
+
+def _me_collect_close(conn: sqlite3.Connection) -> dict:
+    """Read the latest close_record's summary + next_session_should atoms."""
+    row = conn.execute(
+        "SELECT cr.close_record_id, "
+        "       COALESCE(s.workspace_session_no, s.session_no) AS wno, "
+        "       ta_sum.text AS summary "
+        "FROM close_records cr "
+        "JOIN sessions s ON s.session_id=cr.session_id "
+        "JOIN text_atoms ta_sum ON ta_sum.atom_id=cr.summary_atom_id "
+        "ORDER BY s.session_no DESC LIMIT 1"
+    ).fetchone()
+    if row is None:
+        return {"workspace_session_no": None, "summary": None, "next_session_should": []}
+    next_should = [
+        r["text"] for r in conn.execute(
+            "SELECT ta.text FROM close_state_items csi "
+            "JOIN text_atoms ta ON ta.atom_id=csi.item_atom_id "
+            "WHERE csi.close_record_id=? AND csi.facet='next_session_should' "
+            "ORDER BY csi.seq",
+            (row["close_record_id"],),
+        ).fetchall()
+    ]
+    return {
+        "workspace_session_no": row["wno"],
+        "summary": row["summary"],
+        "next_session_should": next_should,
+    }
+
+
+def _me_status(args) -> int:
+    root, db = _me_validate_external(args.workspace)
+    conn = _me_open_external_ro(db)
+    try:
+        meta = {r["key"]: r["value"] for r in conn.execute(
+            "SELECT key, value FROM workspace_metadata"
+        ).fetchall()}
+        sessions = [dict(r) for r in conn.execute(
+            "SELECT session_no, workspace_session_no, slug, kind, status, "
+            "engine_version_at_open, engine_version_at_close, opened_at, closed_at "
+            "FROM sessions ORDER BY session_no DESC LIMIT 5"
+        ).fetchall()]
+        oi_counts = {r["priority"]: r["n"] for r in conn.execute(
+            "SELECT priority, COUNT(*) AS n FROM issues "
+            "WHERE status='open' GROUP BY priority"
+        ).fetchall()}
+        latest_close = _me_collect_close(conn)
+    finally:
+        conn.close()
+
+    ef_files: list[dict] = []
+    ef_dir = root / "engine-feedback"
+    if ef_dir.is_dir():
+        for p in sorted(ef_dir.glob("EF-*.md")):
+            stat = p.stat()
+            ef_files.append({
+                "path": str(p.relative_to(root)),
+                "size": stat.st_size,
+                "mtime": _me_iso_utc(stat.st_mtime),
+            })
+
+    spp = max(1, args.sessions_per_phase)
+    latest_local_no = sessions[0]["session_no"] if sessions else 0
+    phase_idx = max(0, latest_local_no - 1) // spp if latest_local_no else 0
+
+    pkt = {
+        "workspace_path": str(root),
+        "workspace_metadata": meta,
+        "recent_sessions": sessions,
+        "open_issues_total": sum(oi_counts.values()),
+        "open_issues_by_priority": oi_counts,
+        "ef_outbox_files": ef_files,
+        "latest_close": latest_close,
+        "phase_heuristic": {
+            "value": f"P{phase_idx}",
+            "sessions_per_phase": spp,
+            "method": (
+                "floor((latest_substrate_session_no - 1) / sessions_per_phase); "
+                "uses local session_no so init_session_offset does not skew arc-phase"
+            ),
+        },
+    }
+    if args.as_json:
+        print(json.dumps(pkt, indent=2, default=str))
+    else:
+        print(_me_render_status_md(pkt))
+    return 0
+
+
+def _me_render_status_md(pkt: dict) -> str:
+    lines: list[str] = []
+    lines.append("# monitor-external status")
+    lines.append("")
+    lines.append(f"- **workspace_path**: {pkt['workspace_path']}")
+    for k in ("workspace_id", "mode", "current_engine_version"):
+        if k in pkt["workspace_metadata"]:
+            lines.append(f"- **{k}**: {pkt['workspace_metadata'][k]}")
+    lines.append("")
+    lines.append(f"## Recent sessions ({len(pkt['recent_sessions'])})")
+    lines.append("")
+    if pkt["recent_sessions"]:
+        lines.append("| Session | Slug | Kind | Status | Engine open | Engine close | Closed at |")
+        lines.append("|---------|------|------|--------|-------------|--------------|-----------|")
+        for s in pkt["recent_sessions"]:
+            wno = s.get("workspace_session_no") or s["session_no"]
+            lines.append(
+                f"| S{wno:03d} | {s['slug']} | {s['kind']} | {s['status']} | "
+                f"{s['engine_version_at_open']} | {s.get('engine_version_at_close') or ''} | "
+                f"{s.get('closed_at') or ''} |"
+            )
+    else:
+        lines.append("(no sessions yet)")
+    lines.append("")
+    lines.append(f"## Open issues ({pkt['open_issues_total']})")
+    lines.append("")
+    if pkt["open_issues_by_priority"]:
+        for prio in ("HIGH", "MEDIUM", "LOW"):
+            n = pkt["open_issues_by_priority"].get(prio)
+            if n:
+                lines.append(f"- {prio}: {n}")
+    else:
+        lines.append("(none)")
+    lines.append("")
+    lines.append("## Engine-feedback outbox")
+    lines.append("")
+    if pkt["ef_outbox_files"]:
+        for f in pkt["ef_outbox_files"]:
+            lines.append(f"- `{f['path']}` ({f['size']} bytes, mtime {f['mtime']})")
+    else:
+        lines.append("(empty or missing engine-feedback/ directory)")
+    lines.append("")
+    lines.append("## Latest close-record next_session_should")
+    lines.append("")
+    lc = pkt["latest_close"]
+    if lc["next_session_should"]:
+        lines.append(f"- close from S{lc['workspace_session_no']:03d}")
+        for item in lc["next_session_should"]:
+            lines.append(f"  - {item}")
+    else:
+        lines.append("(no closed session with next_session_should yet)")
+    lines.append("")
+    lines.append("## Phase heuristic")
+    lines.append("")
+    ph = pkt["phase_heuristic"]
+    lines.append(f"- **value**: {ph['value']} (sessions_per_phase={ph['sessions_per_phase']})")
+    lines.append(f"- method: {ph['method']}")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _me_next_input(args) -> int:
+    root, db = _me_validate_external(args.workspace)
+
+    def _read_optional(path_arg: str | None, label: str) -> tuple[str | None, str | None]:
+        if not path_arg:
+            return None, None
+        p = Path(path_arg).expanduser().resolve()
+        if not p.exists():
+            raise SelvedgeError("E_NO_FILE", f"{label} not found: {p}")
+        return str(p), p.read_text()
+
+    arc_plan_path, arc_plan_excerpt = _read_optional(args.arc_plan, "arc-plan")
+    ledger_path, ledger_excerpt = _read_optional(args.assumption_ledger, "assumption-ledger")
+
+    conn = _me_open_external_ro(db)
+    try:
+        latest_session = conn.execute(
+            "SELECT session_no, workspace_session_no, slug, kind, status, closed_at "
+            "FROM sessions ORDER BY session_no DESC LIMIT 1"
+        ).fetchone()
+        latest_close = _me_collect_close(conn)
+        open_oi = [r["alias"] for r in conn.execute(
+            "SELECT alias FROM issues WHERE status='open' "
+            "ORDER BY CASE priority WHEN 'HIGH' THEN 0 WHEN 'MEDIUM' THEN 1 ELSE 2 END, alias"
+        ).fetchall()]
+    finally:
+        conn.close()
+
+    if latest_session is None:
+        next_session_no = 1
+        next_workspace_session_no = 1
+    else:
+        next_session_no = latest_session["session_no"] + 1
+        next_workspace_session_no = (
+            latest_session["workspace_session_no"] or latest_session["session_no"]
+        ) + 1
+
+    out = {
+        "external_workspace": str(root),
+        "phase": args.phase,
+        "next_external_session_no": next_session_no,
+        "next_external_workspace_session_no": next_workspace_session_no,
+        "latest_close": latest_close,
+        "open_issue_aliases": open_oi,
+        "arc_plan_path": arc_plan_path,
+        "arc_plan_excerpt": arc_plan_excerpt,
+        "assumption_ledger_path": ledger_path,
+        "assumption_ledger_excerpt": ledger_excerpt,
+        "draft_session_input": {
+            "phase": args.phase,
+            "carry_forward_from_close": latest_close["next_session_should"],
+            "operator_must_fill": [
+                "reveal_axis",
+                "domain_facts",
+                "specific_assumption_ids_to_revise",
+                "session_input_md_body",
+            ],
+            "note": (
+                "This is a JSON drafting buffer per DV-S106-3. The operator reviews and "
+                "edits before placing the final session-input markdown in the external "
+                "workspace's applications/<slug>/session-inputs/ directory."
+            ),
+        },
+    }
+    payload = json.dumps(out, indent=2, default=str)
+    if args.out:
+        out_path = Path(args.out).expanduser().resolve()
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(payload)
+        print(json.dumps({"ok": True, "wrote": str(out_path), "bytes": len(payload)}))
+    else:
+        print(payload)
+    return 0
+
+
+def _me_parse_ef_file(path: Path) -> tuple[int | None, str, str]:
+    """Return (external_session_no_or_None, flag, body_md) from an EF-*.md file.
+
+    Flag detection is windowed to the first `_EF_FLAG_HEADER_LINES` non-empty
+    lines to prevent prose-buried 'flag:' phrases from overriding the
+    author's intent (S108 review F-86).
+    """
+    m = _EF_FILENAME_RE.match(path.name)
+    sess = int(m.group("session")) if m else None
+    body = path.read_text()
+    flag = "observation"
+    seen = 0
+    for line in body.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped == "---":
+            continue
+        seen += 1
+        if seen > _EF_FLAG_HEADER_LINES:
+            break
+        match = _EF_FLAG_RE.match(line)
+        if match:
+            flag = match.group(1).lower()
+            break
+    return sess, flag, body
+
+
+def _me_harvest_ef(args) -> int:
+    # Pin the write target to THIS workspace before validating the peer; the
+    # `--workspace <peer>` argument tells us where to *read* from but writes
+    # always land in self-dev. Two guards together make the write target
+    # unambiguous:
+    #
+    # (1) Iter-3 F-92: require SELVEDGE_WORKSPACE to be set so the self-dev
+    #     workspace is operator-explicit, not inferred by cwd walk. Without
+    #     this, a third-workspace cwd (cwd inside peer1 while --workspace
+    #     names peer2) would route writes to peer1's substrate via
+    #     workspace_root()'s upward MODE.md search.
+    #
+    # (2) Iter-2 F-90: even with SELVEDGE_WORKSPACE set, refuse if cwd is
+    #     inside the peer being monitored — that is operator confusion and
+    #     deserves an explicit error rather than a silently-correct write.
+    if WORKSPACE_ROOT_ENV not in os.environ:
+        raise SelvedgeError(
+            "E_REFUSAL_SELF",
+            f"harvest-ef requires {WORKSPACE_ROOT_ENV} to be set so the self-dev "
+            "write target is unambiguous; cwd-based workspace inference is too "
+            "ambiguous for write operations across peer workspaces",
+        )
+    self_root = workspace_root()
+    self_db = self_root / "state" / "selvedge.sqlite"
+    if not self_db.exists():
+        raise SelvedgeError("E_NO_WORKSPACE", f"missing self-dev substrate: {self_db}")
+    root, _ = _me_validate_external(args.workspace)
+    cwd_resolved = Path.cwd().resolve()
+    if cwd_resolved == root or cwd_resolved.is_relative_to(root):
+        raise SelvedgeError(
+            "E_REFUSAL_SELF",
+            f"refusing harvest-ef: current directory {cwd_resolved} is inside the peer "
+            f"workspace {root}; run from the self-dev workspace so the write target is "
+            "unambiguous",
+        )
+    ef_dir = root / "engine-feedback"
+    if not ef_dir.is_dir():
+        print(json.dumps({
+            "ok": True, "dry_run": bool(args.dry_run),
+            "harvested": [], "skipped": [],
+            "note": f"no engine-feedback/ directory at {ef_dir}",
+        }))
+        return 0
+
+    plan: list[dict] = []
+    for p in sorted(ef_dir.glob("EF-*.md")):
+        sess, flag, _body = _me_parse_ef_file(p)
+        rel = str(p.relative_to(root))
+        if sess is None:
+            plan.append({
+                "path": rel, "external_session_no": None, "flag": flag,
+                "action": "skip",
+                "reason": "filename does not match EF-<session>-<slug>.md",
+            })
+            continue
+        if args.since_session is not None and sess <= args.since_session:
+            plan.append({
+                "path": rel, "external_session_no": sess, "flag": flag,
+                "action": "skip",
+                "reason": f"session {sess} <= --since-session {args.since_session}",
+            })
+            continue
+        plan.append({
+            "path": rel, "external_session_no": sess, "flag": flag,
+            "action": "harvest",
+        })
+
+    if args.dry_run:
+        print(json.dumps({"ok": True, "dry_run": True, "plan": plan}, indent=2))
+        return 0
+
+    role = args.role or "__cli__"
+    results: list[dict] = []
+    c = Conn.open(self_db)
+    try:
+        for entry in plan:
+            if entry["action"] != "harvest":
+                results.append({
+                    "path": entry["path"],
+                    "external_session_no": entry["external_session_no"],
+                    "flag": entry["flag"],
+                    "status": "skipped",
+                    "reason": entry.get("reason"),
+                })
+                continue
+            src = root / entry["path"]
+            sess, flag, body = _me_parse_ef_file(src)
+            preface = (
+                f"_Harvested from external workspace `{root}` "
+                f"(file `{entry['path']}`, external session "
+                f"S{sess:03d})._\n\n"
+            )
+            payload = {"flag": flag, "body_md": preface + body}
+            try:
+                result = c.write_tx(
+                    lambda conn, p=payload: SUBMIT_HANDLERS["engine-feedback"](conn, p, role)
+                )
+                results.append({
+                    "path": entry["path"],
+                    "external_session_no": sess,
+                    "flag": flag,
+                    "status": "success",
+                    "alias": result["alias"],
+                    "object_id": result["object_id"],
+                })
+            except SelvedgeError as e:
+                results.append({
+                    "path": entry["path"],
+                    "external_session_no": sess,
+                    "flag": flag,
+                    "status": "error",
+                    "error": e.code,
+                    "detail": e.detail,
+                })
+            except Exception as e:  # noqa: BLE001 — surface to operator, never silent
+                results.append({
+                    "path": entry["path"],
+                    "external_session_no": sess,
+                    "flag": flag,
+                    "status": "error",
+                    "error": type(e).__name__,
+                    "detail": str(e),
+                })
+    finally:
+        c.close()
+    print(json.dumps({"ok": True, "dry_run": False, "results": results}, indent=2))
+    return 0
+
+
+def cmd_monitor_external(args) -> int:
+    sub = args.monitor_sub
+    if sub == "status":
+        return _me_status(args)
+    if sub == "next-input":
+        return _me_next_input(args)
+    if sub == "harvest-ef":
+        return _me_harvest_ef(args)
+    print(f"unknown monitor-external subcommand: {sub}", file=sys.stderr)
+    return 2
+
+
+# ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
 
@@ -2890,6 +3366,36 @@ def main(argv: Optional[list[str]] = None) -> int:
     p_schema.add_argument("table", nargs="?", default=None, help="Optional table name to focus on.")
     p_schema.add_argument("--raw", action="store_true", help="Emit raw .schema DDL instead of formatted view.")
     p_schema.set_defaults(fn=cmd_schema)
+
+    p_me = sub.add_parser(
+        "monitor-external",
+        help="Read a peer Selvedge workspace and harvest its engine-feedback (engine-v31, DV-S106-3).",
+    )
+    me_sub = p_me.add_subparsers(dest="monitor_sub", required=True)
+
+    p_me_st = me_sub.add_parser("status", help="Print external workspace status (read-only).")
+    p_me_st.add_argument("--workspace", required=True, help="Path to peer workspace root (must contain MODE.md and state/selvedge.sqlite).")
+    p_me_st.add_argument("--json", dest="as_json", action="store_true", help="Emit JSON instead of markdown.")
+    p_me_st.add_argument("--sessions-per-phase", type=int, default=3, help="Heuristic phase divisor (default 3).")
+    p_me_st.set_defaults(fn=cmd_monitor_external)
+
+    p_me_ni = me_sub.add_parser("next-input", help="Emit a JSON draft of the next session-input file.")
+    p_me_ni.add_argument("--workspace", required=True, help="Path to peer workspace root.")
+    p_me_ni.add_argument("--arc-plan", default=None, help="Path to the arc-plan markdown (optional, embedded in output).")
+    p_me_ni.add_argument("--assumption-ledger", default=None, help="Path to assumption-ledger markdown (optional, embedded in output).")
+    p_me_ni.add_argument("--phase", default=None, help="Phase identifier (operator-supplied).")
+    p_me_ni.add_argument("--out", default=None, help="Write JSON to file path instead of stdout.")
+    p_me_ni.set_defaults(fn=cmd_monitor_external)
+
+    p_me_he = me_sub.add_parser(
+        "harvest-ef",
+        help="Copy peer engine-feedback/EF-*.md files into THIS workspace's engine_feedback rows.",
+    )
+    p_me_he.add_argument("--workspace", required=True, help="Path to peer workspace root.")
+    p_me_he.add_argument("--since-session", type=int, default=None, help="Skip files whose EF-<session>- prefix is <= N.")
+    p_me_he.add_argument("--dry-run", action="store_true", help="Print harvest plan without writing rows.")
+    p_me_he.add_argument("--role", default="__cli__")
+    p_me_he.set_defaults(fn=cmd_monitor_external)
 
     args = parser.parse_args(argv)
     try:
