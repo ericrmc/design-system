@@ -880,14 +880,49 @@ def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     if sess is None:
         raise SelvedgeError("E_NOT_FOUND", f"open session_no={p['session_no']}")
     body_path = p["body_path"]
-    body_sha256 = p["body_sha256"]
-    # T-04 application-layer: hash the file and refuse on mismatch.
     real_path = workspace_root() / body_path
-    if not real_path.exists():
-        raise SelvedgeError("E_REFUSAL_T04", f"spec body not found at {body_path}")
-    real_sha = hashlib.sha256(real_path.read_bytes()).hexdigest()
-    if real_sha != body_sha256:
-        raise SelvedgeError("E_REFUSAL_T04", f"body_sha256 mismatch: declared {body_sha256[:8]}…, file is {real_sha[:8]}…")
+    # Path-traversal guard (applies to both authoring branches): refuse a
+    # body_path that escapes workspace_root. Path.resolve(strict=False)
+    # collapses '..' segments without requiring the file to exist.
+    ws = workspace_root().resolve()
+    try:
+        real_path.resolve(strict=False).relative_to(ws)
+    except (ValueError, OSError) as e:
+        raise SelvedgeError(
+            "E_VALIDATION",
+            f"body_path escapes workspace: {body_path} ({e})",
+        )
+    body_md = p.get("body_md")
+    pending_write_bytes: bytes | None = None
+    if body_md is not None:
+        # OI-S090-5: substrate-driven authoring path. Handler writes body_path
+        # in-process from the inline content. In-process Python file IO is
+        # outside the PreToolUse hook scope, so this avoids the Bash heredoc
+        # bypass prior sessions used.
+        if not isinstance(body_md, str) or not body_md.strip():
+            raise SelvedgeError(
+                "E_VALIDATION",
+                "body_md must be a non-empty string with non-whitespace content",
+            )
+        # Encode once, write bytes-for-bytes — avoids any newline translation
+        # the platform open()-text-mode might otherwise introduce.
+        body_bytes = body_md.encode("utf-8")
+        computed_sha = hashlib.sha256(body_bytes).hexdigest()
+        if (declared := p.get("body_sha256")) and declared != computed_sha:
+            raise SelvedgeError(
+                "E_REFUSAL_T04",
+                f"body_md sha mismatch: declared {declared[:8]}…, body_md is {computed_sha[:8]}…",
+            )
+        body_sha256 = computed_sha
+        pending_write_bytes = body_bytes
+    else:
+        body_sha256 = p["body_sha256"]
+        # T-04 application-layer: hash the file and refuse on mismatch.
+        if not real_path.exists():
+            raise SelvedgeError("E_REFUSAL_T04", f"spec body not found at {body_path}")
+        real_sha = hashlib.sha256(real_path.read_bytes()).hexdigest()
+        if real_sha != body_sha256:
+            raise SelvedgeError("E_REFUSAL_T04", f"body_sha256 mismatch: declared {body_sha256[:8]}…, file is {real_sha[:8]}…")
 
     # OI-S090-4: flip prev active to superseded BEFORE inserting the new active row.
     # T-03 (unique index t03_spec_versions_one_active) refuses two simultaneously-active
@@ -956,6 +991,16 @@ def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
                 f"workspace_metadata.current_engine_version row missing or duplicated "
                 f"(rowcount={upd.rowcount}); migrations may be incomplete",
             )
+
+    # Inline body authoring (OI-S090-5): write the file only after every DB
+    # constraint above has cleared. If a constraint refuses, the rollback in
+    # write_tx leaves no row — and now leaves no orphaned file either. If the
+    # FS write itself raises, the same rollback unwinds the row insert.
+    if pending_write_bytes is not None:
+        real_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = real_path.with_suffix(real_path.suffix + ".tmp")
+        tmp_path.write_bytes(pending_write_bytes)
+        os.replace(tmp_path, real_path)
 
     return {"spec_version_id": svid, "object_id": oid, "alias": alias, "refs": n_refs}
 

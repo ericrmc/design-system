@@ -343,6 +343,182 @@ def test_engine_manifest_bump_updates_workspace_metadata(clean_substrate, selved
         body.unlink(missing_ok=True)
 
 
+def test_spec_version_inline_body_md_writes_file_and_inserts_row(clean_substrate, selvedge_cli, db):
+    """OI-S090-5: handler accepts inline body_md, writes the body file in-process,
+    and computes the sha. No prior file required; sha auto-fills if not declared."""
+    body_dir = WORKSPACE / "state" / "tests" / "spec-bodies"
+    body_dir.mkdir(parents=True, exist_ok=True)
+    body_path = body_dir / "inline.md"
+    body_rel = body_path.relative_to(WORKSPACE).as_posix()
+    body_md = "inline body authored via substrate handler\n"
+    expected_sha = hashlib.sha256(body_md.encode("utf-8")).hexdigest()
+    body_path.unlink(missing_ok=True)
+    try:
+        res = selvedge_cli(
+            [
+                "submit", "spec-version", "--payload",
+                json.dumps({
+                    "session_no": 1, "spec_id": "inline-fixture",
+                    "version": 1, "body_path": body_rel,
+                    "body_md": body_md,
+                }),
+            ]
+        )
+        assert res["out"]["ok"], res
+        assert body_path.exists()
+        assert body_path.read_text(encoding="utf-8") == body_md
+        row = db.execute(
+            "SELECT body_sha256 FROM spec_versions WHERE spec_id='inline-fixture' AND version=1"
+        ).fetchone()
+        assert row["body_sha256"] == expected_sha
+    finally:
+        body_path.unlink(missing_ok=True)
+
+
+def test_spec_version_inline_body_md_sha_mismatch_refused(clean_substrate, selvedge_cli):
+    """If both body_md and body_sha256 are supplied, they must agree."""
+    body_dir = WORKSPACE / "state" / "tests" / "spec-bodies"
+    body_dir.mkdir(parents=True, exist_ok=True)
+    body_path = body_dir / "inline-mismatch.md"
+    body_rel = body_path.relative_to(WORKSPACE).as_posix()
+    body_path.unlink(missing_ok=True)
+    bogus_sha = hashlib.sha256(b"not the body").hexdigest()
+    try:
+        res = selvedge_cli(
+            [
+                "submit", "spec-version", "--payload",
+                json.dumps({
+                    "session_no": 1, "spec_id": "inline-mismatch",
+                    "version": 1, "body_path": body_rel,
+                    "body_md": "the actual body\n",
+                    "body_sha256": bogus_sha,
+                }),
+            ],
+            expect_ok=False,
+        )
+        assert res["rc"] != 0
+        assert "E_REFUSAL_T04" in res["err"]
+        assert not body_path.exists()
+    finally:
+        body_path.unlink(missing_ok=True)
+
+
+def test_spec_version_inline_body_md_empty_refused(clean_substrate, selvedge_cli):
+    res = selvedge_cli(
+        [
+            "submit", "spec-version", "--payload",
+            json.dumps({
+                "session_no": 1, "spec_id": "inline-empty",
+                "version": 1, "body_path": "state/tests/spec-bodies/empty.md",
+                "body_md": "",
+            }),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "E_VALIDATION" in res["err"]
+
+
+def test_spec_version_inline_body_md_whitespace_only_refused(clean_substrate, selvedge_cli):
+    """Reviewer F3 (S099): not body_md admits whitespace-only content; .strip() is the guard."""
+    res = selvedge_cli(
+        [
+            "submit", "spec-version", "--payload",
+            json.dumps({
+                "session_no": 1, "spec_id": "inline-ws",
+                "version": 1, "body_path": "state/tests/spec-bodies/ws.md",
+                "body_md": "   \n\t\n",
+            }),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "E_VALIDATION" in res["err"]
+
+
+def test_spec_version_inline_body_md_path_traversal_refused(clean_substrate, selvedge_cli):
+    """Reviewer F1 (S099): body_path escaping workspace_root must be refused."""
+    res = selvedge_cli(
+        [
+            "submit", "spec-version", "--payload",
+            json.dumps({
+                "session_no": 1, "spec_id": "traversal",
+                "version": 1, "body_path": "../escape.md",
+                "body_md": "should not be written\n",
+            }),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "E_VALIDATION" in res["err"]
+    assert not (WORKSPACE.parent / "escape.md").exists()
+
+
+def test_spec_version_file_read_path_traversal_refused(clean_substrate, selvedge_cli):
+    """Reviewer iter-2 follow-up: traversal guard must apply to the file-read
+    branch too, not only the body_md branch."""
+    res = selvedge_cli(
+        [
+            "submit", "spec-version", "--payload",
+            json.dumps({
+                "session_no": 1, "spec_id": "fileread-traversal",
+                "version": 1, "body_path": "../etc-passwd-fixture.md",
+                "body_sha256": "0" * 64,
+            }),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "E_VALIDATION" in res["err"]
+
+
+def test_spec_version_inline_body_md_no_orphan_file_on_constraint_refusal(clean_substrate, selvedge_cli, db):
+    """Reviewer F2 (S099): if T-03 (or any later DB constraint) refuses, no file
+    must end up on disk. Repro: insert spec_id 'orphan-fixture' v1 directly,
+    then ask the handler for v1 again — the unique-active partial index refuses,
+    rollback should leave no body file."""
+    body_dir = WORKSPACE / "state" / "tests" / "spec-bodies"
+    body_dir.mkdir(parents=True, exist_ok=True)
+    seed = body_dir / "orphan-seed.md"
+    body_path = body_dir / "orphan-conflict.md"
+    seed.write_text("seed body\n")
+    seed_rel = seed.relative_to(WORKSPACE).as_posix()
+    seed_sha = hashlib.sha256(seed.read_bytes()).hexdigest()
+    body_rel = body_path.relative_to(WORKSPACE).as_posix()
+    body_path.unlink(missing_ok=True)
+    try:
+        # First submit — establishes the active row.
+        r1 = selvedge_cli(
+            [
+                "submit", "spec-version", "--payload",
+                json.dumps({
+                    "session_no": 1, "spec_id": "orphan-fixture",
+                    "version": 1, "body_path": seed_rel, "body_sha256": seed_sha,
+                }),
+            ]
+        )
+        assert r1["out"]["ok"], r1
+        # Second submit — same spec_id+version. T-03's unique partial index on
+        # active rows OR the unique-(spec_id,version) constraint refuses; the
+        # body file must not exist after rollback.
+        r2 = selvedge_cli(
+            [
+                "submit", "spec-version", "--payload",
+                json.dumps({
+                    "session_no": 1, "spec_id": "orphan-fixture",
+                    "version": 1, "body_path": body_rel,
+                    "body_md": "this body must not survive rollback\n",
+                }),
+            ],
+            expect_ok=False,
+        )
+        assert r2["rc"] != 0
+        assert not body_path.exists()
+    finally:
+        seed.unlink(missing_ok=True)
+        body_path.unlink(missing_ok=True)
+
+
 def test_spec_version_two_active_refused_by_t03(clean_substrate, selvedge_cli, db):
     """T-03 must refuse a direct INSERT of a second active row for the same spec_id.
     Confirms the unique partial index is the structural guarantee that the handler

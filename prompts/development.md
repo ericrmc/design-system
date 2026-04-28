@@ -99,9 +99,13 @@ bin/selvedge submit decision-record --payload '{
 
 T-18 refuses session-close while a substantive decision lacks support or alternative. T-19 refuses while an alternative lacks a rejection. T-01 refuses unresolved aliases at write time. The label format `R-N.N` (e.g. R-1.1, R-2.3) is enforced by GLOB.
 
+The `effects` array admits `closes_issue` whose `target` resolves to a citable issue alias (e.g. `"target": "OI-S090-5"`); the handler dispatches `_submit_issue_disposition` inside the same write_tx and transitions the target issue's status to `resolved`. T-27 refuses `closes_issue` effects with NULL `target_issue_id`; T-28 refuses any direct `decision_effects` INSERT bypassing this handler dispatch (per engine-v28).
+
 ## 6. Produce — create or revise the artefacts the decisions warrant
 
 This is normal code/spec work. For specs, use `bin/selvedge submit spec-version`, `submit spec-section`, `submit spec-clause`. For migrations, write SQL files under `state/migrations/` and `bin/selvedge migrate --apply`. For CLI/code changes, edit Python under `selvedge/`.
+
+Spec body authoring goes through the substrate too (engine-v29 / OI-S090-5). `submit spec-version` accepts an optional `body_md` field carrying the inline body markdown; the handler validates the body_path against `workspace_root`, computes the sha256, and writes the file in-process *after* the row INSERT succeeds. Use `--payload @file.json` or `--payload -` (stdin) when the body is large; the handler refuses path-traversal escapes, empty/whitespace-only content, and any declared-vs-computed sha mismatch. The legacy two-step (write file via Bash heredoc, then submit with `body_sha256`) remains admitted but is no longer the only path.
 
 ## 7. Validate — and run the coding review loop on any code change
 
