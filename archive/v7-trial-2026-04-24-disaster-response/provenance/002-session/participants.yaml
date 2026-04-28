@@ -1,0 +1,22 @@
+session: 002
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+oi004_qualifying_participants: []
+
+participants:
+  - perspective: Risk Analyst
+    manifest: manifests/risk-analyst.manifest.yaml
+    kind: claude-subagent
+  - perspective: Operations Planner
+    manifest: manifests/operations-planner.manifest.yaml
+    kind: claude-subagent
+  - perspective: Vulnerability Advocate
+    manifest: manifests/vulnerability-advocate.manifest.yaml
+    kind: claude-subagent
+  - perspective: Adversarial Skeptic
+    manifest: manifests/adversarial-skeptic.manifest.yaml
+    kind: claude-subagent
+  - perspective: Outsider
+    manifest: manifests/outsider.manifest.yaml
+    kind: non-anthropic-model

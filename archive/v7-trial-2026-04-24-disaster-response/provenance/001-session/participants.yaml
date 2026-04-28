@@ -1,0 +1,42 @@
+---
+session: 001
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+oi004_qualifying_participants: []
+participants:
+  - perspective: systems-modeller
+    manifest: manifests/systems-modeller.manifest.yaml
+    raw: 01A-perspective-systems-modeller.md
+  - perspective: vulnerability-advocate
+    manifest: manifests/vulnerability-advocate.manifest.yaml
+    raw: 01B-perspective-vulnerability-advocate.md
+  - perspective: adversarial-skeptic
+    manifest: manifests/adversarial-skeptic.manifest.yaml
+    raw: 01C-perspective-adversarial-skeptic.md
+  - perspective: outsider
+    manifest: manifests/outsider.manifest.yaml
+    raw: 01D-perspective-outsider.md
+---
+
+# Session 001 participants index
+
+Four perspectives participated in the Session 001 deliberation. Three
+are Claude-family subagents (shared training lineage); one is a
+non-Claude participant from OpenAI accessed via `codex exec`. Per
+`multi-agent-deliberation.md` v4, this deliberation records
+`cross_model: true` — one participant's manifest carries
+`training_lineage_overlap_with_claude: independent-claim` with
+`participant_kind: non-anthropic-model`.
+
+The deliberation's decisions do NOT meet any required-trigger category
+per MAD v4 §When Non-Claude Participation Is Required (not
+kernel-modifying; not MAD-revising; not validation-approach-Tier-2-
+revising; not OI-004 state-changing). Non-Claude participation was
+invoked at operator discretion (Session 001 open) as recommended-
+but-not-required cross-family signal. No OI-004 narrowing claim is
+made by this session; `oi004_qualifying_participants: []` reflects
+that.
+
+No mechanical cross-family invocation outside the perspective frame
+(no `mechanical_cross_family_invocation:` block) occurred this session.

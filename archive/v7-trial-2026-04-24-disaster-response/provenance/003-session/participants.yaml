@@ -1,0 +1,43 @@
+session: 003
+title: Session 003 participants index — system-model v2 multi-view revision
+date: 2026-04-24
+participants_family: cross-model
+cross_model: true
+non_claude_participants: 1
+oi004_qualifying_participants: []
+
+participants:
+  - perspective: system-model-reviser
+    role: 01A
+    manifest: manifests/system-model-reviser.manifest.yaml
+    raw_response: 01A-perspective-system-model-reviser.md
+    kind: claude-subagent
+  - perspective: vulnerability-advocate
+    role: 01B
+    manifest: manifests/vulnerability-advocate.manifest.yaml
+    raw_response: 01B-perspective-vulnerability-advocate.md
+    kind: claude-subagent
+  - perspective: adversarial-skeptic
+    role: 01C
+    manifest: manifests/adversarial-skeptic.manifest.yaml
+    raw_response: 01C-perspective-adversarial-skeptic.md
+    kind: claude-subagent
+  - perspective: outsider
+    role: 01D
+    manifest: manifests/outsider.manifest.yaml
+    raw_response: 01D-perspective-outsider.md
+    kind: non-anthropic-model
+
+notes: |
+  Four perspectives total. Three Claude subagents (01A, 01B, 01C) launched via
+  Claude Code Agent tool; 01D Outsider launched via `codex exec` as a
+  background Bash task (same transport pattern as Sessions 001 + 002). The
+  cross_model: true claim is supported by the codex-outsider-raw-output.log
+  CLI preamble naming provider=openai and model=gpt-5.5, independent of the
+  Claude subagents' sessions.
+
+  No oi004_qualifying_participants declared: this workspace is an external-
+  problem application, OI-004 tracking lives in the self-development source
+  workspace (per Sessions 001 + 002 precedent).
+
+  No mechanical_cross_family_invocation block this session.

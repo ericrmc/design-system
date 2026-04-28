@@ -1,0 +1,37 @@
+perspective: system-model-reviser
+participant_kind: claude-subagent
+participant_identity: Claude (Agent tool, general-purpose subagent, Session 003 01A)
+model_family: claude
+model_id: claude-opus-4-7
+model_version: 1m-context
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator (Claude Code)
+participant_selection_method: self
+identity_known: true
+context_source: inline-prompt (brief + role-specific stance, delivered via Agent tool prompt parameter)
+delivered_at: 2026-04-24
+received_at: 2026-04-24
+raw_response_file: ../01A-perspective-system-model-reviser.md
+transport_notes: |
+  Launched via Claude Code Agent tool with subagent_type=general-purpose.
+  Full shared brief + role-specific stance inline in prompt. Parallel-context
+  isolation enforced by Agent tool architecture (no access to other
+  perspectives' outputs). Output returned verbatim; the Agent tool's trailing
+  agentId/usage metadata block was stripped from the committed raw file
+  (markdown-formatting-only edit permitted per MAD v4 §Stance Briefs brief-
+  immutability clause; substantive content unchanged).
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+training_lineage_evidence_pointer: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown

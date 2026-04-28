@@ -1,0 +1,34 @@
+perspective: adversarial-skeptic
+participant_kind: claude-subagent
+participant_identity: Claude (Agent tool, general-purpose subagent, Session 003 01C — continuity role from Sessions 001 + 002; author of the Session 001 §5.1 minority activated at Session 002)
+model_family: claude
+model_id: claude-opus-4-7
+model_version: 1m-context
+provider: anthropic
+endpoint: agent-tool
+invocation_method: agent-tool
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: known-overlap
+participant_selected_by: session-orchestrator (Claude Code)
+participant_selection_method: self
+identity_known: true
+context_source: inline-prompt (brief + role-specific stance referencing Session 001/002 contributions and explicit decline-to-propose empowerment, delivered via Agent tool prompt parameter)
+delivered_at: 2026-04-24
+received_at: 2026-04-24
+raw_response_file: ../01C-perspective-adversarial-skeptic.md
+transport_notes: |
+  Launched via Claude Code Agent tool with subagent_type=general-purpose.
+  Continuity role; role-specific stance empowered decline-to-propose on
+  laundering grounds per Session 001 + 002 precedent. Trailing agentId/usage
+  metadata stripped from committed raw file.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: anthropic
+claude_output_in_training: n/a
+training_lineage_evidence_pointer: n/a
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: unknown

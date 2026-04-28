@@ -1,0 +1,43 @@
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: OpenAI Codex CLI v0.124.0 via codex exec, model self-report gpt-5.5 (per codex CLI preamble line 4 of raw output log)
+model_family: gpt
+model_id: gpt-5.5
+model_version: unknown (codex account default; no --model override per Sessions 001/002 precedent)
+provider: openai
+endpoint: cli-wrapper
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: session-orchestrator (Claude Code)
+participant_selection_method: pre-registered
+identity_known: true
+context_source: provenance/003-session/codex-outsider-prompt.txt
+delivered_at: 2026-04-24
+received_at: 2026-04-24
+raw_response_file: ../01D-perspective-outsider.md
+transport_notes: |
+  Invoked via CLI:
+    cd provenance/003-session && cat codex-outsider-prompt.txt | \
+      codex exec --sandbox read-only > codex-outsider-raw-output.log 2>&1
+  Run as background task during session (Bash run_in_background=true),
+  completed with exit code 0 before synthesis. Raw log preserved at
+  codex-outsider-raw-output.log (313 lines; model self-report gpt-5.5 at
+  log line 4). The committed raw file 01D-perspective-outsider.md is
+  byte-identical to the post-"tokens used" copy (log lines 213-313);
+  markdown frontmatter added as a wrapper (MAD v4 §Stance Briefs permits
+  markdown-formatting-only edits; the body content is unchanged from the
+  codex output).
+  No --model override used; codex CLI defaults to the account's current
+  model (self-report gpt-5.5) — same Sessions 001/002 pattern.
+output_edited_after_submission: false
+participation_shape: perspective
+participant_organisation: openai
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct

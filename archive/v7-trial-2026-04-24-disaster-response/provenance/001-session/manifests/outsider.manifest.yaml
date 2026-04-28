@@ -1,0 +1,38 @@
+---
+perspective: outsider
+participant_kind: non-anthropic-model
+participant_identity: "OpenAI model via codex-cli 0.124.0 exec; default model (operator ChatGPT account); specific model id not surfaced by codex exec default output"
+model_family: openai-gpt
+model_id: unknown
+model_version: unknown
+provider: openai
+endpoint: "codex-cli `codex exec --sandbox read-only`, session id 019dbdc3-c3c3-7063-8ee0-811abf99a6b2"
+invocation_method: cli-wrapper
+sampling:
+  temperature: unknown
+  top_p: unknown
+  max_tokens: unknown
+training_lineage_overlap_with_claude: independent-claim
+participant_selected_by: "Claude Code orchestrator at Session 001 open; non-Claude participation requested by operator"
+participant_selection_method: pre-registered
+identity_known: partial
+context_source: "provenance/001-session/codex-outsider-prompt.txt (mirrors shared brief + Outsider role stance)"
+delivered_at: 2026-04-24T14:34:00+10:00
+received_at: 2026-04-24T14:34:20+10:00
+raw_response_file: provenance/001-session/01D-perspective-outsider.md
+transport_notes: |
+  First codex exec attempt failed with `--model gpt-5-codex` (400: not supported with ChatGPT account).
+  Second attempt used codex exec default model, exit 0. Raw combined stdout+stderr captured at
+  provenance/001-session/codex-outsider-raw-output.log. codex exec emitted the model response
+  twice (streamed then buffered); the post-`tokens used` copy (lines 321-505 of the raw log) is
+  preserved verbatim as 01D-perspective-outsider.md. Exact model id is not surfaced by codex exec's
+  default output; `model_id: unknown` recorded rather than inferred. ChatGPT-account default models
+  at the time of this session are within the GPT-5 family.
+output_edited_after_submission: false
+participation_shape: perspective
+claude_output_in_training: unknown
+training_lineage_evidence_pointer: unknown-but-asserted
+aggregator_intermediary: n/a
+selection_relationship_to_operator: n/a
+independence_basis: organization-distinct
+---

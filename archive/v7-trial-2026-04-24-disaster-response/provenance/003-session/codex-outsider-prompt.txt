@@ -1,0 +1,92 @@
+You are participating in a multi-agent deliberation as the Outsider perspective. You are expected to be a non-Claude model (OpenAI family via `codex exec`); your reasoning provides cross-family signal to a Claude-family deliberation. Reason primarily from the brief below and the role-specific stance that follows it. Do not browse; do not import silently from pretraining. Respond in Markdown per the Response format section.
+
+===== SHARED BRIEF (byte-identical across all perspectives in this deliberation) =====
+
+## 1. Methodology context
+
+You are participating in a multi-agent deliberation under the Selvedge engine at `engine-v7`. The engine is the current loadable implementation of a self-hosting methodology for specification-driven multi-perspective reasoning: perspectives reason independently, a synthesiser merges them, decisions are recorded with rejected alternatives preserved, and provenance is kept verbatim.
+
+This workspace is the **external-problem application of the engine to a fictional disaster-response scenario** (Laurel Delta, Nivaro; workspace_id `selvedge-disaster-response`). The brief is entirely fictional — no real geography, no real disaster case, no real emergency-management protocol is in scope (`CON-01` in the assumption ledger, anti-laundering per PROMPT.md external-imports rule).
+
+Session 001 produced v1 of the **system model** (a typed dependency map of Laurel Delta at T0+36h: populations `POP-*`, infrastructure `INF-*`, services `SVC-*`, dependencies `DEP-*`, external interfaces `EXT-*`, first-class silences `SIL-*`) and v1 of the **assumption ledger** (43 rows typed `GIV-*` / `CON-*` / `ASM-*` / `DEC-*` / `EXT-SURVEY-*`). Session 002 produced v1 of the **risk register** (22 `RSK-*` entries) and v1 of the **response plan** (23 `ACT-*` actions in 11 concurrent service-family streams). All four artefacts carry `validation: workspace-only` per kernel v6 §7.
+
+Session 002 activated a first-class preserved minority from Session 001: the **§5.1 Adversarial Skeptic single-document-form dissent**. The Session 001 v1 model is a single-document shape — populations, infrastructure, services, dependencies, external interfaces, and silences in six sections. The §5.1 minority argued for a multi-view shape (e.g., settlement-local topology + cohort × service + per-service dependency chain) on the grounds that a flat shape forces readers to re-derive dependency chains under session pressure. The warrant fired at Session 002 close: across 5 perspectives, 23 independent instances of re-derivation cost were recorded; every perspective individually exceeded the ≥3-instance activation threshold. Per Session 002 D-019: *"The multi-view model form is the preferred revision direction for Session 003 or later."*
+
+Session 003's **primary increment** is producing v2 of `system-model.md` in a multi-view form that reduces the re-derivation cost observed at Session 002 while preserving the v1 ID discipline, cohort individuation, silence visibility, and anti-laundering posture.
+
+Session 002 D-018 additionally flagged `ASM-19` (central-government counterparty reliability) for split into two rows: `ASM-19a` recipient-reliability (the 10-day plan has a fillable recipient) and `ASM-19b` delivery-reliability (any action that requires `EXT-01` as delivery partner depends on a different reliability claim). The split is a small ledger update tightly coupled to any v2 view that exposes external-actor topology.
+
+## 2. Problem statement
+
+Design the shape of `applications/001-disaster-response/system-model.md` v2. The revision must:
+
+- **Reduce re-derivation cost** for the kinds of dependency-chain reasoning that Session 002 repeatedly performed (e.g., "for `POP-09` dialysis, the chain is `SVC-03` → `INF-04` inaccessible → referral via `INF-02` requires `SVC-07` requires `INF-15` requires `ASM-11` persistence"). A v2 that natively exposes such chains saves Session 004+ from re-deriving them.
+- **Preserve every v1 ID** (`POP-*`, `INF-*`, `SVC-*`, `DEP-*`, `EXT-*`, `SIL-*`). Downstream artefacts `risk-register.md` and `response-plan.md` cite v1 IDs; those citations must remain resolvable after v2 adoption.
+- **Preserve cohort individuation** (`POP-08` through `POP-15` remain first-class, not collapsed into `POP-5K-parent` or aggregate cohorts).
+- **Preserve silence visibility** (`SIL-*` entries remain first-class, not buried inside notes columns of view tables).
+- **Avoid laundering external taxonomies** into view structure (UN/IASC cluster catalogues per `EXT-SURVEY-02`; lifelines / critical-infrastructure-sector taxonomies per `EXT-SURVEY-04`; ICS/NIMS per `EXT-SURVEY-01`; enterprise-architecture view frameworks like TOGAF / Zachman from pretraining). Any view shape that resembles these must be surveyed-and-adopted-with-reason rather than silently imported.
+- **Remain readable** under the `read-contract.md` v4 §2 8,000-word per-file hard ceiling (with 6,000-word soft warning). Application artefacts are not on the default-read surface but an 8K ceiling is a good readability heuristic.
+
+Revision scope for this session:
+
+1. `system-model.md` v2 shape (primary).
+2. `assumption-ledger.md` `ASM-19` split into `ASM-19a` / `ASM-19b`.
+3. Optionally `POP-12` sub-individuation (`POP-12a` oxygen / `POP-12b` CPAP) iff the v2 shape exposes them naturally.
+
+**Out of scope**: revising `risk-register.md` or `response-plan.md` in this session. Downstream v1.1 work inherits from v2 but is Session 004+ work per Session 001 D-009 increment-boundary discipline. If v2 shape decisions imply v1.1 work, flag it for the close narrative.
+
+## 3. Design questions
+
+Answer each question from your role's stance. Cite specific v1 IDs, specific Session 002 re-derivation instances, or specific external frames as the context requires. Quote specific language where your argument turns on it rather than paraphrasing.
+
+**Q1. View count and axes.** How many views should `system-model.md` v2 contain, and what axis organises each? Candidate axes surfaced by Session 002 re-derivation patterns: (a) cohort × service dependency (for each `POP-*`, the services it consumes and the infrastructure those services require); (b) service chain (upstream-to-downstream `SVC-*` through `DEP-*`); (c) settlement-local topology (what lives where); (d) external-actor / `EXT-*` view (what depends on which external counterparty, split by recipient vs delivery roles per D-018 flag); (e) silence / evidence view (`SIL-*` organised by which model elements they touch). Is there a minimum set? A maximum? Should the v1 single-document form be retained as a base layer plus views, or replaced entirely, or subsumed as one view among several?
+
+**Q2. ID discipline.** How should v1 IDs relate to v2 view entries? Are v1 IDs still canonical? Does each view add view-scoped derived rows (e.g., a cohort × service view row might be keyed as `COH-POP-09`), or does each view just re-organise existing IDs in a new layout? What discipline prevents ID drift between views — i.e., ensures that `POP-09` in the cohort view is the same entity as `POP-09` in the settlement view? Is ID-preservation enforced by discipline or by a mechanical cross-reference?
+
+**Q3. `ASM-19` split.** Per D-018, split `ASM-19` into `ASM-19a` (recipient-reliability) and `ASM-19b` (delivery-reliability). What falsifier does each row carry? Do both rows need review triggers? Should the v2 model expose the two aspects separately as attributes on `EXT-01` (e.g., split the external-actor view into recipient-role + delivery-role sub-views)? Should `RSK-019` be updated to reference both (note: risk-register update is Session 004+ follow-on; flag if you propose it).
+
+**Q4. `POP-12` sub-individuation.** Should `POP-12` (CPAP / home-oxygen dependents) split into `POP-12a` (oxygen-dependent, hours-band) and `POP-12b` (CPAP-dependent, 1–3 days band) as first-class cohorts at v2? Session 001 D-007 declined on count-silence grounds (`ASM-06`: sub-cohort size distribution not specified). Session 002 [01C, Q2] named the internal split as structurally invisible — a §5.1 re-derivation instance. If splitting, what is the falsifier for each sub-cohort's count silence? If not splitting, how should v2 expose the clinical time-to-harm differentiation?
+
+**Q5. Migration and supersession.** How is v1 preserved when v2 is committed? Candidate forms: (A) supersession-chain file `system-model-v1.md` in the application directory with `status: superseded`; (B) copy-plus-reference per workspace-structure v5 §applications regularization clause (copy v1 to `applications/001-disaster-response/system-model-v1.md` as historical witness; v2 takes canonical filename); (C) git-history-only preservation with `last-revised-session: 003`. What frontmatter carries the supersession marker (existing v1 frontmatter has `originating_session`, `artefact_kind`, `domain`, `engine_version`, `validation`, `status`, `created`, `last-revised-session`; v2 needs either a `supersedes:` field or a `version-history:` field to make the chain legible without reading git).
+
+**Q6. Risk-plan downstream impact.** If v2 natively exposes dependency chains, do any v1 `RSK-*` or `ACT-*` rows become visibly under-specified? Specific candidates: `RSK-014` (generator-fuel multi-downstream; `cohort_affected` blank; chains to POP-10/POP-11/SVC-01); `RSK-019` (EXT-01 cross-cutting; traverses 4 streams); `ACT-005` (cold-chain spanning POP-13/14/15 with differing windows — Session 002 §5.1 re-derivation instance); any `RSK-*` whose `dependency_chain` was sparse at v1 despite multi-node citations (`RSK-015` freight-rail-bridge + fibre shared-fate; `RSK-008` aged-care cluster welfare). Flag cases where v2 would make a v1.1 risk or action specification visibly thinner than v2 supports. Feeds the close's hand-forward to Session 004+.
+
+**Q7. Anti-laundering check.** Which external frames risk being laundered into v2's view structure if adopted without explicit surveying? List the external frames your proposed v2 shape resembles (even partially). Explicitly state for each whether it was surveyed and declined at v1 (`EXT-SURVEY-*` rows), or whether you are proposing adoption-with-reason, or whether you are ambivalent. Do not adopt any frame silently. Check against: UN/IASC clusters (`EXT-SURVEY-02` declined-v1); lifelines / critical-infrastructure-sector taxonomies (`EXT-SURVEY-04` declined-v1); ICS/NIMS (`EXT-SURVEY-01` declined-v1); enterprise-architecture view frameworks (TOGAF, Zachman, C4-model); systems-dependency-modelling frames (DoDAF, ArchiMate, causal-loop diagrams).
+
+## 4. (Role-specific stance below)
+
+## 5. Response format
+
+Respond in Markdown with one top-level section per question (`## Q1`, `## Q2`, etc., through `## Q7`). Length target: 900–1,800 words total across all seven questions, with uneven distribution permitted. A closing `## Honest limits` section (up to 200 words) records what you cannot answer from the brief alone.
+
+Quote specific v1 IDs (`POP-09`, `ASM-19`, `SIL-01`, etc.) and cite the deliberation artefacts where your position depends on them (`[Session 001 01-deliberation.md §5.1]`, `[Session 002 01-deliberation.md §5.2]`, etc.). Where you disagree with another perspective, name the specific claim you disagree with rather than gesturing at a general position.
+
+## 6. Constraint on external imports
+
+Per PROMPT.md anti-silent-import rule and per OI-015 laundering-enforcement: reason primarily from this brief and from the v1 artefacts summarised here. If an insight arrived from pretraining (a recognised pattern, a standard framework, a canonical emergency-management convention), name the source frame explicitly in your Q7 answer and mark it as either surveyed-and-decline-to-adopt, surveyed-and-adopt-with-reason, or ambivalent. Do not commit pretrained frames directly to view proposals; surface them through Q7.
+
+Specifically forbidden: applying UN/IASC cluster catalogue as view structure; applying ICS/NIMS as view structure; applying Sphere Handbook or lifelines-sector taxonomies as view structure — all surveyed and declined at Session 001. If your proposed view shape happens to resemble one of these, your Q7 answer must name the resemblance and argue for adoption-with-reason.
+
+Skipping Q7 is recorded as a refusal, preserved per MAD v4 §Graceful Degradation.
+
+===== SUPPLEMENTARY CONTEXT =====
+
+**v1 system model shape:** 6 sections — Time-frame (`WIN-acute`, `WIN-stab`); POP-* (24 entries across structural/age/medical-fragility/access-constrained subsections); INF-* (19 entries across health/water/power/transport/communications/shelter/logistics); SVC-* (15 services keyed by delivering INF and consuming POP); DEP-* (22 typed dependency edges); EXT-* (3 external interfaces); SIL-* (24 first-class silences). Load-bearing Session 001 discipline decisions: D-006 attribute-indexed (settlement as attribute, not axis); D-001 first-class SIL-*; D-003 cohort individuation; D-005 + ASM-20 no pretrained clinical numbers; D-010 four-link traceability.
+
+**v1 risk register shape:** 22 RSK-* entries across 4 cohort-fragility tiers per D-012. Two-axis partial order (cohort-fragility × dependency-depth, both visible, no severity-band column).
+
+**v1 response plan shape:** 23 ACT-* actions in 11 concurrent STR-* streams per D-013. Sub-windows as review gates (D-014). ACT-022 time-triggered gate at T0+72h; ACT-023 information-triggered gate at ≥4 of 8 priority SIL-* closure.
+
+**Session 002 re-derivation instance pattern:** 23 independent instances across 5 perspectives. Cleanest empirical pattern: per-service dependency chain. Examples: `SVC-03` → `INF-04`/`INF-01` → `INF-30` generator → `INF-32` fuel; `SVC-08` cold chain → `SVC-05` power → `INF-11` grid OR `INF-31` on-site generators; `SVC-13` telecoms → `INF-17` fibre via `INF-14` bridge carriage (shared-fate). Session 001's 01C multi-view proposal named cohort × service dependency + settlement-local topology + per-service chain as a 3-view shape.
+
+===== YOUR ROLE-SPECIFIC STANCE (Section 4) =====
+
+You are the **Outsider**. You are not a continuity role in this workspace; your value is cross-family signal — noticing frame choices that a Claude-family deliberation has naturalised without examining. You are explicitly invited to question framings that the prior sessions treated as settled, including: whether the multi-view revision is the right response to the 23 re-derivation instances (maybe the re-derivations are diagnostic of something other than model shape — brief-pressure on the session, role-shape on the perspectives, the specific decisions under discussion); whether the §5.1 activation warrant was calibrated well; whether the "views" frame itself imports view-catalogue thinking from enterprise-architecture traditions you may have seen in pretraining.
+
+You are also empowered to propose shape alternatives the Claude perspectives may miss: for instance, leaving v1 intact and instead producing a supplementary derivation index (a separate file that lists the dependency chains Session 002 re-derived, keyed by the decision each supported — no view reorganisation, just a workspace-internal shortcut); or producing a mechanically-generated cross-reference ("whenever `POP-X` is cited, here are its incident `DEP-*` and its upstream `INF-*`") that need not be a view but a small derived table. Your Q1 should list the alternatives Claude-family perspectives are likely to converge toward and name at least one structurally-different alternative (call it a "frame-completion contribution" if that fits).
+
+Your distinctive contributions in prior sessions (01D at Sessions 001 and 002) were: naturalising-the-request-frame critique (10-day horizon); anti-laundering via pretrained-clinical-numbers; the UN/IASC cluster laundering warning; the state-descriptors framing for stabilisation; the trigger-on-information gate mechanism. For this session, your distinctive contribution should target either the view-catalogue laundering risk (Q7) or a structurally different alternative to the multi-view frame (Q1), or both.
+
+If you believe the revision is premature or miscalibrated, say so and argue the position substantively — do not defer to prior-session convergence when your stance differs. Your role is to add cross-family variance to the deliberation, not to agree.
+
+Begin your response now. Start with `## Q1` immediately. Do not preamble.
