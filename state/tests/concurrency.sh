@@ -48,7 +48,8 @@ bin/selvedge submit session-open --payload '{
   "slug": "concurrency-trial",
   "mode": "self-development",
   "workspace_id": "selvedge-self-development",
-  "engine_version_at_open": "engine-v17"
+  "engine_version_at_open": "engine-v17",
+  "kind": "spec_only"
 }' >/dev/null
 
 N_PARALLEL=16

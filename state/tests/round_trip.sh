@@ -46,7 +46,8 @@ bin/selvedge submit session-open --payload '{
   "slug": "round-trip",
   "mode": "self-development",
   "workspace_id": "selvedge-self-development",
-  "engine_version_at_open": "engine-v17"
+  "engine_version_at_open": "engine-v17",
+  "kind": "spec_only"
 }' >/dev/null && ok "session-open" || bad "session-open"
 
 step "write a prerequisite spec_version (target for the decision's [SPEC-…] ref)"

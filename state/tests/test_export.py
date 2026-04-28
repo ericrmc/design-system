@@ -84,7 +84,7 @@ def isolated_workspace(tmp_path, monkeypatch):
     init = _run_cli_in(tmp_path, ["init", "--force"])
     assert init["rc"] == 0, init
     open_ = _run_cli_in(tmp_path, ["submit", "session-open", "--payload",
-                                    json.dumps({"slug": "export-fixture"})])
+                                    json.dumps({"slug": "export-fixture", "kind": "spec_only"})])
     assert open_["rc"] == 0, open_
     return tmp_path
 

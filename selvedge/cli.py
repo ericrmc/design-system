@@ -632,11 +632,13 @@ def _meta(conn: sqlite3.Connection, key: str, default: Optional[str] = None) -> 
 def _submit_session_open(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     """Open a session in the substrate.
 
-    Engine-v20+: the caller passes ONLY `slug` (kebab-case session name).
-    workspace_id, mode, engine_version_at_open are read from
-    workspace_metadata; session_no is computed as MAX(existing)+1;
-    workspace_session_no is session_no + init_session_offset. The substrate
-    refuses session-open while another session is still open (E_SESSION_ALREADY_OPEN).
+    Engine-v20+: the caller passes `slug` (kebab-case session name) and `kind`
+    (one of coding, spec_only, meta — DV-S105-2 removed the kind=coding default
+    so operators must declare intent at open). workspace_id, mode,
+    engine_version_at_open are read from workspace_metadata; session_no is
+    computed as MAX(existing)+1; workspace_session_no is session_no +
+    init_session_offset. The substrate refuses session-open while another
+    session is still open (E_SESSION_ALREADY_OPEN).
     """
     _check_role_capability(conn, role, "sessions", "insert")
     open_row = conn.execute("SELECT session_no FROM sessions WHERE status='open'").fetchone()
@@ -647,7 +649,12 @@ def _submit_session_open(conn: sqlite3.Connection, p: dict, role: str) -> dict:
         )
     if "slug" not in p or not p["slug"]:
         raise SelvedgeError("E_VALIDATION", "session-open requires slug")
-    kind = p.get("kind", "coding")
+    if "kind" not in p or not p["kind"]:
+        raise SelvedgeError(
+            "E_VALIDATION",
+            "session-open requires kind: one of coding, spec_only, meta",
+        )
+    kind = p["kind"]
     if kind not in ("coding", "spec_only", "meta"):
         raise SelvedgeError(
             "E_VALIDATION",

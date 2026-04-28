@@ -85,15 +85,21 @@ def _close_after_record(selvedge_cli):
 # ---------------------------------------------------------------------------
 
 
-def test_session_open_default_kind_is_coding(clean_substrate, selvedge_cli, db):
-    # The fixture session is kind=spec_only by design (so existing tests can
-    # close without a review_pass). Verify that an explicit second session
-    # without a kind field defaults to 'coding'.
+def test_session_open_requires_kind(clean_substrate, selvedge_cli):
+    # DV-S105-2: kind=coding default removed. session-open must refuse a
+    # payload that omits kind so the operator declares intent explicitly.
     _close_clean_specony(selvedge_cli)
-    res = _open_session(selvedge_cli, slug="default-kind-check")
-    assert res["kind"] == "coding"
-    row = db.execute("SELECT kind FROM sessions WHERE session_id=?", (res["session_id"],)).fetchone()
-    assert row["kind"] == "coding"
+    res = selvedge_cli(
+        [
+            "submit",
+            "session-open",
+            "--payload",
+            json.dumps({"slug": "no-kind"}),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert _err_payload(res).get("code") == "E_VALIDATION"
 
 
 def test_session_open_accepts_spec_only(clean_substrate, selvedge_cli, db):

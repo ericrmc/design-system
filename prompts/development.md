@@ -26,10 +26,16 @@ State the proposed item to the operator, wait for ratification or redirect, then
 ## 2. Open the session
 
 ```sh
-bin/selvedge submit session-open --payload '{"slug": "<kebab-case-name>"}'
+bin/selvedge submit session-open --payload '{"slug": "<kebab-case-name>", "kind": "coding|spec_only|meta"}'
 ```
 
-That is the entire payload. The substrate auto-fills `workspace_id`, `mode`, `engine_version_at_open`, `session_no`, `workspace_session_no`, and the alias `S<NNN>`. The substrate refuses opening if another session is already open (E_SESSION_ALREADY_OPEN). T-23 makes slug immutable after open — pick it carefully.
+Both `slug` and `kind` are required; the handler refuses session-open without `kind`. Pick from:
+
+- `coding` — produces, modifies, or deletes executable logic (Python under `selvedge/`, SQL migrations, shell logic under `bin/` or `tools/`). Subjects the session to T-30 (the coding review loop close gate).
+- `spec_only` — edits engine-definition files (specs, prompts, manifest) without touching executable logic.
+- `meta` — sessions about the engine itself that do not produce or modify any tracked artefact (e.g. triage-only sessions).
+
+Kind is immutable post-open via T-29 — pick deliberately. The substrate auto-fills `workspace_id`, `mode`, `engine_version_at_open`, `session_no`, `workspace_session_no`, and the alias `S<NNN>`. The substrate refuses opening if another session is already open (E_SESSION_ALREADY_OPEN). T-23 makes slug immutable after open — pick it carefully.
 
 ## 3. Submit the assessment
 
