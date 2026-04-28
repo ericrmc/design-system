@@ -81,12 +81,8 @@ def _run_cli(args: list[str], *, expect_ok: bool = True, input_payload: dict | N
     # `coverage` package installed and the sitecustomize shim on PYTHONPATH)
     # rather than the bash shim's `python3`, which resolves to system Python
     # and would not contribute to the coverage report.
-    if _coverage_active():
-        cmd = [sys.executable, "-m", "selvedge.cli", *args]
-    else:
-        cmd = [str(BIN), *args]
     proc = subprocess.run(
-        cmd,
+        [str(BIN), *args],
         capture_output=True,
         text=True,
         env=env,

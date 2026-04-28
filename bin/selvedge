@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 # Selvedge CLI shim. Resolves to the Python package next to this script.
+# Prefers the workspace's uv-managed venv interpreter so dev dependencies
+# (coverage, pytest plumbing) are available; falls back to system python3.
 set -e
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
-exec python3 -m selvedge.cli "$@"
+if [ -x "$DIR/.venv/bin/python" ]; then
+    PY="$DIR/.venv/bin/python"
+else
+    PY="python3"
+fi
+exec "$PY" -m selvedge.cli "$@"
