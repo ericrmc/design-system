@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# bootstrap-external-workspace.sh — engine-v31 minimal external-application bootstrap.
+# bootstrap-external-workspace.sh — minimal external-application bootstrap.
+# Ships the source workspace's current engine-definition file set (per
+# specifications/engine-manifest.md §3) plus all migrations on disk; the
+# resulting target inherits whatever engine version the source is at.
 #
 # Per S106 D-2 (DV-S106-2): copies the engine-definition file set, the selvedge
 # Python package and shell shim, the migrations, the PreToolUse hook, the Claude
@@ -127,9 +130,10 @@ cp "$SOURCE_ROOT/PROMPT.md"                                "$TARGET/PROMPT.md"
 cp "$SOURCE_ROOT/prompts/development.md"                   "$TARGET/prompts/development.md"
 cp "$SOURCE_ROOT/prompts/application.md"                   "$TARGET/prompts/application.md"
 
-for spec in methodology constraints workspace engine-manifest; do
+for spec in methodology workspace engine-manifest; do
   cp "$SOURCE_ROOT/specifications/${spec}.md"              "$TARGET/specifications/${spec}.md"
 done
+# constraints.md was subtracted at engine-v32 (DV-S109-1, S109); kept out of bootstrap per S133 DV-S133-1.
 
 cp "$SOURCE_ROOT/selvedge/__init__.py"                     "$TARGET/selvedge/__init__.py"
 cp "$SOURCE_ROOT/selvedge/cli.py"                          "$TARGET/selvedge/cli.py"
@@ -146,7 +150,7 @@ chmod +x "$TARGET/tools/hooks/refuse-substrate-md.py"
 
 cp "$SOURCE_ROOT/.claude/settings.json"                    "$TARGET/.claude/settings.json"
 
-echo "    Copied: PROMPT.md, 2 prompts, 4 specs, selvedge package (cli.py + __init__.py), bin/selvedge,"
+echo "    Copied: PROMPT.md, 2 prompts, 3 specs, selvedge package (cli.py + __init__.py), bin/selvedge,"
 echo "    $(ls "$TARGET/state/migrations/" | wc -l | tr -d ' ') migrations, validate.sh, refuse-substrate-md.py hook, .claude/settings.json."
 echo ""
 
