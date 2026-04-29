@@ -56,7 +56,7 @@ fi
 
 echo
 echo "Latest session check:"
-LATEST_SESSION_DIR=$(ls -d provenance/*/ 2>/dev/null | sort | tail -1)
+LATEST_SESSION_DIR=$(ls -d provenance/[0-9]*/ 2>/dev/null | sort | tail -1)
 if [ -n "$LATEST_SESSION_DIR" ]; then
   [ -f "${LATEST_SESSION_DIR}00-assessment.md" ] && ok "${LATEST_SESSION_DIR}00-assessment.md" \
     || echo "  warn  ${LATEST_SESSION_DIR}00-assessment.md missing"

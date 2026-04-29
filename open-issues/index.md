@@ -19,7 +19,6 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-013](OI-013.md) | LOW | open | Non-file external artefacts |
 | [OI-014](OI-014.md) | MEDIUM | open | Domain-actor receipt shape variance |
 | [OI-015](OI-015.md) | MEDIUM | open | Laundering enforcement gap in domain reading |
-| [OI-016](OI-016.md) | HIGH | open | Domain-validation pathway under user unavailability |
 | [OI-018](OI-018.md) | MEDIUM | open | Revisit engine-manifest §5 bump-trigger criteria after §5.4 cadence minority activation |
 | [OI-019](OI-019.md) | MEDIUM | open | Path-selection work-channel and warrant-surface diversity |
 | [OI-081-001](OI-081-001.md) | LOW | open | Should the table-count budget (078 D-10) be replaced by a derived-only check? |
@@ -31,6 +30,10 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S088-1](OI-S088-1.md) | LOW | open | Atom_type conflation: issue dispositions and links reuse rejection_reason atom_type. |
 | [OI-S090-1](OI-S090-1.md) | MEDIUM | open | Cross-reference linking pass for spec_clause_links (empty) |
 | [OI-S091-1](OI-S091-1.md) | LOW | open | Migration 011 encodes engine-v24 as a snapshot; future fresh workspaces start one or more versions stale |
+| [OI-S104-1](OI-S104-1.md) | LOW | open | Manifest-hash sealing as forward direction for coding review loop enforcement |
+| [OI-S104-2](OI-S104-2.md) | LOW | open | decision_effects.effect_kind enum lacks deletes despite methodology naming delete-executable as loop trigger |
+| [OI-S104-3](OI-S104-3.md) | LOW | open | Promote halted to a sessions.status value via calibrated table-rebuild when warranted |
+| [OI-S105-1](OI-S105-1.md) | MEDIUM | open | Methodology kernel names three validation senses but enumerates only two |
 
 ## Resolved
 
@@ -40,6 +43,7 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-003](resolved/OI-003.md) | S088 | Automated validation |
 | [OI-004](resolved/OI-004.md) | S088 | Incorporating genuinely independent perspectives across model families |
 | [OI-010](resolved/OI-010.md) | S088 | Cross-model or human participation mechanism |
+| [OI-016](resolved/OI-016.md) | S105 | Domain-validation pathway under user unavailability |
 | [OI-017](resolved/OI-017.md) | S088 | Engine-vs-methodology reframing |
 | [OI-079-001](resolved/OI-079-001.md) | S088 | D-10 table budget of 16 vs the actual 17 in migration 001 (objects + synthesis_points). |
 | [OI-080-001](resolved/OI-080-001.md) | S088 | T-06 missing trigger on deliberations UPDATE; T-13 admits non-NULL→other-non-NULL on sealed_at |
@@ -56,3 +60,10 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S098-1](resolved/OI-S098-1.md) | S098 | Smoke-test closes_issue handler dispatch |
 | [OI-S098-2](resolved/OI-S098-2.md) | S098 | Smoke-test t28 trigger refusal path |
 | [OI-S101-1](resolved/OI-S101-1.md) | S102 | Rename objects.citable_alias to objects.alias for query ergonomics |
+| [OI-S106-1](resolved/OI-S106-1.md) | S107 | Rebuild tools/bootstrap-external-workspace.sh for engine-v31 |
+| [OI-S106-2](resolved/OI-S106-2.md) | S108 | Implement bin/selvedge monitor-external subcommand group |
+| [OI-S106-3](resolved/OI-S106-3.md) | S107 | Archive the v7-era selvedge-disaster-response workspace |
+| [OI-S110-1](resolved/OI-S110-1.md) | S112 | Superseded specs are not surfaced in orient; rationale becomes invisible after archive |
+| [OI-S110-2](resolved/OI-S110-2.md) | S111 | Superseded constraints v1 spec_versions row carries stale body_path pointing at moved file |
+| [OI-S110-3](resolved/OI-S110-3.md) | S113 | Backfill decision_effects.target and decision_supports.cite where alias resolution is possible |
+| [OI-S114-1](resolved/OI-S114-1.md) | S117 | Implement bin/selvedge export --provenance --anchor <alias> cross-session anchor-trace export (markdown projection only) |
