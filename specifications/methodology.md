@@ -1,10 +1,10 @@
 ---
 title: Methodology
-version: 5
+version: 6
 status: active
 created: 2026-04-27
-updated-by-session: 116
-supersedes: methodology-v4 (engine-v33); per S116 DV-S116-2 (reopen-on-new-reading convention)
+updated-by-session: 124
+supersedes: methodology-v5 (engine-v34); per S124 DV-S124-1 (subtract third validation sense clause; clarify that no-domain-actor is skipped Domain validation, not a new sense)
 ---
 
 # Methodology
@@ -35,7 +35,7 @@ A session may include any subset of the following activities. They are a vocabul
 4. **Deliberate** — perspectives state positions independently before seeing one another, then synthesise. Disagreements are preserved.
 5. **Decide** — record what was decided, the reasoning that carried it, what was rejected and why, what remains open.
 6. **Produce** — create or revise the artefacts the decisions warrant.
-7. **Validate** — check that what was produced is consistent with the workspace and meets its stated purpose. Three senses: workspace, domain, and provisional reference substitute (when no domain-actor is available).
+7. **Validate** — check that what was produced is consistent with the workspace and meets its stated purpose. Two senses: workspace and domain. When no domain-actor is available, Domain validation is recorded as skipped; skipping is not a third sense.
 8. **Record** — commit the session's provenance to `provenance/NNN-<slug>/`.
 9. **Close** — leave the workspace coherent. Commit at git. State what the next session should address.
 
@@ -104,10 +104,14 @@ A session that triggers both mechanisms records both: the coding review loop's i
 
 ## Validation senses
 
-A session's Validate activity may operate at two senses:
+A session's Validate activity operates at two senses:
 
 - **Workspace validation** — the session's artefacts are internally consistent, do not contradict active specifications, and accurately describe the workspace as it is. Workspace validation applies to every session.
 - **Domain validation** — when a session produces an artefact intended for use outside the workspace, and a domain-actor is available, the domain-actor reports whether the artefact functioned for its intended use. The session records the report.
+
+When no domain-actor is available, Domain validation is recorded as **skipped: no domain-actor**. Skipping is a first-class outcome, not a defect requiring backfill, and is not a third validation sense. Workspace validation still applies; if a session needs cross-workspace coherence checks (e.g. for an external-application stage product), those checks are recorded as Workspace validation by the validating workspace.
+
+The substrate may admit experimental validation primitives at a workspace-experimental layer when an arc lacks a domain-actor by structural condition (fictional, future-facing, or otherwise inaccessible domains). Such primitives produce substrate evidence that may inform a future kernel revision but are not themselves additional senses. Kernel-promotion questions for these primitives are tracked as open issues with explicit re-evaluation triggers — see OI-S124-1 for the disaster-response arc's `reference_harness` pilot, scheduled for re-evaluation at arc close.
 
 ## Preservation
 
