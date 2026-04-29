@@ -18,8 +18,9 @@ Subcommands:
   recover              Reset expired work_item leases to 'queued'.
   query                Read-only convenience query for round-trip / debugging.
   monitor-external     Read a peer Selvedge workspace (status, next-input) and
-                       harvest its engine-feedback files into THIS substrate
-                       (engine-v31, DV-S106-3).
+                       harvest its engine_feedback rows substrate-direct into
+                       THIS substrate (engine-v31, DV-S106-3; engine-v33 / S110
+                       D-1 substrate-direct read replaces md-files transport).
 
 Single-writer: every write opens its own connection, BEGIN IMMEDIATE, short tx.
 Structured errors:
@@ -31,6 +32,10 @@ Structured errors:
   E_STALE_SCHEMA   submit's schema_version doesn't match current migration.
   E_SCHEMA_MIGRATING  in-flight migration; queue the write.
   E_NOT_FOUND      referenced object_id / alias does not resolve.
+  E_PEER_BUSY      monitor-external: peer substrate locked or busy after busy_timeout.
+  E_PEER_OPEN_FAILED  monitor-external: peer DB open failed for non-busy reason (corrupt, wrong path, perms).
+  E_PEER_QUERY_FAILED monitor-external: peer query failed for non-busy reason.
+  E_PEER_SCHEMA_UNSUPPORTED monitor-external: peer DB lacks engine_feedback table or workspace_id metadata.
 
 The CLI never surfaces a raw `sqlite3.OperationalError("database is locked")` to its
 caller; it converts to E_WRITE_BUSY with retry budget.
@@ -2831,33 +2836,19 @@ def cmd_export(args) -> int:
 
 
 # ---------------------------------------------------------------------------
-# monitor-external (engine-v31, OI-S106-2 / DV-S106-3)
+# monitor-external (engine-v31 origin; engine-v33 substrate-direct ef per S110 D-1)
 #
 # Three subcommands operate against a peer Selvedge workspace given by
 # --workspace <path>. `status` and `next-input` read the peer's substrate
-# read-only via SQLite URI. `harvest-ef` reads the peer's engine-feedback/
-# markdown files and copies them into THIS workspace's substrate via the
-# existing `submit engine-feedback` handler. The tool is generic across
-# external workspaces; per DV-S106-3 if next-input or harvest-ef goes unused
-# at the S009 retrospective, the unused subcommands are deleted rather than
-# deprecated.
+# read-only via SQLite URI. `harvest-ef` reads engine_feedback rows directly
+# from the peer's substrate (engine-v26+ substrate-only-writes) and copies
+# them into THIS workspace's substrate via the existing `submit
+# engine-feedback` handler, recording per-row provenance in a
+# harvested_engine_feedback ledger so re-runs are idempotent at row
+# precision. The tool is generic across external workspaces; per DV-S106-3
+# if next-input or harvest-ef goes unused at the S009 retrospective, the
+# unused subcommands are deleted rather than deprecated.
 # ---------------------------------------------------------------------------
-
-
-_EF_FILENAME_RE = re.compile(
-    r"^EF-(?P<session>\d+)-(?P<slug>[A-Za-z0-9_\-]+)\.md$"
-)
-# Flag annotation parser: matches a "Flag: <value>" line in the file's first
-# annotation window. Tightened per S108 review F-86: the previous regex used
-# MULTILINE without windowing, so an EF body containing the substring
-# `flag: observation` mid-paragraph would override the file's intent. We now
-# scan only the first 8 non-empty lines; an EF that wants its flag honoured
-# puts it in a frontmatter-like header, not buried in prose.
-_EF_FLAG_RE = re.compile(
-    r"^\s*flag\s*[:=]\s*(observation|reframe|calibration|blocker)\s*$",
-    re.IGNORECASE,
-)
-_EF_FLAG_HEADER_LINES = 8
 
 
 def _me_validate_external(workspace_arg: str) -> tuple[Path, Path]:
@@ -2900,10 +2891,16 @@ def _me_open_external_ro(db: Path) -> sqlite3.Connection:
     URI parser treats `?`, `#`, and `&` as URI delimiters; a peer workspace
     whose absolute path contains those characters would otherwise fail to
     open with a misleading "no such table" error.
+
+    Per S110 D-1, set busy_timeout (covers transient WAL contention without an
+    explicit Python sleep loop) and query_only (defence-in-depth against any
+    accidental write attempt against the peer connection).
     """
     quoted = urllib.parse.quote(str(db), safe="/")
     conn = sqlite3.connect(f"file:{quoted}?mode=ro", uri=True)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA busy_timeout = 1000")
+    conn.execute("PRAGMA query_only = 1")
     return conn
 
 
@@ -2957,19 +2954,25 @@ def _me_status(args) -> int:
             "WHERE status='open' GROUP BY priority"
         ).fetchall()}
         latest_close = _me_collect_close(conn)
+        # Engine-v33 (S110 D-1): peer engine_feedback lives in the substrate,
+        # not engine-feedback/*.md. Read directly. If the peer schema lacks the
+        # table, surface ef_rows=None so the renderer can distinguish "no feedback
+        # yet" from "this peer is too old to read feedback from".
+        ef_rows: list[dict] | None
+        if conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='engine_feedback'"
+        ).fetchone():
+            ef_rows = [dict(r) for r in conn.execute(
+                "SELECT ef.feedback_id, ef.flag, ef.disposition, "
+                "       COALESCE(s.workspace_session_no, s.session_no) AS wno "
+                "FROM engine_feedback ef "
+                "JOIN sessions s ON s.session_id = ef.session_id "
+                "ORDER BY ef.feedback_id DESC LIMIT 10"
+            ).fetchall()]
+        else:
+            ef_rows = None
     finally:
         conn.close()
-
-    ef_files: list[dict] = []
-    ef_dir = root / "engine-feedback"
-    if ef_dir.is_dir():
-        for p in sorted(ef_dir.glob("EF-*.md")):
-            stat = p.stat()
-            ef_files.append({
-                "path": str(p.relative_to(root)),
-                "size": stat.st_size,
-                "mtime": _me_iso_utc(stat.st_mtime),
-            })
 
     spp = max(1, args.sessions_per_phase)
     latest_local_no = sessions[0]["session_no"] if sessions else 0
@@ -2981,7 +2984,7 @@ def _me_status(args) -> int:
         "recent_sessions": sessions,
         "open_issues_total": sum(oi_counts.values()),
         "open_issues_by_priority": oi_counts,
-        "ef_outbox_files": ef_files,
+        "ef_rows": ef_rows,
         "latest_close": latest_close,
         "phase_heuristic": {
             "value": f"P{phase_idx}",
@@ -3033,13 +3036,20 @@ def _me_render_status_md(pkt: dict) -> str:
     else:
         lines.append("(none)")
     lines.append("")
-    lines.append("## Engine-feedback outbox")
+    lines.append("## Engine-feedback (peer substrate, last 10)")
     lines.append("")
-    if pkt["ef_outbox_files"]:
-        for f in pkt["ef_outbox_files"]:
-            lines.append(f"- `{f['path']}` ({f['size']} bytes, mtime {f['mtime']})")
+    rows = pkt.get("ef_rows")
+    if rows is None:
+        lines.append("(peer schema does not expose engine_feedback table)")
+    elif rows:
+        for r in rows:
+            disp = f" — disposed: {r['disposition']}" if r.get("disposition") else ""
+            lines.append(
+                f"- feedback_id={r['feedback_id']} S{r['wno']:03d} "
+                f"flag={r['flag']}{disp}"
+            )
     else:
-        lines.append("(empty or missing engine-feedback/ directory)")
+        lines.append("(no engine_feedback rows in peer substrate)")
     lines.append("")
     lines.append("## Latest close-record next_session_should")
     lines.append("")
@@ -3135,30 +3145,113 @@ def _me_next_input(args) -> int:
     return 0
 
 
-def _me_parse_ef_file(path: Path) -> tuple[int | None, str, str]:
-    """Return (external_session_no_or_None, flag, body_md) from an EF-*.md file.
+def _me_read_peer_ef(peer_db: Path) -> tuple[str, list[dict]]:
+    """Read the peer's engine_feedback rows substrate-direct.
 
-    Flag detection is windowed to the first `_EF_FLAG_HEADER_LINES` non-empty
-    lines to prevent prose-buried 'flag:' phrases from overriding the
-    author's intent (S108 review F-86).
+    Returns (peer_workspace_id, rows). Each row dict has feedback_id, peer_wno,
+    peer_slug, flag, body_md, peer_alias (or None if peer schema lacks objects
+    or the row has no object_id).
+
+    Raises:
+      E_PEER_OPEN_FAILED if peer DB cannot be opened for non-busy reasons.
+      E_PEER_BUSY if SQLite returns busy/locked after busy_timeout expiry.
+      E_PEER_QUERY_FAILED if any peer query fails for non-busy reasons.
+      E_PEER_SCHEMA_UNSUPPORTED if the peer DB lacks engine_feedback table or
+      its workspace_metadata.workspace_id is missing.
+
+    Per S110 D-1: capability-based detection over migration-version gating.
+    The contract is the columns, not the engine version. Reads happen on a
+    short-lived RO connection and complete before opening any self-dev write
+    transaction (prevents holding the peer DB locked across slow self-dev work).
+
+    Reviewer iter-2 NEW-1 (S110): every peer query is wrapped in the same
+    OperationalError categorisation (E_PEER_BUSY for transient, E_PEER_QUERY_FAILED
+    otherwise). Schema-validation queries are not exempt.
     """
-    m = _EF_FILENAME_RE.match(path.name)
-    sess = int(m.group("session")) if m else None
-    body = path.read_text()
-    flag = "observation"
-    seen = 0
-    for line in body.splitlines():
-        stripped = line.strip()
-        if not stripped or stripped == "---":
-            continue
-        seen += 1
-        if seen > _EF_FLAG_HEADER_LINES:
-            break
-        match = _EF_FLAG_RE.match(line)
-        if match:
-            flag = match.group(1).lower()
-            break
-    return sess, flag, body
+    try:
+        conn = _me_open_external_ro(peer_db)
+    except sqlite3.OperationalError as e:
+        # Reviewer F-HIGH-1 (S110 iter-1): distinguish transient busy from
+        # permanent open failures. Pattern matches _refusal_from_sqlite.
+        msg = str(e)
+        if "database is locked" in msg or "database is busy" in msg:
+            raise SelvedgeError("E_PEER_BUSY", f"peer substrate busy: {e}")
+        raise SelvedgeError("E_PEER_OPEN_FAILED", f"could not open peer substrate: {e}")
+
+    def _peer_exec(sql: str, params: tuple = ()):
+        """Execute a peer query with the same OperationalError categorisation
+        used by open + main-query paths. Per iter-2 NEW-1."""
+        try:
+            return conn.execute(sql, params).fetchall()
+        except sqlite3.OperationalError as e:
+            msg = str(e)
+            if "database is locked" in msg or "database is busy" in msg:
+                raise SelvedgeError("E_PEER_BUSY", f"peer substrate query busy: {e}")
+            raise SelvedgeError("E_PEER_QUERY_FAILED", f"peer substrate query failed: {e}")
+
+    try:
+        if not _peer_exec(
+            "SELECT 1 FROM sqlite_master "
+            "WHERE type='table' AND name='engine_feedback'"
+        ):
+            raise SelvedgeError(
+                "E_PEER_SCHEMA_UNSUPPORTED",
+                "peer substrate has no engine_feedback table; harvest-ef requires "
+                "engine-v17+ with the engine_feedback table present",
+            )
+        meta_rows = _peer_exec(
+            "SELECT value FROM workspace_metadata WHERE key='workspace_id'"
+        )
+        if not meta_rows or not meta_rows[0]["value"]:
+            raise SelvedgeError(
+                "E_PEER_SCHEMA_UNSUPPORTED",
+                "peer workspace_metadata.workspace_id is missing; required to key "
+                "the harvested_engine_feedback ledger uniquely",
+            )
+        peer_ws_id = str(meta_rows[0]["value"])
+        # Capability-based detection of objects.alias (engine-v30) vs the older
+        # citable_alias (pre-engine-v30). Per S110 deliberation P-2 catch.
+        has_objects_alias = bool(_peer_exec(
+            "SELECT 1 FROM pragma_table_info('objects') WHERE name='alias'"
+        ))
+        has_objects_citable = bool(_peer_exec(
+            "SELECT 1 FROM pragma_table_info('objects') WHERE name='citable_alias'"
+        ))
+        alias_col_sql: str | None
+        if has_objects_alias:
+            alias_col_sql = "o.alias"
+        elif has_objects_citable:
+            alias_col_sql = "o.citable_alias"
+        else:
+            alias_col_sql = None  # peer too old to expose object aliases
+
+        if alias_col_sql:
+            sql = (
+                "SELECT ef.feedback_id, "
+                "       COALESCE(s.workspace_session_no, s.session_no) AS peer_wno, "
+                "       s.slug AS peer_slug, "
+                "       ef.flag, ef.body_md, "
+                f"       {alias_col_sql} AS peer_alias "
+                "FROM engine_feedback ef "
+                "JOIN sessions s ON s.session_id = ef.session_id "
+                "LEFT JOIN objects o ON o.object_id = ef.object_id "
+                "ORDER BY ef.feedback_id"
+            )
+        else:
+            sql = (
+                "SELECT ef.feedback_id, "
+                "       COALESCE(s.workspace_session_no, s.session_no) AS peer_wno, "
+                "       s.slug AS peer_slug, "
+                "       ef.flag, ef.body_md, "
+                "       NULL AS peer_alias "
+                "FROM engine_feedback ef "
+                "JOIN sessions s ON s.session_id = ef.session_id "
+                "ORDER BY ef.feedback_id"
+            )
+        rows = [dict(r) for r in _peer_exec(sql)]
+    finally:
+        conn.close()
+    return peer_ws_id, rows
 
 
 def _me_harvest_ef(args) -> int:
@@ -3187,7 +3280,7 @@ def _me_harvest_ef(args) -> int:
     self_db = self_root / "state" / "selvedge.sqlite"
     if not self_db.exists():
         raise SelvedgeError("E_NO_WORKSPACE", f"missing self-dev substrate: {self_db}")
-    root, _ = _me_validate_external(args.workspace)
+    root, peer_db = _me_validate_external(args.workspace)
     cwd_resolved = Path.cwd().resolve()
     if cwd_resolved == root or cwd_resolved.is_relative_to(root):
         raise SelvedgeError(
@@ -3196,41 +3289,75 @@ def _me_harvest_ef(args) -> int:
             f"workspace {root}; run from the self-dev workspace so the write target is "
             "unambiguous",
         )
-    ef_dir = root / "engine-feedback"
-    if not ef_dir.is_dir():
-        print(json.dumps({
-            "ok": True, "dry_run": bool(args.dry_run),
-            "harvested": [], "skipped": [],
-            "note": f"no engine-feedback/ directory at {ef_dir}",
-        }))
-        return 0
+
+    # Read all peer rows substrate-direct before opening the self-dev write
+    # transaction (P-2 deliberation: read all peer rows first; never hold the
+    # peer connection open across slow self-dev work).
+    peer_ws_id, peer_rows = _me_read_peer_ef(peer_db)
+
+    # Build the plan: for each peer row, look up the ledger to decide harvest
+    # vs already-harvested. --since-session is preserved as an optional
+    # operator-coarse filter on top of the per-row ledger.
+    self_conn = sqlite3.connect(str(self_db))
+    self_conn.row_factory = sqlite3.Row
+    try:
+        ledger_existing: set[int] = {
+            int(r["peer_feedback_id"])
+            for r in self_conn.execute(
+                "SELECT peer_feedback_id FROM harvested_engine_feedback "
+                "WHERE peer_workspace_id=?",
+                (peer_ws_id,),
+            ).fetchall()
+        }
+    finally:
+        self_conn.close()
 
     plan: list[dict] = []
-    for p in sorted(ef_dir.glob("EF-*.md")):
-        sess, flag, _body = _me_parse_ef_file(p)
-        rel = str(p.relative_to(root))
-        if sess is None:
-            plan.append({
-                "path": rel, "external_session_no": None, "flag": flag,
-                "action": "skip",
-                "reason": "filename does not match EF-<session>-<slug>.md",
-            })
+    for r in peer_rows:
+        fid = int(r["feedback_id"])
+        wno = int(r["peer_wno"]) if r.get("peer_wno") is not None else None
+        flag = r["flag"]
+        entry: dict = {
+            "peer_feedback_id": fid,
+            "peer_wno": wno,
+            "peer_slug": r.get("peer_slug"),
+            "peer_alias": r.get("peer_alias"),
+            "flag": flag,
+        }
+        if fid in ledger_existing:
+            entry["action"] = "skip"
+            entry["reason"] = "already-harvested (per peer_workspace_id, peer_feedback_id)"
+            plan.append(entry)
             continue
-        if args.since_session is not None and sess <= args.since_session:
-            plan.append({
-                "path": rel, "external_session_no": sess, "flag": flag,
-                "action": "skip",
-                "reason": f"session {sess} <= --since-session {args.since_session}",
-            })
+        if (
+            args.since_session is not None
+            and wno is not None
+            and wno <= args.since_session
+        ):
+            entry["action"] = "skip"
+            entry["reason"] = f"session {wno} <= --since-session {args.since_session}"
+            plan.append(entry)
             continue
-        plan.append({
-            "path": rel, "external_session_no": sess, "flag": flag,
-            "action": "harvest",
-        })
+        entry["action"] = "harvest"
+        plan.append(entry)
 
     if args.dry_run:
-        print(json.dumps({"ok": True, "dry_run": True, "plan": plan}, indent=2))
+        out = {
+            "ok": True, "dry_run": True,
+            "peer_workspace_id": peer_ws_id,
+            "peer_rows_total": len(peer_rows),
+            "plan": plan,
+        }
+        if not peer_rows:
+            # Reviewer F-MEDIUM-3 (S110 iter-1): explicit signal so an operator
+            # does not mistake silent success for harvest having work to do.
+            out["note"] = "peer substrate has no engine_feedback rows"
+        print(json.dumps(out, indent=2))
         return 0
+
+    # Build a body-by-feedback_id map so the write loop has the prose without
+    # re-querying the peer (peer connection is already closed).
+    bodies: dict[int, str] = {int(r["feedback_id"]): r["body_md"] for r in peer_rows}
 
     role = args.role or "__cli__"
     results: list[dict] = []
@@ -3238,55 +3365,83 @@ def _me_harvest_ef(args) -> int:
     try:
         for entry in plan:
             if entry["action"] != "harvest":
-                results.append({
-                    "path": entry["path"],
-                    "external_session_no": entry["external_session_no"],
-                    "flag": entry["flag"],
-                    "status": "skipped",
-                    "reason": entry.get("reason"),
-                })
+                results.append({**entry, "status": "skipped"})
                 continue
-            src = root / entry["path"]
-            sess, flag, body = _me_parse_ef_file(src)
+            fid = entry["peer_feedback_id"]
+            body = bodies[fid]
+            wno = entry["peer_wno"]
+            peer_alias = entry.get("peer_alias")
+            preface_alias = f"alias `{peer_alias}`, " if peer_alias else ""
             preface = (
-                f"_Harvested from external workspace `{root}` "
-                f"(file `{entry['path']}`, external session "
-                f"S{sess:03d})._\n\n"
+                f"_Harvested from peer substrate `{peer_ws_id}` "
+                f"(peer feedback_id {fid}, {preface_alias}"
+                f"external session S{wno:03d})._\n\n"
+                if wno is not None
+                else f"_Harvested from peer substrate `{peer_ws_id}` "
+                f"(peer feedback_id {fid}, {preface_alias}external session unknown)._\n\n"
             )
-            payload = {"flag": flag, "body_md": preface + body}
+            payload = {"flag": entry["flag"], "body_md": preface + body}
             try:
-                result = c.write_tx(
-                    lambda conn, p=payload: SUBMIT_HANDLERS["engine-feedback"](conn, p, role)
-                )
+                # Reviewer F-MEDIUM-4 (S110 iter-1): pass `role` as a default-arg
+                # for closure-capture consistency with other args (loop-invariant
+                # but the explicit form rules out late-binding surprises).
+                def _do_harvest(conn, p=payload, fid=fid, peer_ws_id=peer_ws_id,
+                                 peer_alias=peer_alias, role=role):
+                    res = SUBMIT_HANDLERS["engine-feedback"](conn, p, role)
+                    sess_id = _atom_session_id(conn, None)
+                    _check_role_capability(
+                        conn, role, "harvested_engine_feedback", "insert"
+                    )
+                    conn.execute(
+                        "INSERT INTO harvested_engine_feedback "
+                        "(peer_workspace_id, peer_feedback_id, peer_alias, "
+                        " imported_object_id, session_id) "
+                        "VALUES (?,?,?,?,?)",
+                        (peer_ws_id, fid, peer_alias, res["object_id"], sess_id),
+                    )
+                    return res
+                result = c.write_tx(_do_harvest)
                 results.append({
-                    "path": entry["path"],
-                    "external_session_no": sess,
-                    "flag": flag,
+                    **entry,
                     "status": "success",
-                    "alias": result["alias"],
-                    "object_id": result["object_id"],
+                    "self_alias": result["alias"],
+                    "self_object_id": result["object_id"],
                 })
             except SelvedgeError as e:
-                results.append({
-                    "path": entry["path"],
-                    "external_session_no": sess,
-                    "flag": flag,
-                    "status": "error",
-                    "error": e.code,
-                    "detail": e.detail,
-                })
+                # Reviewer F-MEDIUM-2 (S110 iter-1): label race-window UNIQUE
+                # collisions explicitly so the operator distinguishes "another
+                # harvest grabbed this row first" from real errors.
+                if e.code == "E_REFUSAL_UNIQUE" and "harvested_engine_feedback" in e.detail:
+                    results.append({
+                        **entry,
+                        "status": "skipped",
+                        "reason": "concurrent harvest already imported this peer row",
+                    })
+                else:
+                    results.append({
+                        **entry,
+                        "status": "error",
+                        "error": e.code,
+                        "detail": e.detail,
+                    })
             except Exception as e:  # noqa: BLE001 — surface to operator, never silent
                 results.append({
-                    "path": entry["path"],
-                    "external_session_no": sess,
-                    "flag": flag,
+                    **entry,
                     "status": "error",
                     "error": type(e).__name__,
                     "detail": str(e),
                 })
     finally:
         c.close()
-    print(json.dumps({"ok": True, "dry_run": False, "results": results}, indent=2))
+    out = {
+        "ok": True, "dry_run": False,
+        "peer_workspace_id": peer_ws_id,
+        "peer_rows_total": len(peer_rows),
+        "results": results,
+    }
+    if not peer_rows:
+        out["note"] = "peer substrate has no engine_feedback rows"
+    print(json.dumps(out, indent=2))
     return 0
 
 
@@ -3389,10 +3544,10 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     p_me_he = me_sub.add_parser(
         "harvest-ef",
-        help="Copy peer engine-feedback/EF-*.md files into THIS workspace's engine_feedback rows.",
+        help="Read peer engine_feedback rows substrate-direct and copy into THIS workspace's engine_feedback rows (idempotent via harvested_engine_feedback ledger).",
     )
     p_me_he.add_argument("--workspace", required=True, help="Path to peer workspace root.")
-    p_me_he.add_argument("--since-session", type=int, default=None, help="Skip files whose EF-<session>- prefix is <= N.")
+    p_me_he.add_argument("--since-session", type=int, default=None, help="Optional coarse filter: skip rows whose peer workspace_session_no is <= N.")
     p_me_he.add_argument("--dry-run", action="store_true", help="Print harvest plan without writing rows.")
     p_me_he.add_argument("--role", default="__cli__")
     p_me_he.set_defaults(fn=cmd_monitor_external)
