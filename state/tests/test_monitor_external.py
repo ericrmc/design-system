@@ -93,10 +93,38 @@ def peer_workspace(tmp_path):
     return peer
 
 
-# NOTE: the `_seed_ef_files` helper and 8 tests that exercised the
-# md-glob harvest-ef model were removed in S121 because S110 rewrote
-# harvest-ef to read peer engine_feedback rows substrate-direct. The
-# substrate-direct test coverage is tracked by OI-S121-1.
+def _seed_peer_ef(peer: Path, slug: str, *bodies: tuple[str, str]) -> dict:
+    """Open a fresh peer session, submit one engine-feedback row per body, close.
+
+    Each `bodies` entry is `(flag, body_md)`. Returns
+    `{"wno": <peer workspace_session_no>, "feedback": [<per-row submit result>]}`.
+    The peer session is `kind=spec_only` so T-30's review-pass gate does not apply.
+
+    The peer's `init_session_offset` is migration-seeded (OI-S091-1) so wno is
+    not 1-based on a fresh peer; tests must read it from the result rather than
+    hard-coding it.
+    """
+    open_res = _peer_submit(peer, "session-open", {"slug": slug, "kind": "spec_only"})
+    wno = int(open_res["workspace_session_no"])
+    _peer_submit(peer, "assessment", {
+        "state": f"peer ef-seed session {slug} for harvest-ef coverage tests.",
+        "agenda": ["seed engine_feedback rows for harvest-ef coverage."],
+    })
+    feedback = [_peer_submit(peer, "engine-feedback", {"flag": f, "body_md": b})
+                for f, b in bodies]
+    _peer_submit(peer, "close-record", {
+        "summary": f"peer ef-seed close for {slug}.",
+        "items": [
+            {"facet": "engine_version", "text": "engine-v34 to engine-v34, no bump."},
+            {"facet": "what_was_done", "text": "seeded peer engine_feedback rows for tests."},
+            {"facet": "state_at_close", "text": "peer engine_feedback populated for tests."},
+            {"facet": "open_issues", "text": "no open issues recorded in fixture."},
+            {"facet": "next_session_should", "text": "harvest tests will run against this seed."},
+            {"facet": "validator_summary", "text": "validator not exercised in fixture."},
+        ],
+    })
+    _peer_submit(peer, "session-close", {})
+    return {"wno": wno, "feedback": feedback}
 
 
 # ---------------------------------------------------------------------------
@@ -332,3 +360,196 @@ def test_harvest_ef_refuses_when_cwd_inside_peer(
     finally:
         conn.close()
     assert n == 0
+
+
+# ---------------------------------------------------------------------------
+# harvest-ef substrate-direct (S110, OI-S121-1)
+#
+# These tests exercise the substrate-direct harvest path: peer engine_feedback
+# rows are read directly from the peer SQLite via `monitor_external._me_read_peer_ef`
+# and written into self-dev's substrate via the engine-feedback handler, with
+# per-row provenance recorded in `harvested_engine_feedback`.
+# ---------------------------------------------------------------------------
+
+
+def _harvest_ef(peer_workspace, *, dry_run: bool = False,
+                 since_session: int | None = None) -> dict:
+    """Run `selvedge monitor-external harvest-ef` against `peer_workspace`.
+
+    `SELVEDGE_WORKSPACE` is pinned to the test workspace root so harvest writes
+    target the snapshotted self-dev substrate (see `_snapshot_primary` in
+    conftest), not whatever cwd the test happens to inherit. `dry_run` and
+    `since_session` map to `--dry-run` and `--since-session`. Returns the
+    parsed JSON envelope; asserts a 0 exit code at the call site.
+    """
+    args = ["monitor-external", "harvest-ef", "--workspace", str(peer_workspace)]
+    if dry_run:
+        args.append("--dry-run")
+    if since_session is not None:
+        args += ["--since-session", str(since_session)]
+    proc = _run_external_cli(
+        args,
+        extra_env={"SELVEDGE_WORKSPACE": str(WORKSPACE)},
+    )
+    assert proc.returncode == 0, f"harvest-ef failed: {proc.stderr}"
+    return json.loads(proc.stdout)
+
+
+def test_harvest_ef_dry_run_empty_peer(clean_substrate, peer_workspace):
+    """Peer with no engine_feedback rows yields an empty plan and a note."""
+    out = _harvest_ef(peer_workspace, dry_run=True)
+    assert out["dry_run"] is True
+    assert out["peer_rows_total"] == 0
+    assert out["plan"] == []
+    assert "no engine_feedback rows" in out["note"]
+
+
+def test_harvest_ef_dry_run_lists_unharvested_rows(
+    clean_substrate, peer_workspace,
+):
+    """Each unharvested peer row appears in the plan with action=harvest, the
+    peer alias, and the peer workspace_session_no. No self rows are written."""
+    seed = _seed_peer_ef(
+        peer_workspace, "ef-seed-1",
+        ("observation", "**peer-ef-1** harvest-ef dry-run coverage atom one."),
+        ("calibration", "**peer-ef-2** harvest-ef dry-run coverage atom two."),
+    )
+    wno = seed["wno"]
+    expected_aliases = [f"EF-S{wno:03d}-1", f"EF-S{wno:03d}-2"]
+    assert [r["alias"] for r in seed["feedback"]] == expected_aliases
+
+    out = _harvest_ef(peer_workspace, dry_run=True)
+    assert out["dry_run"] is True
+    assert out["peer_rows_total"] == 2
+    plan = out["plan"]
+    assert [e["action"] for e in plan] == ["harvest", "harvest"]
+    assert [e["peer_alias"] for e in plan] == expected_aliases
+    assert [e["peer_wno"] for e in plan] == [wno, wno]
+    assert [e["flag"] for e in plan] == ["observation", "calibration"]
+    assert out["peer_workspace_id"]
+
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        n_ef = conn.execute(
+            "SELECT COUNT(*) FROM engine_feedback WHERE body_md LIKE '%peer-ef-%'"
+        ).fetchone()[0]
+        n_ledger = conn.execute(
+            "SELECT COUNT(*) FROM harvested_engine_feedback"
+        ).fetchone()[0]
+    finally:
+        conn.close()
+    assert n_ef == 0
+    assert n_ledger == 0
+
+
+def test_harvest_ef_imports_with_provenance_preface_and_ledger(
+    clean_substrate, peer_workspace,
+):
+    """Live harvest writes engine_feedback rows with the provenance preface,
+    populates harvested_engine_feedback, and returns success per row."""
+    seed = _seed_peer_ef(
+        peer_workspace, "ef-seed-1",
+        ("observation", "**peer-import-1** harvest-ef import coverage atom one."),
+        ("blocker", "**peer-import-2** harvest-ef import coverage atom two."),
+    )
+    wno = seed["wno"]
+    peer_fids = [r["feedback_id"] for r in seed["feedback"]]
+    expected_aliases = [f"EF-S{wno:03d}-1", f"EF-S{wno:03d}-2"]
+
+    out = _harvest_ef(peer_workspace)
+    assert out["dry_run"] is False
+    statuses = [r["status"] for r in out["results"]]
+    assert statuses == ["success", "success"]
+    self_aliases = [r["self_alias"] for r in out["results"]]
+    assert all(a.startswith("EF-S") for a in self_aliases)
+
+    peer_ws_id = out["peer_workspace_id"]
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        rows = conn.execute(
+            "SELECT body_md, flag FROM engine_feedback "
+            "WHERE body_md LIKE '%peer-import-%' ORDER BY feedback_id"
+        ).fetchall()
+        ledger = conn.execute(
+            "SELECT peer_workspace_id, peer_feedback_id, peer_alias "
+            "FROM harvested_engine_feedback ORDER BY harvest_id"
+        ).fetchall()
+    finally:
+        conn.close()
+    assert len(rows) == 2
+    for body, _flag in rows:
+        assert body.startswith("_Harvested from peer substrate")
+        assert f"external session S{wno:03d}" in body
+    assert [r[0] for r in ledger] == [peer_ws_id, peer_ws_id]
+    assert [r[1] for r in ledger] == peer_fids
+    assert [r[2] for r in ledger] == expected_aliases
+
+
+def test_harvest_ef_idempotent_on_second_run(clean_substrate, peer_workspace):
+    """Re-running harvest-ef against an unchanged peer skips already-harvested
+    rows by ledger lookup; no duplicate self-substrate rows are written."""
+    _seed_peer_ef(
+        peer_workspace, "ef-seed-1",
+        ("observation", "**peer-idem-1** idempotency atom one."),
+        ("observation", "**peer-idem-2** idempotency atom two."),
+    )
+
+    first = _harvest_ef(peer_workspace)
+    assert [r["status"] for r in first["results"]] == ["success", "success"]
+
+    second = _harvest_ef(peer_workspace, dry_run=True)
+    assert [e["action"] for e in second["plan"]] == ["skip", "skip"]
+    assert all("already-harvested" in e["reason"] for e in second["plan"])
+
+    third = _harvest_ef(peer_workspace)
+    assert [r["status"] for r in third["results"]] == ["skipped", "skipped"]
+
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        n_ef = conn.execute(
+            "SELECT COUNT(*) FROM engine_feedback WHERE body_md LIKE '%peer-idem-%'"
+        ).fetchone()[0]
+        n_ledger = conn.execute(
+            "SELECT COUNT(*) FROM harvested_engine_feedback"
+        ).fetchone()[0]
+    finally:
+        conn.close()
+    assert n_ef == 2
+    assert n_ledger == 2
+
+
+def test_harvest_ef_since_session_filter(clean_substrate, peer_workspace):
+    """--since-session N skips peer rows whose peer_wno <= N."""
+    early = _seed_peer_ef(
+        peer_workspace, "ef-seed-early",
+        ("observation", "**peer-since-early** filter atom from earlier peer session."),
+    )
+    later = _seed_peer_ef(
+        peer_workspace, "ef-seed-later",
+        ("observation", "**peer-since-later** filter atom from later peer session."),
+    )
+    early_wno, later_wno = early["wno"], later["wno"]
+    assert later_wno > early_wno
+
+    out = _harvest_ef(peer_workspace, dry_run=True, since_session=early_wno)
+    by_wno = {e["peer_wno"]: e for e in out["plan"]}
+    assert by_wno[early_wno]["action"] == "skip"
+    assert f"since-session {early_wno}" in by_wno[early_wno]["reason"]
+    assert by_wno[later_wno]["action"] == "harvest"
+
+    live = _harvest_ef(peer_workspace, since_session=early_wno)
+    statuses = {r["peer_wno"]: r["status"] for r in live["results"]}
+    assert statuses == {early_wno: "skipped", later_wno: "success"}
+
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        n_early = conn.execute(
+            "SELECT COUNT(*) FROM engine_feedback WHERE body_md LIKE '%peer-since-early%'"
+        ).fetchone()[0]
+        n_later = conn.execute(
+            "SELECT COUNT(*) FROM engine_feedback WHERE body_md LIKE '%peer-since-later%'"
+        ).fetchone()[0]
+    finally:
+        conn.close()
+    assert n_early == 0
+    assert n_later == 1
