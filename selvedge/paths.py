@@ -33,6 +33,31 @@ ALIAS_RE = re.compile(
 # alias shapes in current use: OI-NNN, OI-NNN-NNN, OI-S<wno>-<seq>.
 FR_ISSUE_CITE_RE = re.compile(r"\bOI-(?:S\d{3}-\d+|\d{3}(?:-\d+)?)\b")
 
+# Any citable alias form, used by orient null-state detection to decide
+# whether an FR text carries a stable referent. Excludes bare S<NNN>
+# session refs since those appear in casual prose without binding to
+# decisions/issues/etc.
+FR_ANY_ALIAS_RE = re.compile(
+    r"\b("
+    r"DV-S\d+-\d+"
+    r"|D-S\d+-\d+"
+    r"|EF-S\d+-\d+"
+    r"|OI-(?:S\d+-\d+|\d+(?:-\d+)?)"
+    r"|SPEC-[A-Za-z0-9_\-]+-v\d+"
+    r"|FR-S\d+-\d+"
+    r")\b"
+)
+
+# Phrase pattern that flags FR text as a queue-selector placeholder
+# (no specific actionable referent, just "do next thing from queue").
+# An FR is null-state iff this matches AND FR_ANY_ALIAS_RE finds zero cites.
+FR_NULL_STATE_RE = re.compile(
+    r"\b(?:from\s+(?:the\s+)?orient\s+queue"
+    r"|next\s+highest-priority"
+    r"|next\s+FR/OI)\b",
+    re.IGNORECASE,
+)
+
 # Anchor-trace alias parsing for derived FR-S<wno>-<seq> identifiers
 # (close_state_items.facet='next_session_should' rows have no objects.alias).
 ANCHOR_FR_RE = re.compile(r"^FR-S(\d+)-(\d+)$")

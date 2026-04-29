@@ -901,3 +901,77 @@ def test_orient_falls_back_when_feedback_object_missing(clean_substrate, selvedg
     rows = [r for r in packet["untriaged_feedback"] if r["head"] == "orphan row"]
     assert len(rows) == 1
     assert rows[0]["alias"] == f"feedback_id={fid}"
+
+
+# ---------------------------------------------------------------------------
+# FR null-state annotation (DV-S128-1, closes OI-S126-4)
+# ---------------------------------------------------------------------------
+
+
+def _seed_close_with_items(selvedge_cli, items):
+    return selvedge_cli(
+        [
+            "submit", "close-record", "--payload",
+            json.dumps({"session_no": 1, "summary": "fr null-state test fixture", "items": items}),
+        ]
+    )
+
+
+def test_orient_flags_pure_null_state_fr(clean_substrate, selvedge_cli):
+    res = _seed_close_with_items(selvedge_cli, [
+        {"facet": "next_session_should",
+         "text": "Address the next highest-priority open issue from orient queue or undisposed forward references."},
+    ])
+    assert res["out"]["ok"], res
+    packet = _orient_json(selvedge_cli)
+    frs = packet["next_session_should"]
+    assert len(frs) == 1
+    assert frs[0]["null_state"] is True
+
+
+def test_orient_does_not_flag_mixed_fr_with_live_cite(clean_substrate, selvedge_cli):
+    res = _seed_close_with_items(selvedge_cli, [
+        {"facet": "next_session_should",
+         "text": "Address next highest-priority forward-reference or open issue from orient queue; OI-S104-2 remains a candidate."},
+    ])
+    assert res["out"]["ok"], res
+    packet = _orient_json(selvedge_cli)
+    assert packet["next_session_should"][0]["null_state"] is False
+
+
+def test_orient_does_not_flag_actionable_fr_without_phrase(clean_substrate, selvedge_cli):
+    res = _seed_close_with_items(selvedge_cli, [
+        {"facet": "next_session_should",
+         "text": "Consider documenting subtraction-supersession convention in workspace.md before next migration."},
+    ])
+    assert res["out"]["ok"], res
+    packet = _orient_json(selvedge_cli)
+    assert packet["next_session_should"][0]["null_state"] is False
+
+
+def test_orient_does_not_flag_fr_with_cite_alone(clean_substrate, selvedge_cli):
+    res = _seed_close_with_items(selvedge_cli, [
+        {"facet": "next_session_should",
+         "text": "Operator coordinates first reference_harness creation per FR-S124-17 disaster-response pilot."},
+    ])
+    assert res["out"]["ok"], res
+    packet = _orient_json(selvedge_cli)
+    assert packet["next_session_should"][0]["null_state"] is False
+
+
+def test_orient_markdown_renders_null_state_suffix(clean_substrate, selvedge_cli):
+    seed = _seed_close_with_items(selvedge_cli, [
+        {"facet": "next_session_should",
+         "text": "Address the next highest-priority open issue from orient queue or undisposed forward references."},
+        {"facet": "next_session_should",
+         "text": "Coordinate harness pilot per FR-S124-17 disaster-response stage 2 close."},
+    ])
+    assert seed["out"]["ok"], seed
+    res = selvedge_cli(["orient"])
+    assert res["rc"] == 0, res
+    out = res["out"]["_raw"] if isinstance(res["out"], dict) else "\n".join(res["out"])
+    null_lines = [ln for ln in out.splitlines() if "[null-state]" in ln]
+    assert len(null_lines) == 1
+    assert "highest-priority" in null_lines[0]
+    cite_lines = [ln for ln in out.splitlines() if "FR-S124-17" in ln and ln.startswith("- FR-")]
+    assert cite_lines and "[null-state]" not in cite_lines[0]

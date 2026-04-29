@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import sqlite3
 
-from .paths import FR_ISSUE_CITE_RE, db_path
+from .paths import FR_ANY_ALIAS_RE, FR_ISSUE_CITE_RE, FR_NULL_STATE_RE, db_path
 
 
 def _orient_sections(conn: sqlite3.Connection) -> dict:
@@ -82,6 +82,16 @@ def _orient_sections(conn: sqlite3.Connection) -> dict:
                     item["rot"].append({"alias": alias, "status": "absent"})
                 elif status not in LIVE_STATUSES:
                     item["rot"].append({"alias": alias, "status": status})
+    # Null-state annotation (DV-S128-1, closes OI-S126-4): flag FR items
+    # whose text matches a queue-selector phrase pattern AND carries no
+    # citable alias of any form. Pure-placeholder items accumulate in the
+    # queue indefinitely because they never name a concrete referent to
+    # dispose against; the flag surfaces them for §8.5 disposition.
+    for item in out["next_session_should"]:
+        text = item["text"]
+        item["null_state"] = bool(
+            FR_NULL_STATE_RE.search(text) and not FR_ANY_ALIAS_RE.search(text)
+        )
     open_issues_rows = conn.execute(
         "SELECT i.alias, i.priority, i.status, ta.text AS title "
         "FROM issues i JOIN text_atoms ta ON ta.atom_id=i.title_atom_id "
@@ -221,7 +231,9 @@ def _orient_markdown(packet: dict) -> str:
             suffix = ""
             if item.get("rot"):
                 parts = [f"{r['alias']}: {r['status']}" for r in item["rot"]]
-                suffix = f" [rot: {', '.join(parts)}]"
+                suffix += f" [rot: {', '.join(parts)}]"
+            if item.get("null_state"):
+                suffix += " [null-state]"
             lines.append(f"- {item['ref']} {item['text']}{suffix}")
         if packet.get("next_session_should_truncated"):
             lines.append("")
