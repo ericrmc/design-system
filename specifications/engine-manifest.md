@@ -1,10 +1,10 @@
 ---
 title: Engine Manifest
-version: 33
+version: 34
 status: active
 created: 2026-04-28
-updated-by-session: 110
-supersedes: engine-manifest v32 (engine-v33; per S110 DV-S110-1 substrate-direct harvest-ef + migration 019 harvested_engine_feedback ledger); engine-manifest v31 (engine-v32; per S109 DV-S109-1 removes constraints.md from engine-definition file set, adds migrations 011-018 to substrate table, corrects frontmatter version drift); v30 (engine-v31; per S104 DV-S104-1..7 substrate enforcement of coding review loop); v29 (engine-v30; per S102 DV-S102-1 renames objects.citable_alias and issues.citable_alias to alias, closes OI-S101-1); v28 (engine-v29; per S099 DV-S099-1 inline body_md path closes OI-S090-5); v28 per S098 DV-S098-1 (closes_issue handler dispatch); v27 per S097 DV-S097-1; v26 per S094; v25 per S091; v24 per S090; v23 per S089 D-1
+updated-by-session: 118
+supersedes: engine-manifest v33 (engine-v34; per S118 DV-S118-1 opens_issue target_issue_id enforcement via T-31 + handler resolution); engine-manifest v32 (engine-v33; per S110 DV-S110-1 substrate-direct harvest-ef + migration 019 harvested_engine_feedback ledger); engine-manifest v31 (engine-v32; per S109 DV-S109-1 removes constraints.md from engine-definition file set, adds migrations 011-018 to substrate table, corrects frontmatter version drift); v30 (engine-v31; per S104 DV-S104-1..7 substrate enforcement of coding review loop); v29 (engine-v30; per S102 DV-S102-1 renames objects.citable_alias and issues.citable_alias to alias, closes OI-S101-1); v28 (engine-v29; per S099 DV-S099-1 inline body_md path closes OI-S090-5); v28 per S098 DV-S098-1 (closes_issue handler dispatch); v27 per S097 DV-S097-1; v26 per S094; v25 per S091; v24 per S090; v23 per S089 D-1
 ---
 
 # Engine Manifest
@@ -12,6 +12,10 @@ supersedes: engine-manifest v32 (engine-v33; per S110 DV-S110-1 substrate-direct
 This file enumerates the loadable Selvedge engine at the current commit. The engine is the file set listed below plus the substrate; loading the engine means having these files available, the substrate initialised, and the `selvedge` CLI on PATH.
 
 ## Current engine version
+
+`engine-v34` (established Session 118 — opens_issue effects now require target_issue_id at submit time, mirroring closes_issue at engine-v28).
+
+`engine-v34` ships migration 022 adding T-31 (`t31_opens_issue_requires_target_issue`) which refuses any `decision_effects` INSERT with `effect_kind='opens_issue'` and NULL `target_issue_id`. The `_submit_decision_record` handler's opens_issue branch resolves `target` (issue alias) via `_resolve_issue_alias` and refuses unless the resolved issue has `status='open'`; this protects against opens_issue effects citing already-resolved or superseded issues, a logical-consistency check absent from the closes_issue side because closes_issue dispatches the disposition transition itself. Unlike closes_issue, opens_issue does not dispatch issue creation in-band — operators register issues separately via `submit issue` and reference them from the decision-record. Rationale per DV-S118-1 R-1.1 rejection: folding title/priority/summary/body into decision_effects payload bloats the schema for marginal ergonomic gain. Eight legacy NULL `target_issue_id` rows pre-date T-31 and remain untouched (T-31 is BEFORE INSERT only); the chain-walk export (`_decisions_citing_issue` in cli.py ~L2806) retains its target_descriptor word-boundary regex fallback to traverse them. Closes EF-S117-1 (S117 friction observation: 8/14 opens_issue rows carried NULL target_issue_id, forcing descriptor-substring fallback in DV-S116-1 anchor-trace). prompt-development v7 documents the new authoring contract.
 
 `engine-v33` (established Session 110 — substrate-direct read for `monitor-external harvest-ef`; ledger-based per-row idempotency).
 

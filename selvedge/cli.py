@@ -1231,6 +1231,14 @@ def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
             cur_status = conn.execute(
                 "SELECT status FROM issues WHERE issue_id=?", (target_iid,)
             ).fetchone()
+            # cur_status would normally be guaranteed by the resolve above, but
+            # null-guard defensively in case a future code path admits inter-
+            # query deletion (parity with opens_issue at L1271).
+            if cur_status is None:
+                raise SelvedgeError(
+                    "E_NOT_FOUND",
+                    f"closes_issue effect target [{e['target']}] vanished between resolve and status check",
+                )
             if cur_status["status"] not in ("resolved", "superseded"):
                 _submit_issue_disposition(
                     conn,
@@ -1241,6 +1249,36 @@ def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
                         "session_no": p.get("session_no"),
                     },
                     role,
+                )
+        elif e["effect_kind"] == "opens_issue":
+            # DV-S118-1 / engine-v34: opens_issue requires target naming an
+            # issue alias that already exists; identity is conveyed via
+            # target (issue alias) → target_issue_id, mirroring closes_issue
+            # (T-27) at the substrate layer (T-31). Unlike closes_issue,
+            # which folds the disposition transition in-band, opens_issue
+            # does NOT dispatch issue creation — operators register the
+            # issue first via `submit issue`, then reference it here.
+            # The generic target_object_id resolution further down is not used
+            # for opens_issue: the typed reference is target_issue_id (issue-
+            # specific FK to issues.issue_id), not target_object_id (FK to
+            # objects.object_id). closes_issue (T-27) follows the same shape.
+            if not e.get("target"):
+                raise SelvedgeError(
+                    "E_VALIDATION",
+                    "opens_issue effect requires target naming the issue alias (create the issue first via `submit issue` if needed)",
+                )
+            target_iid = _resolve_issue_alias(conn, e["target"])
+            cur_status = conn.execute(
+                "SELECT status FROM issues WHERE issue_id=?", (target_iid,)
+            ).fetchone()
+            # cur_status would normally be guaranteed by the resolve above, but
+            # null-guard defensively in case a future code path admits inter-
+            # query deletion.
+            if cur_status is None or cur_status["status"] != "open":
+                cur_text = cur_status["status"] if cur_status else "DELETED"
+                raise SelvedgeError(
+                    "E_VALIDATION",
+                    f"opens_issue effect must reference an issue with status='open', but [{e['target']}] has status={cur_text!r}",
                 )
         elif e.get("target"):
             target_oid = _resolve_alias_to_object_id(conn, e["target"])
