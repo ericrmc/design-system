@@ -31,6 +31,7 @@ from typing import Optional
 
 from .errors import SelvedgeError
 from .export import cmd_export
+from .feedback_cmd import cmd_feedback
 from .id_allocate import cmd_id_allocate
 from .init_cmd import cmd_init
 from .migrations import cmd_migrate
@@ -153,6 +154,53 @@ def main(argv: Optional[list[str]] = None) -> int:
     p_me_he.add_argument("--dry-run", action="store_true", help="Print harvest plan without writing rows.")
     p_me_he.add_argument("--role", default="__cli__")
     p_me_he.set_defaults(fn=cmd_monitor_external)
+
+    p_fb = sub.add_parser(
+        "feedback",
+        help=(
+            "Record an engine-feedback row; if no session is open, "
+            "wrap the EF in a meta intake session (DV-S122-1)."
+        ),
+        description=(
+            "Records an engine-feedback row. If a session is already "
+            "open, the EF is submitted into that session as a passthrough "
+            "(intake_session=false) — appropriate when the EF arises from "
+            "the work-in-progress. If no session is open, the wrapper "
+            "opens a kind=meta intake session, submits the EF, writes a "
+            "minimal close-record, and closes the session in one "
+            "write_tx (intake_session=true)."
+        ),
+    )
+    p_fb.add_argument(
+        "body",
+        help="EF body markdown; '@file' to read from a file, '-' for stdin.",
+    )
+    p_fb.add_argument(
+        "--flag",
+        default="observation",
+        choices=["observation", "reframe", "calibration", "blocker", "triage"],
+        help="EF flag (default observation).",
+    )
+    p_fb.add_argument(
+        "--slug",
+        default=None,
+        help=(
+            "Override the auto-generated intake-session slug "
+            "(default feedback-intake-<UTC-timestamp>); ignored if a "
+            "session is already open."
+        ),
+    )
+    p_fb.add_argument("--role", default="__cli__")
+    p_fb.add_argument(
+        "--dry-run",
+        dest="dry_run",
+        action="store_true",
+        help=(
+            "Run the wrapper inside a transaction that always rolls back "
+            "(mirrors `submit --dry-run` semantics from DV-S120-1)."
+        ),
+    )
+    p_fb.set_defaults(fn=cmd_feedback)
 
     args = parser.parse_args(argv)
     try:
