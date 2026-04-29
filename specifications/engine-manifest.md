@@ -1,10 +1,10 @@
 ---
 title: Engine Manifest
-version: 39
+version: 40
 status: active
 created: 2026-04-28
-updated-by-session: 132
-supersedes: engine-manifest v34 (engine-v34; per S118 DV-S118-1); jumps past v35 (engine-v35; S125 reference_harness substrate kind, migration 023, no spec-version bump at the time), v36 (engine-v36; S125 reference_harness hardening, migration 024), v37 (engine-v37; S125 reference_harness iter2 fixes, migration 025), v38 (engine-v38; S129 effect_kind admit deletes, migration 026) — these were shipped via migrations without corresponding engine-manifest spec_version bumps. v39 reasserts the spec_version=engine-vN convention via DV-S132-1 calibration: lifts S131 deliberation-shape content into methodology.md kernel; preserves DV-S131-1 substantive scope unchanged
+updated-by-session: 133
+supersedes: engine-manifest v39 (engine-v39; per S132 DV-S132-1 lifted S131 deliberation-shape into kernel; doc-corrective bump to v40 ships tools/update-external-workspace.sh and enumerates migrations 020-026 missing from prior manifest tables); v34 (engine-v34; per S118 DV-S118-1); jumps past v35 (engine-v35; S125 reference_harness substrate kind, migration 023, no spec-version bump at the time), v36 (engine-v36; S125 reference_harness hardening, migration 024), v37 (engine-v37; S125 reference_harness iter2 fixes, migration 025), v38 (engine-v38; S129 effect_kind admit deletes, migration 026) — these were shipped via migrations without corresponding engine-manifest spec_version bumps. v39 reasserts the spec_version=engine-vN convention via DV-S132-1 calibration: lifts S131 deliberation-shape content into methodology.md kernel; preserves DV-S131-1 substantive scope unchanged
 ---
 
 # Engine Manifest
@@ -12,6 +12,10 @@ supersedes: engine-manifest v34 (engine-v34; per S118 DV-S118-1); jumps past v35
 This file enumerates the loadable Selvedge engine at the current commit. The engine is the file set listed below plus the substrate; loading the engine means having these files available, the substrate initialised, and the `selvedge` CLI on PATH.
 
 ## Current engine version
+
+`engine-v40` (established Session 133 — ships `tools/update-external-workspace.sh` for engine-update propagation to existing external-problem workspaces; enumerates migrations 020-026 in the engine-definition file set table below; corrects bootstrap script doc drift per DV-S133-1).
+
+`engine-v40` is a doc-corrective bump alongside one new tool. The engine-update propagation tool (`tools/update-external-workspace.sh`) lets the operator ship engine updates from the source workspace to existing external-problem workspaces (refuses if the target has an open session or is not external-problem mode; preserves applications/, state/selvedge.sqlite, provenance/, MODE.md, engine-feedback/, deliberations/, .git/). The manifest's Substrate engine-definition table now enumerates migrations 020-026, which had shipped via prior coding sessions without manifest updates (S111 020, S113 021, S118 022, S125 023-025, S129 026). The bootstrap script's stale `constraints` row in the spec-copy loop (subtracted at engine-v32 DV-S109-1 but never removed from bootstrap) is also corrected. Coding review loop iter-1 surfaced 2 medium findings on bootstrap doc drift (header line 2 version claim; spec-count line 150 "4 specs" vs actual 3), both fixed; iter-2 surfaced 2 medium findings on this manifest's incompleteness (update-tool not in §3; migrations 020-026 not enumerated), both fixed by this v40 bump.
 
 `engine-v39` (established Session 132 — kernel-restoration of deliberation-shape discipline; lifts S131 substantive content into `specifications/methodology.md` §When-to-convene-multiple-agents where it applies equally to self-development and external-problem applications, per DV-S132-1 calibration).
 
@@ -94,6 +98,7 @@ Active spec (read at session open):
 | `specifications/workspace.md` | File classes, session structure, decisions, specifications discipline. |
 | `specifications/engine-manifest.md` | This file. |
 | `tools/validate.sh` | Wrapper that calls `selvedge validate --precommit`. |
+| `tools/update-external-workspace.sh` | Propagates engine-definition file set + new migrations from source to existing external-problem workspaces (S133 DV-S133-1; ships itself for cascading updates so future engine bumps propagate from any target as a hop). |
 
 Substrate (engine-definition; not read as prose):
 
@@ -118,6 +123,13 @@ Substrate (engine-definition; not read as prose):
 | `state/migrations/017-coding-review-loop-enforcement.sql` | sessions.kind column (coding/spec_only/meta; immutable via T-29) and review_passes table (outcome ∈ clean/findings/nonconverged; head_sha for staleness audit); T-30 close-gate on coding sessions; T-20 narrowed to admit halt path; closes OI-083-001 (per S104 D-1). |
 | `state/migrations/018-review-passes-role-capability.sql` | Grants __cli__ insert capability on review_passes; without this the submit review-pass handler refused with E_REFUSAL_T12 (per S104, follow-up to migration 017). |
 | `state/migrations/019-harvested-engine-feedback-ledger.sql` | harvested_engine_feedback ledger table (UNIQUE peer_workspace_id+peer_feedback_id, FK to objects+sessions) supporting substrate-direct harvest-ef per-row idempotency (per S110 D-1). |
+| `state/migrations/020-fix-stale-constraints-body-path.sql` | Fixes stale body_path on superseded constraints v1 spec_version row (per S111). |
+| `state/migrations/021-backfill-decision-targets-supports.sql` | Backfills target FKs and decision_supports linkage for legacy decision rows (per S113, closing OI-S110-3). |
+| `state/migrations/022-opens-issue-target-issue-id-enforcement.sql` | T-31 trigger refusing decision_effects INSERT with effect_kind=opens_issue and NULL target_issue_id; mirrors closes_issue handler dispatch at engine-v28 (per S118 DV-S118-1). |
+| `state/migrations/023-reference-harness-substrate-kind.sql` | reference_harness substrate kind for workspace-experimental validation primitive: claim_set/stress_protocols/falsification_triggers/expiry rows; CLI verbs harness-create/seal (per S125 DV-S125-1; OI-S124-1 pilot for disaster-response arc). |
+| `state/migrations/024-reference-harness-hardening.sql` | Reviewer iter-1 high findings on engine-v35 reference_harness: alias namespace tightening, claim_set substrate-resolvable validation, expiry parsing hardening (per S125 review). |
+| `state/migrations/025-reference-harness-iter2-fixes.sql` | Reviewer iter-2 medium findings on reference_harness final pass (per S125 close). |
+| `state/migrations/026-effect-kind-admit-deletes.sql` | Calibrated CHECK widening admits `deletes` to decision_effects.effect_kind enum (per S129 DV-S129-1, closing OI-S104-2). |
 | `selvedge/` (Python package) | The CLI implementation. Includes the `migrate` subcommand (engine-v18+) with `--status`, `--dry-run`, `--apply`; T-15 pre-check; sha256 drift detection; 078 D-8 tier-1 rollback via `.pre-migrate-backup`. |
 | `bin/selvedge` | Shell shim. |
 | `state/selvedge.sqlite` | Per-workspace; not under VCS. Created by `selvedge init`, which now chains `selvedge migrate` so a fresh init applies all known migrations (engine-v18+). |
