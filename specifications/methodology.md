@@ -1,10 +1,10 @@
 ---
 title: Methodology
-version: 4
+version: 5
 status: active
 created: 2026-04-27
-updated-by-session: 104
-supersedes: methodology-v3 (engine-v19); per S104 DV-S104-1..4,7 (substrate enforcement of the coding review loop)
+updated-by-session: 116
+supersedes: methodology-v4 (engine-v33); per S116 DV-S116-2 (reopen-on-new-reading convention)
 ---
 
 # Methodology
@@ -62,6 +62,12 @@ When the decision touches the methodology itself, **at least one perspective sho
 The synthesis of perspectives **is not itself a decision**. It feeds Decide. Synthesis preserves dissent: a minority position is recorded as a minority, not erased.
 
 If a multi-agent deliberation would otherwise be triggered but is not performed (because the workspace lacks a non-Claude provider, because the decision is operator-directed, because the cost is unwarranted for this scope), the reason is recorded in the session's decision record.
+
+### Reopen on new reading
+
+A sealed deliberation may be reopened in a follow-up session when post-close operator dialogue or new reading surfaces a **load-bearing option neither perspective named**. The follow-up session re-enters Deliberate with the new option included as a candidate shape, treating the prior synthesis as one input rather than as final. The bar is *load-bearing option neither perspective named*: minor refinements or restatements of options already present in the prior frame are not grounds. Substrate-level supersession admits this without new machinery; this convention names when reopening is appropriate so that the social cost of doing so is not the limiting factor.
+
+When a follow-up session reopens, it cites the prior decision and the new reading or dialogue that surfaced the missed option, and treats prior perspectives' reasoning as available context — not as binding. Reopening is normal, not failure.
 
 ## When to review
 
