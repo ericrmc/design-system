@@ -1,10 +1,10 @@
 ---
 title: Methodology
-version: 6
+version: 7
 status: active
 created: 2026-04-27
-updated-by-session: 124
-supersedes: methodology-v5 (engine-v34); per S124 DV-S124-1 (subtract third validation sense clause; clarify that no-domain-actor is skipped Domain validation, not a new sense)
+updated-by-session: 132
+supersedes: methodology-v6 (engine-v34); per S132 DV-S132-1 (lift S131 deliberation-shape content into kernel; preserves DV-S131-1 substantive scope unchanged)
 ---
 
 # Methodology
@@ -49,17 +49,56 @@ Use multi-agent deliberation when:
 - The question has two or more genuinely plausible positions that the author can name before deliberation.
 - The author marks the work load-bearing for reasons stated in the record.
 
+### Number
+
+Floor of 3 valid perspectives. Target 4 for methodology-changing decisions; 3 acceptable for narrower load-bearing questions. Below the floor is consultation, not deliberation. Justify any deviation at convening time. (Per S131 DV-S131-1; restores MAD-v4 quorum after the post-restart 25-deliberation 2-default drift.)
+
+### Selection and naming
+
+Perspectives are chosen for **expected disagreement on this problem**. No permanent roster. The convening agent names each perspective's expected-disagreement axis at convening time. Free-form labels — but use short stable names consistently across brief, raw output, synthesis, and decision record.
+
+### Adversarial requirement
+
+At least one perspective is adversarial — its job is to challenge the emerging consensus, identify unstated assumptions, and argue for alternatives. Brief-writing has no other built-in adversary; this is the cheapest structural insurance against consensus-as-shared-prior.
+
+### Cross-family
+
+When the decision touches the methodology itself, **at least one perspective MUST come from a different model family** (different organisation; e.g., not Anthropic). The cross-family perspective surfaces assumptions a single training-distribution shares. This was Selvedge's earliest substantive finding (Session 4, pre-restart) and the property that protected the methodology's foundation against single-family bias.
+
+For other multi-agent deliberations, cross-family is the default and strongly recommended. Absence is recorded in the decision-record with reason. Use `codex` for non-Anthropic (OpenAI) and `gemini` for Google when a third family strengthens the deliberation.
+
+### Stance briefs
+
+Each perspective receives a brief whose non-role sections are **byte-identical** across all LLM perspectives in the deliberation: methodology context, problem statement, design questions, evidence base, response format, constraint on external imports. Only the role-specific stance varies (150–300 words, second person, naming the *load* the perspective carries — not the *conclusion* it should reach). Diffing two LLM perspective briefs from one deliberation must reveal only the role-specific stance.
+
+For human or domain perspectives, the briefing must convey **equivalent content** (the same context, problem, questions, and external-imports constraint) but the form may differ (verbal, conversational, written-prose) per the perspective's mode of reasoning. Equivalence of content is the discipline; byte-identicality is the LLM-specific implementation.
+
+### Brief immutability
+
+Briefs are committed to the workspace under `deliberations/<wno>-<slug>/` (or equivalent record path) before any perspective is launched. Briefs are not edited during the deliberation. The on-disk write-and-no-subsequent-edits is the deliberation's anchor; the git commit at session-close materialises the record into history but does not redefine the anchor.
+
+### Independence and quorum
+
 Each perspective:
 
 - States its position before seeing other perspectives' positions, to prevent anchoring.
 - Cites the workspace material it relied on for load-bearing claims.
 - Is willing to say "I don't know" rather than fabricate.
 
-At least one perspective is adversarial (challenges the emerging consensus, identifies unstated assumptions, argues for alternatives).
+Fewer than 3 valid outputs is not a deliberation; re-run or reformulate. A refusal is provenance, not error — preserved as the perspective's body. Do not synthesise over 1–2 perspectives.
 
-When the decision touches the methodology itself, **at least one perspective should come from a different model family** (different organisation; e.g., not Anthropic). The cross-family perspective surfaces assumptions a single training-distribution shares. This was Selvedge's earliest substantive finding (session 4) and the property that protected the methodology's foundation against single-family bias.
+### Synthesis
 
-The synthesis of perspectives **is not itself a decision**. It feeds Decide. Synthesis preserves dissent: a minority position is recorded as a minority, not erased.
+The synthesizer must not have been one of the perspectives.
+
+- **Citation.** Every claim attributing a position to a perspective cites the source (e.g. `[P-N, Q#]` or `[P-N, section]`). Unattributed perspective-specific language is a discipline failure.
+- **`[synth]` markers.** Synthesizer-original claims (not directly sourced from any perspective) are tagged `[synth]`. This lets future readers compute the sourced-vs-synthesised ratio.
+- **Convergence vs coverage.** Distinguish *convergence* (all perspectives independently reached a similar conclusion) from *coverage* (one perspective raised the point; others were silent). They are different epistemic states. Record only multi-source agreement as `synthesis_points.kind='convergence'`.
+- **Dissent preservation.** Disagreements are recorded as `divergence` or `minority` synthesis_points with `source_perspectives` pointing at the dissenting perspective_ids. A minority position with a strong argument is preserved as-is, not diluted.
+
+The synthesis of perspectives **is not itself a decision**. It feeds Decide.
+
+### Skipping triggered deliberation
 
 If a multi-agent deliberation would otherwise be triggered but is not performed (because the workspace lacks a non-Claude provider, because the decision is operator-directed, because the cost is unwarranted for this scope), the reason is recorded in the session's decision record.
 

@@ -1,0 +1,1637 @@
+OpenAI Codex v0.124.0 (research preview)
+--------
+workdir: /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /Users/ericmccowan/.codex/memories]
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 019ddb95-37ec-7cb1-93f1-5f1712aa3d10
+--------
+user
+# Cross-family spot-check — S132 calibration framing
+
+You are a single-agent cross-family (openai) spot-check on a calibration move proposed by the orchestrator (Claude Opus). The session that produced the content (S131) already ran a 6-perspective cross-family deliberation; this is a relocation calibration, not a content question. Your job is to reality-check the move, flag anything missed, and surface conflicts with existing kernel content.
+
+## Engine context (essentials only)
+
+The Selvedge engine has three loadable spec files relevant here:
+
+- **`specifications/methodology.md`** — the kernel. Mode-agnostic. Defines what Selvedge does, the nine activities, when to convene multiple agents, when to review, how preservation works. Header notes: "It replaces the prior split across `methodology-kernel.md`, `identity.md`, `multi-agent-deliberation.md`, and `validation-approach.md`."
+- **`prompts/development.md`** — self-development application prompt. The engine working on its own evolution.
+- **`prompts/application.md`** — external-problem application prompt. The engine working on a domain problem (software, research, policy, etc.). Says "See prompts/development.md for the concrete payload shapes for each submit kind. They are identical for external-problem sessions."
+
+methodology.md §When-to-convene-multiple-agents currently has: triggers (kernel revision / two-plausible-positions / load-bearing), independence (state before seeing others), citation-of-workspace-material, "I-don't-know vs fabricate", adversarial requirement, cross-family for kernel-touching, synthesis-doesn't-decide, dissent preservation, reopen-on-new-reading.
+
+## What S131 added (currently in prompts/development.md §4 only)
+
+A substantive revision restoring 7 disciplines from the subtracted MAD v4 spec, agreed by 6-perspective cross-family deliberation:
+
+1. **Number.** Floor of 3 valid perspectives. Target 4 for methodology-changing decisions; 3 for narrower load-bearing questions. Below the floor is consultation, not deliberation.
+2. **Cross-family.** ≥1 perspective from a different model family (mentions `codex` for OpenAI, `gemini` for Google as concrete tools).
+3. **Naming and selection.** Perspectives chosen for *expected disagreement on this problem*. No permanent roster. Free-form labels but stable names across brief/raw/synthesis/decision.
+4. **Adversarial requirement.** ≥1 perspective adversarial.
+5. **Stance briefs (shared/role-specific split).** Briefs share byte-identical methodology-context/problem-statement/design-questions/evidence/response-format/external-imports-constraint sections; only role-specific stance varies. Diffing two briefs from one deliberation must reveal only the role-specific stance.
+6. **Brief immutability.** Briefs committed under `deliberations/<wno>-<slug>/` before any perspective launches; not edited during deliberation.
+7. **Independence + Quorum + Graceful degradation.** Perspectives state independently. Fewer than 3 valid outputs is not a deliberation; re-run or reformulate. Refusal is provenance, not error.
+8. **Synthesis discipline.** Synthesizer-not-a-perspective, citation `[P-N, Q#]`, `[synth]` markers for synthesizer-original claims, convergence-vs-coverage distinction (only multi-source agreement records as `synthesis_points.kind='convergence'`), dissent preservation as substrate `divergence`/`minority` rows.
+
+Plus mode-specific content that is genuinely application-prompt-level:
+
+- **CLI surface.** `bin/selvedge submit deliberation-open` / `perspective` / `deliberation-seal` / `synthesis-point` — mode-agnostic in payload shape but lives in the prompt because both prompts deliver these.
+- **Capture subagent.** Decomposes perspective bodies into `perspective-position` + `perspective-claim` rows under closed `section_kind` enum (position / schema_sketch / cli_surface / migration_path / what_not / open_question / risk / what_lost). Substrate-tooling pattern.
+
+## Proposed move (S132 calibration)
+
+Move items 1–8 above (the kernel-level content) from `prompts/development.md` §4 to `specifications/methodology.md` §When-to-convene-multiple-agents. Trim `prompts/development.md` §4 to keep only CLI surface + capture-subagent pattern, with an explicit pointer to the kernel section. Add the same explicit pointer in `prompts/application.md` so external-problem agents inherit the kernel discipline. Engine-manifest and engine-version bump alongside.
+
+Calibration **kind** because the content was already cross-family deliberated in S131 with 7 convergences (C-1 through C-7); this session is correcting *where* the content lives, not *what* it says.
+
+## Your task
+
+Five questions. Answer each in 2-4 sentences. Total response under 600 words.
+
+**Q1.** Is methodology.md the right home for items 1–8? Specifically: are any of them genuinely application-mode-specific in a way the orchestrator missed? (E.g., does the 4-perspective target hold the same way for external-problem deliberations where domain perspectives may dominate?)
+
+**Q2.** Does any of the new content conflict with what's already in methodology.md §When-to-convene? (Check for: duplication, contradictory rules, ordering changes that would matter.)
+
+**Q3.** Is "calibration" the right decision-kind for this move? Or does the relocation itself constitute a methodology change worth substantive deliberation? (Consider: prompts/application.md inheritors would now be bound to disciplines they did not see deliberated.)
+
+**Q4.** The plan jumps engine-manifest spec from v34 directly to v39, skipping v35-v38, to align spec_version with current_engine_version (engine-v38) plus the pending bump to engine-v39. Is this version-jump legitimate or a smell? (The atomic-propagation logic in `_submit_spec_version` sets `current_engine_version = engine-v{p['version']}` when `spec_id='engine-manifest'`.)
+
+**Q5.** What did the orchestrator most plausibly miss? (Free response. Anything from architectural concern to implementation detail.)
+
+Output: structured Q1-Q5 answers, no preamble, no postamble. If you have no concern under a question, write "No concern; <one-sentence rationale>." rather than padding.
+
+codex
+I’ll read the existing methodology and prompt sections so the spot-check is grounded in the current repo text, especially the convening rules and versioning mechanics.
+exec
+/bin/zsh -lc "sed -n '1,260p' prompts/development.md" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+exec
+/bin/zsh -lc "sed -n '1,260p' specifications/methodology.md" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+exec
+/bin/zsh -lc "sed -n '1,240p' prompts/application.md" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ exited 1 in 0ms:
+sed: prompts/application.md: No such file or directory
+
+ exited 1 in 0ms:
+sed: specifications/methodology.md: No such file or directory
+
+ exited 1 in 0ms:
+sed: prompts/development.md: No such file or directory
+
+exec
+/bin/zsh -lc 'rg -n "When-to-convene|multiple agents|deliberation|cross-family|adversarial|synthesis|engine-manifest|spec_version|current_engine_version|_submit_spec_version" specifications prompts bin lib src .' in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ exited 2 in 0ms:
+rg: specifications: No such file or directory (os error 2)
+rg: prompts: No such file or directory (os error 2)
+rg: bin: No such file or directory (os error 2)
+rg: lib: No such file or directory (os error 2)
+rg: src: No such file or directory (os error 2)
+./spot-check.log:3:workdir: /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+./spot-check.log:15:You are a single-agent cross-family (openai) spot-check on a calibration move proposed by the orchestrator (Claude Opus). The session that produced the content (S131) already ran a 6-perspective cross-family deliberation; this is a relocation calibration, not a content question. Your job is to reality-check the move, flag anything missed, and surface conflicts with existing kernel content.
+./spot-check.log:21:- **`specifications/methodology.md`** — the kernel. Mode-agnostic. Defines what Selvedge does, the nine activities, when to convene multiple agents, when to review, how preservation works. Header notes: "It replaces the prior split across `methodology-kernel.md`, `identity.md`, `multi-agent-deliberation.md`, and `validation-approach.md`."
+./spot-check.log:25:methodology.md §When-to-convene-multiple-agents currently has: triggers (kernel revision / two-plausible-positions / load-bearing), independence (state before seeing others), citation-of-workspace-material, "I-don't-know vs fabricate", adversarial requirement, cross-family for kernel-touching, synthesis-doesn't-decide, dissent preservation, reopen-on-new-reading.
+./spot-check.log:29:A substantive revision restoring 7 disciplines from the subtracted MAD v4 spec, agreed by 6-perspective cross-family deliberation:
+./spot-check.log:31:1. **Number.** Floor of 3 valid perspectives. Target 4 for methodology-changing decisions; 3 for narrower load-bearing questions. Below the floor is consultation, not deliberation.
+./spot-check.log:33:3. **Naming and selection.** Perspectives chosen for *expected disagreement on this problem*. No permanent roster. Free-form labels but stable names across brief/raw/synthesis/decision.
+./spot-check.log:34:4. **Adversarial requirement.** ≥1 perspective adversarial.
+./spot-check.log:35:5. **Stance briefs (shared/role-specific split).** Briefs share byte-identical methodology-context/problem-statement/design-questions/evidence/response-format/external-imports-constraint sections; only role-specific stance varies. Diffing two briefs from one deliberation must reveal only the role-specific stance.
+./spot-check.log:36:6. **Brief immutability.** Briefs committed under `deliberations/<wno>-<slug>/` before any perspective launches; not edited during deliberation.
+./spot-check.log:37:7. **Independence + Quorum + Graceful degradation.** Perspectives state independently. Fewer than 3 valid outputs is not a deliberation; re-run or reformulate. Refusal is provenance, not error.
+./spot-check.log:38:8. **Synthesis discipline.** Synthesizer-not-a-perspective, citation `[P-N, Q#]`, `[synth]` markers for synthesizer-original claims, convergence-vs-coverage distinction (only multi-source agreement records as `synthesis_points.kind='convergence'`), dissent preservation as substrate `divergence`/`minority` rows.
+./spot-check.log:42:- **CLI surface.** `bin/selvedge submit deliberation-open` / `perspective` / `deliberation-seal` / `synthesis-point` — mode-agnostic in payload shape but lives in the prompt because both prompts deliver these.
+./spot-check.log:47:Move items 1–8 above (the kernel-level content) from `prompts/development.md` §4 to `specifications/methodology.md` §When-to-convene-multiple-agents. Trim `prompts/development.md` §4 to keep only CLI surface + capture-subagent pattern, with an explicit pointer to the kernel section. Add the same explicit pointer in `prompts/application.md` so external-problem agents inherit the kernel discipline. Engine-manifest and engine-version bump alongside.
+./spot-check.log:49:Calibration **kind** because the content was already cross-family deliberated in S131 with 7 convergences (C-1 through C-7); this session is correcting *where* the content lives, not *what* it says.
+./spot-check.log:55:**Q1.** Is methodology.md the right home for items 1–8? Specifically: are any of them genuinely application-mode-specific in a way the orchestrator missed? (E.g., does the 4-perspective target hold the same way for external-problem deliberations where domain perspectives may dominate?)
+./spot-check.log:57:**Q2.** Does any of the new content conflict with what's already in methodology.md §When-to-convene? (Check for: duplication, contradictory rules, ordering changes that would matter.)
+./spot-check.log:59:**Q3.** Is "calibration" the right decision-kind for this move? Or does the relocation itself constitute a methodology change worth substantive deliberation? (Consider: prompts/application.md inheritors would now be bound to disciplines they did not see deliberated.)
+./spot-check.log:61:**Q4.** The plan jumps engine-manifest spec from v34 directly to v39, skipping v35-v38, to align spec_version with current_engine_version (engine-v38) plus the pending bump to engine-v39. Is this version-jump legitimate or a smell? (The atomic-propagation logic in `_submit_spec_version` sets `current_engine_version = engine-v{p['version']}` when `spec_id='engine-manifest'`.)
+./spot-check-prompt.md:3:You are a single-agent cross-family (openai) spot-check on a calibration move proposed by the orchestrator (Claude Opus). The session that produced the content (S131) already ran a 6-perspective cross-family deliberation; this is a relocation calibration, not a content question. Your job is to reality-check the move, flag anything missed, and surface conflicts with existing kernel content.
+./spot-check-prompt.md:9:- **`specifications/methodology.md`** — the kernel. Mode-agnostic. Defines what Selvedge does, the nine activities, when to convene multiple agents, when to review, how preservation works. Header notes: "It replaces the prior split across `methodology-kernel.md`, `identity.md`, `multi-agent-deliberation.md`, and `validation-approach.md`."
+./spot-check-prompt.md:13:methodology.md §When-to-convene-multiple-agents currently has: triggers (kernel revision / two-plausible-positions / load-bearing), independence (state before seeing others), citation-of-workspace-material, "I-don't-know vs fabricate", adversarial requirement, cross-family for kernel-touching, synthesis-doesn't-decide, dissent preservation, reopen-on-new-reading.
+./spot-check-prompt.md:17:A substantive revision restoring 7 disciplines from the subtracted MAD v4 spec, agreed by 6-perspective cross-family deliberation:
+./spot-check-prompt.md:19:1. **Number.** Floor of 3 valid perspectives. Target 4 for methodology-changing decisions; 3 for narrower load-bearing questions. Below the floor is consultation, not deliberation.
+./spot-check-prompt.md:21:3. **Naming and selection.** Perspectives chosen for *expected disagreement on this problem*. No permanent roster. Free-form labels but stable names across brief/raw/synthesis/decision.
+./spot-check-prompt.md:22:4. **Adversarial requirement.** ≥1 perspective adversarial.
+./spot-check-prompt.md:23:5. **Stance briefs (shared/role-specific split).** Briefs share byte-identical methodology-context/problem-statement/design-questions/evidence/response-format/external-imports-constraint sections; only role-specific stance varies. Diffing two briefs from one deliberation must reveal only the role-specific stance.
+./spot-check-prompt.md:24:6. **Brief immutability.** Briefs committed under `deliberations/<wno>-<slug>/` before any perspective launches; not edited during deliberation.
+./spot-check-prompt.md:25:7. **Independence + Quorum + Graceful degradation.** Perspectives state independently. Fewer than 3 valid outputs is not a deliberation; re-run or reformulate. Refusal is provenance, not error.
+./spot-check-prompt.md:26:8. **Synthesis discipline.** Synthesizer-not-a-perspective, citation `[P-N, Q#]`, `[synth]` markers for synthesizer-original claims, convergence-vs-coverage distinction (only multi-source agreement records as `synthesis_points.kind='convergence'`), dissent preservation as substrate `divergence`/`minority` rows.
+./spot-check-prompt.md:30:- **CLI surface.** `bin/selvedge submit deliberation-open` / `perspective` / `deliberation-seal` / `synthesis-point` — mode-agnostic in payload shape but lives in the prompt because both prompts deliver these.
+./spot-check-prompt.md:35:Move items 1–8 above (the kernel-level content) from `prompts/development.md` §4 to `specifications/methodology.md` §When-to-convene-multiple-agents. Trim `prompts/development.md` §4 to keep only CLI surface + capture-subagent pattern, with an explicit pointer to the kernel section. Add the same explicit pointer in `prompts/application.md` so external-problem agents inherit the kernel discipline. Engine-manifest and engine-version bump alongside.
+./spot-check-prompt.md:37:Calibration **kind** because the content was already cross-family deliberated in S131 with 7 convergences (C-1 through C-7); this session is correcting *where* the content lives, not *what* it says.
+./spot-check-prompt.md:43:**Q1.** Is methodology.md the right home for items 1–8? Specifically: are any of them genuinely application-mode-specific in a way the orchestrator missed? (E.g., does the 4-perspective target hold the same way for external-problem deliberations where domain perspectives may dominate?)
+./spot-check-prompt.md:45:**Q2.** Does any of the new content conflict with what's already in methodology.md §When-to-convene? (Check for: duplication, contradictory rules, ordering changes that would matter.)
+./spot-check-prompt.md:47:**Q3.** Is "calibration" the right decision-kind for this move? Or does the relocation itself constitute a methodology change worth substantive deliberation? (Consider: prompts/application.md inheritors would now be bound to disciplines they did not see deliberated.)
+./spot-check-prompt.md:49:**Q4.** The plan jumps engine-manifest spec from v34 directly to v39, skipping v35-v38, to align spec_version with current_engine_version (engine-v38) plus the pending bump to engine-v39. Is this version-jump legitimate or a smell? (The atomic-propagation logic in `_submit_spec_version` sets `current_engine_version = engine-v{p['version']}` when `spec_id='engine-manifest'`.)
+
+codex
+The deliberation directory only has the spot-check prompt/log, so I’m locating the repo root before reading the spec files.
+exec
+/bin/zsh -lc pwd in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+/Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+
+exec
+/bin/zsh -lc ls in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+spot-check-prompt.md
+spot-check-response.md
+spot-check.log
+
+exec
+/bin/zsh -lc "find .. -maxdepth 3 -type f -path '*specifications/methodology.md' -o -path '*prompts/development.md' -o -path '*prompts/application.md'" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+exec
+/bin/zsh -lc 'find ../.. -maxdepth 3 -type d -name specifications -o -name prompts -o -name bin' in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+../../specifications
+../../archive/specifications
+../../archive/pre-restart/specifications
+../../archive/v7-trial-2026-04-24-disaster-response/specifications
+../../archive/v7-trial-2026-04-24-disaster-response/prompts
+../../bin
+../../.venv/bin
+../../prompts
+
+exec
+/bin/zsh -lc "sed -n '1,280p' ../../prompts/application.md" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+exec
+/bin/zsh -lc "sed -n '1,320p' ../../prompts/development.md" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+exec
+/bin/zsh -lc "sed -n '1,260p' ../../specifications/methodology.md" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+exec
+/bin/zsh -lc 'rg -n "def _submit_spec_version|_submit_spec_version|current_engine_version|engine-manifest|spec_version|version" ../../bin ../../src ../../lib ../../*.py ../../specifications ../../prompts' in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ exited 1 in 0ms:
+zsh:1: no matches found: ../../*.py
+
+ succeeded in 0ms:
+# External-problem application (engine-v20)
+
+You are running the Selvedge engine against a non-self problem. Your work produces artefacts in the application's domain (software, research, policy, physical systems, curricula, organisations, anything else). The engine's source-workspace provenance is **not** part of this workspace; you have only the loaded engine plus this application's brief and prior sessions.
+
+The substrate at `state/selvedge.sqlite` is the only writable surface for session state. Markdown is a generated export. Every session phase is a `bin/selvedge submit <kind>` call.
+
+## 1. Read
+
+```sh
+bin/selvedge query "SELECT key, value FROM workspace_metadata"
+bin/selvedge query "SELECT session_no, workspace_session_no, slug, status FROM sessions ORDER BY session_no"
+```
+
+Read the application's brief at the path named in `MODE.md` (`application_brief:`). The brief states problem, constraints, stakeholders, success condition, initial state.
+
+Then read the engine's active specifications (see `specifications/engine-manifest.md`). You do not read the source workspace's history; only the loaded engine and this workspace's record.
+
+## 2–9. Operate via the substrate
+
+The flow mirrors the self-development prompt — same nine activities, same `bin/selvedge submit` kinds — with these differences:
+
+- **Convene** must include at least one **domain perspective** grounded in the domain's actual practice (a practitioner, a stakeholder, a target audience), not just a cross-family LLM.
+- **Decide** does not modify the engine. If you encounter a kernel gap, an unclear spec, or a tool failure, do **not** revise the engine in this workspace. Submit an `engine_feedback` row (or write `engine-feedback/EF-<session>-<slug>.md` until the substrate kind ships) and continue with the application's work.
+- **Produce** writes external artefacts to `applications/NNN-<slug>/`. Frontmatter records `originating_session`, `artefact_kind`, `domain`, `engine_version`, validation label.
+- **Validate** has three senses (workspace, domain, provisional reference substitute). Domain validation requires a domain-actor; if none is available, the artefact carries `validation: reference-provisional`.
+- **Record** is automatic via every `submit` call.
+- **Close** runs `bin/selvedge submit close-record` + `submit session-close` + `bin/selvedge export` + `bash tools/validate.sh` + `git commit`.
+
+See `prompts/development.md` for the concrete payload shapes for each `submit` kind. They are identical for external-problem sessions.
+
+## Coding review loop
+
+If the session produces, modifies, or deletes executable logic (any artefact whose execution behaviour the change alters), follow `specifications/methodology.md` §When to review §Coding review loop: invoke a reviewer subagent — distinct from the implementer — to audit. Submit `review-finding` rows; address every medium-or-higher via `submit finding-disposition`; re-invoke the reviewer until clean. T-20 refuses session-close while open medium-or-higher findings remain.
+
+If a structural validation check warns or fails, record whether the warning is engine-definition-related (route to engine-feedback) or application-scoped (fix before close).
+
+## Engine-feedback
+
+When you encounter methodology-level friction during the application — an unclear spec, a kernel gap, a tool that doesn't function, a deliberation pattern that doesn't fit — record it. Until the engine_feedback substrate kind ships, write a markdown record at `engine-feedback/EF-<session>-<slug>.md`; once the kind ships, submit it. Keep the record specific and verbatim where applicable.
+
+The operator transports feedback back to the source workspace at the operator's discretion.
+
+## Cautions
+
+- **Don't import ideas from outside the process.** External insights are hypotheses, not commitments.
+- **Don't accept domain inputs as given context.** Constraints and stakeholder framings entering the session must be surveyed at Deliberate or Decide.
+- **Don't accumulate ceremony.** Each artefact should serve the application's success condition.
+- **Don't author markdown for session state.** Substrate-only.
+- **Don't track counters in prose.** Counts come from `bin/selvedge query`.
+
+## Close
+
+`bin/selvedge submit close-record` + `submit session-close` + `bin/selvedge export --session <workspace_session_no> --write` + `bash tools/validate.sh` + `git commit`.
+
+ succeeded in 0ms:
+---
+title: Methodology
+version: 6
+status: active
+created: 2026-04-27
+updated-by-session: 124
+supersedes: methodology-v5 (engine-v34); per S124 DV-S124-1 (subtract third validation sense clause; clarify that no-domain-actor is skipped Domain validation, not a new sense)
+---
+
+# Methodology
+
+This file defines what Selvedge does. It is the entire kernel: what the engine is, what a session does, when to convene multiple agents, when to review at close, and how preservation works. It replaces the prior split across `methodology-kernel.md`, `identity.md`, `multi-agent-deliberation.md`, and `validation-approach.md`.
+
+## What Selvedge is
+
+Three layers:
+
+- **Selvedge** — the methodology. Diverse perspectives reasoning together, producing durable artefacts, preserving reasoning, and evolving the system by running the same mechanic on its own outputs.
+- **Selvedge engine** — the current loadable implementation. The set of files enumerated in `specifications/engine-manifest.md` at a given commit.
+- **Application of the engine** — a specific run against a problem. Two kinds: **self-development** (the engine evolves its own specifications) and **external-problem** (the engine runs against a non-self problem).
+
+The methodology is domain-general. The engine is a concrete realisation. An application is a particular run.
+
+The name *selvedge* — the self-finished edge of woven cloth — names three properties: self-hosting (the methodology evolves by running its own process on itself), multi-strand preservation (disagreement preserved as first-class, not melted into consensus), and durability by construction (versioned specs, recorded supersession, provenance as a first-class output).
+
+## How a session works
+
+A **session** is one application of the engine. Each session reads what it needs from the workspace, decides what to advance, does the work, and closes coherently.
+
+A session may include any subset of the following activities. They are a vocabulary, not a strict sequence. They have a general flow (you cannot decide before you deliberate) but recursion is permitted.
+
+1. **Read** — load only what the session's work requires. Record what was loaded.
+2. **Assess** — state what this session will address and why. The agenda is explicit so the next session can read it.
+3. **Convene** — name the perspectives the work needs. For deliberative work, at least one perspective is adversarial.
+4. **Deliberate** — perspectives state positions independently before seeing one another, then synthesise. Disagreements are preserved.
+5. **Decide** — record what was decided, the reasoning that carried it, what was rejected and why, what remains open.
+6. **Produce** — create or revise the artefacts the decisions warrant.
+7. **Validate** — check that what was produced is consistent with the workspace and meets its stated purpose. Two senses: workspace and domain. When no domain-actor is available, Domain validation is recorded as skipped; skipping is not a third sense.
+8. **Record** — commit the session's provenance to `provenance/NNN-<slug>/`.
+9. **Close** — leave the workspace coherent. Commit at git. State what the next session should address.
+
+A session that does only validation may skip Convene and Deliberate. A session that proposes a kernel revision should perform all nine.
+
+## When to convene multiple agents
+
+Use multi-agent deliberation when:
+
+- The decision changes how the methodology works (a kernel revision, a deliberation-pattern change, a validation-mechanism change, a workspace-structure change).
+- The question has two or more genuinely plausible positions that the author can name before deliberation.
+- The author marks the work load-bearing for reasons stated in the record.
+
+Each perspective:
+
+- States its position before seeing other perspectives' positions, to prevent anchoring.
+- Cites the workspace material it relied on for load-bearing claims.
+- Is willing to say "I don't know" rather than fabricate.
+
+At least one perspective is adversarial (challenges the emerging consensus, identifies unstated assumptions, argues for alternatives).
+
+When the decision touches the methodology itself, **at least one perspective should come from a different model family** (different organisation; e.g., not Anthropic). The cross-family perspective surfaces assumptions a single training-distribution shares. This was Selvedge's earliest substantive finding (session 4) and the property that protected the methodology's foundation against single-family bias.
+
+The synthesis of perspectives **is not itself a decision**. It feeds Decide. Synthesis preserves dissent: a minority position is recorded as a minority, not erased.
+
+If a multi-agent deliberation would otherwise be triggered but is not performed (because the workspace lacks a non-Claude provider, because the decision is operator-directed, because the cost is unwarranted for this scope), the reason is recorded in the session's decision record.
+
+### Reopen on new reading
+
+A sealed deliberation may be reopened in a follow-up session when post-close operator dialogue or new reading surfaces a **load-bearing option neither perspective named**. The follow-up session re-enters Deliberate with the new option included as a candidate shape, treating the prior synthesis as one input rather than as final. The bar is *load-bearing option neither perspective named*: minor refinements or restatements of options already present in the prior frame are not grounds. Substrate-level supersession admits this without new machinery; this convention names when reopening is appropriate so that the social cost of doing so is not the limiting factor.
+
+When a follow-up session reopens, it cites the prior decision and the new reading or dialogue that surfaced the missed option, and treats prior perspectives' reasoning as available context — not as binding. Reopening is normal, not failure.
+
+## When to review
+
+Two reviewer mechanisms apply, distinguished by what the session produced.
+
+### Coding review loop
+
+When a session produces, modifies, or deletes **executable logic** — Python under `selvedge/`, SQL under `state/migrations/`, shell logic under `bin/` or `tools/`, or any other artefact whose execution behaviour the change alters — a reviewer subagent audits the change before the session closes. The reviewer is a distinct agent (separate context, not the implementer, not the close author) invoked with the changed files and the relevant context.
+
+Out of scope (does **not** trigger the loop, though may still trigger the engine-definition close review below): version strings and banner text, comments and docstrings, file headers, README-equivalent prose, and shell-script changes that touch only documentation lines. The test is whether the change can alter execution behaviour. A change that only renames a variable for clarity but preserves identical behaviour is in scope (the reviewer can confirm equivalence quickly); a change that updates a comment or a version banner is not.
+
+The reviewer reports findings classified by severity: **critical**, **high**, **medium**, **low**. Critical and high findings indicate a defect that, if shipped, would break the engine or the substrate; medium findings indicate a correctness, safety, or coverage gap that a future session should not have to clean up; low findings are nits.
+
+For every medium-or-higher finding the implementer either:
+
+- **Fixes** the finding (preferred), or
+- **Adjudicates** the finding explicitly: records the reason for not fixing in the session's `04-review.md`, with enough detail and specific argument that a future reviewer — not this one, not the implementer — could independently judge whether the call was sound. A bare assertion of disagreement is not adjudication; the reason must engage the finding's substance. Adjudications are subject to subsequent audit by the engine-definition close reviewer or by the next session that touches the same code.
+
+The reviewer is then re-invoked against the updated changeset. The loop continues until the reviewer reports no medium-or-higher findings remain unresolved.
+
+**Termination and deadlock.** The session does not close until the reviewer's final pass returns clean of medium-or-higher findings. If the loop reaches a fourth iteration without converging — the reviewer keeps surfacing new medium+ issues, or the implementer adjudicates findings the next reviewer pass re-raises — the implementer halts the loop, records the unresolved findings and the iteration history in `04-review.md`, opens `OI-<session>-<slug>-findings-unresolved.md` with the full transcript, and closes the session in a halted state. A halted session is not a normal close; the next session reopens the work as its first agenda item.
+
+The mechanism is structural, not advisory: a coding session that closes without a clean reviewer pass (or an explicit halted-state record) is invalid and the next session must reopen the work. The substrate enforces this since engine-v31 (S104, closing OI-083-001): the operator declares `sessions.kind` at open (default `coding`, alternatives `spec_only` and `meta`; immutable post-open via T-29). The `review_passes` table records each reviewer iteration with outcome ∈ {clean, findings, nonconverged} and an operator-asserted `head_sha` for staleness audit. T-30 refuses close on a coding session unless the latest review_pass is outcome=clean, or outcome=nonconverged with `halt_issue_id NOT NULL` (the halt path). T-20 is narrowed: open medium+ findings still refuse normal close, but admit the halt path so unresolved findings are recorded honestly rather than force-adjudicated. Halted-as-status-value (a third value on `sessions.status`) is deferred to OI-S104-3 because admitting it would require a calibrated rebuild of the heavily-FK'd `sessions` table; halt is currently encoded by the review_pass row's outcome on a `status='closed'` session.
+
+The severity taxonomy (critical / high / medium / low) admits classifier disagreement at its boundaries, especially between medium and low. A worked rubric is deferred until two or three code-producing sessions have exercised the loop and produced empirical examples to calibrate against; until then the implementer and reviewer note any classification disagreement in `04-review.md`, and the implementer treats genuinely-borderline findings as medium for the purpose of the loop's termination condition. The deferral is tracked under `OI-083-002-coding-review-severity-taxonomy.md`.
+
+This responds to constraints §2 (models treat failure as cheap; prevention must be structural) and §5 (detection without a feedback loop into prevention does not correct anything). The loop is the structural feedback path: a finding that is not addressed before close has not been detected, only noted.
+
+### Engine-definition close review
+
+When a session changes any engine-definition file (per `engine-manifest.md`) — including spec text, prompts, or the manifest itself — a separate reviewer audits the close at `04-review.md`, regardless of whether the change involved code. This is a single-pass audit, not a loop; its scope is whether the engine remains coherent after the change.
+
+A session that triggers both mechanisms records both: the coding review loop's iterations and the engine-definition close review.
+
+## Validation senses
+
+A session's Validate activity operates at two senses:
+
+- **Workspace validation** — the session's artefacts are internally consistent, do not contradict active specifications, and accurately describe the workspace as it is. Workspace validation applies to every session.
+- **Domain validation** — when a session produces an artefact intended for use outside the workspace, and a domain-actor is available, the domain-actor reports whether the artefact functioned for its intended use. The session records the report.
+
+When no domain-actor is available, Domain validation is recorded as **skipped: no domain-actor**. Skipping is a first-class outcome, not a defect requiring backfill, and is not a third validation sense. Workspace validation still applies; if a session needs cross-workspace coherence checks (e.g. for an external-application stage product), those checks are recorded as Workspace validation by the validating workspace.
+
+The substrate may admit experimental validation primitives at a workspace-experimental layer when an arc lacks a domain-actor by structural condition (fictional, future-facing, or otherwise inaccessible domains). Such primitives produce substrate evidence that may inform a future kernel revision but are not themselves additional senses. Kernel-promotion questions for these primitives are tracked as open issues with explicit re-evaluation triggers — see OI-S124-1 for the disaster-response arc's `reference_harness` pilot, scheduled for re-evaluation at arc close.
+
+## Preservation
+
+- **Decisions record rejected alternatives**, not just chosen options. The reasoning that led to a rejection is the input to a future decision that may reconsider it.
+- **Specifications evolve through new versions, not silent edits.** When a spec is revised, the prior version is preserved (in archive or under a versioned filename) and the new version takes its place at the canonical filename.
+- **Provenance is immutable after close.** Closed-session records are not edited; if a closed session contained an error, a subsequent session corrects it explicitly with a record of the correction.
+- **All session work is committed to git** at close. Git history is the workspace's tamper-evident substrate.
+
+## Engine-feedback pathway
+
+**Engine-feedback** is the channel for surfacing concerns about the methodology itself during the execution of an application. An operator (human) or an application-agent records observations as files at `engine-feedback/EF-<session>-<slug>.md`. A future session may triage feedback and act on it as a methodology revision.
+
+The engine-feedback pathway is what allowed the operator's interventions across Selvedge's seventy-five self-development sessions to become structural rather than ephemeral. A successor system should not rely on a self-correcting agent (no LLM agent has shown sustained self-correction under load); it should expect that some of its limitations will be surfaced by humans and design the surfacing path deliberately.
+
+## Self-hosting
+
+The methodology evolves by applying its own process to itself. Changes to this kernel pass through the same Read → Assess → Convene → Deliberate → Decide → Produce → Validate → Record → Close as any other artefact. The kernel is revised when the process it describes no longer matches the process actually followed, or when a better process is discovered.
+
+The self-hosting property has limits. A self-applied methodology with no problem outside itself loses the falsification signal that keeps work substantive. The methodology that survives contact with a real complex-systems-design problem will be different from the one that has only been applied to itself, and only the former is the methodology Selvedge originally set out to build. Self-development is the bootstrap, not the destination.
+
+ succeeded in 0ms:
+# Self-development application (engine-v20)
+
+You are running the Selvedge engine on its own development. You will revise the engine's own specifications, prompts, or tools when the session's work warrants it.
+
+The substrate at `state/selvedge.sqlite` is the only writable surface for session state. Markdown in `provenance/` is a *generated export*. Every session phase is a `bin/selvedge submit <kind>` call.
+
+## 1. Read
+
+Run `bin/selvedge orient` first. It prints workspace metadata, recent close-records, **undisposed forward-references with `FR-S<wno>-<seq>` identifiers**, open issues by priority, in-flight work_items, active specs, deferred decisions, open review findings, and untriaged engine-feedback — a single live read of the substrate.
+
+Then read whatever the session needs: `specifications/methodology.md`, the most recent close in `provenance/`, any open issues, engine-feedback. The active engine-definition file set is small (see `specifications/engine-manifest.md`).
+
+You do **not** need to read the full provenance back-catalogue. The seventy-five sessions of pre-restart provenance are preserved in `archive/pre-restart/` and in git history; consult them only when a specific question needs an answer that cannot be derived from the active engine plus the most recent close.
+
+## 1.5 Self-driving dispatch (when the operator's prompt is open-ended)
+
+When the operator's prompt is empty, generic (`continue`, `next`, `keep going`), or otherwise unprescriptive about *what* to do, **propose an agenda before opening the session** drawn from the orient packet, in this priority order:
+
+1. **HIGH-priority open issues** — surface any HIGH and propose them.
+2. **Untriaged engine-feedback** — observations carrying NULL disposition often name specific gaps; the smallest is usually the cheapest leverage.
+3. **Undisposed forward-references** — these are the prior session's explicit ask. Prefer the most recent (largest `S<wno>`) unless older ones name HIGH-priority issues.
+4. **Deferred decisions** — surface but do not act on them without explicit operator confirmation.
+
+State the proposed item to the operator, wait for ratification or redirect, then proceed. If the operator's prompt *does* prescribe specific work, do that work — do not override with the queue.
+
+## 2. Open the session
+
+```sh
+bin/selvedge submit session-open --payload '{"slug": "<kebab-case-name>", "kind": "coding|spec_only|meta"}'
+```
+
+Both `slug` and `kind` are required; the handler refuses session-open without `kind`. Pick from:
+
+- `coding` — produces, modifies, or deletes executable logic (Python under `selvedge/`, SQL migrations, shell logic under `bin/` or `tools/`). Subjects the session to T-30 (the coding review loop close gate).
+- `spec_only` — edits engine-definition files (specs, prompts, manifest) without touching executable logic.
+- `meta` — sessions about the engine itself that do not produce or modify any tracked artefact (e.g. triage-only sessions).
+
+Kind is immutable post-open via T-29 — pick deliberately. The substrate auto-fills `workspace_id`, `mode`, `engine_version_at_open`, `session_no`, `workspace_session_no`, and the alias `S<NNN>`. The substrate refuses opening if another session is already open (E_SESSION_ALREADY_OPEN). T-23 makes slug immutable after open — pick it carefully.
+
+## 3. Submit the assessment
+
+```sh
+bin/selvedge submit assessment --payload '{
+  "state": "<one-sentence read of where the workspace is, 8-240 chars, no newlines>",
+  "agenda": [
+    "<agenda item 1, one-sentence atom>",
+    "<agenda item 2>",
+    "..."
+  ]
+}'
+```
+
+Each item is one typed atom. Newlines, fenced code blocks, and pipe-table syntax are refused by the substrate.
+
+## 4. Convene perspectives (when the work warrants)
+
+Use multi-agent deliberation when the decision changes how the methodology works, when the question has two or more genuinely plausible positions, or when the author marks the work load-bearing.
+
+**Number.** Floor of 3 valid perspectives. Target 4 for methodology-changing decisions; 3 acceptable for narrower load-bearing questions. Below the floor is not deliberation — it is consultation. Justify any deviation at convening time in the deliberation topic. (Per S131 DV-S131-1; restores MAD v4 quorum after the post-restart 25-deliberation 2-default drift.)
+
+**Cross-family.** At least one perspective must come from a different model family. Use `codex` for non-Anthropic (OpenAI) and `gemini` for Google when a third family strengthens the deliberation. Same-family-only deliberations carry shared training-distribution blind spots that cannot be seen from inside.
+
+**Naming and selection.** Perspectives are chosen for **expected disagreement on *this* problem** (e.g., "Archivist", "Skeptic", "Substrate-engineer", "Dreamer"). No permanent roster. The convening agent names each perspective's expected-disagreement axis at convening time. Free-form labels — but use short stable names consistently across brief, raw output, synthesis, and decision record.
+
+**Adversarial requirement.** At least one perspective must be adversarial — its job is to challenge the emerging consensus, not to support it. Brief-writing has no other built-in adversary; this is the cheapest structural insurance against consensus-as-shared-prior.
+
+**Stance briefs (shared/role-specific split).** Each perspective receives a brief whose non-role sections are **byte-identical** across all perspectives (methodology context, problem statement, design questions, evidence base, response format, constraint on external imports). Only the role-specific stance varies (150–300 words, second person, naming the *load* the perspective carries — not the *conclusion* it should reach). Diffing two briefs from the same deliberation must reveal only the role-specific stance.
+
+**Brief immutability.** Briefs are committed to the workspace under `deliberations/<wno>-<slug>/` before any perspective is launched. Briefs are not edited during the deliberation. The commit is the deliberation's anchor.
+
+**Independence.** Perspectives state positions independently before seeing one another. Use the Agent tool with isolated subagents for Claude perspectives (consider model-size variance — opus/sonnet/haiku — to reduce intra-family correlation) and `codex exec` / `gemini` for non-Claude.
+
+**Quorum and degradation.** Fewer than 3 valid outputs is not a deliberation; re-run or reformulate. A refusal is provenance, not error — it is preserved as the perspective's `body_md`. Do not synthesise over 1–2 perspectives.
+
+```sh
+bin/selvedge submit deliberation-open --payload '{"session_no": <N>, "topic": "<short topic phrase>"}'
+# returns deliberation_id
+
+# For each perspective (label P-1, P-2, ...; family in: anthropic, openai, google, other-llm, human):
+bin/selvedge submit perspective --payload @perspective-1.json
+# perspective.body_md is preserved as legacy intake; capture subagent decomposes it
+# into perspective-position + perspective-claim rows under closed section_kinds.
+
+# Then:
+bin/selvedge submit deliberation-seal --payload '{"deliberation_id": <N>, "synthesis_md": "<synthesis text preserving dissent>"}'
+bin/selvedge submit synthesis-point --payload '{"deliberation_id": <N>, "kind": "convergence|divergence|minority", "label": "C-1", "summary": "<1-line>", "source_perspectives": [<perspective_ids>]}'
+```
+
+**Synthesis discipline.** The synthesizer must not have been one of the perspectives. Apply four rules to the `synthesis_md`:
+
+- **Citation.** Every claim attributing a position to a perspective cites the source as `[P-N, Q#]` or `[P-N, section]`. Unattributed perspective-specific language is a discipline failure.
+- **`[synth]` markers.** Synthesizer-original claims (not directly sourced from any perspective) are tagged `[synth]`. This lets future readers compute the sourced-vs-synthesized ratio.
+- **Convergence vs coverage.** Distinguish *convergence* (all perspectives independently reached a similar conclusion) from *coverage* (one perspective raised the point; others were silent). They are different epistemic states. The substrate's `synthesis_points.kind` admits convergence/divergence/minority — record only multi-source agreement as `convergence`.
+- **Dissent preservation.** Disagreements are recorded as `divergence` or `minority` synthesis_points with `source_perspectives` pointing at the dissenting perspective_ids. Minorities are first-class — a strong argument made by one perspective is preserved as-is, not diluted.
+
+Synthesis maps; it does not decide. The Decide activity (decision-record) operates on the synthesis, not on raw perspectives.
+
+After deliberation, spawn a **capture subagent** to read each perspective's body_md and submit `perspective-position` (one per perspective, distilling the **Position.** paragraph into a single 8–240-char atom) and `perspective-claim` rows (one per bullet under each labeled section, with `section_kind` from a closed enum: position / schema_sketch / cli_surface / migration_path / what_not / open_question / risk / what_lost). The orchestrator does not author the decomposition by hand.
+
+## 5. Record decisions
+
+```sh
+bin/selvedge submit decision-record --payload '{
+  "title": "<one-sentence decision title, 8-240 chars>",
+  "kind": "substantive | schema_migration | calibration | disposition | procedural",
+  "outcome_type": "adopt | reject | defer | supersede | ratify",
+  "target_kind": "process_rule | spec_version | migration | issue | review_rule | engine_version | open_question",
+  "target_key": "<short key, 2-120 chars>",
+  "supports": [
+    {"basis": "constraint | operator_directive | prior_decision | review_finding | deliberation | spec_clause | engine_feedback",
+     "claim": "<one-sentence support>",
+     "cite": "<optional alias to resolve, e.g. DV-S083-2>"}
+  ],
+  "effects": [
+    {"effect_kind": "creates | modifies | supersedes | opens_issue | bumps_engine | closes_issue | adds_migration",
+     "target_descriptor": "<short text>",
+     "target": "<optional alias>"}
+  ],
+  "alternatives": [
+    {"label": "R-1.1",
+     "option": "<the alternative being rejected, 8-240 chars>",
+     "rejections": [
+       {"basis": "no_feedback_loop | operator_override | violates_gate | too_large_for_session | inferior_tradeoff | preserves_legacy_path | redundant_with_existing | breaks_invariant",
+        "reason": "<one-sentence reason, 8-240 chars>",
+        "cite": "<optional alias>"}
+     ]}
+  ]
+}'
+```
+
+T-18 refuses session-close while a substantive decision lacks support or alternative. T-19 refuses while an alternative lacks a rejection. T-01 refuses unresolved aliases at write time. The label format `R-N.N` (e.g. R-1.1, R-2.3) is enforced by GLOB.
+
+The `effects` array admits `closes_issue` whose `target` resolves to a citable issue alias (e.g. `"target": "OI-S090-5"`); the handler dispatches `_submit_issue_disposition` inside the same write_tx and transitions the target issue's status to `resolved`. T-27 refuses `closes_issue` effects with NULL `target_issue_id`; T-28 refuses any direct `decision_effects` INSERT bypassing this handler dispatch (per engine-v28).
+
+Symmetrically, the `effects` array admits `opens_issue` whose `target` resolves to an existing issue alias; the handler resolves it to `target_issue_id` and refuses if the issue is not in `status='open'`. Operators register the issue first via `bin/selvedge submit issue` (assigning `alias`, `title`, `priority`) and then reference it from the decision-record. Unlike `closes_issue`, `opens_issue` does not dispatch issue creation in-band. T-31 refuses `opens_issue` effects with NULL `target_issue_id` (per engine-v34).
+
+## 6. Produce — create or revise the artefacts the decisions warrant
+
+This is normal code/spec work. For specs, use `bin/selvedge submit spec-version`, `submit spec-section`, `submit spec-clause`. For migrations, write SQL files under `state/migrations/` and `bin/selvedge migrate --apply`. For CLI/code changes, edit Python under `selvedge/`.
+
+Spec body authoring goes through the substrate too (engine-v29 / OI-S090-5). `submit spec-version` accepts an optional `body_md` field carrying the inline body markdown; the handler validates the body_path against `workspace_root`, computes the sha256, and writes the file in-process *after* the row INSERT succeeds. Use `--payload @file.json` or `--payload -` (stdin) when the body is large; the handler refuses path-traversal escapes, empty/whitespace-only content, and any declared-vs-computed sha mismatch. The legacy two-step (write file via Bash heredoc, then submit with `body_sha256`) remains admitted but is no longer the only path.
+
+## 7. Validate — and run the coding review loop on any code change
+
+If the session produces, modifies, or deletes executable logic (Python under `selvedge/`, SQL migrations, shell logic under `bin/` or `tools/`), invoke a reviewer subagent — distinct from the implementer — to audit the change. Address every medium-or-higher finding and re-invoke until the reviewer reports clean.
+
+```sh
+# For each finding the reviewer surfaces:
+bin/selvedge submit review-finding --payload '{
+  "iteration": 1,
+  "severity": "critical | high | medium | low",
+  "finding": "<one-sentence problem statement>",
+  "target": "<optional alias to the affected object>",
+  "disposition": "open | fixed | adjudicated",
+  "disposition_text": "<optional disposition text>"
+}'
+
+# To update disposition after addressing:
+bin/selvedge submit finding-disposition --payload '{
+  "review_finding_id": <id>,
+  "disposition": "fixed | adjudicated",
+  "disposition_text": "<substantive reason or commit reference>"
+}'
+```
+
+T-20 refuses session-close while any review_finding has `disposition='open'` and `severity` in (critical, high, medium). The Agent tool with `subagent_type=Explore` and an adversarial prompt is the default reviewer invocation.
+
+If the loop reaches a fourth iteration without converging, halt the session: open an `OI-<workspace_no>-<slug>-findings-unresolved` issue and close in halted state per the methodology spec.
+
+## 8. Record — provenance committed to the substrate
+
+Already done by every prior `submit`. Run `bin/selvedge query` to confirm row counts before close.
+
+## 8.5 Close-time reflection (mandatory)
+
+Before submitting `close-record`, do three things:
+
+1. **Author at least one `engine_feedback` row** capturing what reduced friction this session and what surfaced as friction. Successes worth reinforcing belong here as much as corrections — both signals decay if they only live in working memory. Use `flag` ∈ `observation | reframe | calibration | blocker`.
+
+   ```sh
+   bin/selvedge submit engine-feedback --payload '{
+     "flag": "observation",
+     "body_md": "**<headline>** — what reduced friction; what surfaced as friction; proposed remedy if obvious."
+   }'
+   ```
+
+2. **Dispose forward-references this session addressed.** Run `bin/selvedge orient` and for each `FR-S<wno>-<seq>` the session resolved, submit a disposition citing the resolving decision/spec/handler:
+
+   ```sh
+   bin/selvedge submit forward-reference-disposition --payload '{
+     "target_session": <wno>, "seq": <n>,
+     "note": "addressed by DV-S<NNN>-<n> (<short reason>)"
+   }'
+   ```
+
+   Disposition removes the item from `orient`'s queue. Without this, the same forward-reference re-surfaces every session.
+
+3. **Dispose engine-feedback rows this session addressed** (if any), citing the resolving decision:
+
+   ```sh
+   bin/selvedge submit engine-feedback-disposition --payload '{
+     "alias": "EF-S<NNN>-<n>",
+     "disposition": "addressed-by-DV-S<NNN>-<n> (<short reason>)"
+   }'
+   ```
+
+### Temporal-claim grounding (applies to every submit body)
+
+Any duration, elapsed-time, recency, or sequence claim used as evidence in a submit body — `engine_feedback.body_md`, `assessments.state`, `close_records.summary`, decision-record support claims, alternative-rejection reasons, perspective bodies, synthesis text — must be grounded against substrate timestamps before commit, or omitted entirely.
+
+Concretely: if you are about to write a phrase like "the N-month gap", "X hours since", "after S<wno>", "recently", or "long-running", run the cheap query first, e.g.
+
+```sh
+bin/selvedge query "SELECT workspace_session_no, opened_at, closed_at FROM sessions WHERE workspace_session_no IN (110, 126)"
+```
+
+and read the elapsed time off the data. The "ground or omit" rule has no "unverified estimate" escape valve: if the claim is load-bearing, the substrate query takes seconds; if it isn't load-bearing, drop the phrase. The substrate's provenance warrant rests on recorded claims being read off data, not generated to fit narrative.
+
+Scope: every submit body, not engine_feedback only — the failure mode is general (narrative-driven number-fitting can land in any prose surface). Substrate-side static checks on freeform `body_md` are impractical, so this discipline is operator/agent-policed; calibration-EFs are the recovery path when slips are caught. Cites EF-S127-1 (calibration of EF-S126-1's fabricated 4-month-gap claim).
+
+## 9. Close
+
+```sh
+bin/selvedge submit close-record --payload '{
+  "summary": "<one-sentence summary of what shipped>",
+  "items": [
+    {"facet": "engine_version", "text": "engine-vN to engine-vM."},
+    {"facet": "what_was_done", "text": "<atom>"},
+    {"facet": "state_at_close", "text": "<atom>"},
+    {"facet": "open_issues", "text": "<atom>"},
+    {"facet": "next_session_should", "text": "<atom>"},
+    {"facet": "validator_summary", "text": "<atom>"}
+  ]
+}'
+
+bin/selvedge submit session-close --payload '{}'
+```
+
+The substrate auto-fills `engine_version_at_close` from `workspace_metadata.current_engine_version`. If the engine version bumped during the session, run an UPDATE on the metadata row before close (or include it in the version-bumping migration).
+
+Then export and commit:
+
+```sh
+bin/selvedge export --session <workspace_session_no> --write
+bash tools/validate.sh
+git add -A && git commit -m "<message>" && git push
+```
+
+The export materialises `provenance/<workspace_no>-<slug>/00-assessment.md`, `01-deliberation.md`, `02-decisions.md`, `03-close.md`, `04-review.md` deterministically from substrate rows. Git history is the cross-machine durable record; `state/selvedge.sqlite` is per-workspace and rebuildable from migrations + the markdown exports.
+
+## Cautions for self-development
+
+- **Don't import ideas from outside the process.** Surface external insight as a hypothesis to deliberate, not a commitment. The methodology's value is traceability of artefacts to the reasoning that produced them.
+- **Don't silently re-propose what was rejected before.** Cite the prior rejection by `decision_v2` alias and explain what changed.
+- **Don't accumulate ceremony.** Each addition to the engine should pay for itself in capability.
+- **Don't trust your own judgment alone on changes to how the methodology works.** Convene cross-family perspectives.
+- **Be willing to subtract.** Most of what Selvedge accumulated late was ceremony.
+- **Don't author markdown for session state.** Substrate-only.
+- **Don't track counters in prose.** Counts come from `bin/selvedge query`. Atoms forbid pipe-tables and fenced code by construction.
+
+codex
+The current prompt split confirms the proposed move would also fix a real inconsistency: application mode currently points to development payloads but carries different validation wording and no explicit deliberation quorum. I’m checking the versioning code now because the manifest jump has a concrete invariant attached to it.
+exec
+/bin/zsh -lc "sed -n '1,220p' spot-check-response.md" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+exec
+/bin/zsh -lc 'ls ../../selvedge ../../state' in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+exec
+/bin/zsh -lc "sed -n '1,240p' ../../specifications/engine-manifest.md" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+../../selvedge:
+__init__.py
+__pycache__
+aliases.py
+cli.py
+connection.py
+errors.py
+export
+feedback_cmd.py
+id_allocate.py
+init_cmd.py
+migrations.py
+monitor_external.py
+orient.py
+paths.py
+query.py
+recover.py
+schema.py
+submit
+subtract.py
+validate.py
+
+../../state:
+migrations
+selvedge.sqlite
+selvedge.sqlite.pre-migrate-backup
+tests
+
+ succeeded in 0ms:
+ succeeded in 0ms:
+---
+title: Engine Manifest
+version: 34
+status: active
+created: 2026-04-28
+updated-by-session: 118
+supersedes: engine-manifest v33 (engine-v34; per S118 DV-S118-1 opens_issue target_issue_id enforcement via T-31 + handler resolution); engine-manifest v32 (engine-v33; per S110 DV-S110-1 substrate-direct harvest-ef + migration 019 harvested_engine_feedback ledger); engine-manifest v31 (engine-v32; per S109 DV-S109-1 removes constraints.md from engine-definition file set, adds migrations 011-018 to substrate table, corrects frontmatter version drift); v30 (engine-v31; per S104 DV-S104-1..7 substrate enforcement of coding review loop); v29 (engine-v30; per S102 DV-S102-1 renames objects.citable_alias and issues.citable_alias to alias, closes OI-S101-1); v28 (engine-v29; per S099 DV-S099-1 inline body_md path closes OI-S090-5); v28 per S098 DV-S098-1 (closes_issue handler dispatch); v27 per S097 DV-S097-1; v26 per S094; v25 per S091; v24 per S090; v23 per S089 D-1
+---
+
+# Engine Manifest
+
+This file enumerates the loadable Selvedge engine at the current commit. The engine is the file set listed below plus the substrate; loading the engine means having these files available, the substrate initialised, and the `selvedge` CLI on PATH.
+
+## Current engine version
+
+`engine-v34` (established Session 118 — opens_issue effects now require target_issue_id at submit time, mirroring closes_issue at engine-v28).
+
+`engine-v34` ships migration 022 adding T-31 (`t31_opens_issue_requires_target_issue`) which refuses any `decision_effects` INSERT with `effect_kind='opens_issue'` and NULL `target_issue_id`. The `_submit_decision_record` handler's opens_issue branch resolves `target` (issue alias) via `_resolve_issue_alias` and refuses unless the resolved issue has `status='open'`; this protects against opens_issue effects citing already-resolved or superseded issues, a logical-consistency check absent from the closes_issue side because closes_issue dispatches the disposition transition itself. Unlike closes_issue, opens_issue does not dispatch issue creation in-band — operators register issues separately via `submit issue` and reference them from the decision-record. Rationale per DV-S118-1 R-1.1 rejection: folding title/priority/summary/body into decision_effects payload bloats the schema for marginal ergonomic gain. Eight legacy NULL `target_issue_id` rows pre-date T-31 and remain untouched (T-31 is BEFORE INSERT only); the chain-walk export (`_decisions_citing_issue` in cli.py ~L2806) retains its target_descriptor word-boundary regex fallback to traverse them. Closes EF-S117-1 (S117 friction observation: 8/14 opens_issue rows carried NULL target_issue_id, forcing descriptor-substring fallback in DV-S116-1 anchor-trace). prompt-development v7 documents the new authoring contract.
+
+`engine-v33` (established Session 110 — substrate-direct read for `monitor-external harvest-ef`; ledger-based per-row idempotency).
+
+`engine-v33` ships migration 019 (`harvested_engine_feedback` ledger with UNIQUE(peer_workspace_id, peer_feedback_id), FK to objects + sessions) plus a rewrite of `_me_harvest_ef` and `_me_status` to read peer `engine_feedback` rows directly from the peer SQLite via read-only URI with `PRAGMA busy_timeout=1000` and `PRAGMA query_only=1`. The previous file-walk path is removed; against substrate-only peers (the live disaster-recovery workspace was the trigger) it returned silently-empty. Per S110 D-1 deliberation_id=10 (P-1 anthropic, P-2 codex/openai cross-family) the design adopted: capability-based peer schema detection (objects.alias vs older citable_alias detected via `pragma_table_info`) over migration-version gating; per-row dedup via the ledger over `--since-session` as the dedup mechanism (`--since-session` retained as optional coarse filter); SQLite native busy_timeout over Python retry-with-backoff. Four new structured error codes: E_PEER_BUSY, E_PEER_OPEN_FAILED, E_PEER_QUERY_FAILED, E_PEER_SCHEMA_UNSUPPORTED. Reviewer caught the EF-S005-7 vs EF-S005-1 alias precision error (peer feedback_id=7 has alias EF-S005-1 because aliases are per-session ordinals, not absolute feedback_ids). Three iterations: iter-1 surfaced 2 high + 4 medium (OperationalError ambiguity, docstring, race-window UNIQUE labelling, empty-rows note, role closure capture); iter-2 surfaced 2 medium (schema-validation queries unwrapped, docstring Raises incomplete) addressed via _peer_exec inner helper; iter-3 clean.
+
+`engine-v32` (established Session 109 — subtracts `specifications/constraints.md` from the engine-definition file set). The document carried historical design rationale (six properties of LLM agents learned over 75 sessions) with no operational content for external-problem agents. Every constraint it named is already encoded structurally in the substrate triggers and the methodology kernel; the rationale is permanently queryable via `bin/selvedge query` on the decisions substrate. Archive copy at `archive/specifications/constraints-v1.md`. Also backfills the substrate table enumeration through migration 018, closing FR-S107-11/FR-S108-10, and corrects frontmatter version drift carried since engine-v31 shipped without updating the file-body version number.
+
+`engine-v31` (established Session 104 — substrate enforcement of the coding review loop, closing OI-083-001).
+
+`engine-v31` ships migrations 017 + 018 plus a new substrate-only submit kind. Migration 017 adds `sessions.kind` (operator-declared at open: coding/spec_only/meta; immutable post-open via T-29 mirroring T-23 slug pattern) and the `review_passes` table (one row per reviewer iteration; outcome ∈ clean/findings/nonconverged with operator-asserted `head_sha` for staleness audit). T-30 refuses close on a coding session unless the latest review_pass is outcome=clean or outcome=nonconverged with halt_issue_id NOT NULL. T-20 narrowed to admit the halt path so unresolved findings can be recorded honestly. Migration 018 grants `__cli__` insert capability on `review_passes`. The new `submit review-pass` handler closes the structural-enforcement gap OI-083-001 named (S083 D-2 introduced the coding review loop in methodology v3 but left enforcement as operator-policed). P-2 (codex/openai) cross-family perspective surfaced the staleness-protection requirement (now embodied as `head_sha`) and the manifest-hash-sealing alternative recorded as forward direction OI-S104-1. Halted-as-status-value deferred to OI-S104-3 because admitting it would require a calibrated rebuild of the heavily-FK'd `sessions` table; halt is currently encoded by the review_pass row's outcome on a `status='closed'` session. Methodology v4 supersedes v3 with the substrate-now-enforces sentence.
+
+`engine-v30` (established Session 102 — migration 016 renames `objects.citable_alias` → `objects.alias` and `issues.citable_alias` → `issues.alias` via `ALTER TABLE … RENAME COLUMN` (SQLite ≥ 3.25), with the T-22 alias-format trigger reissued so its RAISE message names the new column. The first migration attempt used the calibrated table-recreation dance and tripped FK-constraint-failed at COMMIT because dropping `objects` orphans dozens of referrers within the transaction; switching to RENAME COLUMN is non-destructive and auto-rewrites trigger-body column references (only string literals in RAISE need manual update). Closes OI-S101-1 (LOW): the column was the most-trafficked schema name and the rename removes the `o.citable_alias AS alias` indirection that several read-paths in `cli.py` had already adopted. CLI handlers and tests refactored hard-cut: payload field is now `alias`, not `citable_alias`.
+
+`engine-v29` (established Session 099 — extends `_submit_spec_version` to accept inline `body_md`). The handler validates that `body_path` resolves under `workspace_root` (refusing `..`-traversal escapes via `Path.resolve(strict=False).relative_to(ws)`), computes the body_sha256 from the inline content (refusing on declared-vs-computed mismatch), encodes utf-8 bytes-for-bytes, and writes the file in-process *after* the spec_versions INSERT and the engine-manifest workspace_metadata UPDATE succeed (so a constraint refusal never leaves an orphaned body file). Closes OI-S090-5: spec body authoring is now part of the substrate write transaction, replacing the Bash heredoc bypass that S090–S098 relied on when the PreToolUse hook refused Edit/Write/MultiEdit/NotebookEdit on substrate-canonical markdown. `prompt-development` v4 documents the new authoring path in §6 and the `closes_issue` effect contract in §5.
+
+`engine-v28` (established Session 098 — migration 014 closes_issue effect wiring: typed `decision_effects.target_issue_id` column with FK to `issues`; T-17 reissued to admit it; T-27 refuses `closes_issue` effects with NULL `target_issue_id`; T-28 refuses any direct `decision_effects` INSERT bypassing the handler-side dispatch). Migration 015 (calibrated table-recreation) widens the `decision_effects` UNIQUE to include `target_issue_id` so multiple closes_issue effects within one decision can coexist; triggers reissued outside the calibrated block per S098 EF-S098-2. The `_submit_decision_v2` handler now dispatches `closes_issue` effects through `_submit_issue_disposition` in the same `write_tx`. `bin/selvedge export --session` renders closes_issue effect lines as `kind alias — descriptor`.
+
+`engine-v27` (established Session 097 — migration 013 `forward_reference_dispositions` table + T-26 facet gate, two new submit handlers `engine-feedback-disposition` and `forward-reference-disposition`, and `prompt-development` v3 adding §1.5 self-driving dispatch and §8.5 close-time reflection).
+
+`engine-v26` (established Session 094 — adds the `submit engine-feedback` handler so authoring follows substrate-only-writes. Also fixes two `bin/selvedge export --issues` UX bugs: dry-run output now uses `files_planned` with a `dry_run: true` flag, and `--write` now reconciles open↔resolved transitions by deleting stale on-disk files).
+
+`engine-v25` (established Session 091 — migration 011 plus a one-line addition to `_submit_spec_version`: when `spec_id='engine-manifest'`, the handler atomically updates `workspace_metadata.current_engine_version` inside the same write transaction. Migration 011 backfills the metadata to engine-v24 and seeds the `__cli__` UPDATE capability. Also resolves OI-086-002 as already-satisfied).
+
+`engine-v24` (established Session 090 — ships the PreToolUse hook (`tools/hooks/refuse-substrate-md.py`) wired in `.claude/settings.json` that refuses Edit/Write/MultiEdit/NotebookEdit on `provenance/**/*.md`, `specifications/*.md`, `prompts/*.md`, and `open-issues/**/*.md` unless `SELVEDGE_EXPORT_CONTEXT=1` is set. Resolves OI-085-002 (HIGH): markdown is now structurally non-authoritative for substrate-canonical surfaces).
+
+`engine-v23` (established Session 089 — substrate-native dispatch tooling: `selvedge orient` aggregator CLI; `selvedge schema` introspection CLI; `selvedge export --issues` materialiser; issue↔work_item M:N linkage with T-24 orphan-on-resolve refusal).
+
+`engine-v23` ships migration 010 (`state/migrations/010-issue-work-items.sql`) plus three new CLI subcommands (`selvedge orient`, `selvedge schema`, `selvedge export --issues`). Migration 010 adds the `issue_work_items` join table (M:N: a single work_item may resolve multiple issues — the realistic case is one fix closing several tracked issues at once), widens `work_items.kind` to admit `issue_resolution` (the existing session-phase taxonomy preserved as superset), and adds T-24: refuses an issue's status moving to `resolved`/`superseded` while any linked work_item with relation `resolves` is still `queued` or `leased`. `selvedge orient` prints a single live-read packet (workspace metadata, recent close-records, forward references from `next_session_should`, open issues capped at 30, in-flight work_items, active specs, deferred decisions, open review findings); markdown by default with `--json` flag, never materialised to disk. `selvedge schema` introspects `sqlite_master` and emits a formatted table-by-table summary with parsed CHECK enums (or `--raw` DDL). `selvedge export --issues` materialises `open-issues/<alias>.md` from substrate so issue files stay git-trackable even though the substrate is canonical. PROMPT.md and prompts/development.md updated to point at `bin/selvedge orient` as the first session step. Per S089 D-1, design followed three-perspective deliberation (P-1 anthropic-pragmatic, P-2 codex-cross-family, P-3 anthropic-adversarial); synthesis adopted M:N join over single-column linkage, markdown-default over JSON-default, derived state via LEFT JOIN over explicit decomposition_status column, minimal kind-enum widening, T-24 only (deferred T-25 lease-renewal trigger).
+
+`engine-v22` (established Session 088 — issues substrate table replaces 25 markdown OIs as the canonical dispatch surface).
+
+`engine-v22` ships migration 009 (`state/migrations/009-issues-table.sql`) plus four new CLI submit kinds (`submit issue`, `submit issue-disposition`, `submit issue-link`, `submit issue-note`). Tables: `issues` (per-issue row with `citable_alias`, `surfaced_session_id`, `title_atom_id`, optional `summary_atom_id`/`body_atom_id`, closed-enum `priority` HIGH/MEDIUM/LOW, closed-enum `status` open/in_progress/blocked/resolved/superseded), `issue_links` (directed edges with relation enum blocks/supersedes/duplicates/folds_into/related), `issue_notes` (append-only annotations), `issue_dispositions` (state-transition rows that are the only way `status` moves). Triggers: T-22 (alias-format GLOB), T-22a (terminal-status requires resolved_session_id+resolved_at), T-23 (no self-loops on issue_links). Issues do NOT register in the `objects` table — alias resolution lives on `issues.alias` (renamed from `citable_alias` at engine-v30) directly, sidestepping the FK-cascade pain of recreating `objects`. Future cross-citation can ship via a separate widening migration if needed. The 25 pre-existing markdown OIs were backfilled by a session 088 subagent; their compressed canonical bodies are in substrate, their verbatim prose is in git history. Per S088 D-1, schema design followed three-perspective deliberation (anthropic-pragmatic, codex-cross-family, anthropic-adversarial) with synthesis preserving dissent.
+
+`engine-v21` (established Session 087 — migration 008 widens T-06 to admit `body_canonical_in_substrate` flips on closed-session spec_version rows, unblocking cross-session decomposition completion).
+
+`engine-v21` ships migration 008 (`state/migrations/008-widen-t06-for-canonical-flag.sql`). The original T-06 trigger on `spec_versions` UPDATE refused all non-status mutations of closed-session rows. Decomposition completion (`body_canonical_in_substrate` 0 → 1) is a per-session activity that legitimately spans sessions: a row's creation session may register a pointer-only spec_version, and a later session may complete the substrate decomposition. The widened trigger admits flag transitions in both directions while continuing to refuse content edits (`body_path`, `body_sha256`, etc.) on closed-session rows. The migration also performs a one-time backfill, flipping the flag to 1 on the three v2 rows whose decomposition completed in session 087: `engine-manifest v20`, `prompt-application v2`, `prompt-development v2`.
+
+`engine-v20` (established Session 084 — Path A substrate-only write path per operator direction).
+
+`engine-v20` ships a structural reorientation: the SQLite substrate becomes the only writable surface for session state and specifications; markdown files in `provenance/` and `specifications/` become *exports* generated by `bin/selvedge export --session <N> --write`. Per the deliberation in S084 (deliberation_id=3, three perspectives P-1/P-2/P-3 with synthesis preserving dissent), the operator ratified Path A (P-1 strictest): the substrate refuses prose-in-rows by construction. New tables (`text_atoms`, `decisions_v2`, `decision_supports`, `decision_effects`, `alternatives_v2`, `alternative_rejections`, `spec_sections`, `spec_clauses`, `spec_clause_links`, `assessments`, `assessment_agenda_items`, `perspective_positions`, `perspective_claims`, `review_findings`, `close_records`, `close_state_items`, `legacy_imports`) hold typed atoms (length-bounded, newline-free, no fenced code, no pipe tables) and typed link rows with closed-enum bases. Migrations 003 (Path A schema) and 004 (CR-guard trigger T-21) ship together.
+
+The 078 D-5 release gate's "no methodology-expanding self-development sessions modify active spec content" clause is overridden by operator directive (recorded at S084 D-2 / substrate D-S005-2 R-1.3, with the reason). Per `specifications/methodology.md` §When to convene multiple agents, the no-cross-family-deliberation exception was not invoked: a three-perspective deliberation including a cross-family P-1 (codex/OpenAI) was convened and is recorded at deliberation_id=3.
+
+T-15 was operator-calibrated at S084 D-1: a `-- T-15-CALIBRATED-BEGIN: <reason>` / `-- T-15-CALIBRATED-END` marker pair admits non-destructive CHECK-relaxation table-recreation (validated by the runner: only CREATE TABLE / INSERT INTO ... SELECT / DROP TABLE / ALTER TABLE ... RENAME / CREATE INDEX / CREATE TRIGGER admitted inside the block). The runner refuses other DDL inside the markers.
+
+`engine-v20` remains **provisional** in the same sense `engine-v19` was: no further methodology-expanding self-development sessions modify active spec content between 084 and the close of the first external-problem trial of 30 sessions, except where operator-directed.
+
+`engine-v19` adds a structural reviewer mechanism for code-producing sessions: a reviewer subagent, distinct from the implementer, audits any change to executable code (Python under `selvedge/`, SQL under `state/migrations/`, shell under `bin/` or `tools/`), and the loop continues until the reviewer reports no medium-or-higher findings remain. The pre-existing engine-definition close review is retained as a single-pass mechanism. Both are documented in `specifications/methodology.md` §When to review and wired into `prompts/development.md` and `prompts/application.md`.
+
+The change is operator-directed and is recorded as a deliberate exception to the 078 D-5 release gate. Specifically, the gate's clause forbidding methodology-expanding self-development sessions from modifying active spec content between Session 079 and the close of the first external-problem trial of 30 sessions is overridden for this revision by operator directive (recorded in S083 D-2 / substrate D-S004-2 R-1.3, with the reason). Per `specifications/methodology.md` §When to convene multiple agents (when multi-agent deliberation is otherwise triggered but not performed because the decision is operator-directed, the reason is recorded), no cross-family deliberation was convened on the loop's design details; the procedural exception itself is recorded at S083 D-1 / substrate D-S004-1, and a future cross-family review of the loop's design details is deferred until the mechanism has been exercised against real code-producing sessions.
+
+`engine-v19` remains **provisional** in the same sense `engine-v18` was: no further methodology-expanding self-development sessions modify active spec content between 083 and the close of the first external-problem trial of 30 sessions, except where operator-directed. Bug-fix and validator-tightening sessions remain admitted.
+
+## Engine-definition file set
+
+Active spec (read at session open):
+
+| File | Role |
+|------|------|
+| `PROMPT.md` | Dispatcher: determines mode and loads the executable prompt. |
+| `prompts/development.md` | Executable prompt for self-development applications. |
+| `prompts/application.md` | Executable prompt template for external-problem applications. |
+| `specifications/methodology.md` | Kernel: what the engine does. The nine activities, when to convene multiple agents, validation senses, preservation, engine-feedback pathway, self-hosting. |
+| `specifications/workspace.md` | File classes, session structure, decisions, specifications discipline. |
+| `specifications/engine-manifest.md` | This file. |
+| `tools/validate.sh` | Wrapper that calls `selvedge validate --precommit`. |
+
+Substrate (engine-definition; not read as prose):
+
+| Path | Role |
+|------|------|
+| `state/migrations/001-initial.sql` | Schema for sessions, objects, decisions, decision_alternatives, spec_versions, perspectives, deliberations, synthesis_points, refs, commitments, engine_feedback, work_items, role_write_capabilities, read_log, subtraction_log, schema_migrations, agent_runs (17 tables; 16 per 078 D-10 + synthesis_points calibrated breach per 081 D-1 with cause: T-14 enforcement has no other structural home; `objects` is the alias indirection table powering T-01 (column renamed from `citable_alias` to `alias` at engine-v30)). Encodes refusals T-01..T-16 (per 078 D-3). |
+| `state/migrations/002-tighten-deliberation-immutability.sql` | Closes OI-080-001 (per 082 D-1 + D-2): adds T-06 trigger pair on `deliberations` UPDATE/DELETE for closed sessions; tightens T-13 to refuse any change-in-place to a non-NULL `sealed_at`. Activated by the `selvedge migrate` runner shipped in the same session. |
+| `state/migrations/003-substrate-strict-write-path.sql` | Path A schema (per 084 D-2): adds text_atoms, decisions_v2, decision_supports, decision_effects, alternatives_v2, alternative_rejections, spec_sections, spec_clauses, spec_clause_links, assessments, assessment_agenda_items, perspective_positions, perspective_claims, review_findings, close_records, close_state_items, legacy_imports. T-17/T-18/T-19/T-20 close-gate triggers. T-15-CALIBRATED markers widen objects.object_kind and refs.relation. |
+| `state/migrations/004-text-atoms-cr-guard.sql` | T-21 trigger on text_atoms: refuses CR (\\r) in atom text (per S084 reviewer F6). |
+| `state/migrations/005-workspace-session-numbering.sql` | Per-workspace session numbering (S084). |
+| `state/migrations/006-workspace-metadata.sql` | `workspace_metadata` key/value table (S084). |
+| `state/migrations/007-workspace-invariants.sql` | Workspace-invariant slug immutability + metadata refusals (S084). |
+| `state/migrations/008-widen-t06-for-canonical-flag.sql` | Widens T-06 to admit `body_canonical_in_substrate` flips on closed-session spec_version rows; one-time backfill of the three v2 rows whose decomposition completed in S087 (per 087 D-1). |
+| `state/migrations/009-issues-table.sql` | Issues substrate table + supporting issue_links / issue_notes / issue_dispositions tables; T-22, T-22a, T-23 triggers; replaces 25 markdown OIs as the dispatch surface (per 088 D-1). |
+| `state/migrations/010-issue-work-items.sql` | issue_work_items M:N join + work_items.kind widening to admit issue_resolution + T-24 orphan-on-resolve refusal (per 089 D-1). |
+| `state/migrations/011-engine-version-coherence.sql` | workspace_metadata.current_engine_version coherence: handler now atomically updates the key on every engine-manifest spec_version insert; migration backfills to engine-v24 and seeds __cli__ UPDATE capability on workspace_metadata (per 091 D-1). |
+| `state/migrations/012-t25-lease-renewal.sql` | T-25 lease-renewal monotonicity trigger on work_items: refuses a lease-expiry UPDATE that would decrease lease_expires_at (per S092, OI-S089-2). |
+| `state/migrations/013-forward-reference-dispositions.sql` | forward_reference_dispositions table + T-26 facet gate; two new submit handlers (engine-feedback-disposition, forward-reference-disposition); closes the narrative→substrate linkage gap for forward-references and engine-feedback rows (per S097 D-1, EF-S096-1). |
+| `state/migrations/014-closes-issue-wiring.sql` | closes_issue effect wiring: typed decision_effects.target_issue_id column with FK to issues; T-17 reissued to admit it; T-27 refuses closes_issue with NULL target_issue_id; T-28 refuses direct decision_effects INSERT bypassing handler dispatch (per S098 D-1). |
+| `state/migrations/015-decision-effects-unique-includes-issue.sql` | Calibrated table-recreation widening decision_effects UNIQUE to include target_issue_id so multiple closes_issue effects within one decision coexist; triggers reissued outside calibrated block (per S098 review, EF-S098-2). |
+| `state/migrations/016-rename-citable-alias-to-alias.sql` | ALTER TABLE RENAME COLUMN: objects.citable_alias → objects.alias and issues.citable_alias → issues.alias; T-22 alias-format trigger reissued with updated RAISE message; closes OI-S101-1 (per S102 D-1). |
+| `state/migrations/017-coding-review-loop-enforcement.sql` | sessions.kind column (coding/spec_only/meta; immutable via T-29) and review_passes table (outcome ∈ clean/findings/nonconverged; head_sha for staleness audit); T-30 close-gate on coding sessions; T-20 narrowed to admit halt path; closes OI-083-001 (per S104 D-1). |
+| `state/migrations/018-review-passes-role-capability.sql` | Grants __cli__ insert capability on review_passes; without this the submit review-pass handler refused with E_REFUSAL_T12 (per S104, follow-up to migration 017). |
+| `state/migrations/019-harvested-engine-feedback-ledger.sql` | harvested_engine_feedback ledger table (UNIQUE peer_workspace_id+peer_feedback_id, FK to objects+sessions) supporting substrate-direct harvest-ef per-row idempotency (per S110 D-1). |
+| `selvedge/` (Python package) | The CLI implementation. Includes the `migrate` subcommand (engine-v18+) with `--status`, `--dry-run`, `--apply`; T-15 pre-check; sha256 drift detection; 078 D-8 tier-1 rollback via `.pre-migrate-backup`. |
+| `bin/selvedge` | Shell shim. |
+| `state/selvedge.sqlite` | Per-workspace; not under VCS. Created by `selvedge init`, which now chains `selvedge migrate` so a fresh init applies all known migrations (engine-v18+). |
+
+## What is not part of the engine
+
+- `MODE.md` — workspace-identity (each workspace writes its own).
+- `CLAUDE.md` — harness instructions (per-workspace).
+- `provenance/` — session records.
+- `applications/` — application briefs and artefacts.
+- `engine-feedback/` — operator-mediated observations.
+- `open-issues/` — workspace-scope issue tracker.
+- `archive/` — superseded versions and retired files. Includes `archive/specifications/constraints-v1.md` (the historical six-properties rationale; superseded at engine-v32; design decisions queryable via `bin/selvedge query` on the decisions substrate).
+- `state/selvedge.sqlite` — workspace state, not engine-definition.
+
+## Versioning
+
+The engine version increments when any file in the active set above changes substantively, including a substrate migration. Typo corrections and formatting do not bump. Engine-version increments are recorded in the session's `02-decisions.md`. The 078 D-5 release gate constrains *what kind* of change can ship; it does not exempt qualifying changes from the bump rule. Bug-fix and validator-tightening sessions admitted under the gate (which add migrations like 002) bump the engine version normally.
+
+## Engine-version history
+
+`engine-v1` through `engine-v15` ran for 75 self-development sessions and are preserved in git history. `engine-v16` (session 076) was the trim-restart that reduced the active surface to ~430 non-blank lines. `engine-v17` (session 079) applies the 078 D-7 cut, lands the SQLite substrate, and introduces the `selvedge` CLI as the only writer of structured state. `engine-v18` (session 082) adds migration 002 (closes OI-080-001 by adding T-06 trigger pair on `deliberations` UPDATE/DELETE and tightening T-13 to refuse any change-in-place to a non-NULL `sealed_at`) and ships the `selvedge migrate` runner that activates T-15 enforcement (the runner deferral was named at S079 close per `engine-feedback/inbox/EF-079-002-T15-deferred.md`). `engine-v19` (session 083) introduces the coding review loop in methodology v3 and updates both prompts to invoke it. `engine-v20` (session 084) ships Path A: substrate becomes the only writable surface for session state and specifications; markdown becomes a generated export. Migrations 003 + 004; T-17 through T-21 added; T-15 calibrated marker introduced; `bin/selvedge export` materialises provenance markdown from substrate rows; both prompts rewritten to require CLI-only writes. `engine-v21` (session 087) ships migration 008: widens T-06 to admit `body_canonical_in_substrate` flips on closed-session spec_version rows, with a one-time backfill of the three v2 rows whose decomposition completed in S087 (`engine-manifest v20`, `prompt-application v2`, `prompt-development v2`). The widened trigger continues to refuse content edits on closed-session rows; only the canonicalisation marker is now mutable across sessions. `engine-v22` (session 088) ships migration 009 plus four new CLI submit kinds: substrate-native `issues` table replaces 25 markdown OIs as the canonical dispatch surface, with closed-enum status (open/in_progress/blocked/resolved/superseded), closed-enum priority (HIGH/MEDIUM/LOW), dedicated link/note/disposition tables, and an alias-format GLOB trigger preserving the historical OI-NNN[-NNN] form alongside new OI-SNNN-N session-scoped IDs. Backfill subagent migrated 30 issues; markdown files deleted; substrate becomes the single source of truth. `engine-v23` (session 089) ships migration 010 (`issue_work_items` M:N join, `work_items.kind` widening to admit `issue_resolution`, T-24 orphan-on-resolve refusal) plus three new CLI subcommands: `selvedge orient` (single-command orientation packet — live read, markdown default, `--json` flag, hard caps with elision footers); `selvedge schema` (sqlite_master introspection with parsed CHECK enums or `--raw` DDL); `selvedge export --issues` (materialises `open-issues/<alias>.md` from substrate so files remain git-trackable). PROMPT.md and prompts/development.md updated to make `bin/selvedge orient` the first session step. `engine-v24` (session 090) ships the PreToolUse hook (`tools/hooks/refuse-substrate-md.py`) wired in `.claude/settings.json` that refuses Edit/Write/MultiEdit/NotebookEdit on `provenance/**/*.md`, `specifications/*.md`, `prompts/*.md`, and `open-issues/**/*.md` unless `SELVEDGE_EXPORT_CONTEXT=1` is set. Resolves OI-085-002 (HIGH, carried four sessions): markdown is now structurally — not honour-system — non-authoritative for substrate-canonical surfaces. Bash-mediated writes remain outside the hook's scope by design (the matcher would otherwise fire on every Bash invocation); the gap is documented in the hook docstring and tracked under a new OI for a future substrate-driven spec-authoring CLI. The substrate engine-definition (migrations, schema, CLI submit handlers) is unchanged; the bump is harness configuration that now enforces the substrate-canonical guarantee asserted since engine-v20. `engine-v25` (session 091) ships migration 011 plus a one-line addition to `_submit_spec_version`: when `spec_id='engine-manifest'`, the handler now atomically updates `workspace_metadata.current_engine_version` inside the same write transaction. Prior to S091, `workspace_metadata` and `spec_versions` were two sources of truth that drifted across S087-S090 (metadata stuck at engine-v23 while engine-manifest v24 was active, causing S091 to open at the stale value). The handler change is the structural defence; migration 011 backfills the metadata to engine-v24 and seeds the `__cli__` UPDATE capability. Also resolves OI-086-002 as already-satisfied (T-03 in migration 001 is the partial UNIQUE index the OI requested). `engine-v26` (session 094) adds the `submit engine-feedback` handler so authoring follows substrate-only-writes (closes EF-S092-4: prior sessions had to write engine_feedback rows via raw SQL). Also fixes two `bin/selvedge export --issues` UX bugs: dry-run output now uses the key `files_planned` (not `files_written`) and includes a `dry_run: true` flag (closes EF-S092-1, the misleading-key trap), and `--write` now reconciles open↔resolved transitions by deleting on-disk files no longer in the substrate's target set (closes EF-S092-2, the stale-path bug that left two markdowns in `open-issues/` after S092). The session-export path gains the same `dry_run`/`files_planned` shape for consistency. `engine-v27` (session 097) ships migration 013 (`forward_reference_dispositions` table + T-26 facet gate), two new submit handlers (`engine-feedback-disposition`, `forward-reference-disposition`), and `prompt-development` v3 (adds §1.5 self-driving dispatch and §8.5 close-time reflection). Together these close the narrative→substrate linkage gap that EF-S095-1, EF-S096-1, and EF-S096-2 surfaced: forward-references and engine-feedback rows now transition through typed substrate writes; `bin/selvedge orient` shows every undisposed forward-reference with an `FR-S<wno>-<seq>` identifier (no longer windowed to the last three sessions); and the development prompt directs successors running PROMPT.md cold to propose work from orient's queue without operator steering. `engine-v28` (session 098) ships migration 014 (`closes_issue` effect wiring: typed `decision_effects.target_issue_id` column with FK to `issues`; T-17 reissued to admit it; T-27 refuses `closes_issue` effects with NULL `target_issue_id`; T-28 refuses any direct `decision_effects` INSERT bypassing the handler-side dispatch) and migration 015 (calibrated table-recreation widening the `decision_effects` UNIQUE to include `target_issue_id` so multiple closes_issue effects within one decision can coexist; triggers reissued outside the calibrated block per S098 EF-S098-2). The `_submit_decision_v2` handler now dispatches `closes_issue` effects through `_submit_issue_disposition` in the same `write_tx` before the INSERT, transitioning the target issue's status to `resolved` atomically with the decision row. `bin/selvedge export --session` renders closes_issue effect lines as `kind alias — descriptor` so provenance markdown traces decision-to-issue flow without re-querying the substrate. `engine-v29` (session 099) extends `_submit_spec_version` to accept inline `body_md`: the handler validates that `body_path` resolves under `workspace_root` (refusing `..`-traversal escapes via `Path.resolve(strict=False).relative_to(ws)`), computes the body_sha256 from the inline content (refusing on declared-vs-computed mismatch), encodes utf-8 bytes-for-bytes, and writes the file in-process *after* the spec_versions INSERT and the engine-manifest workspace_metadata UPDATE succeed (so a constraint refusal never leaves an orphaned body file). Closes OI-S090-5: spec body authoring is now part of the substrate write transaction, replacing the Bash heredoc bypass that S090–S098 relied on when the PreToolUse hook refused Edit/Write/MultiEdit/NotebookEdit on substrate-canonical markdown. `prompt-development` v4 documents the new authoring path in §6 and the `closes_issue` effect contract in §5. `engine-v30` (session 102) ships migration 016 renaming `objects.citable_alias` → `objects.alias` and `issues.citable_alias` → `issues.alias` via `ALTER TABLE … RENAME COLUMN` (SQLite ≥ 3.25), with the T-22 alias-format trigger reissued so its RAISE message names the new column. The first migration attempt used the calibrated table-recreation dance and tripped FK-constraint-failed at COMMIT because dropping `objects` orphans dozens of referrers within the transaction; switching to RENAME COLUMN is non-destructive and auto-rewrites trigger-body column references (only string literals in RAISE need manual update). Closes OI-S101-1 (LOW): the column was the most-trafficked schema name and the rename removes the `o.citable_alias AS alias` indirection that several read-paths in `cli.py` had already adopted. CLI handlers and tests refactored hard-cut: payload field is now `alias`, not `citable_alias`. `engine-v31` (session 104) ships migrations 017 + 018 plus a new substrate-only submit kind. Migration 017 adds `sessions.kind` (operator-declared at open: coding/spec_only/meta; immutable post-open via T-29 mirroring T-23 slug pattern) and the `review_passes` table (one row per reviewer iteration; outcome ∈ clean/findings/nonconverged with operator-asserted `head_sha` for staleness audit). T-30 refuses close on a coding session unless the latest review_pass is outcome=clean or outcome=nonconverged with halt_issue_id NOT NULL. T-20 narrowed to admit the halt path so unresolved findings can be recorded honestly. Migration 018 grants `__cli__` insert capability on `review_passes`. The new `submit review-pass` handler closes the structural-enforcement gap OI-083-001 named (S083 D-2 introduced the coding review loop in methodology v3 but left enforcement as operator-policed). P-2 (codex/openai) cross-family perspective surfaced the staleness-protection requirement (now embodied as `head_sha`) and the manifest-hash-sealing alternative recorded as forward direction OI-S104-1. Halted-as-status-value deferred to OI-S104-3 because admitting it would require a calibrated rebuild of the heavily-FK'd `sessions` table; halt is currently encoded by the review_pass row's outcome on a `status='closed'` session. Methodology v4 supersedes v3 with the substrate-now-enforces sentence. `engine-v32` (session 109) subtracts `specifications/constraints.md` from the engine-definition file set (per S109 DV-S109-1). The document carried the six-properties LLM-agent rationale written after session 076; every constraint it named is structurally encoded in the substrate triggers and methodology kernel. Design rationale is permanently queryable via `bin/selvedge query` on the decisions substrate. Archive copy at `archive/specifications/constraints-v1.md`. Also backfills the substrate table enumeration in the manifest through migration 018 (closing FR-S107-11/FR-S108-10) and corrects frontmatter version drift carried since engine-v31 shipped without updating the file-body version number. `engine-v33` (session 110) ships migration 019 (`harvested_engine_feedback` ledger) plus a rewrite of `_me_harvest_ef` and `_me_status` to read peer engine_feedback rows substrate-direct via read-only SQLite URI with busy_timeout + query_only PRAGMAs. Per S110 D-1 (deliberation_id=10, P-1 anthropic, P-2 codex/openai cross-family converged on Option 1): capability-based peer schema detection over migration-version gating; per-row idempotency via ledger over --since-session coarse filter; SQLite native busy_timeout over Python retry loops. New structured errors E_PEER_BUSY/E_PEER_OPEN_FAILED/E_PEER_QUERY_FAILED/E_PEER_SCHEMA_UNSUPPORTED categorise transient lock contention vs permanent open/query/schema failures. P-2 caught the EF-S005-7 vs EF-S005-1 alias precision error (per-session ordinals, not absolute feedback_ids). Live harvest against selvedge-disaster-recovery imported all 9 peer engine_feedback rows including EF-S005-1 (cross-session provenance reframe, now EF-S110-7 in self-dev) on first run; second run skipped all 9 via ledger lookup.
+
+exec
+/bin/zsh -lc 'rg -n "def _submit_spec_version|_submit_spec_version|current_engine_version|engine-manifest|spec_version|version" ../../bin ../../selvedge ../../state ../../specifications ../../prompts' in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+../../specifications/engine-manifest.md:3:version: 34
+../../specifications/engine-manifest.md:7:supersedes: engine-manifest v33 (engine-v34; per S118 DV-S118-1 opens_issue target_issue_id enforcement via T-31 + handler resolution); engine-manifest v32 (engine-v33; per S110 DV-S110-1 substrate-direct harvest-ef + migration 019 harvested_engine_feedback ledger); engine-manifest v31 (engine-v32; per S109 DV-S109-1 removes constraints.md from engine-definition file set, adds migrations 011-018 to substrate table, corrects frontmatter version drift); v30 (engine-v31; per S104 DV-S104-1..7 substrate enforcement of coding review loop); v29 (engine-v30; per S102 DV-S102-1 renames objects.citable_alias and issues.citable_alias to alias, closes OI-S101-1); v28 (engine-v29; per S099 DV-S099-1 inline body_md path closes OI-S090-5); v28 per S098 DV-S098-1 (closes_issue handler dispatch); v27 per S097 DV-S097-1; v26 per S094; v25 per S091; v24 per S090; v23 per S089 D-1
+../../specifications/engine-manifest.md:14:## Current engine version
+../../specifications/engine-manifest.md:22:`engine-v33` ships migration 019 (`harvested_engine_feedback` ledger with UNIQUE(peer_workspace_id, peer_feedback_id), FK to objects + sessions) plus a rewrite of `_me_harvest_ef` and `_me_status` to read peer `engine_feedback` rows directly from the peer SQLite via read-only URI with `PRAGMA busy_timeout=1000` and `PRAGMA query_only=1`. The previous file-walk path is removed; against substrate-only peers (the live disaster-recovery workspace was the trigger) it returned silently-empty. Per S110 D-1 deliberation_id=10 (P-1 anthropic, P-2 codex/openai cross-family) the design adopted: capability-based peer schema detection (objects.alias vs older citable_alias detected via `pragma_table_info`) over migration-version gating; per-row dedup via the ledger over `--since-session` as the dedup mechanism (`--since-session` retained as optional coarse filter); SQLite native busy_timeout over Python retry-with-backoff. Four new structured error codes: E_PEER_BUSY, E_PEER_OPEN_FAILED, E_PEER_QUERY_FAILED, E_PEER_SCHEMA_UNSUPPORTED. Reviewer caught the EF-S005-7 vs EF-S005-1 alias precision error (peer feedback_id=7 has alias EF-S005-1 because aliases are per-session ordinals, not absolute feedback_ids). Three iterations: iter-1 surfaced 2 high + 4 medium (OperationalError ambiguity, docstring, race-window UNIQUE labelling, empty-rows note, role closure capture); iter-2 surfaced 2 medium (schema-validation queries unwrapped, docstring Raises incomplete) addressed via _peer_exec inner helper; iter-3 clean.
+../../specifications/engine-manifest.md:24:`engine-v32` (established Session 109 — subtracts `specifications/constraints.md` from the engine-definition file set). The document carried historical design rationale (six properties of LLM agents learned over 75 sessions) with no operational content for external-problem agents. Every constraint it named is already encoded structurally in the substrate triggers and the methodology kernel; the rationale is permanently queryable via `bin/selvedge query` on the decisions substrate. Archive copy at `archive/specifications/constraints-v1.md`. Also backfills the substrate table enumeration through migration 018, closing FR-S107-11/FR-S108-10, and corrects frontmatter version drift carried since engine-v31 shipped without updating the file-body version number.
+../../specifications/engine-manifest.md:32:`engine-v29` (established Session 099 — extends `_submit_spec_version` to accept inline `body_md`). The handler validates that `body_path` resolves under `workspace_root` (refusing `..`-traversal escapes via `Path.resolve(strict=False).relative_to(ws)`), computes the body_sha256 from the inline content (refusing on declared-vs-computed mismatch), encodes utf-8 bytes-for-bytes, and writes the file in-process *after* the spec_versions INSERT and the engine-manifest workspace_metadata UPDATE succeed (so a constraint refusal never leaves an orphaned body file). Closes OI-S090-5: spec body authoring is now part of the substrate write transaction, replacing the Bash heredoc bypass that S090–S098 relied on when the PreToolUse hook refused Edit/Write/MultiEdit/NotebookEdit on substrate-canonical markdown. `prompt-development` v4 documents the new authoring path in §6 and the `closes_issue` effect contract in §5.
+../../specifications/engine-manifest.md:40:`engine-v25` (established Session 091 — migration 011 plus a one-line addition to `_submit_spec_version`: when `spec_id='engine-manifest'`, the handler atomically updates `workspace_metadata.current_engine_version` inside the same write transaction. Migration 011 backfills the metadata to engine-v24 and seeds the `__cli__` UPDATE capability. Also resolves OI-086-002 as already-satisfied).
+../../specifications/engine-manifest.md:52:`engine-v21` (established Session 087 — migration 008 widens T-06 to admit `body_canonical_in_substrate` flips on closed-session spec_version rows, unblocking cross-session decomposition completion).
+../../specifications/engine-manifest.md:54:`engine-v21` ships migration 008 (`state/migrations/008-widen-t06-for-canonical-flag.sql`). The original T-06 trigger on `spec_versions` UPDATE refused all non-status mutations of closed-session rows. Decomposition completion (`body_canonical_in_substrate` 0 → 1) is a per-session activity that legitimately spans sessions: a row's creation session may register a pointer-only spec_version, and a later session may complete the substrate decomposition. The widened trigger admits flag transitions in both directions while continuing to refuse content edits (`body_path`, `body_sha256`, etc.) on closed-session rows. The migration also performs a one-time backfill, flipping the flag to 1 on the three v2 rows whose decomposition completed in session 087: `engine-manifest v20`, `prompt-application v2`, `prompt-development v2`.
+../../specifications/engine-manifest.md:83:| `specifications/engine-manifest.md` | This file. |
+../../specifications/engine-manifest.md:90:| `state/migrations/001-initial.sql` | Schema for sessions, objects, decisions, decision_alternatives, spec_versions, perspectives, deliberations, synthesis_points, refs, commitments, engine_feedback, work_items, role_write_capabilities, read_log, subtraction_log, schema_migrations, agent_runs (17 tables; 16 per 078 D-10 + synthesis_points calibrated breach per 081 D-1 with cause: T-14 enforcement has no other structural home; `objects` is the alias indirection table powering T-01 (column renamed from `citable_alias` to `alias` at engine-v30)). Encodes refusals T-01..T-16 (per 078 D-3). |
+../../specifications/engine-manifest.md:97:| `state/migrations/008-widen-t06-for-canonical-flag.sql` | Widens T-06 to admit `body_canonical_in_substrate` flips on closed-session spec_version rows; one-time backfill of the three v2 rows whose decomposition completed in S087 (per 087 D-1). |
+../../specifications/engine-manifest.md:100:| `state/migrations/011-engine-version-coherence.sql` | workspace_metadata.current_engine_version coherence: handler now atomically updates the key on every engine-manifest spec_version insert; migration backfills to engine-v24 and seeds __cli__ UPDATE capability on workspace_metadata (per 091 D-1). |
+../../specifications/engine-manifest.md:121:- `archive/` — superseded versions and retired files. Includes `archive/specifications/constraints-v1.md` (the historical six-properties rationale; superseded at engine-v32; design decisions queryable via `bin/selvedge query` on the decisions substrate).
+../../specifications/engine-manifest.md:126:The engine version increments when any file in the active set above changes substantively, including a substrate migration. Typo corrections and formatting do not bump. Engine-version increments are recorded in the session's `02-decisions.md`. The 078 D-5 release gate constrains *what kind* of change can ship; it does not exempt qualifying changes from the bump rule. Bug-fix and validator-tightening sessions admitted under the gate (which add migrations like 002) bump the engine version normally.
+../../specifications/engine-manifest.md:128:## Engine-version history
+../../specifications/engine-manifest.md:130:`engine-v1` through `engine-v15` ran for 75 self-development sessions and are preserved in git history. `engine-v16` (session 076) was the trim-restart that reduced the active surface to ~430 non-blank lines. `engine-v17` (session 079) applies the 078 D-7 cut, lands the SQLite substrate, and introduces the `selvedge` CLI as the only writer of structured state. `engine-v18` (session 082) adds migration 002 (closes OI-080-001 by adding T-06 trigger pair on `deliberations` UPDATE/DELETE and tightening T-13 to refuse any change-in-place to a non-NULL `sealed_at`) and ships the `selvedge migrate` runner that activates T-15 enforcement (the runner deferral was named at S079 close per `engine-feedback/inbox/EF-079-002-T15-deferred.md`). `engine-v19` (session 083) introduces the coding review loop in methodology v3 and updates both prompts to invoke it. `engine-v20` (session 084) ships Path A: substrate becomes the only writable surface for session state and specifications; markdown becomes a generated export. Migrations 003 + 004; T-17 through T-21 added; T-15 calibrated marker introduced; `bin/selvedge export` materialises provenance markdown from substrate rows; both prompts rewritten to require CLI-only writes. `engine-v21` (session 087) ships migration 008: widens T-06 to admit `body_canonical_in_substrate` flips on closed-session spec_version rows, with a one-time backfill of the three v2 rows whose decomposition completed in S087 (`engine-manifest v20`, `prompt-application v2`, `prompt-development v2`). The widened trigger continues to refuse content edits on closed-session rows; only the canonicalisation marker is now mutable across sessions. `engine-v22` (session 088) ships migration 009 plus four new CLI submit kinds: substrate-native `issues` table replaces 25 markdown OIs as the canonical dispatch surface, with closed-enum status (open/in_progress/blocked/resolved/superseded), closed-enum priority (HIGH/MEDIUM/LOW), dedicated link/note/disposition tables, and an alias-format GLOB trigger preserving the historical OI-NNN[-NNN] form alongside new OI-SNNN-N session-scoped IDs. Backfill subagent migrated 30 issues; markdown files deleted; substrate becomes the single source of truth. `engine-v23` (session 089) ships migration 010 (`issue_work_items` M:N join, `work_items.kind` widening to admit `issue_resolution`, T-24 orphan-on-resolve refusal) plus three new CLI subcommands: `selvedge orient` (single-command orientation packet — live read, markdown default, `--json` flag, hard caps with elision footers); `selvedge schema` (sqlite_master introspection with parsed CHECK enums or `--raw` DDL); `selvedge export --issues` (materialises `open-issues/<alias>.md` from substrate so files remain git-trackable). PROMPT.md and prompts/development.md updated to make `bin/selvedge orient` the first session step. `engine-v24` (session 090) ships the PreToolUse hook (`tools/hooks/refuse-substrate-md.py`) wired in `.claude/settings.json` that refuses Edit/Write/MultiEdit/NotebookEdit on `provenance/**/*.md`, `specifications/*.md`, `prompts/*.md`, and `open-issues/**/*.md` unless `SELVEDGE_EXPORT_CONTEXT=1` is set. Resolves OI-085-002 (HIGH, carried four sessions): markdown is now structurally — not honour-system — non-authoritative for substrate-canonical surfaces. Bash-mediated writes remain outside the hook's scope by design (the matcher would otherwise fire on every Bash invocation); the gap is documented in the hook docstring and tracked under a new OI for a future substrate-driven spec-authoring CLI. The substrate engine-definition (migrations, schema, CLI submit handlers) is unchanged; the bump is harness configuration that now enforces the substrate-canonical guarantee asserted since engine-v20. `engine-v25` (session 091) ships migration 011 plus a one-line addition to `_submit_spec_version`: when `spec_id='engine-manifest'`, the handler now atomically updates `workspace_metadata.current_engine_version` inside the same write transaction. Prior to S091, `workspace_metadata` and `spec_versions` were two sources of truth that drifted across S087-S090 (metadata stuck at engine-v23 while engine-manifest v24 was active, causing S091 to open at the stale value). The handler change is the structural defence; migration 011 backfills the metadata to engine-v24 and seeds the `__cli__` UPDATE capability. Also resolves OI-086-002 as already-satisfied (T-03 in migration 001 is the partial UNIQUE index the OI requested). `engine-v26` (session 094) adds the `submit engine-feedback` handler so authoring follows substrate-only-writes (closes EF-S092-4: prior sessions had to write engine_feedback rows via raw SQL). Also fixes two `bin/selvedge export --issues` UX bugs: dry-run output now uses the key `files_planned` (not `files_written`) and includes a `dry_run: true` flag (closes EF-S092-1, the misleading-key trap), and `--write` now reconciles open↔resolved transitions by deleting on-disk files no longer in the substrate's target set (closes EF-S092-2, the stale-path bug that left two markdowns in `open-issues/` after S092). The session-export path gains the same `dry_run`/`files_planned` shape for consistency. `engine-v27` (session 097) ships migration 013 (`forward_reference_dispositions` table + T-26 facet gate), two new submit handlers (`engine-feedback-disposition`, `forward-reference-disposition`), and `prompt-development` v3 (adds §1.5 self-driving dispatch and §8.5 close-time reflection). Together these close the narrative→substrate linkage gap that EF-S095-1, EF-S096-1, and EF-S096-2 surfaced: forward-references and engine-feedback rows now transition through typed substrate writes; `bin/selvedge orient` shows every undisposed forward-reference with an `FR-S<wno>-<seq>` identifier (no longer windowed to the last three sessions); and the development prompt directs successors running PROMPT.md cold to propose work from orient's queue without operator steering. `engine-v28` (session 098) ships migration 014 (`closes_issue` effect wiring: typed `decision_effects.target_issue_id` column with FK to `issues`; T-17 reissued to admit it; T-27 refuses `closes_issue` effects with NULL `target_issue_id`; T-28 refuses any direct `decision_effects` INSERT bypassing the handler-side dispatch) and migration 015 (calibrated table-recreation widening the `decision_effects` UNIQUE to include `target_issue_id` so multiple closes_issue effects within one decision can coexist; triggers reissued outside the calibrated block per S098 EF-S098-2). The `_submit_decision_v2` handler now dispatches `closes_issue` effects through `_submit_issue_disposition` in the same `write_tx` before the INSERT, transitioning the target issue's status to `resolved` atomically with the decision row. `bin/selvedge export --session` renders closes_issue effect lines as `kind alias — descriptor` so provenance markdown traces decision-to-issue flow without re-querying the substrate. `engine-v29` (session 099) extends `_submit_spec_version` to accept inline `body_md`: the handler validates that `body_path` resolves under `workspace_root` (refusing `..`-traversal escapes via `Path.resolve(strict=False).relative_to(ws)`), computes the body_sha256 from the inline content (refusing on declared-vs-computed mismatch), encodes utf-8 bytes-for-bytes, and writes the file in-process *after* the spec_versions INSERT and the engine-manifest workspace_metadata UPDATE succeed (so a constraint refusal never leaves an orphaned body file). Closes OI-S090-5: spec body authoring is now part of the substrate write transaction, replacing the Bash heredoc bypass that S090–S098 relied on when the PreToolUse hook refused Edit/Write/MultiEdit/NotebookEdit on substrate-canonical markdown. `prompt-development` v4 documents the new authoring path in §6 and the `closes_issue` effect contract in §5. `engine-v30` (session 102) ships migration 016 renaming `objects.citable_alias` → `objects.alias` and `issues.citable_alias` → `issues.alias` via `ALTER TABLE … RENAME COLUMN` (SQLite ≥ 3.25), with the T-22 alias-format trigger reissued so its RAISE message names the new column. The first migration attempt used the calibrated table-recreation dance and tripped FK-constraint-failed at COMMIT because dropping `objects` orphans dozens of referrers within the transaction; switching to RENAME COLUMN is non-destructive and auto-rewrites trigger-body column references (only string literals in RAISE need manual update). Closes OI-S101-1 (LOW): the column was the most-trafficked schema name and the rename removes the `o.citable_alias AS alias` indirection that several read-paths in `cli.py` had already adopted. CLI handlers and tests refactored hard-cut: payload field is now `alias`, not `citable_alias`. `engine-v31` (session 104) ships migrations 017 + 018 plus a new substrate-only submit kind. Migration 017 adds `sessions.kind` (operator-declared at open: coding/spec_only/meta; immutable post-open via T-29 mirroring T-23 slug pattern) and the `review_passes` table (one row per reviewer iteration; outcome ∈ clean/findings/nonconverged with operator-asserted `head_sha` for staleness audit). T-30 refuses close on a coding session unless the latest review_pass is outcome=clean or outcome=nonconverged with halt_issue_id NOT NULL. T-20 narrowed to admit the halt path so unresolved findings can be recorded honestly. Migration 018 grants `__cli__` insert capability on `review_passes`. The new `submit review-pass` handler closes the structural-enforcement gap OI-083-001 named (S083 D-2 introduced the coding review loop in methodology v3 but left enforcement as operator-policed). P-2 (codex/openai) cross-family perspective surfaced the staleness-protection requirement (now embodied as `head_sha`) and the manifest-hash-sealing alternative recorded as forward direction OI-S104-1. Halted-as-status-value deferred to OI-S104-3 because admitting it would require a calibrated rebuild of the heavily-FK'd `sessions` table; halt is currently encoded by the review_pass row's outcome on a `status='closed'` session. Methodology v4 supersedes v3 with the substrate-now-enforces sentence. `engine-v32` (session 109) subtracts `specifications/constraints.md` from the engine-definition file set (per S109 DV-S109-1). The document carried the six-properties LLM-agent rationale written after session 076; every constraint it named is structurally encoded in the substrate triggers and methodology kernel. Design rationale is permanently queryable via `bin/selvedge query` on the decisions substrate. Archive copy at `archive/specifications/constraints-v1.md`. Also backfills the substrate table enumeration in the manifest through migration 018 (closing FR-S107-11/FR-S108-10) and corrects frontmatter version drift carried since engine-v31 shipped without updating the file-body version number. `engine-v33` (session 110) ships migration 019 (`harvested_engine_feedback` ledger) plus a rewrite of `_me_harvest_ef` and `_me_status` to read peer engine_feedback rows substrate-direct via read-only SQLite URI with busy_timeout + query_only PRAGMAs. Per S110 D-1 (deliberation_id=10, P-1 anthropic, P-2 codex/openai cross-family converged on Option 1): capability-based peer schema detection over migration-version gating; per-row idempotency via ledger over --since-session coarse filter; SQLite native busy_timeout over Python retry loops. New structured errors E_PEER_BUSY/E_PEER_OPEN_FAILED/E_PEER_QUERY_FAILED/E_PEER_SCHEMA_UNSUPPORTED categorise transient lock contention vs permanent open/query/schema failures. P-2 caught the EF-S005-7 vs EF-S005-1 alias precision error (per-session ordinals, not absolute feedback_ids). Live harvest against selvedge-disaster-recovery imported all 9 peer engine_feedback rows including EF-S005-1 (cross-session provenance reframe, now EF-S110-7 in self-dev) on first run; second run skipped all 9 via ledger lookup.
+../../prompts/application.md:16:Then read the engine's active specifications (see `specifications/engine-manifest.md`). You do not read the source workspace's history; only the loaded engine and this workspace's record.
+../../prompts/application.md:24:- **Produce** writes external artefacts to `applications/NNN-<slug>/`. Frontmatter records `originating_session`, `artefact_kind`, `domain`, `engine_version`, validation label.
+../../selvedge/feedback_cmd.py:107:                    "facet": "engine_version",
+../../selvedge/feedback_cmd.py:109:                        f"{sopen['engine_version_at_open']} unchanged; "
+../../prompts/development.md:11:Then read whatever the session needs: `specifications/methodology.md`, the most recent close in `provenance/`, any open issues, engine-feedback. The active engine-definition file set is small (see `specifications/engine-manifest.md`).
+../../prompts/development.md:38:Kind is immutable post-open via T-29 — pick deliberately. The substrate auto-fills `workspace_id`, `mode`, `engine_version_at_open`, `session_no`, `workspace_session_no`, and the alias `S<NNN>`. The substrate refuses opening if another session is already open (E_SESSION_ALREADY_OPEN). T-23 makes slug immutable after open — pick it carefully.
+../../prompts/development.md:107:  "target_kind": "process_rule | spec_version | migration | issue | review_rule | engine_version | open_question",
+../../prompts/development.md:139:This is normal code/spec work. For specs, use `bin/selvedge submit spec-version`, `submit spec-section`, `submit spec-clause`. For migrations, write SQL files under `state/migrations/` and `bin/selvedge migrate --apply`. For CLI/code changes, edit Python under `selvedge/`.
+../../prompts/development.md:141:Spec body authoring goes through the substrate too (engine-v29 / OI-S090-5). `submit spec-version` accepts an optional `body_md` field carrying the inline body markdown; the handler validates the body_path against `workspace_root`, computes the sha256, and writes the file in-process *after* the row INSERT succeeds. Use `--payload @file.json` or `--payload -` (stdin) when the body is large; the handler refuses path-traversal escapes, empty/whitespace-only content, and any declared-vs-computed sha mismatch. The legacy two-step (write file via Bash heredoc, then submit with `body_sha256`) remains admitted but is no longer the only path.
+../../prompts/development.md:227:    {"facet": "engine_version", "text": "engine-vN to engine-vM."},
+../../prompts/development.md:239:The substrate auto-fills `engine_version_at_close` from `workspace_metadata.current_engine_version`. If the engine version bumped during the session, run an UPDATE on the metadata row before close (or include it in the version-bumping migration).
+../../selvedge/aliases.py:40:def _alias_for_spec(spec_id: str, version: int) -> str:
+../../selvedge/aliases.py:41:    return f"SPEC-{spec_id}-v{version}"
+../../specifications/workspace.md:3:version: 3
+../../specifications/workspace.md:18:- **Engine-definition** — the loadable engine. Same across workspaces (modulo version). Enumerated in `specifications/engine-manifest.md`.
+../../specifications/workspace.md:64:version: <integer>
+../../specifications/workspace.md:69:When a spec is revised in substance, the prior version is preserved (in `archive/specifications/` or under a versioned filename like `<spec>-v<N>.md` with `status: superseded`) and the new version takes its place at the canonical filename.
+../../specifications/workspace.md:90:Files no longer part of the active engine but preserved for historical reference live under `archive/`. Examples: superseded specification versions, retired tools, deliberation records that have outgrown context budgets.
+../../specifications/methodology.md:3:version: 6
+../../specifications/methodology.md:19:- **Selvedge engine** — the current loadable implementation. The set of files enumerated in `specifications/engine-manifest.md` at a given commit.
+../../specifications/methodology.md:24:The name *selvedge* — the self-finished edge of woven cloth — names three properties: self-hosting (the methodology evolves by running its own process on itself), multi-strand preservation (disagreement preserved as first-class, not melted into consensus), and durability by construction (versioned specs, recorded supersession, provenance as a first-class output).
+../../specifications/methodology.md:80:Out of scope (does **not** trigger the loop, though may still trigger the engine-definition close review below): version strings and banner text, comments and docstrings, file headers, README-equivalent prose, and shell-script changes that touch only documentation lines. The test is whether the change can alter execution behaviour. A change that only renames a variable for clarity but preserves identical behaviour is in scope (the reviewer can confirm equivalence quickly); a change that updates a comment or a version banner is not.
+../../specifications/methodology.md:101:When a session changes any engine-definition file (per `engine-manifest.md`) — including spec text, prompts, or the manifest itself — a separate reviewer audits the close at `04-review.md`, regardless of whether the change involved code. This is a single-pass audit, not a loop; its scope is whether the engine remains coherent after the change.
+../../specifications/methodology.md:119:- **Specifications evolve through new versions, not silent edits.** When a spec is revised, the prior version is preserved (in archive or under a versioned filename) and the new version takes its place at the canonical filename.
+../../selvedge/orient.py:24:            "SELECT s.workspace_session_no, s.slug, s.engine_version_at_close, s.closed_at, "
+../../selvedge/orient.py:113:            "SELECT spec_id, version, body_canonical_in_substrate FROM spec_versions "
+../../selvedge/orient.py:117:    # Recent supersessions: surface the rationale for spec_version status
+../../selvedge/orient.py:119:    # target_object_id resolves to a spec_version object. Effects without
+../../selvedge/orient.py:126:            "       ta.text AS decision_title, sv.spec_id, sv.version "
+../../selvedge/orient.py:132:            "JOIN spec_versions sv ON sv.spec_version_id=o.typed_row_id "
+../../selvedge/orient.py:133:            "WHERE de.effect_kind='supersedes' AND o.object_kind='spec_version' "
+../../selvedge/orient.py:219:                f"{r['engine_version_at_close']} | {r['closed_at']} |"
+../../selvedge/orient.py:287:        lines.append(f"| {r['spec_id']} | {r['version']} | {r['body_canonical_in_substrate']} |")
+../../selvedge/orient.py:302:            lines.append(f"| {alias} | {spec_id} | {r['version']} | {title} |")
+../../state/migrations/007-workspace-invariants.sql:3:-- Per operator: workspace_id, mode, current_engine_version are workspace-level
+../../state/migrations/007-workspace-invariants.sql:11:    ('current_engine_version', 'engine-v20');
+../../selvedge/monitor_external.py:120:            "engine_version_at_open, engine_version_at_close, opened_at, closed_at "
+../../selvedge/monitor_external.py:177:    for k in ("workspace_id", "mode", "current_engine_version"):
+../../selvedge/monitor_external.py:190:                f"{s['engine_version_at_open']} | {s.get('engine_version_at_close') or ''} | "
+../../state/migrations/022-opens-issue-target-issue-id-enforcement.sql:66: WHERE key = 'current_engine_version';
+../../selvedge/__init__.py:2:__version__ = "0.1.0"
+../../selvedge/submit/_helpers.py:25:# (currently just _submit_spec_version's body file write) need to read it
+../../selvedge/validate.py:28:        "SELECT spec_id, version, body_path, body_sha256 FROM spec_versions WHERE status='active'"
+../../selvedge/validate.py:38:                f"spec hash mismatch: {r['spec_id']}-v{r['version']} {sha[:8]} != {r['body_sha256'][:8]}"
+../../selvedge/export/session.py:28:        "       engine_version_at_open, engine_version_at_close, "
+../../selvedge/export/session.py:55:            f"engine_version_at_open: {sess['engine_version_at_open']}",
+../../selvedge/export/session.py:314:            f"engine_version_at_close: {sess['engine_version_at_close']}",
+../../selvedge/export/session.py:332:            "engine_version": "Engine version",
+../../state/migrations/006-workspace-metadata.sql:18:    ('schema_version_at_init', 'engine-v17');
+../../state/migrations/021-backfill-decision-targets-supports.sql:26:--     supersedes    x4: 2 engine-manifest version transitions, 1 DV-S104-3,
+../../state/migrations/021-backfill-decision-targets-supports.sql:75:    AND target_descriptor = 'OI-086-002 single-active spec_version per spec_id'
+../../state/migrations/021-backfill-decision-targets-supports.sql:107:-- effect: supersedes engine-manifest v23 -> v24 (DV-S090-1) targets v23 row
+../../state/migrations/021-backfill-decision-targets-supports.sql:108:UPDATE decision_effects SET target_object_id = (SELECT object_id FROM objects WHERE alias='SPEC-engine-manifest-v23')
+../../state/migrations/021-backfill-decision-targets-supports.sql:110:    AND target_descriptor = 'engine-manifest v23 to v24'
+../../state/migrations/021-backfill-decision-targets-supports.sql:121:-- effect: supersedes engine-manifest v24 -> v25 (DV-S091-1) targets v24 row
+../../state/migrations/021-backfill-decision-targets-supports.sql:122:UPDATE decision_effects SET target_object_id = (SELECT object_id FROM objects WHERE alias='SPEC-engine-manifest-v24')
+../../state/migrations/021-backfill-decision-targets-supports.sql:124:    AND target_descriptor = 'engine-manifest v24 to v25'
+../../state/migrations/021-backfill-decision-targets-supports.sql:180:    AND target_descriptor = 'constraints spec-version row status set to superseded'
+../../selvedge/submit/session.py:17:    engine_version_at_open are read from workspace_metadata; session_no is
+../../selvedge/submit/session.py:44:    eng_ver = _meta(conn, "current_engine_version")
+../../selvedge/submit/session.py:48:            "workspace_metadata missing one of: workspace_id, mode, current_engine_version",
+../../selvedge/submit/session.py:55:        "INSERT INTO sessions (session_no, workspace_session_no, slug, mode, workspace_id, engine_version_at_open, status, kind) "
+../../selvedge/submit/session.py:73:        "engine_version_at_open": eng_ver,
+../../selvedge/submit/session.py:82:    session and reads `current_engine_version` from workspace_metadata for
+../../selvedge/submit/session.py:83:    engine_version_at_close.
+../../selvedge/submit/session.py:96:    eng_ver = p.get("engine_version_at_close") or _meta(conn, "current_engine_version")
+../../selvedge/submit/session.py:100:            "engine_version_at_close not provided and workspace_metadata.current_engine_version missing",
+../../selvedge/submit/session.py:103:        "UPDATE sessions SET status='closed', engine_version_at_close=?, "
+../../selvedge/submit/session.py:107:    return {"session_id": sid, "engine_version_at_close": eng_ver}
+../../selvedge/subtract.py:29:        SELECT sv.spec_id, sv.version,
+../../selvedge/subtract.py:32:                  JOIN spec_versions sv2 ON sv2.object_id = o_target.object_id
+../../selvedge/subtract.py:39:                WHERE sv2.spec_version_id = sv.spec_version_id) AS last_cite_session_no
+../../selvedge/subtract.py:40:          FROM spec_versions sv
+../../selvedge/subtract.py:50:                {"spec": f"{r['spec_id']}-v{r['version']}", "last_cite_session_no": last, "gap": gap}
+../../state/tests/concurrency.sh:51:  "engine_version_at_open": "engine-v17",
+../../selvedge/paths.py:18:#   [SPEC-<spec_id>-v<N>]     spec_version
+../../state/tests/test_deliberation_kinds.py:416:            json.dumps({"session_no": 1, "engine_version_at_close": "engine-v18"}),
+../../state/tests/test_deliberation_kinds.py:552:            json.dumps({"session_no": 1, "engine_version_at_close": "engine-v17"}),
+../../state/tests/test_deliberation_kinds.py:607:            json.dumps({"session_no": 1, "engine_version_at_close": "engine-v17"}),
+../../selvedge/export/anchor.py:12:  - spec_versions superseded chain (via decision_effects.effect_kind=
+../../selvedge/export/anchor.py:13:    'supersedes' targeting spec_version objects)
+../../selvedge/export/anchor.py:194:    if kind == "spec_version":
+../../selvedge/export/anchor.py:196:            "SELECT sv.spec_id, sv.version, sv.status, "
+../../selvedge/export/anchor.py:198:            "FROM spec_versions sv JOIN sessions s ON s.session_id=sv.session_id "
+../../selvedge/export/anchor.py:199:            "WHERE sv.spec_version_id=?",
+../../selvedge/export/anchor.py:203:            return f"S{r['wno']:03d} {r['spec_id']} v{r['version']} [{r['status']}]"
+../../selvedge/export/anchor.py:448:    elif kind == "spec_version":
+../../selvedge/export/anchor.py:450:            "SELECT session_id FROM spec_versions WHERE spec_version_id=?", (pk,)
+../../selvedge/export/anchor.py:456:        oid = _anchor_object_id(conn, "spec_version", pk)
+../../selvedge/export/anchor.py:657:                "SELECT spec_version_id FROM spec_versions WHERE session_id=? ORDER BY spec_version_id",
+../../selvedge/export/anchor.py:660:                edges.append(("spec_created", "out", _node_from_kind_pk(conn, "spec_version", r["spec_version_id"])))
+../../selvedge/export/anchor.py:738:        "close_state_items (FR) ↔ forward_reference_dispositions, spec_version "
+../../selvedge/submit/spec.py:1:"""spec-version, spec-section, spec-clause handlers."""
+../../selvedge/submit/spec.py:21:def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+../../selvedge/submit/spec.py:22:    _check_role_capability(conn, role, "spec_versions", "insert")
+../../selvedge/submit/spec.py:72:    # T-03 (unique index t03_spec_versions_one_active) refuses two simultaneously-active
+../../selvedge/submit/spec.py:78:        _check_role_capability(conn, role, "spec_versions", "update")
+../../selvedge/submit/spec.py:83:            "SELECT sv.spec_version_id FROM spec_versions sv JOIN objects o ON o.object_id = sv.object_id WHERE o.object_id=?",
+../../selvedge/submit/spec.py:88:                "UPDATE spec_versions SET status='superseded' WHERE spec_version_id=?",
+../../selvedge/submit/spec.py:89:                (prev_row["spec_version_id"],),
+../../selvedge/submit/spec.py:93:        "INSERT INTO spec_versions (spec_id, version, body_path, body_sha256, status, session_id) "
+../../selvedge/submit/spec.py:95:        (p["spec_id"], p["version"], body_path, body_sha256, sess["session_id"]),
+../../selvedge/submit/spec.py:98:    alias = _alias_for_spec(p["spec_id"], p["version"])
+../../selvedge/submit/spec.py:99:    oid = _link_object(conn, "spec_versions", "spec_version_id", svid, "spec_version", alias)
+../../selvedge/submit/spec.py:106:            (oid, prev_oid, p.get("supersedes_reason_md") or "spec_version supersession"),
+../../selvedge/submit/spec.py:110:    # OI-S091: keep workspace_metadata.current_engine_version coherent with the
+../../selvedge/submit/spec.py:111:    # active engine-manifest spec_version. Migration 007 seeded the metadata at
+../../selvedge/submit/spec.py:113:    # the metadata had drifted four versions behind. Updates atomically inside
+../../selvedge/submit/spec.py:116:    if p["spec_id"] == "engine-manifest":
+../../selvedge/submit/spec.py:119:            "UPDATE workspace_metadata SET value = ? WHERE key = 'current_engine_version'",
+../../selvedge/submit/spec.py:120:            (f"engine-v{p['version']}",),
+../../selvedge/submit/spec.py:125:                f"workspace_metadata.current_engine_version row missing or duplicated "
+../../selvedge/submit/spec.py:141:    return {"spec_version_id": svid, "object_id": oid, "alias": alias, "refs": n_refs}
+../../selvedge/submit/spec.py:152:        "INSERT INTO spec_sections (spec_version_id, ord, heading_atom_id, intent_atom_id) "
+../../selvedge/submit/spec.py:154:        (p["spec_version_id"], p["ord"], head_aid, intent_aid),
+../../state/migrations/020-fix-stale-constraints-body-path.sql:1:-- Migration 020: fix stale body_path on superseded constraints v1 spec_versions row.
+../../state/migrations/020-fix-stale-constraints-body-path.sql:6:--   in spec_versions transitioned active -> superseded and the file was moved
+../../state/migrations/020-fix-stale-constraints-body-path.sql:14:--   spec_versions rows except for status active->superseded transitions and
+../../state/migrations/020-fix-stale-constraints-body-path.sql:30:--   AND version=1). Selector is by spec_id+version (not by spec_version_id) so
+../../state/migrations/020-fix-stale-constraints-body-path.sql:43:UPDATE spec_versions
+../../state/migrations/020-fix-stale-constraints-body-path.sql:46:   AND version = 1
+../../state/migrations/020-fix-stale-constraints-body-path.sql:51:BEFORE UPDATE ON spec_versions
+../../state/migrations/020-fix-stale-constraints-body-path.sql:57:    SELECT RAISE(ABORT, 'E_REFUSAL_T06: spec_version body belongs to a closed session');
+../../state/tests/test_monitor_external.py:83:            {"facet": "engine_version", "text": "engine-v31 to engine-v31, no bump."},
+../../state/tests/test_monitor_external.py:118:            {"facet": "engine_version", "text": "engine-v34 to engine-v34, no bump."},
+../../state/tests/test_monitor_external.py:206:    assert pkt["workspace_metadata"]["current_engine_version"].startswith("engine-v")
+../../selvedge/submit/__init__.py:58:from .spec import _submit_spec_clause, _submit_spec_section, _submit_spec_version
+../../selvedge/submit/__init__.py:65:    "spec-version": _submit_spec_version,
+../../state/tests/test_feedback_cmd.py:30:                        {"facet": "engine_version", "text": "engine-v17 unchanged in fixture close-record."},
+../../state/migrations/003-substrate-strict-write-path.sql:19:        'engine_version_note','close_summary','close_state_item'
+../../state/migrations/003-substrate-strict-write-path.sql:66:        'decision','spec_version','perspective','deliberation',
+../../state/migrations/003-substrate-strict-write-path.sql:96:    FROM objects o JOIN spec_versions sv ON sv.object_id = o.object_id
+../../state/migrations/003-substrate-strict-write-path.sql:100:    SELECT RAISE(ABORT, 'E_REFUSAL_T07: cite targets a superseded spec_version (set allow_superseded=1 with reason)');
+../../state/migrations/003-substrate-strict-write-path.sql:143:        'process_rule','spec_version','migration','issue','review_rule','engine_version','open_question'
+../../state/migrations/003-substrate-strict-write-path.sql:244:-- spec_versions gains body_canonical_in_substrate flag (additive ALTER ADD).
+../../state/migrations/003-substrate-strict-write-path.sql:246:ALTER TABLE spec_versions ADD COLUMN body_canonical_in_substrate INTEGER NOT NULL DEFAULT 0
+../../state/migrations/003-substrate-strict-write-path.sql:251:    spec_version_id     INTEGER NOT NULL REFERENCES spec_versions(spec_version_id),
+../../state/migrations/003-substrate-strict-write-path.sql:256:    UNIQUE (spec_version_id, ord)
+../../state/migrations/003-substrate-strict-write-path.sql:376:        'engine_version','validator_summary'
+../../state/migrations/003-substrate-strict-write-path.sql:411:    ('__cli__','spec_versions','update'),
+../../state/migrations/001-initial.sql:39:    engine_version_at_open  TEXT NOT NULL,
+../../state/migrations/001-initial.sql:40:    engine_version_at_close TEXT,
+../../state/migrations/001-initial.sql:63:        'decision','spec_version','perspective','deliberation',
+../../state/migrations/001-initial.sql:100:-- spec_versions: S2 files. T-03 unique-active; T-04 hash via CLI; T-07 supersession.
+../../state/migrations/001-initial.sql:102:CREATE TABLE spec_versions (
+../../state/migrations/001-initial.sql:103:    spec_version_id   INTEGER PRIMARY KEY,
+../../state/migrations/001-initial.sql:105:    version           INTEGER NOT NULL,
+../../state/migrations/001-initial.sql:111:    UNIQUE (spec_id, version)
+../../state/migrations/001-initial.sql:114:CREATE UNIQUE INDEX t03_spec_versions_one_active
+../../state/migrations/001-initial.sql:115:    ON spec_versions (spec_id) WHERE status = 'active';
+../../state/migrations/001-initial.sql:185:-- T-07a: cite of a superseded spec_version is refused unless allow_superseded=1.
+../../state/migrations/001-initial.sql:193:    FROM objects o JOIN spec_versions sv ON sv.object_id = o.object_id
+../../state/migrations/001-initial.sql:197:    SELECT RAISE(ABORT, 'E_REFUSAL_T07: cite targets a superseded spec_version (set allow_superseded=1 with reason)');
+../../state/migrations/001-initial.sql:299:    ('__cli__','spec_versions','insert'),
+../../state/migrations/001-initial.sql:300:    ('__cli__','spec_versions','update'),
+../../state/migrations/001-initial.sql:444:BEFORE UPDATE ON spec_versions
+../../state/migrations/001-initial.sql:449:                               -- non-status mutations of a closed-session spec_version row.
+../../state/migrations/001-initial.sql:453:    SELECT RAISE(ABORT, 'E_REFUSAL_T06: spec_version body belongs to a closed session');
+../../state/migrations/001-initial.sql:456:BEFORE DELETE ON spec_versions
+../../state/migrations/001-initial.sql:460:    SELECT RAISE(ABORT, 'E_REFUSAL_T06: spec_version belongs to a closed session');
+../../state/migrations/001-initial.sql:530:            WHEN 'spec_version' THEN (SELECT session_id FROM spec_versions WHERE spec_version_id = o.typed_row_id)
+../../state/migrations/001-initial.sql:558:            WHEN 'spec_version' THEN (SELECT session_id FROM spec_versions WHERE spec_version_id = o.typed_row_id)
+../../state/migrations/017-coding-review-loop-enforcement.sql:149:-- 6. Engine version bump.
+../../state/migrations/017-coding-review-loop-enforcement.sql:150:UPDATE workspace_metadata SET value='engine-v31' WHERE key='current_engine_version';
+../../state/migrations/025-reference-harness-iter2-fixes.sql:99:-- 3. Engine version bump.
+../../state/migrations/025-reference-harness-iter2-fixes.sql:103: WHERE key = 'current_engine_version';
+../../state/migrations/023-reference-harness-substrate-kind.sql:69:-- Engine version bump rationale:
+../../state/migrations/023-reference-harness-substrate-kind.sql:70:--   New substrate kind expands the workspace's vocabulary; current_engine_version
+../../state/migrations/023-reference-harness-substrate-kind.sql:72:--   records its engine-version-at-open coherently. workspace-experimental
+../../state/migrations/023-reference-harness-substrate-kind.sql:322:-- 9. Engine version bump.
+../../state/migrations/023-reference-harness-substrate-kind.sql:326: WHERE key = 'current_engine_version';
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:1:-- Migration 008: widen T-06 spec_versions UPDATE to admit body_canonical_in_substrate flips.
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:5:--   spec_versions.body_canonical_in_substrate (added in 003 by ALTER ADD, default 0)
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:8:--   re-decomposed three v2 rows (engine-manifest v20, prompt-application v2,
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:10:--   The existing T-06 trigger on spec_versions UPDATE refused: those rows were
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:15:--   sessions (the row's creation session may register a pointer-only spec_version
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:28:--   session 087 (spec_version_id IN (7, 8, 9)). Bounding the UPDATE to these IDs
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:41:-- version (not by spec_version_id) so derived workspaces with different rowids
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:43:UPDATE spec_versions
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:45: WHERE (spec_id = 'engine-manifest'    AND version = 20)
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:46:    OR (spec_id = 'prompt-application' AND version = 2)
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:47:    OR (spec_id = 'prompt-development' AND version = 2);
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:51:BEFORE UPDATE ON spec_versions
+../../state/migrations/008-widen-t06-for-canonical-flag.sql:57:    SELECT RAISE(ABORT, 'E_REFUSAL_T06: spec_version body belongs to a closed session');
+../../state/migrations/009-issues-table.sql:15:-- spec_versions FK chain creates when objects is dropped/recreated. If a future session
+../../state/tests/round_trip.sh:49:  "engine_version_at_open": "engine-v17",
+../../state/tests/round_trip.sh:53:step "write a prerequisite spec_version (target for the decision's [SPEC-…] ref)"
+../../state/tests/round_trip.sh:58:bin/selvedge submit spec-version --payload "{
+../../state/tests/round_trip.sh:61:  \"version\": 1,
+../../state/tests/round_trip.sh:64:}" >/dev/null && ok "spec-version SPEC-round-trip-spec-v1" || bad "spec-version"
+../../state/tests/round_trip.sh:81:  "engine_version_at_close": "engine-v17"
+../../state/migrations/026-effect-kind-admit-deletes.sql:100: WHERE key = 'current_engine_version';
+../../state/migrations/016-rename-citable-alias-to-alias.sql:16:--   referrers (spec_versions, decisions, perspectives, etc.) within the
+../../state/migrations/016-rename-citable-alias-to-alias.sql:32:-- Engine version: bumped to engine-v30 by handler dispatch when the
+../../state/migrations/016-rename-citable-alias-to-alias.sql:33:--   subsequent spec-version submission for engine-manifest v30 fires
+../../state/migrations/016-rename-citable-alias-to-alias.sql:34:--   (cf. migration 011 commentary; S091 _submit_spec_version
+../../state/tests/conftest.py:135:                    "engine_version_at_open": "engine-v17",
+../../state/migrations/014-closes-issue-wiring.sql:92: WHERE key = 'current_engine_version';
+../../state/migrations/024-reference-harness-hardening.sql:37:--   Updates workspace_metadata.current_engine_version. The pre-existing
+../../state/migrations/024-reference-harness-hardening.sql:288:-- 6. Engine version bump.
+../../state/migrations/024-reference-harness-hardening.sql:292: WHERE key = 'current_engine_version';
+../../state/tests/test_path_a_kinds.py:432:def _seed_spec_version(selvedge_cli) -> int:
+../../state/tests/test_path_a_kinds.py:441:            "submit", "spec-version", "--payload",
+../../state/tests/test_path_a_kinds.py:443:                "session_no": 1, "spec_id": "section-fixture", "version": 1,
+../../state/tests/test_path_a_kinds.py:449:    # The result returns alias; we want the spec_version_id.
+../../state/tests/test_path_a_kinds.py:454:            "SELECT spec_version_id FROM spec_versions WHERE spec_id='section-fixture' AND version=1"
+../../state/tests/test_path_a_kinds.py:462:    sv_id = _seed_spec_version(selvedge_cli)
+../../state/tests/test_path_a_kinds.py:468:                "spec_version_id": sv_id,
+../../state/tests/test_path_a_kinds.py:485:    sv_id = _seed_spec_version(selvedge_cli)
+../../state/tests/test_path_a_kinds.py:490:                "session_no": 1, "spec_version_id": sv_id, "ord": 1,
+../../state/tests/test_top_level_commands.py:40:            "workspace_id, engine_version_at_open, status) "
+../../state/tests/test_top_level_commands.py:53:    """An active spec_versions row whose body file has drifted should fail T-04."""
+../../state/tests/test_top_level_commands.py:63:                "submit", "spec-version", "--payload",
+../../state/tests/test_top_level_commands.py:66:                    "version": 1, "body_path": body_rel, "body_sha256": sha,
+../../state/migrations/011-engine-version-coherence.sql:1:-- Migration 011: workspace_metadata.current_engine_version coherence.
+../../state/migrations/011-engine-version-coherence.sql:5:--   Two sources of truth for engine version diverged across S087/S088/S089/S090:
+../../state/migrations/011-engine-version-coherence.sql:6:--     - spec_versions row for spec_id='engine-manifest' with status='active'
+../../state/migrations/011-engine-version-coherence.sql:7:--     - workspace_metadata row for key='current_engine_version'
+../../state/migrations/011-engine-version-coherence.sql:9:--   bump propagated to it structurally. By S091 open, spec_versions said
+../../state/migrations/011-engine-version-coherence.sql:10:--   engine-manifest v24 was active while the metadata still said engine-v23,
+../../state/migrations/011-engine-version-coherence.sql:12:--   in `selvedge/cli.py` _submit_spec_version (S091) now updates the metadata
+../../state/migrations/011-engine-version-coherence.sql:13:--   atomically when a spec_id='engine-manifest' row is inserted.
+../../state/migrations/011-engine-version-coherence.sql:19:--   2. One-time backfill: bring `current_engine_version` to 'engine-v24',
+../../state/migrations/011-engine-version-coherence.sql:20:--      the value implied by the active spec_versions row at S091 open. The
+../../state/migrations/011-engine-version-coherence.sql:37: WHERE key = 'current_engine_version';
+../../state/migrations/011-engine-version-coherence.sql:39:INSERT INTO schema_migrations (name, sha256) VALUES ('011-engine-version-coherence.sql', 'COMPUTED-AT-APPLY-TIME');
+../../state/tests/test_existing_kinds.py:45:                "workspace_id, engine_version_at_open, status) "
+../../state/tests/test_existing_kinds.py:108:            json.dumps({"session_no": 1, "engine_version_at_close": "engine-v17"}),
+../../state/tests/test_existing_kinds.py:168:def test_spec_version_hash_match_admitted(clean_substrate, selvedge_cli, tmp_path, db):
+../../state/tests/test_existing_kinds.py:179:                "spec-version",
+../../state/tests/test_existing_kinds.py:185:                        "version": 1,
+../../state/tests/test_existing_kinds.py:198:def test_spec_version_hash_mismatch_refused(clean_substrate, selvedge_cli):
+../../state/tests/test_existing_kinds.py:209:                "spec-version",
+../../state/tests/test_existing_kinds.py:215:                        "version": 1,
+../../state/tests/test_existing_kinds.py:229:def test_spec_version_supersedes_flips_prev_to_superseded(clean_substrate, selvedge_cli, db):
+../../state/tests/test_existing_kinds.py:246:                "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:249:                    "version": 1, "body_path": v1_rel, "body_sha256": v1_sha,
+../../state/tests/test_existing_kinds.py:258:                "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:261:                    "version": 2, "body_path": v2_rel, "body_sha256": v2_sha,
+../../state/tests/test_existing_kinds.py:271:            "SELECT version, status FROM spec_versions WHERE spec_id='supersede-fixture' ORDER BY version"
+../../state/tests/test_existing_kinds.py:273:        assert [(r["version"], r["status"]) for r in rows] == [(1, "superseded"), (2, "active")]
+../../state/tests/test_existing_kinds.py:280:    """OI-S091 regression: when spec_id='engine-manifest', the handler must
+../../state/tests/test_existing_kinds.py:281:    propagate the new version into workspace_metadata.current_engine_version
+../../state/tests/test_existing_kinds.py:283:    propagate, leaving the metadata four versions stale at S091 open."""
+../../state/tests/test_existing_kinds.py:286:    body = body_dir / "engine-manifest-coherence.md"
+../../state/tests/test_existing_kinds.py:287:    body.write_text("engine-manifest coherence fixture\n")
+../../state/tests/test_existing_kinds.py:292:        "SELECT value FROM workspace_metadata WHERE key='current_engine_version'"
+../../state/tests/test_existing_kinds.py:294:    assert before is not None, "fixture should have current_engine_version seeded"
+../../state/tests/test_existing_kinds.py:299:                "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:301:                    "session_no": 1, "spec_id": "engine-manifest",
+../../state/tests/test_existing_kinds.py:302:                    "version": 999, "body_path": body_rel, "body_sha256": sha,
+../../state/tests/test_existing_kinds.py:309:            "SELECT value FROM workspace_metadata WHERE key='current_engine_version'"
+../../state/tests/test_existing_kinds.py:312:            f"expected current_engine_version='engine-v999' after engine-manifest bump, "
+../../state/tests/test_existing_kinds.py:316:        # Non-engine-manifest specs must NOT touch the metadata. Submit a
+../../state/tests/test_existing_kinds.py:325:                    "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:328:                        "version": 1, "body_path": other_rel, "body_sha256": other_sha,
+../../state/tests/test_existing_kinds.py:334:                "SELECT value FROM workspace_metadata WHERE key='current_engine_version'"
+../../state/tests/test_existing_kinds.py:337:                f"non-engine-manifest spec must not change current_engine_version; got {still['value']!r}"
+../../state/tests/test_existing_kinds.py:345:def test_spec_version_inline_body_md_writes_file_and_inserts_row(clean_substrate, selvedge_cli, db):
+../../state/tests/test_existing_kinds.py:358:                "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:361:                    "version": 1, "body_path": body_rel,
+../../state/tests/test_existing_kinds.py:370:            "SELECT body_sha256 FROM spec_versions WHERE spec_id='inline-fixture' AND version=1"
+../../state/tests/test_existing_kinds.py:377:def test_spec_version_inline_body_md_sha_mismatch_refused(clean_substrate, selvedge_cli):
+../../state/tests/test_existing_kinds.py:388:                "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:391:                    "version": 1, "body_path": body_rel,
+../../state/tests/test_existing_kinds.py:405:def test_spec_version_inline_body_md_empty_refused(clean_substrate, selvedge_cli):
+../../state/tests/test_existing_kinds.py:408:            "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:411:                "version": 1, "body_path": "state/tests/spec-bodies/empty.md",
+../../state/tests/test_existing_kinds.py:421:def test_spec_version_inline_body_md_whitespace_only_refused(clean_substrate, selvedge_cli):
+../../state/tests/test_existing_kinds.py:425:            "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:428:                "version": 1, "body_path": "state/tests/spec-bodies/ws.md",
+../../state/tests/test_existing_kinds.py:438:def test_spec_version_inline_body_md_path_traversal_refused(clean_substrate, selvedge_cli):
+../../state/tests/test_existing_kinds.py:442:            "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:445:                "version": 1, "body_path": "../escape.md",
+../../state/tests/test_existing_kinds.py:456:def test_spec_version_file_read_path_traversal_refused(clean_substrate, selvedge_cli):
+../../state/tests/test_existing_kinds.py:461:            "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:464:                "version": 1, "body_path": "../etc-passwd-fixture.md",
+../../state/tests/test_existing_kinds.py:474:def test_spec_version_inline_body_md_no_orphan_file_on_constraint_refusal(clean_substrate, selvedge_cli, db):
+../../state/tests/test_existing_kinds.py:492:                "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:495:                    "version": 1, "body_path": seed_rel, "body_sha256": seed_sha,
+../../state/tests/test_existing_kinds.py:500:        # Second submit — same spec_id+version. T-03's unique partial index on
+../../state/tests/test_existing_kinds.py:501:        # active rows OR the unique-(spec_id,version) constraint refuses; the
+../../state/tests/test_existing_kinds.py:505:                "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:508:                    "version": 1, "body_path": body_rel,
+../../state/tests/test_existing_kinds.py:521:def test_spec_version_two_active_refused_by_t03(clean_substrate, selvedge_cli, db):
+../../state/tests/test_existing_kinds.py:534:                "submit", "spec-version", "--payload",
+../../state/tests/test_existing_kinds.py:537:                    "version": 1, "body_path": body_rel, "body_sha256": sha,
+../../state/tests/test_existing_kinds.py:547:                    "INSERT INTO spec_versions (spec_id, version, body_path, body_sha256, status, session_id) "
+../../state/tests/test_existing_kinds.py:581:            json.dumps({"session_no": 1, "engine_version_at_close": "engine-v17"}),
+../../state/tests/test_existing_kinds.py:595:            json.dumps({"session_no": 1, "engine_version_at_close": "engine-v17"}),
+../../state/tests/test_existing_kinds.py:631:            json.dumps({"session_no": 1, "engine_version_at_close": "engine-v17"}),
+
+exec
+/bin/zsh -lc "sed -n '1,170p' ../../selvedge/submit/spec.py" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+"""spec-version, spec-section, spec-clause handlers."""
+
+from __future__ import annotations
+
+import hashlib
+import os
+import sqlite3
+
+from ..aliases import _alias_for_spec, _resolve_alias, _resolve_alias_to_object_id
+from ..errors import SelvedgeError
+from ..paths import workspace_root
+from ._helpers import (
+    _atom_session_id,
+    _check_role_capability,
+    _insert_atom,
+    _link_object,
+    is_dry_run,
+)
+
+
+def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "spec_versions", "insert")
+    sess = conn.execute(
+        "SELECT session_id FROM sessions WHERE session_no=? AND status='open'",
+        (p["session_no"],),
+    ).fetchone()
+    if sess is None:
+        raise SelvedgeError("E_NOT_FOUND", f"open session_no={p['session_no']}")
+    body_path = p["body_path"]
+    real_path = workspace_root() / body_path
+    ws = workspace_root().resolve()
+    try:
+        real_path.resolve(strict=False).relative_to(ws)
+    except (ValueError, OSError) as e:
+        raise SelvedgeError(
+            "E_VALIDATION",
+            f"body_path escapes workspace: {body_path} ({e})",
+        )
+    body_md = p.get("body_md")
+    pending_write_bytes: bytes | None = None
+    if body_md is not None:
+        # OI-S090-5: substrate-driven authoring path. Handler writes body_path
+        # in-process from the inline content. In-process Python file IO is
+        # outside the PreToolUse hook scope, so this avoids the Bash heredoc
+        # bypass prior sessions used.
+        if not isinstance(body_md, str) or not body_md.strip():
+            raise SelvedgeError(
+                "E_VALIDATION",
+                "body_md must be a non-empty string with non-whitespace content",
+            )
+        body_bytes = body_md.encode("utf-8")
+        computed_sha = hashlib.sha256(body_bytes).hexdigest()
+        if (declared := p.get("body_sha256")) and declared != computed_sha:
+            raise SelvedgeError(
+                "E_REFUSAL_T04",
+                f"body_md sha mismatch: declared {declared[:8]}…, body_md is {computed_sha[:8]}…",
+            )
+        body_sha256 = computed_sha
+        pending_write_bytes = body_bytes
+    else:
+        body_sha256 = p["body_sha256"]
+        if not real_path.exists():
+            raise SelvedgeError("E_REFUSAL_T04", f"spec body not found at {body_path}")
+        real_sha = hashlib.sha256(real_path.read_bytes()).hexdigest()
+        if real_sha != body_sha256:
+            raise SelvedgeError(
+                "E_REFUSAL_T04",
+                f"body_sha256 mismatch: declared {body_sha256[:8]}…, file is {real_sha[:8]}…",
+            )
+
+    # OI-S090-4: flip prev active to superseded BEFORE inserting the new active row.
+    # T-03 (unique index t03_spec_versions_one_active) refuses two simultaneously-active
+    # rows for the same spec_id; insert-then-flip tripped on every supersession in S087/S088/S089.
+    prev_oid = None
+    prev_row = None
+    if prev := p.get("supersedes"):
+        _check_role_capability(conn, role, "refs", "insert")
+        _check_role_capability(conn, role, "spec_versions", "update")
+        prev_oid = _resolve_alias(conn, prev)
+        if prev_oid is None:
+            raise SelvedgeError("E_REFUSAL_T01", f"unresolved supersedes alias [{prev}]")
+        prev_row = conn.execute(
+            "SELECT sv.spec_version_id FROM spec_versions sv JOIN objects o ON o.object_id = sv.object_id WHERE o.object_id=?",
+            (prev_oid,),
+        ).fetchone()
+        if prev_row:
+            conn.execute(
+                "UPDATE spec_versions SET status='superseded' WHERE spec_version_id=?",
+                (prev_row["spec_version_id"],),
+            )
+
+    cur = conn.execute(
+        "INSERT INTO spec_versions (spec_id, version, body_path, body_sha256, status, session_id) "
+        "VALUES (?,?,?,?, 'active', ?)",
+        (p["spec_id"], p["version"], body_path, body_sha256, sess["session_id"]),
+    )
+    svid = cur.lastrowid
+    alias = _alias_for_spec(p["spec_id"], p["version"])
+    oid = _link_object(conn, "spec_versions", "spec_version_id", svid, "spec_version", alias)
+
+    n_refs = 0
+    if prev_oid is not None:
+        conn.execute(
+            "INSERT INTO refs (source_object_id, target_object_id, relation, allow_superseded, reason_md) "
+            "VALUES (?,?, 'supersedes', 1, ?)",
+            (oid, prev_oid, p.get("supersedes_reason_md") or "spec_version supersession"),
+        )
+        n_refs += 1
+
+    # OI-S091: keep workspace_metadata.current_engine_version coherent with the
+    # active engine-manifest spec_version. Migration 007 seeded the metadata at
+    # engine-v20; bumps in S087/S088/S089/S090 did not propagate, so by S091
+    # the metadata had drifted four versions behind. Updates atomically inside
+    # the same transaction as the insert. Migration 011 seeded the __cli__
+    # UPDATE capability on workspace_metadata.
+    if p["spec_id"] == "engine-manifest":
+        _check_role_capability(conn, role, "workspace_metadata", "update")
+        upd = conn.execute(
+            "UPDATE workspace_metadata SET value = ? WHERE key = 'current_engine_version'",
+            (f"engine-v{p['version']}",),
+        )
+        if upd.rowcount != 1:
+            raise SelvedgeError(
+                "E_VALIDATION",
+                f"workspace_metadata.current_engine_version row missing or duplicated "
+                f"(rowcount={upd.rowcount}); migrations may be incomplete",
+            )
+
+    # Inline body authoring (OI-S090-5): write the file only after every DB
+    # constraint above has cleared. If a constraint refuses, the rollback in
+    # write_tx leaves no row — and now leaves no orphaned file either. If the
+    # FS write itself raises, the same rollback unwinds the row insert. Under
+    # --dry-run the transaction will be rolled back, so we must also suppress
+    # the FS write to keep the workspace clean (EF-S118-1).
+    if pending_write_bytes is not None and not is_dry_run():
+        real_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = real_path.with_suffix(real_path.suffix + ".tmp")
+        tmp_path.write_bytes(pending_write_bytes)
+        os.replace(tmp_path, real_path)
+
+    return {"spec_version_id": svid, "object_id": oid, "alias": alias, "refs": n_refs}
+
+
+def _submit_spec_section(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "spec_sections", "insert")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    head_aid = _insert_atom(conn, role, sess_id, "title", p["heading"])
+    intent_aid = None
+    if p.get("intent"):
+        intent_aid = _insert_atom(conn, role, sess_id, "spec_section_intent", p["intent"])
+    cur = conn.execute(
+        "INSERT INTO spec_sections (spec_version_id, ord, heading_atom_id, intent_atom_id) "
+        "VALUES (?,?,?,?)",
+        (p["spec_version_id"], p["ord"], head_aid, intent_aid),
+    )
+    ssid = cur.lastrowid
+    oid = _link_object(conn, "spec_sections", "spec_section_id", ssid, "spec_section", None)
+    return {"spec_section_id": ssid, "object_id": oid}
+
+
+def _submit_spec_clause(conn: sqlite3.Connection, p: dict, role: str) -> dict:
+    _check_role_capability(conn, role, "spec_clauses", "insert")
+    sess_id = _atom_session_id(conn, p.get("session_no"))
+    aid = _insert_atom(conn, role, sess_id, "spec_clause", p["clause"])
+    src_did = None
+    if p.get("source_decision_alias"):
+        oid = _resolve_alias_to_object_id(conn, p["source_decision_alias"])
+        row = conn.execute(
+            "SELECT decision_v2_id FROM decisions_v2 WHERE object_id=?", (oid,)
+        ).fetchone()
+
+exec
+/bin/zsh -lc 'rg -n "engine-v35|engine-v36|engine-v37|engine-v38|version: 35|version: 36|version: 37|version: 38|Session 12[0-9]|Session 13[0-9]" ../../specifications ../../prompts ../../provenance ../../state/migrations' in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+../../state/migrations/024-reference-harness-hardening.sql:2:-- engine-v35 → engine-v36 (S125 review-finding remediation).
+../../state/migrations/024-reference-harness-hardening.sql:291:   SET value = 'engine-v36'
+../../state/migrations/026-effect-kind-admit-deletes.sql:2:-- engine-v37 → engine-v38 (S129 closing OI-S104-2).
+../../state/migrations/026-effect-kind-admit-deletes.sql:99:   SET value = 'engine-v38'
+../../state/migrations/025-reference-harness-iter2-fixes.sql:2:-- engine-v36 → engine-v37 (S125 T-30 review iteration 2).
+../../state/migrations/025-reference-harness-iter2-fixes.sql:102:   SET value = 'engine-v37'
+../../provenance/127-ef-s126-1-fabricated-cadence-correction/03-close.md:4:engine_version_at_close: engine-v37
+../../provenance/127-ef-s126-1-fabricated-cadence-correction/03-close.md:17:- engine-v37 to engine-v37 (no version bump; meta-only correction).
+../../provenance/127-ef-s126-1-fabricated-cadence-correction/00-assessment.md:4:engine_version_at_open: engine-v37
+../../state/migrations/023-reference-harness-substrate-kind.sql:2:-- engine-v34 → engine-v35 (S125 closing OI-S124-2 per DV-S124-2).
+../../state/migrations/023-reference-harness-substrate-kind.sql:325:   SET value = 'engine-v35'
+../../provenance/128-fr-null-state-annotation/00-assessment.md:4:engine_version_at_open: engine-v37
+../../provenance/128-fr-null-state-annotation/03-close.md:4:engine_version_at_close: engine-v37
+../../provenance/128-fr-null-state-annotation/03-close.md:17:- engine-v37 unchanged; pure orient-rendering refinement, no spec or migration.
+../../provenance/125-reference-harness-substrate-kind/03-close.md:4:engine_version_at_close: engine-v37
+../../provenance/125-reference-harness-substrate-kind/03-close.md:13:S125 ships reference_harness substrate kind closing OI-S124-2; engine-v34 to engine-v37 across three migrations with clean iteration-3 review.
+../../provenance/125-reference-harness-substrate-kind/03-close.md:17:- engine-v34 to engine-v37.
+../../provenance/125-reference-harness-substrate-kind/03-close.md:27:- All 198 pytest cases pass on iter-3 head; engine-version-at-close is engine-v37.
+../../provenance/125-reference-harness-substrate-kind/02-decisions.md:9:## D-1. Ship reference_harness substrate kind (engine-v37) closing OI-S124-2 with workspace-experimental scope and P-2 guardrails.
+../../provenance/125-reference-harness-substrate-kind/02-decisions.md:25:- bumps_engine engine-v34 to engine-v37
+../../provenance/130-temporal-claim-grounding/03-close.md:4:engine_version_at_close: engine-v38
+../../provenance/130-temporal-claim-grounding/03-close.md:17:- engine-v38 unchanged; prompt-development v7 to v8 only — discipline-clause addition with no migration or handler change.
+../../provenance/130-temporal-claim-grounding/00-assessment.md:4:engine_version_at_open: engine-v38
+../../provenance/131-restore-deliberation-shape/03-close.md:4:engine_version_at_close: engine-v38
+../../provenance/131-restore-deliberation-shape/03-close.md:17:- engine-v38 unchanged; bumps_engine effect in DV-S131-1 deferred to future calibration.
+../../provenance/131-restore-deliberation-shape/03-close.md:27:- engine-manifest at v34, current_engine_version engine-v38, prompt-development now v9, DV-S131-1 closed, FR-S130-8 disposed.
+../../provenance/131-restore-deliberation-shape/03-close.md:33:- Optionally calibrate engine-v38 to engine-v39 via migration with engine-manifest narrative addendum honoring DV-S131-1 effect.
+../../provenance/131-restore-deliberation-shape/00-assessment.md:4:engine_version_at_open: engine-v38
+../../provenance/131-restore-deliberation-shape/02-decisions.md:25:- bumps_engine engine-v38 to engine-v39
+../../provenance/126-harvested-ef-disaster-recovery-triage/03-close.md:4:engine_version_at_close: engine-v37
+../../provenance/126-harvested-ef-disaster-recovery-triage/03-close.md:17:- engine-v37 to engine-v37 (no version bump; meta-only session).
+../../provenance/126-harvested-ef-disaster-recovery-triage/00-assessment.md:4:engine_version_at_open: engine-v37
+../../provenance/129-widen-effect-kind-deletes/03-close.md:4:engine_version_at_close: engine-v38
+../../provenance/129-widen-effect-kind-deletes/03-close.md:13:S129 ships engine-v38 widening decision_effects.effect_kind CHECK to admit deletes (migration 026) closing OI-S104-2 on iter-1 clean.
+../../provenance/129-widen-effect-kind-deletes/03-close.md:17:- engine-v37 to engine-v38.
+../../provenance/129-widen-effect-kind-deletes/00-assessment.md:4:engine_version_at_open: engine-v37
+../../provenance/129-widen-effect-kind-deletes/00-assessment.md:13:S129 opens on engine-v37; OI-S104-2 effect_kind enum gap surfaced four sessions ago remains unaddressed and queued via FR-S104-13/FR-S120-8/FR-S121-9/FR-S125-11.
+../../provenance/129-widen-effect-kind-deletes/00-assessment.md:18:2. Bump current_engine_version engine-v37 to engine-v38 in the same migration.
+../../provenance/129-widen-effect-kind-deletes/02-decisions.md:9:## D-1. Widen decision_effects.effect_kind CHECK to admit deletes (engine-v37 to engine-v38) closing OI-S104-2.
+../../provenance/129-widen-effect-kind-deletes/02-decisions.md:22:- bumps_engine engine-v37 to engine-v38 via current_engine_version UPDATE in migration 026
+
+exec
+/bin/zsh -lc "bin/selvedge query \"SELECT key, value FROM workspace_metadata WHERE key='current_engine_version'\"" in /Users/ericmccowan/Development/complex-systems-engine
+exec
+/bin/zsh -lc "bin/selvedge query \"SELECT spec_id, version, status FROM spec_versions WHERE spec_id IN ('engine-manifest','methodology','prompt-development','prompt-application') ORDER BY spec_id, version\"" in /Users/ericmccowan/Development/complex-systems-engine
+ exited 1 in 0ms:
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/ericmccowan/Development/complex-systems-engine/selvedge/cli.py", line 214, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/ericmccowan/Development/complex-systems-engine/selvedge/cli.py", line 207, in main
+    return args.fn(args)
+           ~~~~~~~^^^^^^
+  File "/Users/ericmccowan/Development/complex-systems-engine/selvedge/query.py", line 14, in cmd_query
+    rows = conn.execute(args.sql).fetchall()
+           ~~~~~~~~~~~~^^^^^^^^^^
+sqlite3.OperationalError: unable to open database file
+
+ exited 1 in 0ms:
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/ericmccowan/Development/complex-systems-engine/selvedge/cli.py", line 214, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/ericmccowan/Development/complex-systems-engine/selvedge/cli.py", line 207, in main
+    return args.fn(args)
+           ~~~~~~~^^^^^^
+  File "/Users/ericmccowan/Development/complex-systems-engine/selvedge/query.py", line 14, in cmd_query
+    rows = conn.execute(args.sql).fetchall()
+           ~~~~~~~~~~~~^^^^^^^^^^
+sqlite3.OperationalError: unable to open database file
+
+exec
+/bin/zsh -lc "sed -n '1,180p' ../../selvedge/connection.py" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+exec
+/bin/zsh -lc "sed -n '1,140p' ../../selvedge/paths.py" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+"""Workspace layout, environment overrides, and shared regex/constants."""
+
+from __future__ import annotations
+
+import os
+import re
+from pathlib import Path
+
+
+WORKSPACE_ROOT_ENV = "SELVEDGE_WORKSPACE"
+DEFAULT_BUSY_TIMEOUT_MS = 5000
+DEFAULT_RETRY_BUDGET = 5
+DEFAULT_RETRY_BASE_MS = 50
+DEFAULT_LEASE_SECONDS = 300
+
+# Citable-alias parser (T-01 source). Recognised forms:
+#   [D-S<NNN>-<N>]            decision N in session NNN
+#   [SPEC-<spec_id>-v<N>]     spec_version
+#   [P-<deliberation>-<label>] perspective
+#   [C-S<NNN>-<N>]            commitment
+#   [EF-S<NNN>-<N>]           engine_feedback
+ALIAS_RE = re.compile(
+    r"\[("
+    r"D-S\d+-\d+"
+    r"|SPEC-[A-Za-z0-9_\-]+-v\d+"
+    r"|P-\d+-[A-Za-z0-9_\-]+"
+    r"|C-S\d+-\d+"
+    r"|EF-S\d+-\d+"
+    r")\]"
+)
+
+# Issue-alias regex used by orient FR-rot annotation. Matches the three
+# alias shapes in current use: OI-NNN, OI-NNN-NNN, OI-S<wno>-<seq>.
+FR_ISSUE_CITE_RE = re.compile(r"\bOI-(?:S\d{3}-\d+|\d{3}(?:-\d+)?)\b")
+
+# Any citable alias form, used by orient null-state detection to decide
+# whether an FR text carries a stable referent. Excludes bare S<NNN>
+# session refs since those appear in casual prose without binding to
+# decisions/issues/etc.
+FR_ANY_ALIAS_RE = re.compile(
+    r"\b("
+    r"DV-S\d+-\d+"
+    r"|D-S\d+-\d+"
+    r"|EF-S\d+-\d+"
+    r"|OI-(?:S\d+-\d+|\d+(?:-\d+)?)"
+    r"|SPEC-[A-Za-z0-9_\-]+-v\d+"
+    r"|FR-S\d+-\d+"
+    r")\b"
+)
+
+# Phrase pattern that flags FR text as a queue-selector placeholder
+# (no specific actionable referent, just "do next thing from queue").
+# An FR is null-state iff this matches AND FR_ANY_ALIAS_RE finds zero cites.
+FR_NULL_STATE_RE = re.compile(
+    r"\b(?:from\s+(?:the\s+)?orient\s+queue"
+    r"|next\s+highest-priority"
+    r"|next\s+FR/OI)\b",
+    re.IGNORECASE,
+)
+
+# Anchor-trace alias parsing for derived FR-S<wno>-<seq> identifiers
+# (close_state_items.facet='next_session_should' rows have no objects.alias).
+ANCHOR_FR_RE = re.compile(r"^FR-S(\d+)-(\d+)$")
+ANCHOR_DELIB_RE = re.compile(r"^DELIB-(\d+)$")
+# Generic alias-citation scanner used to follow forward-reference disposition
+# notes ("addressed by DV-S116-1 (...)") into the trace.
+ANCHOR_CITE_RE = re.compile(
+    r"\b("
+    r"DV-S\d+-\d+"
+    r"|D-S\d+-\d+"
+    r"|EF-S\d+-\d+"
+    r"|OI-(?:S\d+-\d+|\d+(?:-\d+)?)"
+    r"|SPEC-[A-Za-z0-9_\-]+-v\d+"
+    r"|FR-S\d+-\d+"
+    r"|S\d{3}"
+    r")\b"
+)
+
+ANCHOR_TRACE_DEFAULT_DEPTH = 3
+ANCHOR_TRACE_HARD_CAP_DEPTH = 5
+
+
+def workspace_root() -> Path:
+    from .errors import SelvedgeError
+    if root := os.environ.get(WORKSPACE_ROOT_ENV):
+        return Path(root).resolve()
+    here = Path.cwd().resolve()
+    for candidate in [here, *here.parents]:
+        if (candidate / "MODE.md").exists():
+            return candidate
+    raise SelvedgeError("E_NO_WORKSPACE", f"no MODE.md found from {here} upward; set ${WORKSPACE_ROOT_ENV}")
+
+
+def db_path() -> Path:
+    if override := os.environ.get("SELVEDGE_DB_PATH"):
+        return Path(override).resolve()
+    return workspace_root() / "state" / "selvedge.sqlite"
+
+
+def migrations_dir() -> Path:
+    if override := os.environ.get("SELVEDGE_MIGRATIONS_DIR"):
+        return Path(override).resolve()
+    return workspace_root() / "state" / "migrations"
+
+ succeeded in 0ms:
+"""Single-writer connection wrapper with BEGIN IMMEDIATE write_tx + retry."""
+
+from __future__ import annotations
+
+import sqlite3
+import time
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional
+
+from .errors import SelvedgeError, _refusal_from_sqlite
+from .paths import DEFAULT_BUSY_TIMEOUT_MS, DEFAULT_RETRY_BASE_MS, DEFAULT_RETRY_BUDGET, db_path
+
+
+@dataclass
+class Conn:
+    conn: sqlite3.Connection
+
+    @classmethod
+    def open(cls, path: Optional[Path] = None) -> "Conn":
+        path = path or db_path()
+        if not path.parent.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)
+        conn = sqlite3.connect(str(path), isolation_level=None, timeout=DEFAULT_BUSY_TIMEOUT_MS / 1000)
+        conn.row_factory = sqlite3.Row
+        conn.execute(f"PRAGMA busy_timeout = {DEFAULT_BUSY_TIMEOUT_MS}")
+        conn.execute("PRAGMA foreign_keys = ON")
+        return cls(conn)
+
+    def close(self) -> None:
+        self.conn.close()
+
+    def write_tx(
+        self,
+        fn,
+        *,
+        retry_budget: int = DEFAULT_RETRY_BUDGET,
+        retry_base_ms: int = DEFAULT_RETRY_BASE_MS,
+        dry_run: bool = False,
+    ):
+        # dry_run wraps the same BEGIN IMMEDIATE / handler / ... pattern but
+        # ROLLBACKs at the end of a successful handler invocation instead of
+        # COMMITting. Statement-time triggers and CHECK constraints fire as
+        # normal during fn(self.conn), so any RAISE(ABORT) refusal still
+        # propagates as a SelvedgeError. The substrate has no DEFERRABLE
+        # constraints, so nothing is deferred to commit time. (EF-S118-1.)
+        attempt = 0
+        while True:
+            try:
+                self.conn.execute("BEGIN IMMEDIATE")
+                try:
+                    result = fn(self.conn)
+                    if dry_run:
+                        self.conn.execute("ROLLBACK")
+                    else:
+                        self.conn.execute("COMMIT")
+                    return result
+                except Exception:
+                    try:
+                        self.conn.execute("ROLLBACK")
+                    except sqlite3.OperationalError:
+                        pass
+                    raise
+            except (sqlite3.OperationalError, sqlite3.DatabaseError) as e:
+                err = _refusal_from_sqlite(e)
+                if err.code == "E_WRITE_BUSY" and attempt < retry_budget:
+                    sleep_ms = retry_base_ms * (2 ** attempt)
+                    time.sleep(sleep_ms / 1000)
+                    attempt += 1
+                    continue
+                raise err from e
+            except sqlite3.IntegrityError as e:
+                raise _refusal_from_sqlite(e) from e
+
+exec
+/bin/zsh -lc 'ls -l ../../state/selvedge.sqlite ../../bin/selvedge' in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+-rwxr-xr-x@ 1 ericmccowan  staff      417 Apr 28 12:45 ../../bin/selvedge
+-rw-r--r--@ 1 ericmccowan  staff  2809856 Apr 30 09:30 ../../state/selvedge.sqlite
+
+exec
+/bin/zsh -lc "sqlite3 ../../state/selvedge.sqlite \"SELECT key, value FROM workspace_metadata WHERE key='current_engine_version'; SELECT spec_id, version, status FROM spec_versions WHERE spec_id IN ('engine-manifest','methodology','prompt-development','prompt-application') ORDER BY spec_id, version;\"" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ exited 14 in 0ms:
+Error: in prepare, unable to open database file (14)
+
+exec
+/bin/zsh -lc "sqlite3 \"file:../../state/selvedge.sqlite?mode=ro\" \"SELECT key, value FROM workspace_metadata WHERE key='current_engine_version'; SELECT spec_id, version, status FROM spec_versions WHERE spec_id IN ('engine-manifest','methodology','prompt-development','prompt-application') ORDER BY spec_id, version;\"" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ exited 14 in 0ms:
+Error: in prepare, unable to open database file (14)
+
+exec
+/bin/zsh -lc "sed -n '1,120p' ../../provenance/131-restore-deliberation-shape/02-decisions.md" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+---
+session: 131
+title: restore-deliberation-shape — decisions
+generated_by: selvedge export
+---
+
+# Decisions
+
+## D-1. Restore deliberation shape: prompt-development v8 to v9 prose adds floor-of-3, adversarial-required, named-not-rostered, brief immutability, synthesis disciplines
+
+**Kind:** substantive.  **Outcome:** adopt spec_version `prompt-development`.
+
+**Why.**
+
+- (deliberation) S131 six-perspective cross-family deliberation converged C-1 through C-7: floor 3, adversarial required, named-not-rostered, brief immutability, synthesis disciplines, no MAD-v4 restoration. [P-17-P-1]
+- (engine_feedback) EF-S124-1 names four-perspective shape as load-bearing: dreamer persona produced reference_harness substantive design the two-perspective default would have missed. [EF-S124-1]
+- (operator_directive) Operator chose option 2 prose-only on the 3-3 enforcement-layer split per S131 conversation; smallest change preserving agent autonomy as substrate already does for other rules.
+- (deliberation) Prose-only cluster P-1 P-2 P-6 advocated avoiding the manifest-schema accretion pathway the engine-v16 restart specifically subtracted. [P-17-P-2]
+
+**Effects.**
+
+- modifies prompts/development.md section 4 substantive revision
+- supersedes prompt-development v8 superseded by v9
+- modifies engine-manifest spec bumped reflecting prompt-development v9
+- bumps_engine engine-v38 to engine-v39
+
+**Rejected alternatives.**
+
+- **R-1.1.** Substrate-enforced minimum kernel: perspectives.role_kind closed enum, deliberations.min_valid_perspectives, seal-time checks for quorum and adversarial and cross-family per P-3 P-4 P-5 cluster.
+  - (operator_override) Operator chose prose-only on D-1 split; substrate enforcement deferred per autonomy preference for agent self-discipline.
+- **R-1.2.** Full MAD v4 restoration: re-import the 482-line specifications/multi-agent-deliberation.md spec subtracted at engine-v16 S076 restart.
+  - (too_large_for_session) All six S131 perspectives convergent C-6: do not re-import the 482-line spec; OI-004 closure machinery is stale post-S041 closure.
+- **R-1.3.** Status quo: no change to prompts/development.md section 4; rely on existing three-sentence guidance.
+  - (violates_gate) 25-deliberation post-restart drift to 2-perspective default with S124 outlier is the demonstrated failure case; status quo perpetuates EF-S124-1 cost-of-absence.
+
+exec
+/bin/zsh -lc "find ../../provenance -maxdepth 2 -name '02-decisions.md' -path '*13[0-9]*' -o -path '*12[5-9]*' -name '02-decisions.md'" in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+../../provenance/128-fr-null-state-annotation/02-decisions.md
+../../provenance/130-temporal-claim-grounding/02-decisions.md
+../../provenance/125-reference-harness-substrate-kind/02-decisions.md
+../../provenance/126-harvested-ef-disaster-recovery-triage/02-decisions.md
+../../provenance/129-widen-effect-kind-deletes/02-decisions.md
+../../provenance/131-restore-deliberation-shape/02-decisions.md
+
+exec
+/bin/zsh -lc 'rg -n "SPEC-engine-manifest|engine-manifest|prompt-development|methodology|prompt-application|engine-v39|calibration|substantive|D-1" ../../provenance/125-reference-harness-substrate-kind/02-decisions.md ../../provenance/129-widen-effect-kind-deletes/02-decisions.md ../../provenance/130-temporal-claim-grounding/02-decisions.md ../../provenance/131-restore-deliberation-shape/02-decisions.md' in /Users/ericmccowan/Development/complex-systems-engine/deliberations/132-lift-deliberation-shape-to-kernel
+ succeeded in 0ms:
+../../provenance/130-temporal-claim-grounding/02-decisions.md:9:## D-1. Add temporal-claim grounding discipline to prompt-development; ground-or-omit applies to every submit body
+../../provenance/130-temporal-claim-grounding/02-decisions.md:11:**Kind:** substantive.  **Outcome:** supersede spec_version `prompt-development`.
+../../provenance/130-temporal-claim-grounding/02-decisions.md:22:- supersedes SPEC-prompt-development-v7 — prompt-development v7 superseded by v8 ground-or-omit clause
+../../provenance/130-temporal-claim-grounding/02-decisions.md:23:- creates SPEC-prompt-development-v8 — prompt-development v8 ships ground-or-omit temporal-claim discipline
+../../provenance/130-temporal-claim-grounding/02-decisions.md:31:- **R-1.3.** Duplicate the clause in methodology spec to mark temporal-provenance as kernel-level.
+../../provenance/131-restore-deliberation-shape/02-decisions.md:9:## D-1. Restore deliberation shape: prompt-development v8 to v9 prose adds floor-of-3, adversarial-required, named-not-rostered, brief immutability, synthesis disciplines
+../../provenance/131-restore-deliberation-shape/02-decisions.md:11:**Kind:** substantive.  **Outcome:** adopt spec_version `prompt-development`.
+../../provenance/131-restore-deliberation-shape/02-decisions.md:16:- (engine_feedback) EF-S124-1 names four-perspective shape as load-bearing: dreamer persona produced reference_harness substantive design the two-perspective default would have missed. [EF-S124-1]
+../../provenance/131-restore-deliberation-shape/02-decisions.md:22:- modifies prompts/development.md section 4 substantive revision
+../../provenance/131-restore-deliberation-shape/02-decisions.md:23:- supersedes prompt-development v8 superseded by v9
+../../provenance/131-restore-deliberation-shape/02-decisions.md:24:- modifies engine-manifest spec bumped reflecting prompt-development v9
+../../provenance/131-restore-deliberation-shape/02-decisions.md:25:- bumps_engine engine-v38 to engine-v39
+../../provenance/131-restore-deliberation-shape/02-decisions.md:30:  - (operator_override) Operator chose prose-only on D-1 split; substrate enforcement deferred per autonomy preference for agent self-discipline.
+../../provenance/125-reference-harness-substrate-kind/02-decisions.md:9:## D-1. Ship reference_harness substrate kind (engine-v37) closing OI-S124-2 with workspace-experimental scope and P-2 guardrails.
+../../provenance/125-reference-harness-substrate-kind/02-decisions.md:36:- **R-1.2.** Promote reference_harness to methodology v7 third validation sense in this session per S124 P-4 framing.
+../../provenance/129-widen-effect-kind-deletes/02-decisions.md:9:## D-1. Widen decision_effects.effect_kind CHECK to admit deletes (engine-v37 to engine-v38) closing OI-S104-2.
+../../provenance/129-widen-effect-kind-deletes/02-decisions.md:15:- (prior_decision) DV-S104-6 opened OI-S104-2 noting the methodology-vs-substrate vocabulary gap surfaced by P-2 in S104 D-8 deliberation. [DV-S104-6]
+../../provenance/129-widen-effect-kind-deletes/02-decisions.md:29:- **R-1.2.** Bump engine-manifest spec version alongside the CHECK widening to record the vocabulary expansion as a named manifest event.
+../../provenance/129-widen-effect-kind-deletes/02-decisions.md:30:  - (redundant_with_existing) current_engine_version bump already records the engine-vN flip; the CHECK widening calibrates substrate to existing methodology language and adds no new manifest capability.
+
+codex
+**Q1.** Methodology.md is the right home for items 1–8; they define what counts as deliberation, not self-development procedure. The 4-perspective target is fine because it is scoped to methodology-changing decisions. The only caveat is external-problem sessions: domain-perspective requirements must remain additive, and human/domain inputs may need a narrow exception or adaptation for byte-identical LLM briefs.
+
+**Q2.** There is duplication, not deep conflict, with the existing section: triggers, independence, adversarial stance, cross-family, synthesis-not-decision, and dissent preservation already exist. The main possible contradiction is cross-family: current methodology says different-family is expected for methodology-touching decisions, while S131 wording sounds mandatory for every deliberation. Merge carefully so citation-of-workspace-material, “I don’t know,” exception recording, and “reopen on new reading” are preserved.
+
+**Q3.** Calibration is defensible only if the move is framed as relocating DV-S131-1’s already-substantive result without changing scope. If the relocation changes “development prompt guidance” into new external-problem obligations, especially an unconditional cross-family mandate, then it is a methodology change. The clean path is calibration plus explicit citation that this spot-check covered application-mode inheritance.
+
+**Q4.** The v34 → v39 manifest jump is legitimate as a repair, but it is a smell. Because `_submit_spec_version` sets `current_engine_version = engine-v{version}` for `engine-manifest`, submitting v35 would regress metadata from engine-v38. The v39 manifest should explicitly say v35–v38 were engine versions shipped without corresponding manifest spec versions, not silently imply missing spec artefacts.
+
+**Q5.** The orchestrator most plausibly missed the existing application-prompt validation conflict: `prompts/application.md` still says external validation has three senses, while methodology.md says there are two and “reference substitute” is not a third sense. Also, “briefs committed before launch” changes git sequencing; current prompts mostly assume commit at close, so the deliberation-brief anchor needs an explicit allowance.
+tokens used
+55,844

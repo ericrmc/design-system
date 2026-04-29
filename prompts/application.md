@@ -19,10 +19,10 @@ Then read the engine's active specifications (see `specifications/engine-manifes
 
 The flow mirrors the self-development prompt — same nine activities, same `bin/selvedge submit` kinds — with these differences:
 
-- **Convene** must include at least one **domain perspective** grounded in the domain's actual practice (a practitioner, a stakeholder, a target audience), not just a cross-family LLM.
+- **Convene** follows `specifications/methodology.md` §When-to-convene-multiple-agents for the substantive discipline (number floor of 3 / target 4, named-not-rostered selection, adversarial requirement, cross-family, stance-brief shared/role-specific split, brief immutability, quorum, synthesis discipline). External-problem additionally **must include at least one domain perspective** grounded in the domain's actual practice (a practitioner, a stakeholder, a target audience) — not just a cross-family LLM. Domain perspectives may be briefed in form-equivalent rather than byte-identical shape per the kernel's allowance.
 - **Decide** does not modify the engine. If you encounter a kernel gap, an unclear spec, or a tool failure, do **not** revise the engine in this workspace. Submit an `engine_feedback` row (or write `engine-feedback/EF-<session>-<slug>.md` until the substrate kind ships) and continue with the application's work.
 - **Produce** writes external artefacts to `applications/NNN-<slug>/`. Frontmatter records `originating_session`, `artefact_kind`, `domain`, `engine_version`, validation label.
-- **Validate** has three senses (workspace, domain, provisional reference substitute). Domain validation requires a domain-actor; if none is available, the artefact carries `validation: reference-provisional`.
+- **Validate** has two senses per `specifications/methodology.md` §Validation senses (workspace and domain). When no domain-actor is available, Domain validation is recorded as **skipped: no domain-actor**; this is a first-class outcome, not a third sense. Workspace-experimental primitives (e.g. `reference_harness`) may produce substrate evidence but are not additional senses.
 - **Record** is automatic via every `submit` call.
 - **Close** runs `bin/selvedge submit close-record` + `submit session-close` + `bin/selvedge export` + `bash tools/validate.sh` + `git commit`.
 

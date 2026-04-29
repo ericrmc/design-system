@@ -1,10 +1,10 @@
 ---
 title: Engine Manifest
-version: 34
+version: 39
 status: active
 created: 2026-04-28
-updated-by-session: 118
-supersedes: engine-manifest v33 (engine-v34; per S118 DV-S118-1 opens_issue target_issue_id enforcement via T-31 + handler resolution); engine-manifest v32 (engine-v33; per S110 DV-S110-1 substrate-direct harvest-ef + migration 019 harvested_engine_feedback ledger); engine-manifest v31 (engine-v32; per S109 DV-S109-1 removes constraints.md from engine-definition file set, adds migrations 011-018 to substrate table, corrects frontmatter version drift); v30 (engine-v31; per S104 DV-S104-1..7 substrate enforcement of coding review loop); v29 (engine-v30; per S102 DV-S102-1 renames objects.citable_alias and issues.citable_alias to alias, closes OI-S101-1); v28 (engine-v29; per S099 DV-S099-1 inline body_md path closes OI-S090-5); v28 per S098 DV-S098-1 (closes_issue handler dispatch); v27 per S097 DV-S097-1; v26 per S094; v25 per S091; v24 per S090; v23 per S089 D-1
+updated-by-session: 132
+supersedes: engine-manifest v34 (engine-v34; per S118 DV-S118-1); jumps past v35 (engine-v35; S125 reference_harness substrate kind, migration 023, no spec-version bump at the time), v36 (engine-v36; S125 reference_harness hardening, migration 024), v37 (engine-v37; S125 reference_harness iter2 fixes, migration 025), v38 (engine-v38; S129 effect_kind admit deletes, migration 026) — these were shipped via migrations without corresponding engine-manifest spec_version bumps. v39 reasserts the spec_version=engine-vN convention via DV-S132-1 calibration: lifts S131 deliberation-shape content into methodology.md kernel; preserves DV-S131-1 substantive scope unchanged
 ---
 
 # Engine Manifest
@@ -12,6 +12,18 @@ supersedes: engine-manifest v33 (engine-v34; per S118 DV-S118-1 opens_issue targ
 This file enumerates the loadable Selvedge engine at the current commit. The engine is the file set listed below plus the substrate; loading the engine means having these files available, the substrate initialised, and the `selvedge` CLI on PATH.
 
 ## Current engine version
+
+`engine-v39` (established Session 132 — kernel-restoration of deliberation-shape discipline; lifts S131 substantive content into `specifications/methodology.md` §When-to-convene-multiple-agents where it applies equally to self-development and external-problem applications, per DV-S132-1 calibration).
+
+`engine-v39` reasserts the engine-manifest-spec-version = engine-vN convention. Versions v35–v38 (below) shipped via migrations 023–026 without corresponding engine-manifest spec_version bumps; the spec drifted four versions behind from S125 through S129. v39 jumps engine-manifest from v34 to v39 via supersedes pointer, atomically propagating `current_engine_version` to `engine-v39` per the engine-v25 `_submit_spec_version` handler logic. Substantively v39 ships methodology.md v7 (kernel absorbs S131 deliberation-shape content; preserves DV-S131-1 substantive scope unchanged), prompt-development v10 (§4 trimmed to mode-specific CLI surface and capture-subagent decomposition pattern, with explicit pointer to the kernel section), prompt-application v3 (kernel pointer added under Convene; validation-senses drift fixed — application.md had said three senses while methodology.md v6 was already two). Closes the S131 self-application failure: S131 itself failed P-6 brief-shape-applies-recursively criterion by placing kernel-level deliberation discipline in a self-development-only prompt; S132 is the structural correction surfaced by operator question. Single-agent codex spot-check confirmed framing with caveats (human/domain brief equivalence, cross-family scope preservation, version-jump narrative); caveats absorbed into v7 body.
+
+`engine-v38` (established Session 129 — calibrated CHECK widening admits `deletes` to `decision_effects.effect_kind` enum, closing OI-S104-2). Migration 026 widens the constraint; no other substrate change. The widening was held back from S104 effect-kind consolidation because no decision had yet needed `deletes` as a typed effect; S129 surfaced one in the path-selection rejection chain.
+
+`engine-v37` (established Session 125 close — third reviewer iteration of `reference_harness` substrate kind, finalising the experimental-validation primitive for the disaster-response arc per OI-S124-1). Migration 025 (`reference-harness-iter2-fixes.sql`) lands the reviewer's iter-2 medium findings.
+
+`engine-v36` (established Session 125 review iteration — `reference_harness` hardening pass addressing iter-1 high findings on the substrate kind introduced at engine-v35). Migration 024 (`reference-harness-hardening.sql`).
+
+`engine-v35` (established Session 125 — `reference_harness` substrate kind introduced as workspace-experimental validation primitive per DV-S125-1). Migration 023 (`reference-harness-substrate-kind.sql`) creates the table and CLI verbs; the kind is admitted as workspace-experimental rather than kernel-promoted pending OI-S124-1 re-evaluation at disaster-response arc close.
 
 `engine-v34` (established Session 118 — opens_issue effects now require target_issue_id at submit time, mirroring closes_issue at engine-v28).
 
