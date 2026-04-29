@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import sqlite3
 import subprocess
 from pathlib import Path
@@ -94,11 +93,10 @@ def peer_workspace(tmp_path):
     return peer
 
 
-def _seed_ef_files(peer: Path, *names: tuple[str, str]) -> None:
-    ef = peer / "engine-feedback"
-    ef.mkdir(exist_ok=True)
-    for fname, body in names:
-        (ef / fname).write_text(body)
+# NOTE: the `_seed_ef_files` helper and 8 tests that exercised the
+# md-glob harvest-ef model were removed in S121 because S110 rewrote
+# harvest-ef to read peer engine_feedback rows substrate-direct. The
+# substrate-direct test coverage is tracked by OI-S121-1.
 
 
 # ---------------------------------------------------------------------------
@@ -165,7 +163,7 @@ def test_status_emits_markdown_packet(clean_substrate, selvedge_cli, peer_worksp
     assert "# monitor-external status" in md
     assert "## Recent sessions" in md
     assert "## Open issues" in md
-    assert "## Engine-feedback outbox" in md
+    assert "## Engine-feedback (peer substrate, last 10)" in md
     assert "## Latest close-record next_session_should" in md
     assert "## Phase heuristic" in md
     assert "smoke-001" in md
@@ -185,21 +183,10 @@ def test_status_emits_json_packet(clean_substrate, selvedge_cli, peer_workspace)
         "carry-forward atom two for tests.",
     ]
     assert pkt["phase_heuristic"]["value"] == "P0"
-    assert pkt["ef_outbox_files"] == []
-
-
-def test_status_lists_engine_feedback_files(clean_substrate, selvedge_cli, peer_workspace):
-    _seed_ef_files(
-        peer_workspace,
-        ("EF-001-first.md", "Flag: observation\n\nfirst body.\n"),
-        ("EF-001-second.md", "flag: blocker\n\nsecond body.\n"),
-    )
-    res = selvedge_cli(["monitor-external", "status", "--workspace", str(peer_workspace), "--json"])
-    paths = sorted(f["path"] for f in res["out"]["ef_outbox_files"])
-    assert paths == [
-        "engine-feedback/EF-001-first.md",
-        "engine-feedback/EF-001-second.md",
-    ]
+    # S110 substrate-direct harvest-ef: status now reads peer engine_feedback
+    # rows directly. Empty peer substrate returns ef_rows=[] (table exists but
+    # no rows); a peer without the table returns ef_rows=None.
+    assert pkt["ef_rows"] == []
 
 
 def test_status_phase_heuristic_respects_sessions_per_phase(
@@ -292,186 +279,6 @@ def test_next_input_refuses_missing_arc_plan(
 # ---------------------------------------------------------------------------
 
 
-def test_harvest_ef_dry_run_lists_plan_without_writing(
-    clean_substrate, selvedge_cli, peer_workspace,
-):
-    _seed_ef_files(
-        peer_workspace,
-        ("EF-002-alpha.md", "Flag: observation\n\nalpha body.\n"),
-        ("EF-003-beta.md", "flag: blocker\n\nbeta body.\n"),
-    )
-    res = selvedge_cli([
-        "monitor-external", "harvest-ef",
-        "--workspace", str(peer_workspace), "--dry-run",
-    ])
-    assert res["rc"] == 0
-    assert res["out"]["dry_run"] is True
-    actions = {entry["path"]: entry for entry in res["out"]["plan"]}
-    assert actions["engine-feedback/EF-002-alpha.md"]["flag"] == "observation"
-    assert actions["engine-feedback/EF-003-beta.md"]["flag"] == "blocker"
-    assert all(e["action"] == "harvest" for e in res["out"]["plan"])
-    # Verify no engine_feedback rows were written.
-    conn = sqlite3.connect(str(PRIMARY_DB))
-    try:
-        n = conn.execute("SELECT COUNT(*) FROM engine_feedback").fetchone()[0]
-    finally:
-        conn.close()
-    assert n == 0
-
-
-def test_harvest_ef_applies_and_creates_engine_feedback_rows(
-    clean_substrate, selvedge_cli, peer_workspace,
-):
-    _seed_ef_files(
-        peer_workspace,
-        ("EF-002-alpha.md", "Flag: observation\n\nalpha body content.\n"),
-        ("EF-003-beta.md", "flag: blocker\n\nbeta body content.\n"),
-    )
-    res = selvedge_cli([
-        "monitor-external", "harvest-ef",
-        "--workspace", str(peer_workspace),
-    ])
-    assert res["rc"] == 0
-    assert res["out"]["dry_run"] is False
-    successes = [r for r in res["out"]["results"] if r["status"] == "success"]
-    assert len(successes) == 2
-    flags = sorted(r["flag"] for r in successes)
-    assert flags == ["blocker", "observation"]
-    # Confirm the rows landed in the self-dev substrate (PRIMARY_DB) and that
-    # the body_md preserves the original body plus the harvest preface.
-    conn = sqlite3.connect(str(PRIMARY_DB))
-    try:
-        rows = conn.execute(
-            "SELECT flag, body_md FROM engine_feedback ORDER BY feedback_id"
-        ).fetchall()
-    finally:
-        conn.close()
-    assert len(rows) == 2
-    # Order is filename-sort: alpha then beta.
-    assert rows[0][0] == "observation"
-    assert "Harvested from external workspace" in rows[0][1]
-    assert "alpha body content." in rows[0][1]
-    assert rows[1][0] == "blocker"
-    assert "beta body content." in rows[1][1]
-
-
-def test_harvest_ef_skips_below_since_session(
-    clean_substrate, selvedge_cli, peer_workspace,
-):
-    _seed_ef_files(
-        peer_workspace,
-        ("EF-001-old.md", "Flag: observation\n\nold body.\n"),
-        ("EF-005-new.md", "Flag: observation\n\nnew body.\n"),
-    )
-    res = selvedge_cli([
-        "monitor-external", "harvest-ef",
-        "--workspace", str(peer_workspace),
-        "--since-session", "2",
-    ])
-    assert res["rc"] == 0
-    by_status: dict[str, list[str]] = {}
-    for entry in res["out"]["results"]:
-        by_status.setdefault(entry["status"], []).append(entry["path"])
-    assert by_status["success"] == ["engine-feedback/EF-005-new.md"]
-    assert by_status["skipped"] == ["engine-feedback/EF-001-old.md"]
-
-
-def test_harvest_ef_skips_unparseable_filenames(
-    clean_substrate, selvedge_cli, peer_workspace,
-):
-    _seed_ef_files(
-        peer_workspace,
-        ("EF-001-good.md", "Flag: observation\n\ngood body.\n"),
-        ("EF-bad-not-numeric.md", "flag: observation\n\nstray body.\n"),
-    )
-    res = selvedge_cli([
-        "monitor-external", "harvest-ef",
-        "--workspace", str(peer_workspace), "--dry-run",
-    ])
-    assert res["rc"] == 0
-    by_path = {p["path"]: p for p in res["out"]["plan"]}
-    assert by_path["engine-feedback/EF-001-good.md"]["action"] == "harvest"
-    assert by_path["engine-feedback/EF-bad-not-numeric.md"]["action"] == "skip"
-    assert "filename does not match" in by_path["engine-feedback/EF-bad-not-numeric.md"]["reason"]
-
-
-def test_harvest_ef_handles_missing_engine_feedback_dir(
-    clean_substrate, selvedge_cli, peer_workspace,
-):
-    # peer_workspace has no engine-feedback/ directory yet.
-    res = selvedge_cli([
-        "monitor-external", "harvest-ef",
-        "--workspace", str(peer_workspace),
-    ])
-    assert res["rc"] == 0
-    assert res["out"]["harvested"] == []
-    assert "no engine-feedback/" in res["out"]["note"]
-
-
-def test_harvest_ef_ignores_flag_buried_in_prose(
-    clean_substrate, selvedge_cli, peer_workspace,
-):
-    """A 'flag: blocker' deep in prose must not override the default."""
-    _seed_ef_files(
-        peer_workspace,
-        ("EF-001-mid-prose-flag.md",
-         "This file's first paragraph carries no flag header.\n\n"
-         "Several sentences in, the author writes flag: blocker as part of\n"
-         "an unrelated narrative that should not change classification.\n"),
-    )
-    res = selvedge_cli([
-        "monitor-external", "harvest-ef",
-        "--workspace", str(peer_workspace), "--dry-run",
-    ])
-    assert res["rc"] == 0
-    plan = res["out"]["plan"]
-    assert len(plan) == 1
-    assert plan[0]["flag"] == "observation"
-
-
-def test_harvest_ef_ignores_selvedge_db_path_override(
-    clean_substrate, peer_workspace,
-):
-    """harvest-ef must write to workspace_root()/state/selvedge.sqlite even
-    when SELVEDGE_DB_PATH points elsewhere (S108 review F-84 / F-91). The
-    explicit `Conn.open(self_db)` pin must bypass `db_path()`'s SELVEDGE_DB_PATH
-    override."""
-    _seed_ef_files(
-        peer_workspace,
-        ("EF-001-pin-test.md", "Flag: observation\n\npin-test body content.\n"),
-    )
-    peer_db = peer_workspace / "state" / "selvedge.sqlite"
-    proc = _run_external_cli(
-        ["monitor-external", "harvest-ef", "--workspace", str(peer_workspace)],
-        extra_env={
-            "SELVEDGE_WORKSPACE": str(WORKSPACE),
-            "SELVEDGE_DB_PATH": str(peer_db),
-        },
-    )
-    assert proc.returncode == 0, f"harvest-ef failed: {proc.stderr}"
-    summary = json.loads(proc.stdout)
-    successes = [r for r in summary["results"] if r["status"] == "success"]
-    assert len(successes) == 1
-    # If harvest-ef obeyed SELVEDGE_DB_PATH, the row would have landed in the
-    # peer's substrate. The explicit pin must override that.
-    conn = sqlite3.connect(str(PRIMARY_DB))
-    try:
-        n_self = conn.execute(
-            "SELECT COUNT(*) FROM engine_feedback WHERE body_md LIKE '%pin-test body%'"
-        ).fetchone()[0]
-    finally:
-        conn.close()
-    peer_conn = sqlite3.connect(str(peer_db))
-    try:
-        n_peer = peer_conn.execute(
-            "SELECT COUNT(*) FROM engine_feedback WHERE body_md LIKE '%pin-test body%'"
-        ).fetchone()[0]
-    finally:
-        peer_conn.close()
-    assert n_self == 1, "row must land in self-dev PRIMARY_DB"
-    assert n_peer == 0, "row must NOT leak into the peer substrate"
-
-
 def test_harvest_ef_refuses_without_explicit_self_workspace_env(
     clean_substrate, peer_workspace, tmp_path,
 ):
@@ -481,10 +288,6 @@ def test_harvest_ef_refuses_without_explicit_self_workspace_env(
     substrate. Demonstrate by running with cwd in a third workspace and no
     SELVEDGE_WORKSPACE set."""
     third = _bootstrap_peer(tmp_path / "third")
-    _seed_ef_files(
-        peer_workspace,
-        ("EF-001-env-test.md", "Flag: observation\n\nenv-required body.\n"),
-    )
     env = os.environ.copy()
     env.pop("SELVEDGE_WORKSPACE", None)
     env["PYTHONPATH"] = str(WORKSPACE)
@@ -507,10 +310,6 @@ def test_harvest_ef_refuses_when_cwd_inside_peer(
     inside the peer workspace (the simpler footgun behind the cwd-confusion
     risk). SELVEDGE_WORKSPACE points at self-dev so the substrate validation
     succeeds — the refusal is purely on cwd grounds."""
-    _seed_ef_files(
-        peer_workspace,
-        ("EF-001-cwd-test.md", "Flag: observation\n\ncwd-guard body.\n"),
-    )
     proc = _run_external_cli(
         ["monitor-external", "harvest-ef", "--workspace", str(peer_workspace)],
         cwd=peer_workspace,

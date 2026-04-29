@@ -55,6 +55,25 @@ else
 fi
 
 echo
+echo "Pytest suite (state/tests):"
+if command -v uv >/dev/null 2>&1; then
+  # pyproject.toml addopts already pins -q; passing --no-header lets the
+  # summary line ("N passed in Xs") survive into the log so the validator
+  # can echo a meaningful count. Per-process tmp file (mktemp) so concurrent
+  # validator runs don't race on a shared log path.
+  PYTEST_LOG=$(mktemp -t selvedge-pytest.XXXXXX)
+  trap 'rm -f "$PYTEST_LOG"' EXIT
+  if uv run pytest --no-header >"$PYTEST_LOG" 2>&1; then
+    ok "pytest ($(grep -E '[0-9]+ passed' "$PYTEST_LOG" | tail -1))"
+  else
+    fail "pytest (log: $PYTEST_LOG)"
+    tail -20 "$PYTEST_LOG"
+  fi
+else
+  echo "  warn  uv not found on PATH — skipping pytest invocation"
+fi
+
+echo
 echo "Latest session check:"
 LATEST_SESSION_DIR=$(ls -d provenance/[0-9]*/ 2>/dev/null | sort | tail -1)
 if [ -n "$LATEST_SESSION_DIR" ]; then

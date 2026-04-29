@@ -32,20 +32,20 @@ from conftest import BIN, WORKSPACE
 
 
 def test_t15_refuses_drop_table():
-    from selvedge.cli import _t15_violations
+    from selvedge.migrations import _t15_violations
 
     assert _t15_violations("DROP TABLE foo;") == ["DROP TABLE"]
     assert _t15_violations("drop table foo;") == ["DROP TABLE"]
 
 
 def test_t15_refuses_drop_column():
-    from selvedge.cli import _t15_violations
+    from selvedge.migrations import _t15_violations
 
     assert _t15_violations("ALTER TABLE foo DROP COLUMN bar;") == ["DROP COLUMN", "ALTER TABLE … DROP"]
 
 
 def test_t15_refuses_alter_drop():
-    from selvedge.cli import _t15_violations
+    from selvedge.migrations import _t15_violations
 
     # The DROP keyword inside ALTER TABLE … DROP CONSTRAINT (forbidden form).
     sql = "ALTER TABLE foo\n  DROP CONSTRAINT bar;"
@@ -54,25 +54,25 @@ def test_t15_refuses_alter_drop():
 
 
 def test_t15_admits_drop_trigger():
-    from selvedge.cli import _t15_violations
+    from selvedge.migrations import _t15_violations
 
     assert _t15_violations("DROP TRIGGER IF EXISTS t13_old;") == []
 
 
 def test_t15_admits_drop_index():
-    from selvedge.cli import _t15_violations
+    from selvedge.migrations import _t15_violations
 
     assert _t15_violations("DROP INDEX idx_foo;") == []
 
 
 def test_t15_admits_create_trigger():
-    from selvedge.cli import _t15_violations
+    from selvedge.migrations import _t15_violations
 
     assert _t15_violations("CREATE TRIGGER tx BEFORE UPDATE OF c ON t BEGIN SELECT 1; END;") == []
 
 
 def test_t15_strips_comments_before_match():
-    from selvedge.cli import _t15_violations
+    from selvedge.migrations import _t15_violations
 
     # The keyword DROP TABLE appears only inside comments — must not trip.
     sql = """
