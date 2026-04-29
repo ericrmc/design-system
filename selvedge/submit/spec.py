@@ -14,6 +14,7 @@ from ._helpers import (
     _check_role_capability,
     _insert_atom,
     _link_object,
+    is_dry_run,
 )
 
 
@@ -128,8 +129,10 @@ def _submit_spec_version(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     # Inline body authoring (OI-S090-5): write the file only after every DB
     # constraint above has cleared. If a constraint refuses, the rollback in
     # write_tx leaves no row — and now leaves no orphaned file either. If the
-    # FS write itself raises, the same rollback unwinds the row insert.
-    if pending_write_bytes is not None:
+    # FS write itself raises, the same rollback unwinds the row insert. Under
+    # --dry-run the transaction will be rolled back, so we must also suppress
+    # the FS write to keep the workspace clean (EF-S118-1).
+    if pending_write_bytes is not None and not is_dry_run():
         real_path.parent.mkdir(parents=True, exist_ok=True)
         tmp_path = real_path.with_suffix(real_path.suffix + ".tmp")
         tmp_path.write_bytes(pending_write_bytes)

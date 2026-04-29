@@ -30,14 +30,30 @@ class Conn:
     def close(self) -> None:
         self.conn.close()
 
-    def write_tx(self, fn, *, retry_budget: int = DEFAULT_RETRY_BUDGET, retry_base_ms: int = DEFAULT_RETRY_BASE_MS):
+    def write_tx(
+        self,
+        fn,
+        *,
+        retry_budget: int = DEFAULT_RETRY_BUDGET,
+        retry_base_ms: int = DEFAULT_RETRY_BASE_MS,
+        dry_run: bool = False,
+    ):
+        # dry_run wraps the same BEGIN IMMEDIATE / handler / ... pattern but
+        # ROLLBACKs at the end of a successful handler invocation instead of
+        # COMMITting. Statement-time triggers and CHECK constraints fire as
+        # normal during fn(self.conn), so any RAISE(ABORT) refusal still
+        # propagates as a SelvedgeError. The substrate has no DEFERRABLE
+        # constraints, so nothing is deferred to commit time. (EF-S118-1.)
         attempt = 0
         while True:
             try:
                 self.conn.execute("BEGIN IMMEDIATE")
                 try:
                     result = fn(self.conn)
-                    self.conn.execute("COMMIT")
+                    if dry_run:
+                        self.conn.execute("ROLLBACK")
+                    else:
+                        self.conn.execute("COMMIT")
                     return result
                 except Exception:
                     try:

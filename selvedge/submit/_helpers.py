@@ -12,10 +12,27 @@ Three patterns get extracted here:
 
 from __future__ import annotations
 
+import contextvars
 import sqlite3
 from typing import Optional
 
 from ..errors import SelvedgeError
+
+
+# Communicates --dry-run intent from cmd_submit into individual handlers
+# without changing every handler signature. Most handlers do not consult
+# this; only handlers with side-effects outside the SQL transaction
+# (currently just _submit_spec_version's body file write) need to read it
+# so they can suppress those side-effects when the transaction will be
+# rolled back. The contextvar is set by cmd_submit before write_tx and
+# reset in finally.
+_dry_run_var: contextvars.ContextVar[bool] = contextvars.ContextVar(
+    "selvedge_submit_dry_run", default=False
+)
+
+
+def is_dry_run() -> bool:
+    return _dry_run_var.get()
 
 
 def _check_role_capability(conn: sqlite3.Connection, role: str, table: str, op: str) -> None:

@@ -70,6 +70,16 @@ def main(argv: Optional[list[str]] = None) -> int:
     p_submit.add_argument("kind", help=f"one of: {sorted(SUBMIT_HANDLERS)}")
     p_submit.add_argument("--payload", required=True, help="JSON payload, '@file', or '-' for stdin.")
     p_submit.add_argument("--role", default="__cli__")
+    p_submit.add_argument(
+        "--dry-run",
+        dest="dry_run",
+        action="store_true",
+        help=(
+            "Run the handler inside a transaction that always rolls back. "
+            "Triggers and constraint refusals propagate as normal; no rows "
+            "(or spec body files) persist. EF-S118-1."
+        ),
+    )
     p_submit.set_defaults(fn=cmd_submit)
 
     p_validate = sub.add_parser("validate", help="Validate substrate integrity.")

@@ -12,6 +12,7 @@ from pathlib import Path
 
 from ..connection import Conn
 from ..errors import SelvedgeError
+from ._helpers import _dry_run_var
 from .assessment import _submit_assessment, _submit_legacy_import
 from .close import _submit_close_record
 from .decision_v2 import _submit_decision_v2
@@ -89,13 +90,25 @@ def cmd_submit(args) -> int:
     else:
         payload = json.loads(args.payload)
     role = args.role or "__cli__"
+    dry_run = bool(getattr(args, "dry_run", False))
     c = Conn.open()
+    token = _dry_run_var.set(dry_run)
     try:
-        result = c.write_tx(lambda conn: SUBMIT_HANDLERS[args.kind](conn, payload, role))
+        result = c.write_tx(
+            lambda conn: SUBMIT_HANDLERS[args.kind](conn, payload, role),
+            dry_run=dry_run,
+        )
     except SelvedgeError as e:
-        print(json.dumps({"ok": False, "code": e.code, "detail": e.detail}), file=sys.stderr)
+        envelope = {"ok": False, "code": e.code, "detail": e.detail}
+        if dry_run:
+            envelope["dry_run"] = True
+        print(json.dumps(envelope), file=sys.stderr)
         return 3
     finally:
+        _dry_run_var.reset(token)
         c.close()
-    print(json.dumps({"ok": True, "result": result}))
+    envelope = {"ok": True, "result": result}
+    if dry_run:
+        envelope["dry_run"] = True
+    print(json.dumps(envelope))
     return 0
