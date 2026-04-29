@@ -29,6 +29,18 @@ from .feedback import (
     _submit_engine_feedback_disposition,
     _submit_forward_reference_disposition,
 )
+from .harness import (
+    _submit_harness_assumption,
+    _submit_harness_claim,
+    _submit_harness_dissent,
+    _submit_harness_open,
+    _submit_harness_result,
+    _submit_harness_seal,
+    _submit_harness_stress,
+    _submit_harness_target,
+    _submit_harness_trigger,
+    _submit_harness_trigger_fire,
+)
 from .issue import (
     _submit_issue,
     _submit_issue_disposition,
@@ -76,6 +88,17 @@ SUBMIT_HANDLERS = {
     "engine-feedback": _submit_engine_feedback,
     "engine-feedback-disposition": _submit_engine_feedback_disposition,
     "forward-reference-disposition": _submit_forward_reference_disposition,
+    # reference_harness (engine-v35+, S125 closing OI-S124-2):
+    "harness-open": _submit_harness_open,
+    "harness-target": _submit_harness_target,
+    "harness-assumption": _submit_harness_assumption,
+    "harness-claim": _submit_harness_claim,
+    "harness-stress": _submit_harness_stress,
+    "harness-result": _submit_harness_result,
+    "harness-dissent": _submit_harness_dissent,
+    "harness-trigger": _submit_harness_trigger,
+    "harness-trigger-fire": _submit_harness_trigger_fire,
+    "harness-seal": _submit_harness_seal,
 }
 
 
