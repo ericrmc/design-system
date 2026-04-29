@@ -96,7 +96,7 @@ fi
 
 TODAY="$(date +%Y-%m-%d)"
 
-echo "=== Selvedge external-application bootstrap (engine-v31 minimal) ==="
+echo "=== Selvedge external-application bootstrap ==="
 echo "Source workspace:  $SOURCE_ROOT"
 echo "Target workspace:  $TARGET"
 echo "Application slug:  $SLUG"
