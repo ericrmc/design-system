@@ -148,7 +148,7 @@ Already done by every prior `submit`. Run `bin/selvedge query` to confirm row co
 
 ## 8.5 Close-time reflection (mandatory)
 
-Before submitting `close-record`, do two things:
+Before submitting `close-record`, do three things:
 
 1. **Author at least one `engine_feedback` row** capturing what reduced friction this session and what surfaced as friction. Successes worth reinforcing belong here as much as corrections — both signals decay if they only live in working memory. Use `flag` ∈ `observation | reframe | calibration | blocker`.
 
@@ -178,6 +178,20 @@ Before submitting `close-record`, do two things:
      "disposition": "addressed-by-DV-S<NNN>-<n> (<short reason>)"
    }'
    ```
+
+### Temporal-claim grounding (applies to every submit body)
+
+Any duration, elapsed-time, recency, or sequence claim used as evidence in a submit body — `engine_feedback.body_md`, `assessments.state`, `close_records.summary`, decision-record support claims, alternative-rejection reasons, perspective bodies, synthesis text — must be grounded against substrate timestamps before commit, or omitted entirely.
+
+Concretely: if you are about to write a phrase like "the N-month gap", "X hours since", "after S<wno>", "recently", or "long-running", run the cheap query first, e.g.
+
+```sh
+bin/selvedge query "SELECT workspace_session_no, opened_at, closed_at FROM sessions WHERE workspace_session_no IN (110, 126)"
+```
+
+and read the elapsed time off the data. The "ground or omit" rule has no "unverified estimate" escape valve: if the claim is load-bearing, the substrate query takes seconds; if it isn't load-bearing, drop the phrase. The substrate's provenance warrant rests on recorded claims being read off data, not generated to fit narrative.
+
+Scope: every submit body, not engine_feedback only — the failure mode is general (narrative-driven number-fitting can land in any prose surface). Substrate-side static checks on freeform `body_md` are impractical, so this discipline is operator/agent-policed; calibration-EFs are the recovery path when slips are caught. Cites EF-S127-1 (calibration of EF-S126-1's fabricated 4-month-gap claim).
 
 ## 9. Close
 
