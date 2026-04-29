@@ -2567,6 +2567,41 @@ def _orient_sections(conn: sqlite3.Connection) -> dict:
             "WHERE status='active' ORDER BY spec_id"
         ).fetchall()
     ]
+    # Recent supersessions: surface the rationale for spec_version status
+    # transitions to superseded (OI-S110-1). Joins decision_effects whose
+    # target_object_id resolves to a spec_version object. Effects without
+    # object linkage (older entries, or rows that recorded the change only
+    # in target_descriptor) are not reachable here; the count is reported
+    # so OI-S110-3's backfill scope stays visible from orient.
+    out["recent_supersessions"] = [
+        dict(r) for r in conn.execute(
+            "SELECT COALESCE(s.workspace_session_no, s.session_no) AS wno, "
+            "       dv.decision_no, "
+            "       ta.text AS decision_title, sv.spec_id, sv.version "
+            "FROM decision_effects de "
+            "JOIN decisions_v2 dv ON dv.decision_v2_id=de.decision_v2_id "
+            "JOIN sessions s ON s.session_id=dv.session_id "
+            "JOIN text_atoms ta ON ta.atom_id=dv.title_atom_id "
+            "JOIN objects o ON o.object_id=de.target_object_id "
+            "JOIN spec_versions sv ON sv.spec_version_id=o.typed_row_id "
+            "WHERE de.effect_kind='supersedes' AND o.object_kind='spec_version' "
+            "ORDER BY de.effect_id DESC LIMIT 10"
+        ).fetchall()
+    ]
+    out["unlinked_supersedes_count"] = conn.execute(
+        "SELECT COUNT(*) FROM decision_effects "
+        "WHERE effect_kind='supersedes' AND target_object_id IS NULL"
+    ).fetchone()[0]
+    # Pointer issue for the unlinked-count hint: only cite the alias if the
+    # issue is live, mirroring the FR-rot pattern (DV-S101-1). When the
+    # backfill issue resolves, the hint degrades to a generic pointer.
+    backfill_row = conn.execute(
+        "SELECT alias, status FROM issues WHERE alias='OI-S110-3'"
+    ).fetchone()
+    if backfill_row and backfill_row["status"] in ("open", "in_progress", "blocked"):
+        out["unlinked_supersedes_pointer"] = backfill_row["alias"]
+    else:
+        out["unlinked_supersedes_pointer"] = None
     out["deferred_decisions"] = [
         dict(r) for r in conn.execute(
             "SELECT s.workspace_session_no, dv.decision_no, ta.text AS title "
@@ -2688,6 +2723,29 @@ def _orient_markdown(packet: dict) -> str:
     lines.append("|------|---------|------------------------|")
     for r in packet["active_specs"]:
         lines.append(f"| {r['spec_id']} | {r['version']} | {r['body_canonical_in_substrate']} |")
+    lines.append("")
+
+    sup = packet.get("recent_supersessions", [])
+    unlinked = packet.get("unlinked_supersedes_count", 0)
+    pointer = packet.get("unlinked_supersedes_pointer")
+    lines.append(f"## Recent supersessions ({len(sup)})")
+    lines.append("")
+    if sup:
+        lines.append("| Decision | Spec | Version | Title |")
+        lines.append("|----------|------|---------|-------|")
+        for r in sup:
+            alias = f"DV-S{r['wno']:03d}-{r['decision_no']}"
+            title = (r["decision_title"] or "").replace("|", "\\|")
+            spec_id = (r["spec_id"] or "").replace("|", "\\|")
+            lines.append(f"| {alias} | {spec_id} | {r['version']} | {title} |")
+    else:
+        lines.append("(none)")
+    if unlinked:
+        lines.append("")
+        if pointer:
+            lines.append(f"_{unlinked} supersedes effect(s) lack target_object_id and are not reachable here; see {pointer} for backfill scope._")
+        else:
+            lines.append(f"_{unlinked} supersedes effect(s) lack target_object_id and are not reachable here; raw SQL on decision_effects required for those._")
     lines.append("")
 
     lines.append(f"## Deferred decisions ({len(packet['deferred_decisions'])})")
