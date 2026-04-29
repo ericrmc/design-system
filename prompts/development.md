@@ -54,10 +54,26 @@ Each item is one typed atom. Newlines, fenced code blocks, and pipe-table syntax
 
 ## 4. Convene perspectives (when the work warrants)
 
-Use multi-agent deliberation when the decision changes how the methodology works, when the question has two or more genuinely plausible positions, or when the author marks the work load-bearing. At least one perspective must come from a different model family (use `codex` for non-Anthropic). Perspectives state positions independently before seeing one another.
+Use multi-agent deliberation when the decision changes how the methodology works, when the question has two or more genuinely plausible positions, or when the author marks the work load-bearing.
+
+**Number.** Floor of 3 valid perspectives. Target 4 for methodology-changing decisions; 3 acceptable for narrower load-bearing questions. Below the floor is not deliberation — it is consultation. Justify any deviation at convening time in the deliberation topic. (Per S131 DV-S131-1; restores MAD v4 quorum after the post-restart 25-deliberation 2-default drift.)
+
+**Cross-family.** At least one perspective must come from a different model family. Use `codex` for non-Anthropic (OpenAI) and `gemini` for Google when a third family strengthens the deliberation. Same-family-only deliberations carry shared training-distribution blind spots that cannot be seen from inside.
+
+**Naming and selection.** Perspectives are chosen for **expected disagreement on *this* problem** (e.g., "Archivist", "Skeptic", "Substrate-engineer", "Dreamer"). No permanent roster. The convening agent names each perspective's expected-disagreement axis at convening time. Free-form labels — but use short stable names consistently across brief, raw output, synthesis, and decision record.
+
+**Adversarial requirement.** At least one perspective must be adversarial — its job is to challenge the emerging consensus, not to support it. Brief-writing has no other built-in adversary; this is the cheapest structural insurance against consensus-as-shared-prior.
+
+**Stance briefs (shared/role-specific split).** Each perspective receives a brief whose non-role sections are **byte-identical** across all perspectives (methodology context, problem statement, design questions, evidence base, response format, constraint on external imports). Only the role-specific stance varies (150–300 words, second person, naming the *load* the perspective carries — not the *conclusion* it should reach). Diffing two briefs from the same deliberation must reveal only the role-specific stance.
+
+**Brief immutability.** Briefs are committed to the workspace under `deliberations/<wno>-<slug>/` before any perspective is launched. Briefs are not edited during the deliberation. The commit is the deliberation's anchor.
+
+**Independence.** Perspectives state positions independently before seeing one another. Use the Agent tool with isolated subagents for Claude perspectives (consider model-size variance — opus/sonnet/haiku — to reduce intra-family correlation) and `codex exec` / `gemini` for non-Claude.
+
+**Quorum and degradation.** Fewer than 3 valid outputs is not a deliberation; re-run or reformulate. A refusal is provenance, not error — it is preserved as the perspective's `body_md`. Do not synthesise over 1–2 perspectives.
 
 ```sh
-bin/selvedge submit deliberation-open --payload '{"topic": "<short topic phrase>"}'
+bin/selvedge submit deliberation-open --payload '{"session_no": <N>, "topic": "<short topic phrase>"}'
 # returns deliberation_id
 
 # For each perspective (label P-1, P-2, ...; family in: anthropic, openai, google, other-llm, human):
@@ -66,11 +82,20 @@ bin/selvedge submit perspective --payload @perspective-1.json
 # into perspective-position + perspective-claim rows under closed section_kinds.
 
 # Then:
-bin/selvedge submit deliberation-seal --payload '{"deliberation_id": <N>, "synthesis_md": "<short synthesis text preserving dissent>"}'
+bin/selvedge submit deliberation-seal --payload '{"deliberation_id": <N>, "synthesis_md": "<synthesis text preserving dissent>"}'
 bin/selvedge submit synthesis-point --payload '{"deliberation_id": <N>, "kind": "convergence|divergence|minority", "label": "C-1", "summary": "<1-line>", "source_perspectives": [<perspective_ids>]}'
 ```
 
-After deliberation, spawn a **capture subagent** to read each perspective's body_md and submit `perspective-position` (one per perspective) and `perspective-claim` rows (multiple, with `section_kind` from a closed enum: position / schema_sketch / cli_surface / migration_path / what_not / open_question / risk / what_lost). The orchestrator does not author the decomposition by hand.
+**Synthesis discipline.** The synthesizer must not have been one of the perspectives. Apply four rules to the `synthesis_md`:
+
+- **Citation.** Every claim attributing a position to a perspective cites the source as `[P-N, Q#]` or `[P-N, section]`. Unattributed perspective-specific language is a discipline failure.
+- **`[synth]` markers.** Synthesizer-original claims (not directly sourced from any perspective) are tagged `[synth]`. This lets future readers compute the sourced-vs-synthesized ratio.
+- **Convergence vs coverage.** Distinguish *convergence* (all perspectives independently reached a similar conclusion) from *coverage* (one perspective raised the point; others were silent). They are different epistemic states. The substrate's `synthesis_points.kind` admits convergence/divergence/minority — record only multi-source agreement as `convergence`.
+- **Dissent preservation.** Disagreements are recorded as `divergence` or `minority` synthesis_points with `source_perspectives` pointing at the dissenting perspective_ids. Minorities are first-class — a strong argument made by one perspective is preserved as-is, not diluted.
+
+Synthesis maps; it does not decide. The Decide activity (decision-record) operates on the synthesis, not on raw perspectives.
+
+After deliberation, spawn a **capture subagent** to read each perspective's body_md and submit `perspective-position` (one per perspective, distilling the **Position.** paragraph into a single 8–240-char atom) and `perspective-claim` rows (one per bullet under each labeled section, with `section_kind` from a closed enum: position / schema_sketch / cli_surface / migration_path / what_not / open_question / risk / what_lost). The orchestrator does not author the decomposition by hand.
 
 ## 5. Record decisions
 
