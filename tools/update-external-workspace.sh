@@ -13,7 +13,7 @@
 #
 # Engine-definition file list per specifications/engine-manifest.md §3. Update
 # SHIP_FILES and SUBTRACTED_FILES below when the manifest's file set changes.
-# Last reviewed: engine-v40 (S133).
+# Last reviewed: engine-v41 (S134; migration 027 + T-39 close-record-required-at-close + parse-time atom validator). Migration enumeration is dynamic (line ~206), so 027 ships automatically.
 
 set -euo pipefail
 

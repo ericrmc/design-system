@@ -378,7 +378,7 @@ def test_t14_minority_with_one_source_admitted(open_deliberation, selvedge_cli, 
     assert row["kind"] == "minority"
 
 
-def test_t06_closed_deliberation_topic_immutable(open_deliberation, selvedge_cli):
+def test_t06_closed_deliberation_topic_immutable(open_deliberation, selvedge_cli, submit_minimal_close_record):
     """Migration 002 (S082) added T-06 triggers on `deliberations` UPDATE/DELETE.
     A closed-session deliberation's `topic` and `synthesis_md` are now refused
     by direct SQL writers. This test was the strict xfail pinning OI-080-001
@@ -408,6 +408,7 @@ def test_t06_closed_deliberation_topic_immutable(open_deliberation, selvedge_cli
             json.dumps({"deliberation_id": did, "synthesis_md": "original synthesis"}),
         ]
     )
+    submit_minimal_close_record(1)
     selvedge_cli(
         [
             "submit",
@@ -517,7 +518,7 @@ def test_t13_admits_idempotent_same_value_sealed_at_write(open_deliberation, sel
     assert after == sealed_at
 
 
-def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cli):
+def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cli, submit_minimal_close_record):
     did = open_deliberation
     r1 = selvedge_cli(
         [
@@ -544,6 +545,7 @@ def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cl
             json.dumps({"deliberation_id": did}),
         ]
     )
+    submit_minimal_close_record(1)
     selvedge_cli(
         [
             "submit",
@@ -561,7 +563,7 @@ def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cl
         conn.close()
 
 
-def test_t06_closed_session_synthesis_point_immutable(open_deliberation, selvedge_cli):
+def test_t06_closed_session_synthesis_point_immutable(open_deliberation, selvedge_cli, submit_minimal_close_record):
     did = open_deliberation
     pids = []
     for label in ["p1", "p2"]:
@@ -599,6 +601,7 @@ def test_t06_closed_session_synthesis_point_immutable(open_deliberation, selvedg
         ]
     )
     spid = sp["out"]["result"]["synthesis_point_id"]
+    submit_minimal_close_record(1)
     selvedge_cli(
         [
             "submit",

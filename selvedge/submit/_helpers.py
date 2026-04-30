@@ -109,7 +109,59 @@ def _session_open_or_die(conn: sqlite3.Connection, session_no: int) -> sqlite3.R
     return sess
 
 
+# Length tiers mirror the text_atoms.text CHECK in migration 003. Keep in sync.
+# Atom-types not listed fall through to _ATOM_LENGTH_DEFAULT (8-240); that
+# matches the SQL CASE statement's ELSE branch. New tier-specific atom_types
+# added to the SQL enum (migration 003) MUST also be added here so the Python
+# parse-time mirror keeps tier parity with SQL.
+_ATOM_LENGTH_TIERS: dict[str, tuple[int, int]] = {
+    "spec_clause": (16, 480),
+    "spec_section_intent": (16, 480),
+    "legacy_import": (8, 4000),
+}
+_ATOM_LENGTH_DEFAULT: tuple[int, int] = (8, 240)
+
+
+def _validate_atom(atom_type: str, text: str, field_path: str = "") -> None:
+    """Parse-time mirror of text_atoms CHECK + T-21 CR-guard.
+
+    Raises structured SelvedgeError(E_ATOM_*) before any atom INSERT or SQL
+    role-capability lookup so callers receive named errors rather than a
+    CHECK refusal mid-transaction. Per DV-S134-1 (engine-v41); the SQL CHECK
+    and T-21 trigger remain canonical defence-in-depth.
+    """
+    prefix = f"{field_path}: " if field_path else ""
+    if "\n" in text:
+        raise SelvedgeError("E_ATOM_NEWLINE", f"{prefix}atom contains newline")
+    if "\r" in text:
+        raise SelvedgeError("E_ATOM_CR", f"{prefix}atom contains carriage return")
+    if "```" in text:
+        raise SelvedgeError("E_ATOM_FENCED_CODE", f"{prefix}atom contains fenced code block delimiter")
+    # SQL CHECK is `text NOT GLOB '*|*|*'`, which matches when text contains
+    # >=2 pipe characters (the pattern requires two pipes with arbitrary
+    # content surrounding/between them). count(...) >= 2 is the exact
+    # Python equivalent.
+    if text.count("|") >= 2:
+        raise SelvedgeError("E_ATOM_PIPE_TABLE", f"{prefix}atom contains pipe-table syntax")
+    lo, hi = _ATOM_LENGTH_TIERS.get(atom_type, _ATOM_LENGTH_DEFAULT)
+    n = len(text)
+    if n < lo:
+        raise SelvedgeError(
+            "E_ATOM_LENGTH",
+            f"{prefix}atom is {n} chars; minimum {lo} for atom_type={atom_type}",
+        )
+    if n > hi:
+        raise SelvedgeError(
+            "E_ATOM_LENGTH",
+            f"{prefix}atom is {n} chars; maximum {hi} for atom_type={atom_type}",
+        )
+
+
 def _insert_atom(conn: sqlite3.Connection, role: str, session_id: int, atom_type: str, text: str) -> int:
+    # Atom-format validation runs before the role-capability SELECT so a
+    # malformed atom surfaces a structured E_ATOM_* code without consulting
+    # the substrate. Per DV-S134-1 review iter-2 (F169 fix).
+    _validate_atom(atom_type, text)
     _check_role_capability(conn, role, "text_atoms", "insert")
     cur = conn.execute(
         "INSERT INTO text_atoms (atom_type, text, created_session_id) VALUES (?,?,?)",

@@ -75,6 +75,13 @@ bin/selvedge submit decision --payload '{
   ]
 }' && ok "decision insert" || bad "decision insert"
 
+step "submit close-record (T-39 prerequisite, engine-v41)"
+bin/selvedge submit close-record --payload '{
+  "session_no": 1,
+  "summary": "round_trip.sh fixture close-record for T-39 prerequisite",
+  "items": []
+}' >/dev/null && ok "close-record insert" || bad "close-record insert"
+
 step "close S001"
 bin/selvedge submit session-close --payload '{
   "session_no": 1,

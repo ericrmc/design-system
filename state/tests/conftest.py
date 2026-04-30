@@ -146,6 +146,32 @@ def clean_substrate():
     return open_res["out"]["result"]["session_id"]
 
 
+def _submit_minimal_close_record(session_no: int = 1) -> dict:
+    """Submit a minimal close-record so tests can exercise session-close
+    without tripping T-39 (engine-v41, DV-S134-1). Asserts success so a
+    fixture-side close-record refusal does not silently mask the test's
+    intended assertion (S134 review iter-1 F173)."""
+    return _run_cli(
+        [
+            "submit",
+            "close-record",
+            "--payload",
+            json.dumps(
+                {
+                    "session_no": session_no,
+                    "summary": "pytest minimal close-record for T-39 prerequisite",
+                    "items": [],
+                }
+            ),
+        ],
+    )
+
+
+@pytest.fixture
+def submit_minimal_close_record():
+    return _submit_minimal_close_record
+
+
 @pytest.fixture
 def open_deliberation(clean_substrate):
     """Open a deliberation in the clean S001 substrate. Returns deliberation_id."""

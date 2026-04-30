@@ -213,6 +213,8 @@ bin/selvedge submit close-record --payload '{
 bin/selvedge submit session-close --payload '{}'
 ```
 
+`session-close` refuses (E_REFUSAL_T39, engine-v41) when no `close_records` row exists for the session — submit `close-record` first and check its return code before invoking `session-close`. Atom-bearing fields are pre-validated at submit time and surface structured `E_ATOM_LENGTH | NEWLINE | CR | FENCED_CODE | PIPE_TABLE` codes (DV-S134-1, mirroring the `text_atoms.text` CHECK and T-21). Author calibration `engine-feedback` rows *before* `session-close`; the table requires an open session, so post-close calibration must wait for the next session-open.
+
 The substrate auto-fills `engine_version_at_close` from `workspace_metadata.current_engine_version`. If the engine version bumped during the session, run an UPDATE on the metadata row before close (or include it in the version-bumping migration).
 
 Then export and commit:

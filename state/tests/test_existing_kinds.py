@@ -83,7 +83,7 @@ def test_decision_with_alternative_creates_alias(clean_substrate, selvedge_cli, 
     assert n_alts == 1
 
 
-def test_t02_substantive_decision_requires_alternative_at_close(clean_substrate, selvedge_cli):
+def test_t02_substantive_decision_requires_alternative_at_close(clean_substrate, selvedge_cli, submit_minimal_close_record):
     selvedge_cli(
         [
             "submit",
@@ -100,6 +100,7 @@ def test_t02_substantive_decision_requires_alternative_at_close(clean_substrate,
             ),
         ]
     )
+    submit_minimal_close_record(1)
     res = selvedge_cli(
         [
             "submit",
@@ -555,7 +556,7 @@ def test_spec_version_two_active_refused_by_t03(clean_substrate, selvedge_cli, d
         body.unlink(missing_ok=True)
 
 
-def test_session_close_after_unresolved_workitems_refused(clean_substrate, selvedge_cli, db):
+def test_session_close_after_unresolved_workitems_refused(clean_substrate, selvedge_cli, submit_minimal_close_record, db):
     """T-11 demonstrator. We can't insert a work_item via the CLI yet (no
     submit kind), so we go via direct sqlite3 with the __cli__ capability
     that's already seeded for work_items.insert."""
@@ -572,6 +573,7 @@ def test_session_close_after_unresolved_workitems_refused(clean_substrate, selve
     finally:
         conn.close()
 
+    submit_minimal_close_record(1)
     # T-11 is a trigger; close should refuse.
     res = selvedge_cli(
         [
@@ -586,7 +588,8 @@ def test_session_close_after_unresolved_workitems_refused(clean_substrate, selve
     assert "E_REFUSAL_T11" in res["err"]
 
 
-def test_session_close_admitted_when_workitems_clear(clean_substrate, selvedge_cli, db):
+def test_session_close_admitted_when_workitems_clear(clean_substrate, selvedge_cli, submit_minimal_close_record, db):
+    submit_minimal_close_record(1)
     res = selvedge_cli(
         [
             "submit",
@@ -600,7 +603,7 @@ def test_session_close_admitted_when_workitems_clear(clean_substrate, selvedge_c
     assert row["status"] == "closed"
 
 
-def test_t06_closed_decision_immutable_via_sql(clean_substrate, selvedge_cli):
+def test_t06_closed_decision_immutable_via_sql(clean_substrate, selvedge_cli, submit_minimal_close_record):
     selvedge_cli(
         [
             "submit",
@@ -623,6 +626,7 @@ def test_t06_closed_decision_immutable_via_sql(clean_substrate, selvedge_cli):
             ),
         ]
     )
+    submit_minimal_close_record(1)
     selvedge_cli(
         [
             "submit",
