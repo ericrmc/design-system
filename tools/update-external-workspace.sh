@@ -13,7 +13,7 @@
 #
 # Engine-definition file list per specifications/engine-manifest.md §3. Update
 # SHIP_FILES and SUBTRACTED_FILES below when the manifest's file set changes.
-# Last reviewed: engine-v39 (S133).
+# Last reviewed: engine-v40 (S133).
 
 set -euo pipefail
 
