@@ -135,8 +135,14 @@ for spec in methodology workspace engine-manifest; do
 done
 # constraints.md was subtracted at engine-v32 (DV-S109-1, S109); kept out of bootstrap per S133 DV-S133-1.
 
-cp "$SOURCE_ROOT/selvedge/__init__.py"                     "$TARGET/selvedge/__init__.py"
-cp "$SOURCE_ROOT/selvedge/cli.py"                          "$TARGET/selvedge/cli.py"
+# Ship the entire selvedge/ Python package recursively (excluding __pycache__).
+# The package has grown beyond cli.py / __init__.py since engine-v17; per-file
+# copy would miss errors.py / paths.py / submit/ / export/ / etc. (S133 fix).
+while IFS= read -r src_py; do
+  rel="${src_py#$SOURCE_ROOT/}"
+  mkdir -p "$(dirname "$TARGET/$rel")"
+  cp "$src_py" "$TARGET/$rel"
+done < <(find "$SOURCE_ROOT/selvedge" -type f -name '*.py' -not -path '*/__pycache__/*')
 cp "$SOURCE_ROOT/bin/selvedge"                             "$TARGET/bin/selvedge"
 chmod +x "$TARGET/bin/selvedge"
 

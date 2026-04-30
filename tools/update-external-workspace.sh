@@ -137,14 +137,21 @@ SHIP_FILES=(
   "specifications/methodology.md"
   "specifications/workspace.md"
   "specifications/engine-manifest.md"
-  "selvedge/__init__.py"
-  "selvedge/cli.py"
   "bin/selvedge"
   "tools/validate.sh"
   "tools/update-external-workspace.sh"
   "tools/hooks/refuse-substrate-md.py"
   ".claude/settings.json"
 )
+
+# Engine-manifest §3 Substrate table treats `selvedge/` as a single Python-package
+# entry; ship every *.py file under it (excluding __pycache__). The package has
+# grown beyond cli.py / __init__.py since engine-v17, and the bootstrap script's
+# original two-file copy was a latent bug (S133 disaster-recovery apply caught it).
+while IFS= read -r f; do
+  rel="${f#$SOURCE_ROOT/}"
+  SHIP_FILES+=("$rel")
+done < <(find "$SOURCE_ROOT/selvedge" -type f -name '*.py' -not -path '*/__pycache__/*' | sort)
 
 SUBTRACTED_FILES=(
   "specifications/constraints.md"   # subtracted at engine-v32 (DV-S109-1, S109)
@@ -221,13 +228,13 @@ if [[ ${#MISSING_FROM_SOURCE[@]} -gt 0 ]]; then
 fi
 
 echo "Files to update: ${#CHANGED_FILES[@]}"
-for f in "${CHANGED_FILES[@]}"; do echo "  M $f"; done
+(( ${#CHANGED_FILES[@]} > 0 )) && for f in "${CHANGED_FILES[@]}"; do echo "  M $f"; done
 echo ""
 echo "Files to remove (subtracted from engine): ${#REMOVE_FILES[@]}"
-for f in "${REMOVE_FILES[@]}"; do echo "  D $f"; done
+(( ${#REMOVE_FILES[@]} > 0 )) && for f in "${REMOVE_FILES[@]}"; do echo "  D $f"; done
 echo ""
 echo "New migrations to apply: ${#NEW_MIGRATIONS[@]}"
-for m in "${NEW_MIGRATIONS[@]}"; do echo "  + $m"; done
+(( ${#NEW_MIGRATIONS[@]} > 0 )) && for m in "${NEW_MIGRATIONS[@]}"; do echo "  + $m"; done
 echo ""
 
 if [[ ${#CHANGED_FILES[@]} -eq 0 && ${#REMOVE_FILES[@]} -eq 0 && ${#NEW_MIGRATIONS[@]} -eq 0 ]]; then
@@ -246,21 +253,27 @@ fi
 
 echo "=== Applying ==="
 
-for f in "${CHANGED_FILES[@]}"; do
-  mkdir -p "$(dirname "$TARGET/$f")"
-  cp "$SOURCE_ROOT/$f" "$TARGET/$f"
-  if is_executable_file "$f"; then
-    chmod +x "$TARGET/$f"
-  fi
-done
+if (( ${#CHANGED_FILES[@]} > 0 )); then
+  for f in "${CHANGED_FILES[@]}"; do
+    mkdir -p "$(dirname "$TARGET/$f")"
+    cp "$SOURCE_ROOT/$f" "$TARGET/$f"
+    if is_executable_file "$f"; then
+      chmod +x "$TARGET/$f"
+    fi
+  done
+fi
 
-for f in "${REMOVE_FILES[@]}"; do
-  rm "$TARGET/$f"
-done
+if (( ${#REMOVE_FILES[@]} > 0 )); then
+  for f in "${REMOVE_FILES[@]}"; do
+    rm "$TARGET/$f"
+  done
+fi
 
-for m in "${NEW_MIGRATIONS[@]}"; do
-  cp "$SOURCE_ROOT/state/migrations/$m" "$TARGET/state/migrations/$m"
-done
+if (( ${#NEW_MIGRATIONS[@]} > 0 )); then
+  for m in "${NEW_MIGRATIONS[@]}"; do
+    cp "$SOURCE_ROOT/state/migrations/$m" "$TARGET/state/migrations/$m"
+  done
+fi
 
 if [[ ${#NEW_MIGRATIONS[@]} -gt 0 ]]; then
   echo ""
