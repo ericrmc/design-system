@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sqlite3
 
+from ..errors import SelvedgeError
 from ._helpers import (
     _atom_session_id,
     _check_role_capability,
@@ -20,7 +21,13 @@ def _submit_close_record(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     # cannot leave half the close-record's atoms in text_atoms when the
     # transaction rolls back. DV-S134-1 (engine-v41).
     _validate_atom("close_summary", p["summary"], "summary")
-    for idx, item in enumerate(p.get("items", [])):
+    items = p.get("items") or []
+    if not items:
+        raise SelvedgeError(
+            "E_VALIDATION",
+            "close-record requires non-empty items[]; submit at least one close_state_item entry (T-40 will refuse session-close otherwise)",
+        )
+    for idx, item in enumerate(items):
         _validate_atom("close_state_item", item["text"], f"items[{idx}].text")
     sess_id = _atom_session_id(conn, p.get("session_no"))
     wno = _session_workspace_no(conn, sess_id)

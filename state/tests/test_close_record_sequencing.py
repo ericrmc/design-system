@@ -1,8 +1,13 @@
-"""Tests for engine-v41 (DV-S134-1) close-record sequencing defences:
+"""Tests for engine-v41 (DV-S134-1) and engine-v44 (DV-S153-1)
+close-record sequencing defences:
 
 - T-39 refuses session-close when no close_records row exists (UPDATE path).
 - T-39b refuses INSERT INTO sessions with status='closed' without a
   close_records row (defence-in-depth, migration 028).
+- T-40 refuses session-close when the close_records row carries zero
+  close_state_items (migration 029, DV-S153-1).
+- _submit_close_record refuses empty items[] at the handler pre-check
+  (defence-in-depth companion to T-40).
 - _validate_atom mirrors text_atoms.text CHECK + T-21 CR-guard at parse time
   with structured E_ATOM_* error codes that propagate through the CLI.
 """
@@ -61,6 +66,96 @@ def test_t39b_refuses_direct_insert_of_closed_session(clean_substrate):
         assert "E_REFUSAL_T39B" in str(exc.value)
     finally:
         conn.close()
+
+
+# ---------------------------------------------------------------------------
+# T-40: session-close requires close_state_items
+# ---------------------------------------------------------------------------
+
+
+def test_t40_handler_refuses_empty_items_array(clean_substrate, selvedge_cli):
+    """Handler-side pre-check refuses close-record with explicit empty
+    items[] — surfaces E_VALIDATION before any close_records / text_atoms
+    INSERT, so the caller cannot produce the S147-S150-class empty
+    close_record rows that motivated DV-S153-1."""
+    payload = {
+        "session_no": 1,
+        "summary": "well-formed summary atom for empty-items refusal test",
+        "items": [],
+    }
+    res = selvedge_cli(
+        ["submit", "close-record", "--payload", json.dumps(payload)],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    err = json.loads(res["err"])
+    assert err["code"] == "E_VALIDATION"
+    assert "non-empty items[]" in err["detail"]
+
+
+def test_t40_handler_refuses_missing_items_field(clean_substrate, selvedge_cli):
+    """Same refusal when the items field is absent entirely (treated as the
+    empty case via `p.get('items') or []`)."""
+    payload = {
+        "session_no": 1,
+        "summary": "well-formed summary atom for missing-items refusal test",
+    }
+    res = selvedge_cli(
+        ["submit", "close-record", "--payload", json.dumps(payload)],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    err = json.loads(res["err"])
+    assert err["code"] == "E_VALIDATION"
+    assert "non-empty items[]" in err["detail"]
+
+
+def test_t40_trigger_refuses_session_close_with_zero_items(clean_substrate, db):
+    """T-40 fires at session-close when a close_records row exists for the
+    session but no close_state_items row references it. Bypasses the handler
+    pre-check via direct SQL to mirror the attack surface — same shape as
+    test_t39b_refuses_direct_insert_of_closed_session."""
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        atom_row = conn.execute(
+            "INSERT INTO text_atoms (atom_type, text, created_session_id) "
+            "VALUES ('close_summary', "
+            "'direct-sql close-record summary for T-40 trigger refusal test', "
+            "1) RETURNING atom_id"
+        ).fetchone()
+        atom_id = atom_row[0]
+        conn.execute(
+            "INSERT INTO close_records (session_id, summary_atom_id) VALUES (?, ?)",
+            (1, atom_id),
+        )
+        with pytest.raises(sqlite3.IntegrityError) as exc:
+            conn.execute(
+                "UPDATE sessions SET status='closed' WHERE session_no=1"
+            )
+        assert "E_REFUSAL_T40" in str(exc.value)
+        assert "at least one close_state_items entry" in str(exc.value)
+    finally:
+        conn.close()
+
+
+def test_t40_admits_session_close_with_one_item(
+    clean_substrate, selvedge_cli, submit_minimal_close_record, db
+):
+    """The minimal fixture submits exactly one close_state_items row; T-40
+    admits session-close at the >=1 threshold. Round-trip ensures the
+    threshold is not silently >=2 or higher."""
+    submit_minimal_close_record(1)
+    res = selvedge_cli(["submit", "session-close", "--payload", "{}"])
+    assert res["out"]["ok"], res
+    row = db.execute(
+        "SELECT s.status, COUNT(csi.state_item_id) AS n "
+        "FROM sessions s "
+        "JOIN close_records cr ON cr.session_id=s.session_id "
+        "LEFT JOIN close_state_items csi ON csi.close_record_id=cr.close_record_id "
+        "WHERE s.session_no=1 GROUP BY s.session_id"
+    ).fetchone()
+    assert row["status"] == "closed"
+    assert row["n"] == 1
 
 
 # ---------------------------------------------------------------------------

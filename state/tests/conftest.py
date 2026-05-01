@@ -148,9 +148,16 @@ def clean_substrate():
 
 def _submit_minimal_close_record(session_no: int = 1) -> dict:
     """Submit a minimal close-record so tests can exercise session-close
-    without tripping T-39 (engine-v41, DV-S134-1). Asserts success so a
-    fixture-side close-record refusal does not silently mask the test's
-    intended assertion (S134 review iter-1 F173)."""
+    without tripping T-39 (engine-v41, DV-S134-1) or T-40 (engine-v44,
+    DV-S153-1). The clean_substrate fixture applies all migrations, so tests
+    run against the latest engine-version on disk; this fixture's items[]
+    shape must satisfy the strictest gate currently applied. T-40 requires
+    at least one close_state_items row, so the fixture carries one
+    well-formed item; the empty-items[] shape that sufficed under T-39
+    alone is now refused at the handler pre-check. If a future engine bump
+    raises the threshold above 1 (e.g. per-facet coverage R-1.1), this
+    fixture must be widened to match — otherwise tests passing here would
+    not exercise session-close under the deployed gate."""
     return _run_cli(
         [
             "submit",
@@ -159,8 +166,13 @@ def _submit_minimal_close_record(session_no: int = 1) -> dict:
             json.dumps(
                 {
                     "session_no": session_no,
-                    "summary": "pytest minimal close-record for T-39 prerequisite",
-                    "items": [],
+                    "summary": "pytest minimal close-record for T-39 plus T-40 prerequisite",
+                    "items": [
+                        {
+                            "facet": "what_was_done",
+                            "text": "pytest minimal close-record fixture sole item to satisfy T-40",
+                        }
+                    ],
                 }
             ),
         ],
