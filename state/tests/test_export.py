@@ -343,3 +343,128 @@ def test_export_issues_write_cleans_stale_files(isolated_workspace):
     assert res["rc"] == 0, res
     assert not stale.exists()
     assert str(stale.relative_to(isolated_workspace)) in res["out"]["files_deleted"]
+
+
+# ---------------------------------------------------------------------------
+# reference-harness export
+# ---------------------------------------------------------------------------
+
+
+def _seed_sealed_harness(workspace: Path, alias: str = "RH-S080-1") -> dict:
+    """Open + populate + seal a harness in the fresh test workspace's session 1
+    (workspace_session_no=80). Returns the seal CLI response payload."""
+    open_res = _run_cli_in(workspace, [
+        "submit", "harness-open", "--payload",
+        json.dumps({
+            "alias": alias,
+            "arc_slug": "pytest-arc",
+            "stage_n": 1,
+            "absence_declaration": f"absence declaration for {alias} export-pipeline test",
+            "expiry_sessions": 4,
+        }),
+    ])
+    assert open_res["rc"] == 0, open_res
+    hid = open_res["out"]["result"]["harness_id"]
+    _run_cli_in(workspace, [
+        "submit", "harness-target", "--payload",
+        json.dumps({
+            "harness_id": hid, "ord": 1,
+            "descriptor": "pytest target descriptor for harness export",
+            "artifact_path": "tests/fixture-target.md",
+            "artifact_sha256": "deadbeef" * 8,
+        }),
+    ])
+    _run_cli_in(workspace, [
+        "submit", "harness-assumption", "--payload",
+        json.dumps({"harness_id": hid, "ord": 1,
+                    "assumption": "fixture assumption for harness export pytest"}),
+    ])
+    claim_res = _run_cli_in(workspace, [
+        "submit", "harness-claim", "--payload",
+        json.dumps({"harness_id": hid, "ord": 1,
+                    "claim": "fixture claim for harness export pytest",
+                    "load_bearing": True}),
+    ])
+    cid = claim_res["out"]["result"]["claim_id"]
+    _run_cli_in(workspace, [
+        "submit", "harness-stress", "--payload",
+        json.dumps({"harness_id": hid, "ord": 1, "protocol_kind": "constraint_replay",
+                    "description": "fixture stress description for harness export"}),
+    ])
+    _run_cli_in(workspace, [
+        "submit", "harness-result", "--payload",
+        json.dumps({"claim_id": cid, "result": "survived",
+                    "evidence": "fixture evidence text for harness result export"}),
+    ])
+    _run_cli_in(workspace, [
+        "submit", "harness-dissent", "--payload",
+        json.dumps({"harness_id": hid, "ord": 1,
+                    "dissent": "fixture dissent text for harness export"}),
+    ])
+    seal_res = _run_cli_in(workspace, [
+        "submit", "harness-seal", "--payload", json.dumps({"harness_id": hid}),
+    ])
+    assert seal_res["rc"] == 0, seal_res
+    return {"harness_id": hid, "alias": alias}
+
+
+def test_export_session_skips_open_harness(isolated_workspace):
+    """An open harness must not appear in the export plan; it has no
+    sealed reference value yet."""
+    _run_cli_in(isolated_workspace, [
+        "submit", "harness-open", "--payload",
+        json.dumps({
+            "alias": "RH-S080-1", "arc_slug": "pytest-arc", "stage_n": 1,
+            "absence_declaration": "open-only harness for skip-open pytest",
+            "expiry_sessions": 4,
+        }),
+    ])
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "fixture close-record so the export plan is non-empty",
+                    "items": []}),
+    ])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "80"])
+    assert res["rc"] == 0, res
+    assert res["out"]["harness_files_planned"] == []
+
+
+def test_export_session_emits_sealed_harness_dry_run(isolated_workspace):
+    seeded = _seed_sealed_harness(isolated_workspace)
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "close-record for sealed-harness dry-run export",
+                    "items": []}),
+    ])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "80"])
+    assert res["rc"] == 0, res
+    planned = res["out"]["harness_files_planned"]
+    assert len(planned) == 1
+    assert planned[0].endswith(f"/harnesses/{seeded['alias']}.md")
+    # Dry-run must not have written anything.
+    assert not (isolated_workspace / planned[0]).exists()
+
+
+def test_export_session_writes_sealed_harness(isolated_workspace):
+    seeded = _seed_sealed_harness(isolated_workspace)
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "close-record for sealed-harness write export",
+                    "items": []}),
+    ])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "80", "--write"])
+    assert res["rc"] == 0, res
+    written = res["out"]["harness_files_written"]
+    assert len(written) == 1
+    path = isolated_workspace / written[0]
+    assert path.exists()
+    text = path.read_text()
+    assert f"id: {seeded['alias']}" in text
+    assert "status: sealed" in text
+    assert "## Targets" in text
+    assert "## Claims" in text
+    assert "## Results" in text
+    assert "## Dissent" in text
+    assert "load-bearing" in text
+    assert "fixture claim for harness export pytest" in text
+    assert "→ **survived**" in text

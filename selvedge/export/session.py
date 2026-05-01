@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from ..errors import SelvedgeError
+from .harnesses import _export_reference_harnesses_for_session
 
 
 def _atom_text(conn: sqlite3.Connection, atom_id: Optional[int]) -> str:
@@ -341,16 +342,26 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
         lines.append("")
         files["03-close.md"] = "\n".join(lines)
 
+    # Reference harnesses lifecycle-touched by this session land at
+    # provenance/<open_wno>-<open_slug>/harnesses/<alias>.md (workspace-relative
+    # paths, possibly outside this session's out_dir when sealed cross-session).
+    harness_files = _export_reference_harnesses_for_session(conn, sid)
+
     if write:
         out_dir.mkdir(parents=True, exist_ok=True)
         for name, content in files.items():
             (out_dir / name).write_text(content)
+        for path_str, content in harness_files.items():
+            p = Path(path_str)
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(content)
         return {
             "dry_run": False,
             "session_no": session_no,
             "workspace_session_no": workspace_no,
             "out_dir": str(out_dir),
             "files_written": list(files.keys()),
+            "harness_files_written": sorted(harness_files.keys()),
         }
     return {
         "dry_run": True,
@@ -358,4 +369,5 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
         "workspace_session_no": workspace_no,
         "out_dir": str(out_dir),
         "files_planned": list(files.keys()),
+        "harness_files_planned": sorted(harness_files.keys()),
     }
