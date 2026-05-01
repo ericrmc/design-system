@@ -1,10 +1,10 @@
 ---
 title: Methodology
-version: 11
+version: 12
 status: active
 created: 2026-04-27
-updated-by-session: 159
-supersedes: methodology-v10 (engine-v45); per S159 DV-S159-1 (synthesis-phase mention of seal-time deliberation-grading clause; details in prompt-development §4)
+updated-by-session: 161
+supersedes: methodology-v11 (engine-v46); per S161 DV-S161-1 (§Roles disambiguation paragraph clarifying agent and human in post-restart context)
 ---
 
 # Methodology
@@ -161,11 +161,20 @@ The substrate may admit experimental validation primitives at a workspace-experi
 - **Provenance is immutable after close.** Closed-session records are not edited; if a closed session contained an error, a subsequent session corrects it explicitly with a record of the correction.
 - **All session work is committed to git** at close. Git history is the workspace's tamper-evident substrate.
 
+## Roles
+
+Two actors interact with this engine and are named throughout this kernel and the executable prompts. Their roles have shifted since the engine was first authored, and the vocabulary should be read with that shift in mind.
+
+- **The agent** is the language-model process that opens sessions, reads the substrate, drafts decisions, runs deliberations, ships specs, runs review loops, commits, and pushes. In the post-restart engine the agent is the only CLI-runner; every `bin/selvedge submit` call is authored by the agent. Multi-agent deliberation produces multiple agent-instances within a session (one per perspective; capture and reviewer subagents are also agent-instances), but they are all the agent.
+- **The human** (also referred to in older kernel text as *the operator*) directs scope, surfaces course corrections, ratifies methodology-changing decisions, names friction patterns, decides what external problems to test the engine against, and acts as the structural reviewer-subtractor. Per S075 problem statement, this is "a human reviewer with a defined scope, scheduled at predictable intervals, with the authority to reframe rather than just ratify"; per provenance/078-design-commitments §D-2 the human is one of four roles in the active agent set, the only one with subtraction authority.
+
+Where this kernel and the prompts say *operator-policed* (DV-S130-1 temporal-claim grounding, DV-S155-1 close-time interpretive-choice audit, DV-S159-1 seal-time deliberation-grading), the meaning is *agent-policed at execution with human-as-structural-reviewer recovery via calibration-EF*. The substrate refuses what neither catches. This split is the structural defense the methodology relies on; the §Engine-feedback-pathway is the surface that makes the human-as-reviewer role deliberate rather than accidental. (Cites DV-S161-1; D-24 P-2 cross-family + P-1 + P-3 caveat.)
+
 ## Engine-feedback pathway
 
-**Engine-feedback** is the channel for surfacing concerns about the methodology itself during the execution of an application. An operator (human) or an application-agent records observations as files at `engine-feedback/EF-<session>-<slug>.md`. A future session may triage feedback and act on it as a methodology revision.
+**Engine-feedback** is the channel for surfacing concerns about the methodology itself during the execution of an application. The human or an agent-instance records observations as `engine_feedback` rows in the substrate (engine-v26+ via `bin/selvedge submit engine-feedback`); a future session may triage feedback and act on it as a methodology revision.
 
-The engine-feedback pathway is what allowed the operator's interventions across Selvedge's seventy-five self-development sessions to become structural rather than ephemeral. A successor system should not rely on a self-correcting agent (no LLM agent has shown sustained self-correction under load); it should expect that some of its limitations will be surfaced by humans and design the surfacing path deliberately.
+The engine-feedback pathway is what allowed the human's interventions across Selvedge's seventy-five self-development sessions to become structural rather than ephemeral. A successor system should not rely on a self-correcting agent (no LLM agent has shown sustained self-correction under load); it should expect that some of its limitations will be surfaced by humans and design the surfacing path deliberately.
 
 ## Self-hosting
 

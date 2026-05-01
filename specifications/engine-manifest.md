@@ -1,10 +1,10 @@
 ---
 title: Engine Manifest
-version: 46
+version: 47
 status: active
 created: 2026-04-28
-updated-by-session: 159
-supersedes: engine-manifest v45 (engine-v45; S155 DV-S155-1 close-time interpretive-choice audit); v44 (engine-v44; S153 T-40 close_state_items); v43 (engine-v43; S134 iter-2 narrative correction); v42 (engine-v42; iter-1 review fix-up); v41 (engine-v41; iter-0 ship of T-39 + atom validator); v40 (engine-v40; S133 DV-S133-1)
+updated-by-session: 161
+supersedes: engine-manifest v46 (engine-v46; S159 DV-S159-1 seal-time deliberation-grading clause); v45 (engine-v45; S155 DV-S155-1 close-time interpretive-choice audit); v44 (engine-v44; S153 T-40 close_state_items); v43 (engine-v43; S134 iter-2 narrative correction); v42 (engine-v42; iter-1 review fix-up); v41 (engine-v41; iter-0 ship of T-39 + atom validator); v40 (engine-v40; S133 DV-S133-1)
 ---
 
 # Engine Manifest
@@ -12,6 +12,10 @@ supersedes: engine-manifest v45 (engine-v45; S155 DV-S155-1 close-time interpret
 This file enumerates the loadable Selvedge engine at the current commit. The engine is the file set listed below plus the substrate; loading the engine means having these files available, the substrate initialised, and the `selvedge` CLI on PATH.
 
 ## Current engine version
+
+`engine-v47` (established Session 161 — adds the §Roles paragraph to `methodology` clarifying the agent (LLM, sole CLI-runner) and human (reframer-subtractor, scheduled review cadence) split that has drifted since the kernel was first authored; ratifies D-24 synthesis with C-1 PILOT-FIRST + C-2 FRICTION-REDUCTION-SEPARABLE + C-3 ORIENT-§WHY + C-4 NO-SUBSTRATE-GATE-NOW + C-5 NO-AUTO-MODE-MECHANISM convergences; defers submit-help schema registry, orient §Why extension, drain script, §1.5 autonomous-mode branch, T-NN substrate gate, P-2 authority tables — pending pilot-arc evidence per S075 external-pressure thesis).
+
+`engine-v47` is a methodology-only bump: methodology v12 supersedes v11 with a new `## Roles` section between §Preservation and §Engine-feedback-pathway. The §Engine-feedback-pathway section is also updated to refer to substrate `engine_feedback` rows (engine-v26+ surface) rather than the legacy `engine-feedback/EF-...md` markdown files retired at engine-v22. No new substrate table, no new submit kind, no new trigger, no Python change. Per S161 DV-S161-1 — four-perspective cross-family deliberation D-24 (P-1 anthropic kernel-coherence, P-2 openai-codex cross-family substrate engineer, P-3 anthropic adversary, P-4 anthropic human-load economist); convergence on PILOT-FIRST (P-2+P-3+P-4 — disaster-response harness analysis is load-bearing-next per S075 external-pressure thesis; auto-mode infrastructure premature); convergence on FRICTION-REDUCTION-SEPARABLE (4-of-4 — submit-help schema registry ships in S163+ as separable scope, all reject bundling); convergence on ORIENT-§WHY (P-1+P-2+P-4 — extend orient with foundational-purpose distillation per EF-S161-1 calibration); convergence on NO-SUBSTRATE-GATE-NOW (P-3+P-4 — DV-S159-1 promotion-trigger requires recurrence not first-instance; EF-S160-1 is first calibration not recurrent); convergence on NO-AUTO-MODE-MECHANISM (4-of-4 — reject DV-S160-1 drain-script + §1.5 env-var shape). Divergences preserved (D-1 P-1 ship-gate-now as v2 graduation target on second calibration-EF; D-2 P-2 bounded-delegated-execution as v2 if recurrence pressure builds; D-3 vocabulary 4-way split resolved as minimal §Roles disambiguation rather than full rename). Minorities preserved (M-1 P-3 halt-all-self-development admit-gate; synthesis adopts operational direction toward pilot-first without formal admit-gate. M-2 P-3 coupling-objection on Q10; synthesis ships orient §Why per 3-of-4 convergence with P-3 caveat). Single-frame counterfactual deferred to FR-S161-X: enumerate target_kind values that trigger §When-to-convene rather than carrying trigger as prose. Self-applied DV-S159-1 §4 seal-grade clause to D-24 retroactively per DV-S159-1 v15 §4 discipline.
 
 `engine-v46` (established Session 159 — adds the seal-time deliberation-grading clause to `prompt-development` §4 and the kernel synthesis-phase mention in `methodology` §Synthesis; closes OI-S154-5 by-mechanism per DV-S159-1; opens sibling OI-S159-1 rehoming sub-type verification at typed-observation closure to harness scope per DV-S152-1 / OI-S151-4 graduation gate).
 
