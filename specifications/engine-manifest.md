@@ -1,10 +1,10 @@
 ---
 title: Engine Manifest
-version: 45
+version: 46
 status: active
 created: 2026-04-28
-updated-by-session: 155
-supersedes: engine-manifest v44 (engine-v44; S153 T-40 close_state_items); v43 (engine-v43; S134 iter-2 narrative correction); v42 (engine-v42; iter-1 review fix-up); v41 (engine-v41; iter-0 ship of T-39 + atom validator); v40 (engine-v40; S133 DV-S133-1)
+updated-by-session: 159
+supersedes: engine-manifest v45 (engine-v45; S155 DV-S155-1 close-time interpretive-choice audit); v44 (engine-v44; S153 T-40 close_state_items); v43 (engine-v43; S134 iter-2 narrative correction); v42 (engine-v42; iter-1 review fix-up); v41 (engine-v41; iter-0 ship of T-39 + atom validator); v40 (engine-v40; S133 DV-S133-1)
 ---
 
 # Engine Manifest
@@ -12,6 +12,10 @@ supersedes: engine-manifest v44 (engine-v44; S153 T-40 close_state_items); v43 (
 This file enumerates the loadable Selvedge engine at the current commit. The engine is the file set listed below plus the substrate; loading the engine means having these files available, the substrate initialised, and the `selvedge` CLI on PATH.
 
 ## Current engine version
+
+`engine-v46` (established Session 159 — adds the seal-time deliberation-grading clause to `prompt-development` §4 and the kernel synthesis-phase mention in `methodology` §Synthesis; closes OI-S154-5 by-mechanism per DV-S159-1; opens sibling OI-S159-1 rehoming sub-type verification at typed-observation closure to harness scope per DV-S152-1 / OI-S151-4 graduation gate).
+
+`engine-v46` is a spec-only methodology bump: prompt-development v15 supersedes v14 with a new ### subsection in §4 ("Seal-time deliberation-grading") naming definition, four-item exclusion list, payload shape with three-disposition vocabulary (addressed-in-synthesis / deferred-to-FR / nilled-by-exclusion), universal scope (every sealed deliberation; `seal-grade: 0` admitted with named exclusion), operator/agent-policed authority, named promotion trigger to substrate gate, sub-type-verification-out-of-scope clause, synthesizer-as-actor caveat, and minority-preserved clause carrying P-3's M-1 ship-nothing position. Methodology v11 supersedes v10 with one paragraph in §Synthesis pointing at the §4 clause. No new substrate table, no new submit kind, no new trigger at v1: the seal-grade clause is one `engine_feedback` row with `flag='observation'` and headline prefix `seal-grade:` mirroring DV-S155-1's `audit-step:` pattern (P-1 anthropic + P-2 openai-codex cross-family convergence on naming and shape, C-3 of D-23). Per S159 DV-S159-1 — four-perspective cross-family deliberation D-23 (P-1 anthropic architect, P-2 openai-codex cross-family substrate engineer, P-3 anthropic adversary, P-4 anthropic pragmatist); convergence on SPLIT (counterfactual half ships now; sub-type verification rehomed to OI-S159-1 per DV-S152-1) (P-1+P-2+P-4 vs P-3); convergence on no-new-substrate-at-v1 reuse engine_feedback observation row (P-1+P-2+P-4); cross-family convergence on `seal-grade:` prefix (P-1+P-2); convergence on universal scope (P-1+P-2); divergence preserved (D-1 P-4 alternative naming `seal-counterfactual:`); minority preserved (M-1 P-3 ship-nothing-and-reminder as v2 promotion target if calibration-EF evidence accumulates). The typed-observation→gate progression follows DV-S152-1's typed-conflict-primitive precedent and DV-S155-1's audit-step trajectory.
 
 `engine-v45` (established Session 155 — adds the close-time interpretive-choice audit clause to `prompt-development` §8.5 and the kernel Close-activity mention in `methodology` §How a session works activity 9; closes OI-S154-2 (HIGH) and OI-S154-3 jointly per DV-S155-1).
 

@@ -1,10 +1,10 @@
 ---
 title: Methodology
-version: 10
+version: 11
 status: active
 created: 2026-04-27
-updated-by-session: 155
-supersedes: methodology-v9 (engine-v44); per S155 DV-S155-1 (close-phase mention of close-time interpretive-choice audit; details in prompt-development §8.5)
+updated-by-session: 159
+supersedes: methodology-v10 (engine-v45); per S159 DV-S159-1 (synthesis-phase mention of seal-time deliberation-grading clause; details in prompt-development §4)
 ---
 
 # Methodology
@@ -97,6 +97,8 @@ The synthesizer must not have been one of the perspectives.
 - **Dissent preservation.** Disagreements are recorded as `divergence` or `minority` synthesis_points with `source_perspectives` pointing at the dissenting perspective_ids. A minority position with a strong argument is preserved as-is, not diluted.
 
 The synthesis of perspectives **is not itself a decision**. It feeds Decide.
+
+At every sealed deliberation the synthesizer additionally authors a `seal-grade:` engine_feedback row naming single-frame counterfactuals — positions no perspective took that the synthesis admits as load-bearing alternative readings — before `deliberation-seal` returns. The operational clause, definition, exclusions, payload shape, and v2 promotion trigger live in `prompts/development.md` §Seal-time deliberation-grading per DV-S159-1; this is the deliberation-seal sibling of the §8.5 close-time interpretive-choice audit (DV-S155-1) and is operator/agent-policed at engine-v46.
 
 ### Skipping triggered deliberation
 

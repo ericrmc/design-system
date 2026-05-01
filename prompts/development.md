@@ -1,4 +1,4 @@
-# Self-development application (engine-v45)
+# Self-development application (engine-v46)
 
 You are running the Selvedge engine on its own development. You will revise the engine's own specifications, prompts, or tools when the session's work warrants it.
 
@@ -75,6 +75,40 @@ bin/selvedge submit synthesis-point --payload '{"deliberation_id": <N>, "kind": 
 After deliberation, spawn a **capture subagent** to read each perspective's body_md and submit `perspective-position` (one per perspective, distilling the **Position.** paragraph into a single 8–240-char atom) and `perspective-claim` rows (one per bullet under each labeled section, with `section_kind` from a closed enum: position / schema_sketch / cli_surface / migration_path / what_not / open_question / risk / what_lost). The orchestrator does not author the decomposition by hand.
 
 **Subagent tool class (cites OI-S156-1).** The perspective subagents (each producing a stance brief and authoring a `perspective-N.json` payload) and the capture subagent (writing decomposition payloads before submit) both need Write capability. Spawn them with a tool class that admits Write (e.g. `general-purpose`); `Explore` is read-only and refuses payload authoring at dispatch time. Reserve `Explore` for the §7 reviewer subagent, which only reads the change and submits findings via Bash.
+
+### Seal-time deliberation-grading (mandatory; cites DV-S159-1)
+
+The clause is the deliberation-seal sibling of the §8.5 close-time interpretive-choice audit (DV-S155-1). At every sealed deliberation the synthesizer authors a `seal-grade:` engine_feedback row before `bin/selvedge submit deliberation-seal` returns control to the next phase. D-23 cross-family convergence (P-1 anthropic + P-2 openai-codex) carries the naming and shape; methodology §Synthesis carries the sibling-clause pointer.
+
+**Definition.** A *single-frame counterfactual* is a position no perspective took during the deliberation that the synthesis admits as a load-bearing alternative reading — a stance that, if surfaced post-seal by a future reader, would warrant reopening per methodology §Reopen-on-new-reading. The synthesizer enumerates 0..N counterfactuals at seal time, naming for each: the position, why it would have changed the synthesis if adopted, and the disposition.
+
+**Exclusions (the position is NOT a counterfactual for grading purposes if any holds):**
+
+- The position is already preserved as a `synthesis_points.kind ∈ {divergence, minority}` row from this deliberation (it was taken by some perspective).
+- The position is barred by recorded constraints, prior decisions, or active spec clauses cited at convening time.
+- The position is a micro-decision (wording, ordering, naming variants within an axis already deliberated).
+- The position is foreclosed by the deliberation's stated scope at convening time.
+
+**Payload shape.** Submit one `engine_feedback` row with `flag='observation'` and headline prefix `seal-grade:`. The body enumerates each counterfactual and disposition. Each counterfactual receives one of three dispositions: **addressed-in-synthesis** (the synthesis text already covered the alternative — cite the synthesis_md location), **deferred-to FR-S\<wno\>-\<seq\>** (the alternative warrants future revisit — submit the FR first, cite its alias), or **nilled-by-exclusion** (the position is acknowledged as plausible but excluded — cite which exclusion applied).
+
+```sh
+bin/selvedge submit engine-feedback --payload '{
+  "flag": "observation",
+  "body_md": "**seal-grade:** <count> single-frame counterfactuals.\n\n1. <position>: addressed-in-synthesis (<short reason>).\n2. <position>: deferred-to FR-S<wno>-<seq> (<short reason>).\n3. <position>: nilled-by-exclusion — <which exclusion applied>.\n\nIf no counterfactual remains after exclusions, state: **seal-grade:** 0 — exclusions applied: <which>."
+}'
+```
+
+**Scope.** Every sealed deliberation, regardless of weight. `seal-grade: 0` with named exclusion is the cheap exit for tactical seals whose stance-space was obvious at convening time — analogous to `audit-step: 0` in §8.5. Universal scope mirrors DV-S155-1's session-universal close-time audit (cites C-4 of D-23).
+
+**Authority.** This clause is operator/agent-policed. The substrate does not gate `deliberation-seal` on seal-grade row presence at engine-v46. Calibration-EFs are the recovery path when a reader notices a missed counterfactual after seal (mirrors §8.5 close-time audit and temporal-claim grounding).
+
+**Promotion trigger to substrate gate.** If a future deliberation seals without a `seal-grade:` row AND a downstream session opens a calibration-EF naming the prior deliberation as having sealed without naming a load-bearing counterfactual that the engine_feedback could have absorbed, the next session opens a gate-promotion `OI` and the engine ships a T-NN refusing `deliberation-seal` on seal-grade row absence. This is the v2 graduation path; the typed-observation→gate progression follows DV-S152-1's typed-conflict-primitive precedent and DV-S155-1's audit-step trajectory.
+
+**Sub-type verification scope (cites OI-S159-1, DV-S152-1).** Sub-type verification at typed-observation closure (the `conflict_kind`/`closure_kind` nullable opt-in atoms on `reference_harness`) is *not* part of this clause. It rehomes to OI-S159-1 and rides OI-S151-4's second-arc reference_harness re-evaluation gate. A future harness session may carry a verification-pass adjacent to harness-row submission; the seal-grade clause does not.
+
+**Synthesizer-as-actor caveat (cites P-2 D-23).** The synthesizer is typically an LLM playing a role within the same session, not the human operator. An LLM enumerating counterfactuals it didn't name during synthesis may converge on the same blind spots it had during synthesis. The calibration-EF recovery path is the honest mitigation; the v2 gate-promotion trigger is the structural insurance if recurrence pressure builds.
+
+**Minority preserved (cites M-1 of D-23).** P-3's ship-nothing position — that existing `divergence`/`minority` synthesis_points plus methodology §Reopen-on-new-reading already carry the load — is preserved in D-23 synthesis as M-1. The synthesis did not adopt M-1 because existing dissent kinds preserve perspectives that took stances, not stances no perspective took, and §Reopen is post-hoc recovery rather than seal-time prevention. M-1's strongest insight (operator-policed clauses risk the unfired-trigger pile) is folded into the v2 promotion trigger above.
 
 ## 5. Record decisions
 
@@ -250,11 +284,11 @@ If a choice is lifted, submit the `A-NNN` row first (`bin/selvedge submit assump
 
 **Plan-time discipline (cites M-2 of D-21; carries P-3's warning).** The audit is recovery, not prevention. The primary discipline is to lift `A-NNN` rows *while authoring* plan-prose, deliberation-output, or spec text — not at close. The close-time audit catches what plan-time discipline missed; it does not substitute for it.
 
-**Authority.** This clause is operator/agent-policed. The substrate does not gate `session-close` on audit-row presence at engine-v45. Calibration-EFs are the recovery path when a reader notices a missed audit or a missed lift after close (mirrors temporal-claim grounding).
+**Authority.** This clause is operator/agent-policed. The substrate does not gate `session-close` on audit-row presence at engine-v46. Calibration-EFs are the recovery path when a reader notices a missed audit or a missed lift after close (mirrors temporal-claim grounding).
 
 **Promotion trigger to substrate gate.** If a future session-close lands without an audit row AND a downstream session opens a calibration-EF naming the prior session as having shipped on an unlifted load-bearing assumption, the next session opens a gate-promotion `OI` and the engine ships a T-NN refusing `session-close` on audit-row absence. This is the v2 graduation path; the typed-observation→gate progression follows DV-S152-1's typed-conflict-primitive precedent.
 
-**Scope limits (cites C-1 of D-21).** This audit covers session-close, not deliberation-seal. OI-S154-5 (single-frame counterfactual at deliberation-seal) is mechanically distinct (different trigger, different actor) and remains a separate open issue with its own future treatment.
+**Scope limits (cites C-1 of D-21).** This audit covers session-close, not deliberation-seal. The deliberation-seal sibling — single-frame counterfactual grading — ships in §4 as `Seal-time deliberation-grading` per DV-S159-1 (closing OI-S154-5 by-mechanism); the two clauses are coordinated but mechanically distinct (different trigger, different actor, different evidence shape).
 
 ## 9. Close
 
