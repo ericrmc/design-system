@@ -1,10 +1,10 @@
 ---
 title: Methodology
-version: 7
+version: 10
 status: active
 created: 2026-04-27
-updated-by-session: 132
-supersedes: methodology-v6 (engine-v34); per S132 DV-S132-1 (lift S131 deliberation-shape content into kernel; preserves DV-S131-1 substantive scope unchanged)
+updated-by-session: 155
+supersedes: methodology-v9 (engine-v44); per S155 DV-S155-1 (close-phase mention of close-time interpretive-choice audit; details in prompt-development §8.5)
 ---
 
 # Methodology
@@ -37,7 +37,7 @@ A session may include any subset of the following activities. They are a vocabul
 6. **Produce** — create or revise the artefacts the decisions warrant.
 7. **Validate** — check that what was produced is consistent with the workspace and meets its stated purpose. Two senses: workspace and domain. When no domain-actor is available, Domain validation is recorded as skipped; skipping is not a third sense.
 8. **Record** — commit the session's provenance to `provenance/NNN-<slug>/`.
-9. **Close** — leave the workspace coherent. Commit at git. State what the next session should address.
+9. **Close** — leave the workspace coherent. Audit load-bearing interpretive choices the session relied on (lift each into the assumption_register or defer via self-review forward-reference; engine-application prompts carry the close-time interpretive-choice audit clause and the typed-observation→gate promotion trigger). Commit at git. State what the next session should address.
 
 A session that does only validation may skip Convene and Deliberate. A session that proposes a kernel revision should perform all nine.
 

@@ -1,4 +1,4 @@
-# Self-development application (engine-v20)
+# Self-development application (engine-v45)
 
 You are running the Selvedge engine on its own development. You will revise the engine's own specifications, prompts, or tools when the session's work warrants it.
 
@@ -150,7 +150,7 @@ Already done by every prior `submit`. Run `bin/selvedge query` to confirm row co
 
 ## 8.5 Close-time reflection (mandatory)
 
-Before submitting `close-record`, do three things:
+Before submitting `close-record`, do four things:
 
 1. **Author at least one `engine_feedback` row** capturing what reduced friction this session and what surfaced as friction. Successes worth reinforcing belong here as much as corrections — both signals decay if they only live in working memory. Use `flag` ∈ `observation | reframe | calibration | blocker`.
 
@@ -181,6 +181,8 @@ Before submitting `close-record`, do three things:
    }'
    ```
 
+4. **Audit load-bearing interpretive choices** made during the session and either lift each into the assumption_register (`A-NNN`) or defer it via a self-review forward-reference. See *Close-time interpretive-choice audit* below for definition, exclusions, payload shape, and the promotion trigger.
+
 ### Temporal-claim grounding (applies to every submit body)
 
 Any duration, elapsed-time, recency, or sequence claim used as evidence in a submit body — `engine_feedback.body_md`, `assessments.state`, `close_records.summary`, decision-record support claims, alternative-rejection reasons, perspective bodies, synthesis text — must be grounded against substrate timestamps before commit, or omitted entirely.
@@ -194,6 +196,38 @@ bin/selvedge query "SELECT workspace_session_no, opened_at, closed_at FROM sessi
 and read the elapsed time off the data. The "ground or omit" rule has no "unverified estimate" escape valve: if the claim is load-bearing, the substrate query takes seconds; if it isn't load-bearing, drop the phrase. The substrate's provenance warrant rests on recorded claims being read off data, not generated to fit narrative.
 
 Scope: every submit body, not engine_feedback only — the failure mode is general (narrative-driven number-fitting can land in any prose surface). Substrate-side static checks on freeform `body_md` are impractical, so this discipline is operator/agent-policed; calibration-EFs are the recovery path when slips are caught. Cites EF-S127-1 (calibration of EF-S126-1's fabricated 4-month-gap claim).
+
+### Close-time interpretive-choice audit (mandatory; cites DV-S155-1)
+
+The audit is the §8.5 item-4 closure of OI-S154-2 (HIGH) and OI-S154-3. Peer evidence at disaster-recovery arc S017 measured 11-of-25 plan-prose statements acting on never-lifted `A-NNN` assumptions; the audit is the kernel response.
+
+**Definition.** A *load-bearing interpretive choice* is a choice that was needed to justify a session's plan, prose, spec text, or decision-record content, and that is **not already carried by an existing substrate row**. The exclusion list below is exhaustive; if a choice does not satisfy at least one exclusion, it is in scope.
+
+**Exclusions (the choice is NOT load-bearing for audit purposes if any holds):**
+
+- The choice is reflected in a committed spec row (spec_clause, spec_section, spec_version body) authored or cited by this session.
+- The choice is resolved by citing an existing `A-NNN` row in the assumption_register.
+- The choice is covered by a closed forward-reference, a closed open-issue, or a sealed deliberation-synthesis the session cited.
+- The choice is a micro-decision (wording, ordering of bullets, local naming) whose alteration would not change the session's substantive outcome.
+
+**Payload shape.** Submit one `engine_feedback` row with `flag='observation'` and headline prefix `audit-step:`. The body enumerates each load-bearing choice and its disposition. Each choice receives one of three dispositions: **lifted-to A-NNN** (the choice was promoted to a registered assumption — cite the `A-NNN` row), **deferred-to FR-S<wno>-<seq>** (the choice needs future revisit — cite the forward-reference), or **accepted-implicit** (the choice is acknowledged unregistered — cite the reason, drawing on the exclusion list to justify why no lift or FR is warranted).
+
+```sh
+bin/selvedge submit engine-feedback --payload '{
+  "flag": "observation",
+  "body_md": "**audit-step:** <count> load-bearing interpretive choices.\n\n1. <choice>: lifted-to A-<n> (<short reason>).\n2. <choice>: deferred-to FR-S<wno>-<seq> (<short reason>).\n3. <choice>: accepted-implicit — <which exclusion applied and why>.\n\nIf no load-bearing choices remain after exclusions, state: **audit-step:** 0 — exclusions applied: <which>."
+}'
+```
+
+If a choice is lifted, submit the `A-NNN` row first (`bin/selvedge submit assumption ...`) and cite its alias in the audit body. If a choice is deferred, submit the `FR` first (`bin/selvedge submit forward-reference ...`) and cite its alias in the audit body. The audit row is the inventory; the lifts and FRs are the substantive substrate work.
+
+**Plan-time discipline (cites M-2 of D-21; carries P-3's warning).** The audit is recovery, not prevention. The primary discipline is to lift `A-NNN` rows *while authoring* plan-prose, deliberation-output, or spec text — not at close. The close-time audit catches what plan-time discipline missed; it does not substitute for it.
+
+**Authority.** This clause is operator/agent-policed. The substrate does not gate `session-close` on audit-row presence at engine-v45. Calibration-EFs are the recovery path when a reader notices a missed audit or a missed lift after close (mirrors temporal-claim grounding).
+
+**Promotion trigger to substrate gate.** If a future session-close lands without an audit row AND a downstream session opens a calibration-EF naming the prior session as having shipped on an unlifted load-bearing assumption, the next session opens a gate-promotion `OI` and the engine ships a T-NN refusing `session-close` on audit-row absence. This is the v2 graduation path; the typed-observation→gate progression follows DV-S152-1's typed-conflict-primitive precedent.
+
+**Scope limits (cites C-1 of D-21).** This audit covers session-close, not deliberation-seal. OI-S154-5 (single-frame counterfactual at deliberation-seal) is mechanically distinct (different trigger, different actor) and remains a separate open issue with its own future treatment.
 
 ## 9. Close
 

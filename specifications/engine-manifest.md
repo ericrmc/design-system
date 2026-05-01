@@ -1,10 +1,10 @@
 ---
 title: Engine Manifest
-version: 44
+version: 45
 status: active
 created: 2026-04-28
-updated-by-session: 153
-supersedes: engine-manifest v43 (engine-v43; S134 iter-2 narrative correction); v42 (engine-v42; iter-1 review fix-up); v41 (engine-v41; iter-0 ship of T-39 + atom validator); v40 (engine-v40; S133 DV-S133-1)
+updated-by-session: 155
+supersedes: engine-manifest v44 (engine-v44; S153 T-40 close_state_items); v43 (engine-v43; S134 iter-2 narrative correction); v42 (engine-v42; iter-1 review fix-up); v41 (engine-v41; iter-0 ship of T-39 + atom validator); v40 (engine-v40; S133 DV-S133-1)
 ---
 
 # Engine Manifest
@@ -12,6 +12,10 @@ supersedes: engine-manifest v43 (engine-v43; S134 iter-2 narrative correction); 
 This file enumerates the loadable Selvedge engine at the current commit. The engine is the file set listed below plus the substrate; loading the engine means having these files available, the substrate initialised, and the `selvedge` CLI on PATH.
 
 ## Current engine version
+
+`engine-v45` (established Session 155 — adds the close-time interpretive-choice audit clause to `prompt-development` §8.5 and the kernel Close-activity mention in `methodology` §How a session works activity 9; closes OI-S154-2 (HIGH) and OI-S154-3 jointly per DV-S155-1).
+
+`engine-v45` is a spec-only methodology bump: prompt-development v12 supersedes v11 with a fourth close-time-reflection step ("Audit load-bearing interpretive choices") plus a new ### subsection naming definition, exclusions, payload shape, plan-time-discipline carry from M-2, operator-policed authority, and the named promotion-trigger to a future T-NN substrate gate (gate ships if a downstream calibration-EF names a prior close as having shipped on an unlifted load-bearing assumption). Methodology v10 supersedes v9 with one extended sentence in activity 9 mentioning the audit; the kernel stays general and points at prompt-development for the full clause. No new substrate table, no new submit kind, no new trigger at v1: the audit is one `engine_feedback` row with `flag='observation'` and headline prefix `audit-step:` (P-2 substrate-conservative shape carried after deliberation D-21). Per S155 DV-S155-1 — five-perspective cross-family deliberation (P-1 anthropic max-enforcement, P-2 anthropic prose-only, P-3 openai subtractive, P-4 openai hybrid-pragmatist, P-5 openai scope-bounding); convergence on scope-excludes-OI-S154-5 (5/5); convergence on operator-policed-with-promotion-trigger (P-4 + P-5 + P-2); convergence on substrate-conservative reuse-engine_feedback (P-2 + P-5); minorities preserved (M-1 P-1 substrate-gate-now as v2 promotion target if v1 fails next-arc gap-closure; M-2 P-3 plan-time-discipline carried as co-clause; M-3 P-5 definition-rigour carried as exclusion list). The typed-observation-pathway-now-gate-later progression follows DV-S152-1's typed-conflict-primitive precedent.
 
 `engine-v44` (established Session 153 — adds T-40 close_state_items required at session-close trigger plus handler-side empty-items refusal in `_submit_close_record`, closing the close-record empty-items regression observed across S147-S150 per DV-S153-1).
 
