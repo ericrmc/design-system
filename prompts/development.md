@@ -109,6 +109,15 @@ bin/selvedge submit decision-record --payload '{
 
 T-18 refuses session-close while a substantive decision lacks support or alternative. T-19 refuses while an alternative lacks a rejection. T-01 refuses unresolved aliases at write time. The label format `R-N.N` (e.g. R-1.1, R-2.3) is enforced by GLOB.
 
+**Cite typing for `supports` and `alternatives.rejections` (cites DV-S158-1, EF-S157-1).** The optional `cite` slot resolves only against `objects.alias` (FK `cited_object_id`). Issues (`OI-...`) live in the `issues` table; forward-reference dispositions (`FR-...`) live in `forward_reference_dispositions`; neither registers in `objects` and so neither can populate `cited_object_id` directly. Migration 021 records the historical residual (24 OI-mentioning + 9 FR-mentioning supports left with NULL `cited_object_id`); OI-086-003 tracks the schema gap and remains open as the graduation-trigger if recurrence pressure rises. At engine-v45 the operator-facing rule is:
+
+- For `basis=engine_feedback`: cite the `EF-S<wno>-<n>` alias (in `objects`), not the `OI-...` it surfaced. Fold the OI reference into claim text.
+- For `basis=prior_decision`: cite the `DV-S<wno>-<n>` alias (in `objects`), not the FR or OI it emitted. Fold those into claim text.
+- For `basis=spec_clause`: cite the spec section/clause/version object alias (`SPEC-<spec>-v<n>` for the version; sections and clauses register their own aliases).
+- For `basis=review_finding | deliberation | constraint | operator_directive`: cite the corresponding object alias only (review_finding, perspective/synthesis_point, constraint atom, decision-record-equivalent).
+
+If you attempt to cite an `OI-...` or `FR-...`, the `_resolve_alias_to_object_id` handler refuses with `E_REFUSAL_T01` and a basis-aware hint naming the alias-kind mismatch and the recovery path. Operators reading the refusal do not need to memorise the table layout; the message recommends the surfacing EF or opening DV.
+
 The `effects` array admits `closes_issue` whose `target` resolves to a citable issue alias (e.g. `"target": "OI-S090-5"`); the handler dispatches `_submit_issue_disposition` inside the same write_tx and transitions the target issue's status to `resolved`. T-27 refuses `closes_issue` effects with NULL `target_issue_id`; T-28 refuses any direct `decision_effects` INSERT bypassing this handler dispatch (per engine-v28).
 
 Symmetrically, the `effects` array admits `opens_issue` whose `target` resolves to an existing issue alias; the handler resolves it to `target_issue_id` and refuses if the issue is not in `status='open'`. Operators register the issue first via `bin/selvedge submit issue` (assigning `alias`, `title`, `priority`) and then reference it from the decision-record. Unlike `closes_issue`, `opens_issue` does not dispatch issue creation in-band. T-31 refuses `opens_issue` effects with NULL `target_issue_id` (per engine-v34).

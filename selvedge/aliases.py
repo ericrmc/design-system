@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sqlite3
 from typing import Iterable, Optional
 
@@ -17,9 +18,33 @@ def _resolve_alias(conn: sqlite3.Connection, alias: str) -> Optional[int]:
     return row["object_id"] if row else None
 
 
+_ISSUE_ALIAS_RE = re.compile(r"^OI-(?:S\d{3}-\d+|\d{3}(?:-\d{3})?)$")
+_FR_ALIAS_RE = re.compile(r"^FR-S\d{3}-\d+$")
+
+
 def _resolve_alias_to_object_id(conn: sqlite3.Connection, alias: str) -> int:
     row = conn.execute("SELECT object_id FROM objects WHERE alias=?", (alias,)).fetchone()
     if row is None:
+        # DV-S158-1: detect issue-shape and forward-reference-shape aliases and
+        # emit a basis-aware hint. Issues live in `issues`, forward-references
+        # live in `forward_reference_dispositions` close-state items; neither
+        # registers in `objects`, so cite slots backed by FK to objects cannot
+        # carry them. Fold into claim text or cite the surfacing EF / opening DV.
+        if _ISSUE_ALIAS_RE.match(alias):
+            raise SelvedgeError(
+                "E_REFUSAL_T01",
+                f"alias [{alias}] is an issue alias (issues are not objects); "
+                f"cite the surfacing EF-... or opening DV-... instead, or fold "
+                f"the OI reference into claim text",
+            )
+        if _FR_ALIAS_RE.match(alias):
+            raise SelvedgeError(
+                "E_REFUSAL_T01",
+                f"alias [{alias}] is a forward-reference alias (FRs live in "
+                f"forward_reference_dispositions, not objects); cite the "
+                f"prior-session DV-... that emitted the FR or fold the FR "
+                f"reference into claim text",
+            )
         raise SelvedgeError("E_REFUSAL_T01", f"unresolved alias [{alias}]")
     return row["object_id"]
 
