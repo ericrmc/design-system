@@ -31,9 +31,22 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S090-1](OI-S090-1.md) | MEDIUM | open | Cross-reference linking pass for spec_clause_links (empty) |
 | [OI-S091-1](OI-S091-1.md) | LOW | open | Migration 011 encodes engine-v24 as a snapshot; future fresh workspaces start one or more versions stale |
 | [OI-S104-1](OI-S104-1.md) | LOW | open | Manifest-hash sealing as forward direction for coding review loop enforcement |
-| [OI-S104-2](OI-S104-2.md) | LOW | open | decision_effects.effect_kind enum lacks deletes despite methodology naming delete-executable as loop trigger |
 | [OI-S104-3](OI-S104-3.md) | LOW | open | Promote halted to a sessions.status value via calibrated table-rebuild when warranted |
-| [OI-S105-1](OI-S105-1.md) | MEDIUM | open | Methodology kernel names three validation senses but enumerates only two |
+| [OI-S122-1](OI-S122-1.md) | LOW | open | sessions.slug has no UNIQUE constraint; concurrent same-microsecond writes could create duplicates |
+| [OI-S123-1](OI-S123-1.md) | LOW | open | Defensive-branch coverage for monitor-external harvest-ef: peer schema variance, peer-error paths (E_PEER_BUSY/OPEN_FAILED/SCHEMA_UNSUPPORTED), and concurrent-harvest race (E_REFUSAL_UNIQUE recovery). |
+| [OI-S124-1](OI-S124-1.md) | MEDIUM | open | Evaluate reference_harness pilot at disaster-response arc close: promote to kernel third sense, retire, or scope-change. |
+| [OI-S125-1](OI-S125-1.md) | LOW | open | Harness alias not registered in objects; cross-citation via [RH-...] from decision-records would fail T-01. |
+| [OI-S125-2](OI-S125-2.md) | MEDIUM | open | Falsification trigger expiry-window enforcement deferred to harness expire CLI work. |
+| [OI-S125-3](OI-S125-3.md) | LOW | open | Auto-OI emission on broken load-bearing harness claim is application-layer; not implemented in S125. |
+| [OI-S125-4](OI-S125-4.md) | LOW | open | Replay-on-same-harness vs replay-creates-new-harness: revisit if pilot needs the former. |
+| [OI-S126-1](OI-S126-1.md) | LOW | open | prompts/application.md does not document deliberation-open payload shape; indirection to development.md is fragile. |
+| [OI-S126-2](OI-S126-2.md) | LOW | open | session.kind enum (coding/spec_only/meta) does not cleanly fit external-problem application sessions. |
+| [OI-S126-3](OI-S126-3.md) | LOW | open | close-record items are creation-only; no submit close-state-item amendment handler exists. |
+| [OI-S126-5](OI-S126-5.md) | MEDIUM | open | Typed-graph linkage thins in external-problem sessions: target_object_id, cited_object_id, alternative_rejections.basis underused. |
+| [OI-S130-1](OI-S130-1.md) | LOW | open | Conditional close-time temporal-claim lint if discipline-only proves insufficient. |
+| [OI-S133-1](OI-S133-1.md) | MEDIUM | open | Coding review loop static audit misses integration-test failures; iter BETWEEN 1 AND 4 cap blocks runtime-fix records |
+| [OI-S135-1](OI-S135-1.md) | LOW | open | cmd_recover reclaim-rowcount=1 branch untested due to T-16 refusal of past lease_expires_at; needs --clock-override or T-16 sentinel relaxation. |
+| [OI-S145-1](OI-S145-1.md) | MEDIUM | open | SELVEDGE_EXPORT_CONTEXT=1 bypass mechanism too permissive; env-var scope admits direct markdown authoring outside bin/selvedge export. |
 
 ## Resolved
 
@@ -60,6 +73,8 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S098-1](resolved/OI-S098-1.md) | S098 | Smoke-test closes_issue handler dispatch |
 | [OI-S098-2](resolved/OI-S098-2.md) | S098 | Smoke-test t28 trigger refusal path |
 | [OI-S101-1](resolved/OI-S101-1.md) | S102 | Rename objects.citable_alias to objects.alias for query ergonomics |
+| [OI-S104-2](resolved/OI-S104-2.md) | S129 | decision_effects.effect_kind enum lacks deletes despite methodology naming delete-executable as loop trigger |
+| [OI-S105-1](resolved/OI-S105-1.md) | S124 | Methodology kernel names three validation senses but enumerates only two |
 | [OI-S106-1](resolved/OI-S106-1.md) | S107 | Rebuild tools/bootstrap-external-workspace.sh for engine-v31 |
 | [OI-S106-2](resolved/OI-S106-2.md) | S108 | Implement bin/selvedge monitor-external subcommand group |
 | [OI-S106-3](resolved/OI-S106-3.md) | S107 | Archive the v7-era selvedge-disaster-response workspace |
@@ -67,3 +82,6 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S110-2](resolved/OI-S110-2.md) | S111 | Superseded constraints v1 spec_versions row carries stale body_path pointing at moved file |
 | [OI-S110-3](resolved/OI-S110-3.md) | S113 | Backfill decision_effects.target and decision_supports.cite where alias resolution is possible |
 | [OI-S114-1](resolved/OI-S114-1.md) | S117 | Implement bin/selvedge export --provenance --anchor <alias> cross-session anchor-trace export (markdown projection only) |
+| [OI-S121-1](resolved/OI-S121-1.md) | S123 | Rewrite test_monitor_external harvest-ef coverage for substrate-direct semantics (S110) |
+| [OI-S124-2](resolved/OI-S124-2.md) | S125 | Implement reference_harness substrate kind per S124 P-4 schema with P-2 epistemic guardrails for disaster-response stage 2 onward pilot. |
+| [OI-S126-4](resolved/OI-S126-4.md) | S128 | next_session_should close-state-items register as undisposed forward references even when content names no actionable item. |
