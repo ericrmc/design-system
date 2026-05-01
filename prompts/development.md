@@ -74,6 +74,8 @@ bin/selvedge submit synthesis-point --payload '{"deliberation_id": <N>, "kind": 
 
 After deliberation, spawn a **capture subagent** to read each perspective's body_md and submit `perspective-position` (one per perspective, distilling the **Position.** paragraph into a single 8–240-char atom) and `perspective-claim` rows (one per bullet under each labeled section, with `section_kind` from a closed enum: position / schema_sketch / cli_surface / migration_path / what_not / open_question / risk / what_lost). The orchestrator does not author the decomposition by hand.
 
+**Subagent tool class (cites OI-S156-1).** The perspective subagents (each producing a stance brief and authoring a `perspective-N.json` payload) and the capture subagent (writing decomposition payloads before submit) both need Write capability. Spawn them with a tool class that admits Write (e.g. `general-purpose`); `Explore` is read-only and refuses payload authoring at dispatch time. Reserve `Explore` for the §7 reviewer subagent, which only reads the change and submits findings via Bash.
+
 ## 5. Record decisions
 
 ```sh
@@ -116,6 +118,22 @@ Symmetrically, the `effects` array admits `opens_issue` whose `target` resolves 
 This is normal code/spec work. For specs, use `bin/selvedge submit spec-version`, `submit spec-section`, `submit spec-clause`. For migrations, write SQL files under `state/migrations/` and `bin/selvedge migrate --apply`. For CLI/code changes, edit Python under `selvedge/`.
 
 Spec body authoring goes through the substrate too (engine-v29 / OI-S090-5). `submit spec-version` accepts an optional `body_md` field carrying the inline body markdown; the handler validates the body_path against `workspace_root`, computes the sha256, and writes the file in-process *after* the row INSERT succeeds. Use `--payload @file.json` or `--payload -` (stdin) when the body is large; the handler refuses path-traversal escapes, empty/whitespace-only content, and any declared-vs-computed sha mismatch. The legacy two-step (write file via Bash heredoc, then submit with `body_sha256`) remains admitted but is no longer the only path.
+
+**spec-version payload shape (cites OI-S156-2).**
+
+```sh
+bin/selvedge submit spec-version --payload '{
+  "session_no": <N>,
+  "spec_id": "<spec-id>",
+  "version": <new-version>,
+  "body_path": "specifications/<spec>.md",
+  "body_md": "<inline markdown body, required unless using legacy two-step>",
+  "supersedes": "<prior alias, e.g. methodology@9>",
+  "supersedes_reason_md": "<one-sentence reason>"
+}'
+```
+
+`session_no` (the open-session number) and `supersedes` (the prior `<spec-id>@<prior-version>` alias) are required for any non-initial version; the handler refuses with `E_NOT_FOUND` if `session_no` does not name an open session, and `E_REFUSAL_T01` if `supersedes` does not resolve. `supersedes_reason_md` is optional but recorded on the resulting `refs` row carrying relation `supersedes`. For an initial version (`version: 1`), omit `supersedes` and `supersedes_reason_md`. T-03 (one active per spec_id) is satisfied by the handler flipping the prior active row to `superseded` BEFORE inserting the new active row, inside the same write_tx (cites OI-S090-4).
 
 ## 7. Validate — and run the coding review loop on any code change
 
