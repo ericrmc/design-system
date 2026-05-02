@@ -145,6 +145,10 @@ def test_t34_alias_format_refusal(clean_substrate, selvedge_cli):
     )
     assert res["rc"] != 0
     assert "E_REFUSAL_T34" in res["err"]
+    # Migration 032 (DV-S177-1) expanded the refusal text with a concrete
+    # example so operators learn the accepted form from the error itself,
+    # closing DV-S151-1 D-19 friction #3 (HRN-to-RH learning failure).
+    assert "RH-S172-1" in res["err"]
 
 
 # ---------------------------------------------------------------------------
