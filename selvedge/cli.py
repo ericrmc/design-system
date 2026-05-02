@@ -42,6 +42,7 @@ from .query import cmd_query
 from .recover import cmd_recover
 from .schema import cmd_schema
 from .submit import SUBMIT_HANDLERS, cmd_submit
+from .submit_help import cmd_submit_help
 from .subtract import cmd_subtract_eligibility
 from .validate import cmd_validate
 
@@ -82,6 +83,18 @@ def main(argv: Optional[list[str]] = None) -> int:
         ),
     )
     p_submit.set_defaults(fn=cmd_submit)
+
+    p_submit_help = sub.add_parser(
+        "submit-help",
+        help="Print payload schemas from the submit registry (documentation; handlers own validation).",
+    )
+    p_submit_help.add_argument(
+        "kind",
+        nargs="?",
+        default=None,
+        help=f"submit kind to describe; omit for the full index. one of: {sorted(SUBMIT_HANDLERS)}",
+    )
+    p_submit_help.set_defaults(fn=cmd_submit_help)
 
     p_validate = sub.add_parser("validate", help="Validate substrate integrity.")
     p_validate.add_argument("--precommit", action="store_true")
