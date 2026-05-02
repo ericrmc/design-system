@@ -3,15 +3,28 @@
 Engine-v34 enforces opens_issue/closes_issue target_issue_id at submit time
 (T-27, T-31). closes_issue dispatches `_submit_issue_disposition` in-band so
 the dependent issue's status flips to 'resolved' before the t28 trigger fires.
+
+Engine-v48 (DV-S176-1, migration 031) ships T-32 substrate-gate: the handler
+computes the cited-alias union from supports + alternatives.rejections +
+effects.target, dispatches the existing `_export_provenance_anchor` walker
+in-band per alias, and inserts decision_chain_walks receipt rows inside the
+same write_tx. Walker exceptions, unresolved aliases, and count mismatches
+raise E_REFUSAL_T32 with refusal text naming the offending alias. Zero-cite
+decisions admit zero receipts (initial spec-version, no supersedes, no DV
+cites). Walk-everything per D-27 C-1+D-1 synthesis (P-1 walk-everything
+adopted over P-2 predicate-detected obligations).
 """
 
 from __future__ import annotations
 
+import hashlib
 import sqlite3
 from typing import Optional
 
 from ..aliases import _resolve_alias_to_object_id, _resolve_issue_alias
 from ..errors import SelvedgeError
+from ..export.anchor import WALKER_VERSION, _export_provenance_anchor
+from ..paths import ANCHOR_TRACE_DEFAULT_DEPTH
 from ._helpers import (
     _atom_session_id,
     _check_role_capability,
@@ -148,4 +161,86 @@ def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
             )
         alts_out.append({"alternative_v2_id": avid, "alias": alt_alias})
 
-    return {"decision_v2_id": did, "object_id": oid, "alias": alias, "decision_no": next_no, "alternatives": alts_out}
+    # T-32 substrate-gate (engine-v48, DV-S176-1, migration 031).
+    # Walk every cited alias in supports + alternatives.rejections + effects.target;
+    # insert one decision_chain_walks receipt per unique alias inside this write_tx.
+    # P-1 walk-everything per D-27 C-1+D-1 synthesis (P-2 predicate-detect preserved
+    # as M-1 minority graduation path). Refuses E_REFUSAL_T32 on walker exception or
+    # unresolved alias; refusal text names the offending alias per P-3 D-27 defense.
+    _check_role_capability(conn, role, "decision_chain_walks", "insert")
+    cited: list[str] = []
+    seen: set[str] = set()
+    for s in p.get("supports", []):
+        c = s.get("cite")
+        if c and c not in seen:
+            seen.add(c)
+            cited.append(c)
+    for a in p.get("alternatives", []):
+        for r in a.get("rejections", []):
+            c = r.get("cite")
+            if c and c not in seen:
+                seen.add(c)
+                cited.append(c)
+    for e in p.get("effects", []):
+        t = e.get("target")
+        if t and t not in seen:
+            seen.add(t)
+            cited.append(t)
+    walks_out: list[dict] = []
+    for anchor_alias in cited:
+        try:
+            walk = _export_provenance_anchor(
+                conn, anchor_alias, max_depth=ANCHOR_TRACE_DEFAULT_DEPTH, write=False
+            )
+        except SelvedgeError as exc:
+            raise SelvedgeError(
+                "E_REFUSAL_T32",
+                f"chain-walk failed for cited alias [{anchor_alias}]: {exc.code}: {exc.detail}",
+            )
+        body = walk["preview"]
+        sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
+        anchor_oid_row = conn.execute(
+            "SELECT object_id FROM objects WHERE alias=?", (anchor_alias,)
+        ).fetchone()
+        anchor_oid = anchor_oid_row["object_id"] if anchor_oid_row else None
+        cur4 = conn.execute(
+            "INSERT INTO decision_chain_walks "
+            "(decision_v2_id, anchor_alias, anchor_object_id, max_depth, walker_version, "
+            " nodes_visited, edges_traversed, truncation_status, result_text, result_sha256) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (
+                did,
+                anchor_alias,
+                anchor_oid,
+                walk["max_depth"],
+                walk["walker_version"],
+                walk["nodes_visited"],
+                walk["edges_traversed"],
+                walk["truncation_status"],
+                body,
+                sha,
+            ),
+        )
+        walks_out.append(
+            {
+                "chain_walk_id": cur4.lastrowid,
+                "anchor_alias": anchor_alias,
+                "nodes_visited": walk["nodes_visited"],
+                "edges_traversed": walk["edges_traversed"],
+                "truncation_status": walk["truncation_status"],
+            }
+        )
+    if len(walks_out) != len(cited):
+        raise SelvedgeError(
+            "E_REFUSAL_T32",
+            f"decision-record cited {len(cited)} aliases but only {len(walks_out)} chain-walk receipts inserted",
+        )
+
+    return {
+        "decision_v2_id": did,
+        "object_id": oid,
+        "alias": alias,
+        "decision_no": next_no,
+        "alternatives": alts_out,
+        "chain_walks": walks_out,
+    }

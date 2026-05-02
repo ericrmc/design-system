@@ -183,6 +183,166 @@ def test_decision_record_closes_issue_short_descriptor_refused(clean_substrate, 
 
 
 # ---------------------------------------------------------------------------
+# T-32 substrate-gate: decision_chain_walks dispatched in-band per cited alias
+# (engine-v48, DV-S176-1, migration 031).
+# ---------------------------------------------------------------------------
+
+
+def test_decision_record_no_cites_admits_zero_walks(clean_substrate, selvedge_cli, db):
+    res = selvedge_cli(
+        ["submit", "decision-record", "--payload", json.dumps(_minimal_decision_payload())]
+    )
+    assert res["out"]["ok"], res
+    did = res["out"]["result"]["decision_v2_id"]
+    assert res["out"]["result"]["chain_walks"] == []
+    n = db.execute(
+        "SELECT COUNT(*) AS n FROM decision_chain_walks WHERE decision_v2_id=?", (did,)
+    ).fetchone()["n"]
+    assert n == 0
+
+
+def _seed_ef(selvedge_cli) -> str:
+    """Submit one engine_feedback row in the open session; return its EF alias."""
+    res = selvedge_cli(
+        [
+            "submit", "engine-feedback", "--payload",
+            json.dumps({
+                "flag": "observation",
+                "body_md": "Seed EF for chain-walk test",
+            }),
+        ]
+    )
+    assert res["out"]["ok"], res
+    return res["out"]["result"]["alias"]
+
+
+def test_decision_record_cite_dispatches_chain_walk(clean_substrate, selvedge_cli, db):
+    ef_alias = _seed_ef(selvedge_cli)
+    payload = _minimal_decision_payload(
+        title="decision-record citing EF alias triggers chain-walk receipt",
+        supports=[{
+            "basis": "engine_feedback",
+            "claim": "T-32 happy-path: cited EF alias must materialise one chain_walks row.",
+            "cite": ef_alias,
+        }],
+    )
+    res = selvedge_cli(["submit", "decision-record", "--payload", json.dumps(payload)])
+    assert res["out"]["ok"], res
+    did = res["out"]["result"]["decision_v2_id"]
+    walks = res["out"]["result"]["chain_walks"]
+    assert len(walks) == 1
+    assert walks[0]["anchor_alias"] == ef_alias
+    row = db.execute(
+        "SELECT anchor_alias, max_depth, walker_version, nodes_visited, "
+        "edges_traversed, truncation_status, length(result_text) AS body_len, "
+        "length(result_sha256) AS sha_len FROM decision_chain_walks WHERE decision_v2_id=?",
+        (did,),
+    ).fetchone()
+    assert row["anchor_alias"] == ef_alias
+    assert row["max_depth"] == 3
+    assert row["walker_version"] == "v1"
+    assert row["nodes_visited"] >= 1
+    assert row["truncation_status"] in ("none", "depth_capped")
+    assert row["body_len"] > 0
+    assert row["sha_len"] == 64
+
+
+def test_decision_record_effects_target_oi_dispatches_chain_walk(clean_substrate, selvedge_cli, db):
+    """closes_issue effect target=OI-... is a citable anchor (walker resolves via issues table)."""
+    seed = selvedge_cli(
+        [
+            "submit", "issue", "--payload",
+            json.dumps({
+                "session_no": 1, "alias": "OI-S001-99",
+                "title": "issue closed by decision and walked via effects.target",
+                "priority": "LOW",
+            }),
+        ]
+    )
+    assert seed["out"]["ok"], seed
+    payload = _minimal_decision_payload(
+        title="closes_issue effect target dispatches chain-walk on OI alias",
+        target_kind="issue",
+        target_key="OI-S001-99",
+        effects=[{
+            "effect_kind": "closes_issue",
+            "target": "OI-S001-99",
+            "target_descriptor": "resolved by closes_issue chain-walk regression test",
+        }],
+    )
+    res = selvedge_cli(["submit", "decision-record", "--payload", json.dumps(payload)])
+    assert res["out"]["ok"], res
+    walks = res["out"]["result"]["chain_walks"]
+    assert len(walks) == 1
+    assert walks[0]["anchor_alias"] == "OI-S001-99"
+
+
+def test_decision_record_unresolved_cite_refuses(clean_substrate, selvedge_cli):
+    """Unresolved supports.cite is caught at T-01 alias-resolve before T-32 dispatch;
+    either refusal is acceptable as long as the offending alias is named."""
+    payload = _minimal_decision_payload(
+        title="decision-record citing nonexistent alias must refuse",
+        supports=[{
+            "basis": "prior_decision",
+            "claim": "Unresolved-alias path: this DV alias does not exist.",
+            "cite": "DV-S999-9",
+        }],
+    )
+    res = selvedge_cli(
+        ["submit", "decision-record", "--payload", json.dumps(payload)],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    blob = (res.get("err", "") or "") + json.dumps(res.get("out") or {})
+    assert "DV-S999-9" in blob
+    assert "E_REFUSAL_T01" in blob or "E_REFUSAL_T32" in blob
+
+
+def test_decision_record_walker_failure_on_effects_target_refuses_t32(clean_substrate, selvedge_cli):
+    """effects.target bypasses supports.cite alias-resolution, so a target that
+    fails the walker reaches the T-32 dispatch path. closes_issue refuses earlier
+    via _resolve_issue_alias, but a creates/modifies effect.target that the
+    walker cannot resolve hits the T-32 path."""
+    payload = _minimal_decision_payload(
+        title="decision-record creates effect with unresolvable target hits T-32",
+        effects=[{
+            "effect_kind": "creates",
+            "target": "DV-S888-8",
+            "target_descriptor": "ghost target",
+        }],
+    )
+    res = selvedge_cli(
+        ["submit", "decision-record", "--payload", json.dumps(payload)],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    blob = (res.get("err", "") or "") + json.dumps(res.get("out") or {})
+    assert "DV-S888-8" in blob
+
+
+def test_decision_record_dedupes_repeated_cites(clean_substrate, selvedge_cli, db):
+    ef_alias = _seed_ef(selvedge_cli)
+    payload = _minimal_decision_payload(
+        title="decision-record citing same alias in support and rejection",
+        supports=[{"basis": "engine_feedback", "claim": f"first cite to {ef_alias} alias for dedup test.", "cite": ef_alias}],
+        alternatives=[{
+            "label": "R-1.1",
+            "option": f"alternative path rejected per {ef_alias} same alias.",
+            "rejections": [{"basis": "redundant_with_existing", "reason": f"redundant per {ef_alias} same alias.", "cite": ef_alias}],
+        }],
+    )
+    res = selvedge_cli(["submit", "decision-record", "--payload", json.dumps(payload)])
+    assert res["out"]["ok"], res
+    did = res["out"]["result"]["decision_v2_id"]
+    walks = res["out"]["result"]["chain_walks"]
+    assert len(walks) == 1
+    n = db.execute(
+        "SELECT COUNT(*) AS n FROM decision_chain_walks WHERE decision_v2_id=?", (did,)
+    ).fetchone()["n"]
+    assert n == 1
+
+
+# ---------------------------------------------------------------------------
 # perspective-position / perspective-claim
 # ---------------------------------------------------------------------------
 

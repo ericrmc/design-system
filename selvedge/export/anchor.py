@@ -34,6 +34,12 @@ from ..paths import (
 )
 from .session import _atom_text
 
+# Walker logic version. Bump when the BFS shape, edge family, or markdown
+# rendering changes in ways that would invalidate older receipts. Stamped
+# onto every decision_chain_walks row at S176 substrate-gate landing
+# (DV-S176-1, migration 031).
+WALKER_VERSION = "v1"
+
 
 def _anchor_node_key(node: tuple) -> tuple:
     """Visited-set key. Unique per (kind, primary_id)."""
@@ -769,6 +775,7 @@ def _export_provenance_anchor(
 
     body = "\n".join(lines).rstrip() + "\n"
     files = {str(out_path): body}
+    truncation_status = "depth_capped" if cap_nodes else "none"
 
     if write:
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -781,6 +788,9 @@ def _export_provenance_anchor(
             "nodes_visited": len(visited),
             "edges_traversed": len(edges_out),
             "out_path": str(out_path),
+            "walker_version": WALKER_VERSION,
+            "truncation_status": truncation_status,
+            "body": body,
         }
     return {
         "dry_run": True,
@@ -791,4 +801,6 @@ def _export_provenance_anchor(
         "edges_traversed": len(edges_out),
         "planned_path": str(out_path),
         "preview": body,
+        "walker_version": WALKER_VERSION,
+        "truncation_status": truncation_status,
     }
