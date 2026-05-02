@@ -17,6 +17,7 @@ from .assessment import _submit_assessment, _submit_legacy_import
 from .close import _submit_close_record
 from .decision_v2 import _submit_decision_v2
 from .deliberation import (
+    _submit_deliberation_counterfactual,
     _submit_deliberation_open,
     _submit_deliberation_seal,
     _submit_perspective,
@@ -67,6 +68,8 @@ SUBMIT_HANDLERS = {
     "perspective": _submit_perspective,
     "deliberation-seal": _submit_deliberation_seal,
     "synthesis-point": _submit_synthesis_point,
+    # Seal-time deliberation-grading typed surface (engine-v50, DV-S180-1):
+    "deliberation-counterfactual": _submit_deliberation_counterfactual,
     # Path A (engine-v20+):
     "assessment": _submit_assessment,
     "decision-record": _submit_decision_v2,

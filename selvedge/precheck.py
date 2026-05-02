@@ -19,7 +19,7 @@ from __future__ import annotations
 import hashlib
 import secrets
 import sqlite3
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from .errors import SelvedgeError
 from .paths import db_path
@@ -36,12 +36,23 @@ def _open_session_id(conn: sqlite3.Connection) -> int:
     return row["session_id"]
 
 
-def _gather_sources(conn: sqlite3.Connection, target_kind: str, target_key: str) -> List[dict]:
+def _gather_sources(
+    conn: sqlite3.Connection,
+    target_kind: str,
+    target_key: str,
+    exclude_decision_v2_id: Optional[int] = None,
+) -> List[dict]:
     """Walk the substrate for relevant context. Deterministic SQL only;
     per P-2 codex stance, no model-judgment similarity. The returned list is
     ordered: similar_oi (by alias prefix match), prior_dv (target_key match),
     active_clause (spec_clauses where source_decision matches), supersedes
     (recent supersession edges).
+
+    `exclude_decision_v2_id` excludes one in-flight decision_v2 row from the
+    prior_dv and recent_supersede queries; verify_and_consume_precheck passes
+    the just-inserted `did` so submit-time recompute matches precheck-time
+    issue (DV-S180-1: the first kind=schema_migration outcome_type=supersede
+    decision exposed the in-flight-row drift).
     """
     sources: List[dict] = []
 
@@ -65,15 +76,26 @@ def _gather_sources(conn: sqlite3.Connection, target_kind: str, target_key: str)
         )
 
     # 2. Recent prior DVs with target_key matching (last 30 sessions).
-    rows = conn.execute(
-        "SELECT o.alias AS dv_alias, dv.target_kind, dv.target_key, ta.text AS title "
-        "FROM decisions_v2 dv "
-        "JOIN objects o ON o.object_kind='decision_v2' AND o.typed_row_id=dv.decision_v2_id "
-        "JOIN text_atoms ta ON ta.atom_id=dv.title_atom_id "
-        "WHERE dv.target_kind=? AND dv.target_key=? "
-        "ORDER BY dv.decision_v2_id DESC LIMIT 3",
-        (target_kind, target_key),
-    ).fetchall()
+    if exclude_decision_v2_id is not None:
+        rows = conn.execute(
+            "SELECT o.alias AS dv_alias, dv.target_kind, dv.target_key, ta.text AS title "
+            "FROM decisions_v2 dv "
+            "JOIN objects o ON o.object_kind='decision_v2' AND o.typed_row_id=dv.decision_v2_id "
+            "JOIN text_atoms ta ON ta.atom_id=dv.title_atom_id "
+            "WHERE dv.target_kind=? AND dv.target_key=? AND dv.decision_v2_id <> ? "
+            "ORDER BY dv.decision_v2_id DESC LIMIT 3",
+            (target_kind, target_key, exclude_decision_v2_id),
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT o.alias AS dv_alias, dv.target_kind, dv.target_key, ta.text AS title "
+            "FROM decisions_v2 dv "
+            "JOIN objects o ON o.object_kind='decision_v2' AND o.typed_row_id=dv.decision_v2_id "
+            "JOIN text_atoms ta ON ta.atom_id=dv.title_atom_id "
+            "WHERE dv.target_kind=? AND dv.target_key=? "
+            "ORDER BY dv.decision_v2_id DESC LIMIT 3",
+            (target_kind, target_key),
+        ).fetchall()
     for r in rows:
         body = f"DV {r['dv_alias']} target={r['target_kind']}/{r['target_key']} title={r['title']}"
         sources.append(
@@ -105,14 +127,25 @@ def _gather_sources(conn: sqlite3.Connection, target_kind: str, target_key: str)
         )
 
     # 4. Recent supersession DVs (last 3).
-    rows = conn.execute(
-        "SELECT o.alias AS dv_alias, ta.text AS title "
-        "FROM decisions_v2 dv "
-        "JOIN objects o ON o.object_kind='decision_v2' AND o.typed_row_id=dv.decision_v2_id "
-        "JOIN text_atoms ta ON ta.atom_id=dv.title_atom_id "
-        "WHERE dv.outcome_type='supersede' "
-        "ORDER BY dv.decision_v2_id DESC LIMIT 3",
-    ).fetchall()
+    if exclude_decision_v2_id is not None:
+        rows = conn.execute(
+            "SELECT o.alias AS dv_alias, ta.text AS title "
+            "FROM decisions_v2 dv "
+            "JOIN objects o ON o.object_kind='decision_v2' AND o.typed_row_id=dv.decision_v2_id "
+            "JOIN text_atoms ta ON ta.atom_id=dv.title_atom_id "
+            "WHERE dv.outcome_type='supersede' AND dv.decision_v2_id <> ? "
+            "ORDER BY dv.decision_v2_id DESC LIMIT 3",
+            (exclude_decision_v2_id,),
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT o.alias AS dv_alias, ta.text AS title "
+            "FROM decisions_v2 dv "
+            "JOIN objects o ON o.object_kind='decision_v2' AND o.typed_row_id=dv.decision_v2_id "
+            "JOIN text_atoms ta ON ta.atom_id=dv.title_atom_id "
+            "WHERE dv.outcome_type='supersede' "
+            "ORDER BY dv.decision_v2_id DESC LIMIT 3",
+        ).fetchall()
     for r in rows:
         body = f"SUPERSEDE {r['dv_alias']} title={r['title']}"
         sources.append(
@@ -298,8 +331,14 @@ def verify_and_consume_precheck(
             f"precheck nonce expired ({age_seconds:.0f}s old, ttl={row['ttl_seconds']}s); "
             f"rerun precheck",
         )
-    # Re-render + hash compare.
-    sources = _gather_sources(conn, target_kind, target_key)
+    # Re-render + hash compare. Exclude the just-inserted decision_v2_id so the
+    # in-flight row (visible inside the same write_tx) does not drift the hash
+    # between precheck-issue and submit-time. DV-S180-1 named this: the first
+    # kind=schema_migration outcome_type=supersede DV exposed the rotation in
+    # recent_supersede; prior schema_migration DVs all used outcome_type=adopt.
+    sources = _gather_sources(
+        conn, target_kind, target_key, exclude_decision_v2_id=decision_v2_id
+    )
     body = _render_context(sources, target_kind, target_key)
     recomputed_sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
     if recomputed_sha != row["context_sha256"]:

@@ -1,10 +1,10 @@
 ---
 title: Methodology
-version: 12
+version: 13
 status: active
 created: 2026-04-27
-updated-by-session: 161
-supersedes: methodology-v11 (engine-v46); per S161 DV-S161-1 (§Roles disambiguation paragraph clarifying agent and human in post-restart context)
+updated-by-session: 180
+supersedes: methodology-v12 (engine-v50); per S180 DV-S180-1 (line-101 paragraph rewrite naming the typed deliberation_counterfactuals primitive + T-36 substrate-gate; supersedes DV-S159-1 engine_feedback prefix-row home).
 ---
 
 # Methodology
@@ -98,7 +98,7 @@ The synthesizer must not have been one of the perspectives.
 
 The synthesis of perspectives **is not itself a decision**. It feeds Decide.
 
-At every sealed deliberation the synthesizer additionally authors a `seal-grade:` engine_feedback row naming single-frame counterfactuals — positions no perspective took that the synthesis admits as load-bearing alternative readings — before `deliberation-seal` returns. The operational clause, definition, exclusions, payload shape, and v2 promotion trigger live in `prompts/development.md` §Seal-time deliberation-grading per DV-S159-1; this is the deliberation-seal sibling of the §8.5 close-time interpretive-choice audit (DV-S155-1) and is operator/agent-policed at engine-v46.
+At every sealed deliberation the synthesizer must author at least one `deliberation_counterfactuals` row before `deliberation-seal` admits the seal. Counterfactuals are positions no perspective took that the synthesis admits as load-bearing alternative readings. T-36 (engine-v50, migration 040) substrate-gates the seal; the operational clause, disposition enum, exclusion enum, cheap-exit nil_attestation, and v2 promotion trigger live in `prompts/development.md` §Seal-time-deliberation-grading per DV-S180-1 (which supersedes DV-S159-1's engine_feedback prefix-row home). Sibling of the §8.5 close-time interpretive-choice audit (DV-S155-1).
 
 ### Skipping triggered deliberation
 

@@ -1,10 +1,10 @@
 ---
 title: Engine Manifest
-version: 47
+version: 48
 status: active
 created: 2026-04-28
-updated-by-session: 161
-supersedes: engine-manifest v46 (engine-v46; S159 DV-S159-1 seal-time deliberation-grading clause); v45 (engine-v45; S155 DV-S155-1 close-time interpretive-choice audit); v44 (engine-v44; S153 T-40 close_state_items); v43 (engine-v43; S134 iter-2 narrative correction); v42 (engine-v42; iter-1 review fix-up); v41 (engine-v41; iter-0 ship of T-39 + atom validator); v40 (engine-v40; S133 DV-S133-1)
+updated-by-session: 180
+supersedes: engine-manifest v47 (engine-v47); v46 (engine-v46; S159 DV-S159-1 seal-time deliberation-grading clause); v45 (engine-v45; S155 DV-S155-1 close-time interpretive-choice audit); v44 (engine-v44; S153 T-40 close_state_items); v43 (engine-v43; S134 iter-2 narrative correction); v42 (engine-v42; iter-1 review fix-up); v41 (engine-v41; iter-0 ship of T-39 + atom validator); v40 (engine-v40; S133 DV-S133-1)
 ---
 
 # Engine Manifest
@@ -12,6 +12,10 @@ supersedes: engine-manifest v46 (engine-v46; S159 DV-S159-1 seal-time deliberati
 This file enumerates the loadable Selvedge engine at the current commit. The engine is the file set listed below plus the substrate; loading the engine means having these files available, the substrate initialised, and the `selvedge` CLI on PATH.
 
 ## Current engine version
+
+`engine-v50` (established Session 180 — adds typed `deliberation_counterfactuals` substrate primitive + T-36 substrate-gate refusing `deliberation-seal` when zero counterfactual rows exist; supersedes DV-S159-1 engine_feedback prefix-row home; subtracts prompts/development.md §Seal-time-deliberation-grading prefix-prose clause and methodology.md §Synthesis line-101 paragraph byte-identically, replacing both with typed-surface pointers per DV-S180-1; M-1 ship-nothing minority preserved across D-23 + D-29 lineage with v2 promotion-trigger naming formulaic-compliance failures as the calibration-EF surface).
+
+`engine-v50` ships migration 040 (`040-deliberation-counterfactuals.sql`): new `deliberation_counterfactuals` table (PK + FK deliberations CASCADE + 3 atom-rule TEXT columns + 4 enum CHECKs + nil_attestation cheap-exit boolean + UNIQUE(deliberation_id, seq)), new `deliberation-counterfactual` submit kind (handler in `selvedge/submit/deliberation.py`), T-36 BEFORE UPDATE OF sealed_at trigger, T-13 BEFORE INSERT trigger, T-06 mutation-after-close protections. Handler-side T-36 preflight in `_submit_deliberation_seal` for friendlier refusal text. prompt-development v22 to v23 (§4 byte-identical replacement), methodology v12 to v13 (§Synthesis line-101 paragraph byte-identical replacement). Cross-family deliberation D-29 (P-1 anthropic systems-architect adopted; P-2 openai-codex obligations-meta and conditional-by-kind preserved as forward-direction + D-2 dissent; P-3 anthropic ship-nothing M-1 minority preserved per §Synthesis dissent-preservation; P-4 anthropic synthesis_points enum-extension preserved as forward-direction UNION-view + D-1 dissent). Operator-named-mandate basis at S180-open ("constraints without compromise") + mid-deliberation ("use triggers and types deterministically; can be expanded later with more types") per §1.5 admissibility lineage. Pre-existing precheck context_sha256 drift bug (in-flight outcome_type=supersede row visible to recompute) fixed in `selvedge/precheck.py` with `exclude_decision_v2_id` parameter on `_gather_sources`; no migration needed. Forward-only per DV-S176-1 C-4: 8 historical seal-grade engine_feedback rows preserved as legacy evidence (C-8 convergence). 286 pytest pass (+6 T-36 / nil_attestation / T-13-counterfactual cases over the 280 baseline post-S179).
 
 `engine-v47` (established Session 161 — adds the §Roles paragraph to `methodology` clarifying the agent (LLM, sole CLI-runner) and human (reframer-subtractor, scheduled review cadence) split that has drifted since the kernel was first authored; ratifies D-24 synthesis with C-1 PILOT-FIRST + C-2 FRICTION-REDUCTION-SEPARABLE + C-3 ORIENT-§WHY + C-4 NO-SUBSTRATE-GATE-NOW + C-5 NO-AUTO-MODE-MECHANISM convergences; defers submit-help schema registry, orient §Why extension, drain script, §1.5 autonomous-mode branch, T-NN substrate gate, P-2 authority tables — pending pilot-arc evidence per S075 external-pressure thesis).
 

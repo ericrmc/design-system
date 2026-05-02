@@ -196,6 +196,17 @@ def test_export_session_with_deliberation_decision_finding(isolated_workspace):
         json.dumps({"session_no": 1, "deliberation_id": did, "label": "p2",
                     "family": "openai", "body_md": "second perspective body for export fixture"}),
     ])
+    # T-36 (DV-S180-1, engine-v50, migration 040) refuses seal without a
+    # deliberation_counterfactuals row; submit one nil_attestation cheap-exit.
+    _run_cli_in(isolated_workspace, [
+        "submit", "deliberation-counterfactual", "--payload",
+        json.dumps({"deliberation_id": did,
+                    "position": "export-fixture cheap-exit nil_attestation: no counterfactuals.",
+                    "why": "tactical fixture seal; stance-space exhaustion not load-bearing.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                    "nil_attestation": 1}),
+    ])
     _run_cli_in(isolated_workspace, [
         "submit", "deliberation-seal", "--payload",
         json.dumps({"session_no": 1, "deliberation_id": did,

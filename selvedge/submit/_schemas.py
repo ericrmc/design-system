@@ -180,6 +180,22 @@ SUBMIT_SCHEMAS: dict[str, dict] = {
         "example": '{"deliberation_id": 24, "synthesis_md": "Synthesis preserves M-1 dissent."}',
         "spec_ref": "prompts/development.md §4",
     },
+    "deliberation-counterfactual": {
+        "summary": "Author one counterfactual under an open deliberation (DV-S180-1, engine-v50, T-36).",
+        "required": [
+            ("deliberation_id", "open deliberation_id (T-13 refuses if sealed)"),
+            ("position", "the position no perspective took (8-240 char atom)"),
+            ("why", "why the position would change synthesis if adopted (8-240 char atom)"),
+            ("disposition", "addressed-in-synthesis | deferred-to-FR | nilled-by-exclusion"),
+        ],
+        "optional": [
+            ("disposition_note", "synthesis_md anchor (addressed-in-synthesis) or FR alias (deferred-to-FR); 8-240 char"),
+            ("exclusion_kind", "preserved-as-divergence | barred-by-constraint | micro-decision | out-of-scope; required when disposition=nilled-by-exclusion"),
+            ("nil_attestation", "0 or 1; 1 encodes 'seal-grade: 0' cheap-exit (requires seq=1, disposition=nilled-by-exclusion, exclusion_kind set)"),
+        ],
+        "example": '{"deliberation_id": 29, "position": "Hybrid clause: ship typed primitive AND retain prose-prefix as recommended-optional.", "why": "Foreclosed by Q1 framing graduate-or-subtract.", "disposition": "nilled-by-exclusion", "exclusion_kind": "out-of-scope"}',
+        "spec_ref": "prompts/development.md §4",
+    },
     "synthesis-point": {
         "summary": "Add a synthesis point to a sealed deliberation (convergence, divergence, minority).",
         "required": [

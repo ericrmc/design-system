@@ -21,6 +21,30 @@ import pytest
 from conftest import PRIMARY_DB
 
 
+def _attest_nil(selvedge_cli, did):
+    """Submit a nil_attestation cheap-exit deliberation_counterfactuals row so
+    deliberation-seal admits past T-36 (DV-S180-1, engine-v50, migration 040).
+    Tests that exercise post-seal behavior call this immediately before the
+    seal submit."""
+    return selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "pytest cheap-exit nil_attestation: no counterfactuals.",
+                    "why": "tactical pytest seal; stance-space exhaustion not load-bearing.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                    "nil_attestation": 1,
+                }
+            ),
+        ]
+    )
+
+
 # ---------------------------------------------------------------------------
 # happy paths
 # ---------------------------------------------------------------------------
@@ -86,6 +110,7 @@ def test_deliberation_seal_sets_timestamp_and_synthesis(open_deliberation, selve
             json.dumps({"deliberation_id": did, "label": "p2", "family": "openai", "body_md": "b"}),
         ]
     )
+    _attest_nil(selvedge_cli, did)
     res = selvedge_cli(
         [
             "submit",
@@ -115,6 +140,7 @@ def test_synthesis_point_after_seal(open_deliberation, selvedge_cli, db):
             ]
         )
         pids.append(r["out"]["result"]["perspective_id"])
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -163,6 +189,7 @@ def test_t05_perspective_after_seal_refused(open_deliberation, selvedge_cli):
             json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
         ]
     )
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -194,6 +221,7 @@ def test_t13_resealing_to_null_refused(open_deliberation, selvedge_cli):
             json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
         ]
     )
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -223,6 +251,7 @@ def test_t14_convergence_with_one_source_refused(open_deliberation, selvedge_cli
         ]
     )
     pid = r["out"]["result"]["perspective_id"]
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -262,6 +291,7 @@ def test_t14_convergence_with_zero_sources_refused(open_deliberation, selvedge_c
             json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
         ]
     )
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -302,6 +332,7 @@ def test_t14_divergence_with_one_source_admitted(open_deliberation, selvedge_cli
         ]
     )
     pid = r["out"]["result"]["perspective_id"]
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -346,6 +377,7 @@ def test_t14_minority_with_one_source_admitted(open_deliberation, selvedge_cli, 
         ]
     )
     pid = r["out"]["result"]["perspective_id"]
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -400,6 +432,7 @@ def test_t06_closed_deliberation_topic_immutable(open_deliberation, selvedge_cli
             json.dumps({"deliberation_id": did, "label": "p2", "family": "openai", "body_md": "b"}),
         ]
     )
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -446,6 +479,7 @@ def test_t13_refuses_resealing_to_other_timestamp(open_deliberation, selvedge_cl
             json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
         ]
     )
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -489,6 +523,7 @@ def test_t13_admits_idempotent_same_value_sealed_at_write(open_deliberation, sel
             json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
         ]
     )
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -537,6 +572,7 @@ def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cl
             json.dumps({"deliberation_id": did, "label": "p2", "family": "openai", "body_md": "b"}),
         ]
     )
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -576,6 +612,7 @@ def test_t06_closed_session_synthesis_point_immutable(open_deliberation, selvedg
             ]
         )
         pids.append(r["out"]["result"]["perspective_id"])
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -691,6 +728,7 @@ def test_double_seal_refused(open_deliberation, selvedge_cli):
             json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
         ]
     )
+    _attest_nil(selvedge_cli, did)
     selvedge_cli(
         [
             "submit",
@@ -750,3 +788,395 @@ def test_perspective_body_alias_resolves_to_refs(open_deliberation, selvedge_cli
     assert r2["out"]["result"]["refs"] == 1
     n = db.execute("SELECT COUNT(*) AS n FROM refs").fetchone()["n"]
     assert n == 1
+
+
+# ---------------------------------------------------------------------------
+# T-36 deliberation_counterfactuals + deliberation-seal gate (DV-S180-1)
+# ---------------------------------------------------------------------------
+
+
+def test_t36_seal_refused_when_no_counterfactual_rows(open_deliberation, selvedge_cli):
+    """T-36 (engine-v50, migration 040): deliberation-seal refuses when the
+    deliberation has zero deliberation_counterfactuals rows."""
+    did = open_deliberation
+    selvedge_cli(
+        [
+            "submit",
+            "perspective",
+            "--payload",
+            json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
+        ]
+    )
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-seal",
+            "--payload",
+            json.dumps({"deliberation_id": did}),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "E_REFUSAL_T36" in res["err"]
+
+
+def test_t36_seal_admits_after_one_counterfactual_row(open_deliberation, selvedge_cli, db):
+    """T-36 admits seal once a single counterfactual row exists (substantive disposition path)."""
+    did = open_deliberation
+    selvedge_cli(
+        [
+            "submit",
+            "perspective",
+            "--payload",
+            json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
+        ]
+    )
+    selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "Hybrid coexistence: typed primitive plus prose-prefix coexist.",
+                    "why": "Foreclosed by Q1 graduate-or-subtract framing; not in stance-space.",
+                    "disposition": "addressed-in-synthesis",
+                    "disposition_note": "synthesis_md frame paragraph already addresses coexistence.",
+                }
+            ),
+        ]
+    )
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-seal",
+            "--payload",
+            json.dumps({"deliberation_id": did}),
+        ]
+    )
+    assert res["out"]["ok"]
+    n = db.execute(
+        "SELECT COUNT(*) AS n FROM deliberation_counterfactuals WHERE deliberation_id=?",
+        (did,),
+    ).fetchone()["n"]
+    assert n == 1
+
+
+def test_nil_attestation_cheap_exit_admits_seal(open_deliberation, selvedge_cli, db):
+    """The cheap-exit nil_attestation=1 row admits seal mirroring §8.5 audit-step:0."""
+    did = open_deliberation
+    selvedge_cli(
+        [
+            "submit",
+            "perspective",
+            "--payload",
+            json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
+        ]
+    )
+    r = selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "Tactical-pytest-seal cheap-exit attestation row.",
+                    "why": "Tactical scope; stance-space-exhaustion not load-bearing here.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                    "nil_attestation": 1,
+                }
+            ),
+        ]
+    )
+    assert r["out"]["ok"]
+    assert r["out"]["result"]["nil_attestation"] == 1
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-seal",
+            "--payload",
+            json.dumps({"deliberation_id": did}),
+        ]
+    )
+    assert res["out"]["ok"]
+
+
+def test_disposition_addressed_in_synthesis_requires_note(open_deliberation, selvedge_cli):
+    did = open_deliberation
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "A position no perspective took during the deliberation.",
+                    "why": "Why it would change synthesis if adopted.",
+                    "disposition": "addressed-in-synthesis",
+                }
+            ),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "addressed-in-synthesis requires disposition_note" in res["err"]
+
+
+def test_disposition_nilled_by_exclusion_requires_kind(open_deliberation, selvedge_cli):
+    did = open_deliberation
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "A position no perspective took during the deliberation.",
+                    "why": "Why it would change synthesis if adopted.",
+                    "disposition": "nilled-by-exclusion",
+                }
+            ),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "exclusion_kind" in res["err"]
+
+
+def test_t13_counterfactual_after_seal_refused(open_deliberation, selvedge_cli):
+    """T-13: cannot insert a counterfactual after parent deliberation is sealed."""
+    did = open_deliberation
+    selvedge_cli(
+        [
+            "submit",
+            "perspective",
+            "--payload",
+            json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
+        ]
+    )
+    _attest_nil(selvedge_cli, did)
+    selvedge_cli(
+        [
+            "submit",
+            "deliberation-seal",
+            "--payload",
+            json.dumps({"deliberation_id": did}),
+        ]
+    )
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "Late counterfactual after seal — should be refused.",
+                    "why": "T-13 mirrors synthesis_points / perspectives ordering discipline.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                }
+            ),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "E_REFUSAL_T13" in res["err"]
+
+
+def test_nil_attestation_must_be_only_row(open_deliberation, selvedge_cli):
+    """nil_attestation=1 cheap-exit row must be the only counterfactual."""
+    did = open_deliberation
+    selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "First substantive counterfactual.",
+                    "why": "Some reason it would have changed synthesis.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                }
+            ),
+        ]
+    )
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "Second cheap-exit attestation should be refused.",
+                    "why": "nil_attestation cheap-exit cannot follow another row.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                    "nil_attestation": 1,
+                }
+            ),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "nil_attestation=1 cheap-exit row must be the only counterfactual" in res["err"]
+
+
+def test_atom_rules_position_too_short_refused(open_deliberation, selvedge_cli):
+    """deliberation_counterfactuals.position CHECK enforces length>=8."""
+    did = open_deliberation
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "short",
+                    "why": "long enough why text here.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                }
+            ),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+
+
+def test_atom_rules_why_with_newline_refused(open_deliberation, selvedge_cli):
+    """deliberation_counterfactuals.why CHECK refuses embedded newline."""
+    did = open_deliberation
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "valid position text long enough.",
+                    "why": "first line\nsecond line text long enough.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                }
+            ),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+
+
+def test_atom_rules_position_with_pipe_table_refused(open_deliberation, selvedge_cli):
+    """deliberation_counterfactuals.position CHECK refuses pipe-table syntax."""
+    did = open_deliberation
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "header | col1 | col2 forbidden pipe.",
+                    "why": "valid why text long enough here.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                }
+            ),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+
+
+def test_invalid_exclusion_kind_refused(open_deliberation, selvedge_cli):
+    """exclusion_kind CHECK admits only 4 values; invalid value refused."""
+    did = open_deliberation
+    res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "valid position text long enough.",
+                    "why": "valid why text long enough here.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "made-up-not-in-enum",
+                }
+            ),
+        ],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "exclusion_kind" in res["err"]
+
+
+def test_t06_counterfactual_immutable_after_close(open_deliberation, selvedge_cli, db, submit_minimal_close_record):
+    """T-06: closed-session deliberation_counterfactuals row is immutable."""
+    did = open_deliberation
+    selvedge_cli(
+        [
+            "submit",
+            "perspective",
+            "--payload",
+            json.dumps({"deliberation_id": did, "label": "p1", "family": "anthropic", "body_md": "a"}),
+        ]
+    )
+    cf_res = selvedge_cli(
+        [
+            "submit",
+            "deliberation-counterfactual",
+            "--payload",
+            json.dumps(
+                {
+                    "deliberation_id": did,
+                    "position": "Tactical seal cheap-exit attestation row.",
+                    "why": "Tactical scope; stance-space-exhaustion not load-bearing.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                    "nil_attestation": 1,
+                }
+            ),
+        ]
+    )
+    cfid = cf_res["out"]["result"]["counterfactual_id"]
+    selvedge_cli(
+        [
+            "submit",
+            "deliberation-seal",
+            "--payload",
+            json.dumps({"deliberation_id": did}),
+        ]
+    )
+    # Close the session via close-record + session-close.
+    submit_minimal_close_record()
+    selvedge_cli(["submit", "session-close", "--payload", json.dumps({})])
+    # Now any direct UPDATE / DELETE should fire T-06.
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        with pytest.raises(sqlite3.IntegrityError) as exc:
+            conn.execute(
+                "UPDATE deliberation_counterfactuals SET disposition_note='post-close mutation' WHERE counterfactual_id=?",
+                (cfid,),
+            )
+        assert "E_REFUSAL_T06" in str(exc.value)
+        with pytest.raises(sqlite3.IntegrityError) as exc:
+            conn.execute(
+                "DELETE FROM deliberation_counterfactuals WHERE counterfactual_id=?",
+                (cfid,),
+            )
+        assert "E_REFUSAL_T06" in str(exc.value)
+    finally:
+        conn.close()
