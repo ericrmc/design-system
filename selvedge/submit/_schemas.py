@@ -573,9 +573,10 @@ SUBMIT_SCHEMAS: dict[str, dict] = {
         "optional": [
             _SESSION_NO_OPTIONAL,
             ("source_claim_id", "claim_id this dissent objects to (must belong to the same harness)"),
+            ("conflict_kind", "typed-observation atom: free-text conflict-shape label (workspace-experimental, no enum); kernel methodology names no canonical values per DV-S152-1"),
         ],
         "example": '{"alias": "RH-S166-1", "dissent": "Dissent atom.", "source_claim_id": 7}',
-        "spec_ref": "(harness)",
+        "spec_ref": "(harness; conflict_kind nullable opt-in atom per DV-S152-1)",
     },
     "harness-trigger": {
         "summary": "Register a falsification_trigger on a harness.",
@@ -635,8 +636,9 @@ SUBMIT_SCHEMAS: dict[str, dict] = {
         ],
         "optional": [
             _SESSION_NO_OPTIONAL,
+            ("closure_kind", "typed-observation atom: free-text closure-shape label (workspace-experimental, no enum); kernel methodology names no canonical values per DV-S152-1"),
         ],
         "example": '{"alias": "RH-S166-1"}',
-        "spec_ref": "(harness)",
+        "spec_ref": "(harness; closure_kind nullable opt-in atom per DV-S152-1)",
     },
 }

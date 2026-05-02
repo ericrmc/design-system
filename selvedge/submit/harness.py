@@ -216,12 +216,17 @@ def _submit_harness_dissent(conn: sqlite3.Connection, p: dict, role: str) -> dic
                 f"source_claim_id={source_claim_id} belongs to harness_id={row['harness_id']}, not {hid}",
             )
     dissent_aid = _insert_atom(conn, role, sess_id, "claim", p["dissent"])
+    conflict_kind_aid = (
+        _insert_atom(conn, role, sess_id, "claim", p["conflict_kind"])
+        if p.get("conflict_kind")
+        else None
+    )
     ord_ = _next_child_ord(conn, "reference_harness_dissent", hid)
     cur = conn.execute(
         "INSERT INTO reference_harness_dissent "
-        "(harness_id, ord, dissent_atom_id, source_claim_id) "
-        "VALUES (?,?,?,?)",
-        (hid, ord_, dissent_aid, source_claim_id),
+        "(harness_id, ord, dissent_atom_id, source_claim_id, conflict_kind_atom_id) "
+        "VALUES (?,?,?,?,?)",
+        (hid, ord_, dissent_aid, source_claim_id, conflict_kind_aid),
     )
     return {"dissent_id": cur.lastrowid, "harness_id": hid, "ord": ord_}
 
@@ -325,13 +330,19 @@ def _submit_harness_seal(conn: sqlite3.Connection, p: dict, role: str) -> dict:
             "E_VALIDATION",
             f"harness_id={hid} status is {row['status']}; only open harnesses can be sealed",
         )
+    closure_kind_aid = (
+        _insert_atom(conn, role, sess_id, "claim", p["closure_kind"])
+        if p.get("closure_kind")
+        else None
+    )
     upd = conn.execute(
         "UPDATE reference_harnesses "
         "SET status='sealed', "
         "    sealed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now'), "
-        "    sealed_session_id=? "
+        "    sealed_session_id=?, "
+        "    closure_kind_atom_id=COALESCE(?, closure_kind_atom_id) "
         "WHERE harness_id=?",
-        (sess_id, hid),
+        (sess_id, closure_kind_aid, hid),
     )
     if upd.rowcount != 1:
         raise SelvedgeError("E_NOT_FOUND", f"harness_id={hid}")
