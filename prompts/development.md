@@ -177,12 +177,12 @@ bin/selvedge submit spec-version --payload '{
   "version": <new-version>,
   "body_path": "specifications/<spec>.md",
   "body_md": "<inline markdown body, required unless using legacy two-step>",
-  "supersedes": "<prior alias, e.g. methodology@9>",
+  "supersedes": "<prior alias, e.g. SPEC-methodology-v9>",
   "supersedes_reason_md": "<one-sentence reason>"
 }'
 ```
 
-`session_no` (the open-session number) and `supersedes` (the prior `<spec-id>@<prior-version>` alias) are required for any non-initial version; the handler refuses with `E_NOT_FOUND` if `session_no` does not name an open session, and `E_REFUSAL_T01` if `supersedes` does not resolve. `supersedes_reason_md` is optional but recorded on the resulting `refs` row carrying relation `supersedes`. For an initial version (`version: 1`), omit `supersedes` and `supersedes_reason_md`. T-03 (one active per spec_id) is satisfied by the handler flipping the prior active row to `superseded` BEFORE inserting the new active row, inside the same write_tx (cites OI-S090-4).
+`session_no` (the open-session number) and `supersedes` (the prior `SPEC-<spec-id>-v<prior-version>` alias) are required for any non-initial version; the handler refuses with `E_NOT_FOUND` if `session_no` does not name an open session, and `E_REFUSAL_T01` if `supersedes` does not resolve. `supersedes_reason_md` is optional but recorded on the resulting `refs` row carrying relation `supersedes`. For an initial version (`version: 1`), omit `supersedes` and `supersedes_reason_md`. T-03 (one active per spec_id) is satisfied by the handler flipping the prior active row to `superseded` BEFORE inserting the new active row, inside the same write_tx (cites OI-S090-4).
 
 ## 7. Validate — and run the coding review loop on any code change
 
