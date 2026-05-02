@@ -1,4 +1,4 @@
-# Self-development application (engine-v46)
+# Self-development application (engine-v47)
 
 You are running the Selvedge engine on its own development. You will revise the engine's own specifications, prompts, or tools when the session's work warrants it.
 
@@ -14,14 +14,18 @@ You do **not** need to read the full provenance back-catalogue. The seventy-five
 
 ## 1.5 Self-driving dispatch (when the operator's prompt is open-ended)
 
-When the operator's prompt is empty, generic (`continue`, `next`, `keep going`), or otherwise unprescriptive about *what* to do, **propose an agenda before opening the session** drawn from the orient packet, in this priority order:
+When the operator's prompt does not prescribe specific work, **propose an agenda from the orient packet** in this priority order:
 
 1. **HIGH-priority open issues** — surface any HIGH and propose them.
 2. **Untriaged engine-feedback** — observations carrying NULL disposition often name specific gaps; the smallest is usually the cheapest leverage.
 3. **Undisposed forward-references** — these are the prior session's explicit ask. Prefer the most recent (largest `S<wno>`) unless older ones name HIGH-priority issues.
 4. **Deferred decisions** — surface but do not act on them without explicit operator confirmation.
 
-State the proposed item to the operator, wait for ratification or redirect, then proceed. If the operator's prompt *does* prescribe specific work, do that work — do not override with the queue.
+**Bare-`PROMPT.md` auto-proceed mode (cites DV-S164-1).** When the operator's input is exactly `PROMPT.md` with no additional text, the agent runs orient, selects the recommended path from the priority order above, and **proceeds without waiting for ratification**. The bare-prompt form is the operator's signal that they are absent or hands-off for this turn; waiting for confirmation that will not arrive defeats the dispatch. If the recommended path would open a substantive session (kind=`coding`, deliberation-shaped `spec_only`, or any session that would convene perspectives per methodology §When-to-convene), consult the OpenAI `codex` CLI before `session-open` for a non-Anthropic-family read on session shape (kind, scope, agenda) and fold the consult into the assessment as an `engine_feedback` `observation` row tagged `codex-shape-consult:` or as an explicit perspective when the session opens a deliberation. Tactical paths (small calibration-EF closures, FR-disposition-only sessions, single-clause spec edits, triage-only meta sessions) skip the codex consult.
+
+**Operator-input-with-text mode.** When the operator's input includes text beyond `PROMPT.md` — even if the text is generic (`continue`, `next`, `keep going`) — present available paths from the priority order above and **wait for direction**. Any operator text signals operator presence; do not bypass them.
+
+If the operator's prompt *does* prescribe specific work, do that work — do not override with the queue.
 
 ## 2. Open the session
 
@@ -75,6 +79,8 @@ bin/selvedge submit synthesis-point --payload '{"deliberation_id": <N>, "kind": 
 After deliberation, spawn a **capture subagent** to read each perspective's body_md and submit `perspective-position` (one per perspective, distilling the **Position.** paragraph into a single 8–240-char atom) and `perspective-claim` rows (one per bullet under each labeled section, with `section_kind` from a closed enum: position / schema_sketch / cli_surface / migration_path / what_not / open_question / risk / what_lost). The orchestrator does not author the decomposition by hand.
 
 **Subagent tool class (cites OI-S156-1).** The perspective subagents (each producing a stance brief and authoring a `perspective-N.json` payload) and the capture subagent (writing decomposition payloads before submit) both need Write capability. Spawn them with a tool class that admits Write (e.g. `general-purpose`); `Explore` is read-only and refuses payload authoring at dispatch time. Reserve `Explore` for the §7 reviewer subagent, which only reads the change and submits findings via Bash.
+
+**Subagent prompts must include do-not-commit boilerplate (cites EF-S161-2, FR-S161-18, DV-S164-1).** Every subagent dispatch — perspective subagents, capture subagent, §7 reviewer subagent, and any other Bash- or Write-capable spawn — receives an explicit instruction in its prompt block: *"Do not run `git commit`, `git push`, `git add` for the purpose of staging-to-commit, or any commit-like operation. The orchestrator commits at session-close after `bin/selvedge export --write`. Author payloads, run `bin/selvedge submit ...`, write files when authorised, but do not finalise git state."* The subagent has no view of session-close ordering and may otherwise commit mid-session, fragmenting provenance and bypassing the export-then-commit handshake. The clause is operator/agent-policed at prompt-authoring time; the harness does not gate subagent dispatch on boilerplate presence at engine-v47. If a future calibration-EF names a subagent commit that landed despite this clause, the next session opens a gate-promotion `OI` toward harness-side enforcement (subagent prompt linter or git-hook refusal scoped to subagent shells).
 
 ### Seal-time deliberation-grading (mandatory; cites DV-S159-1)
 
