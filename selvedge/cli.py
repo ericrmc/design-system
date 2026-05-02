@@ -31,6 +31,7 @@ from typing import Optional
 
 from .errors import SelvedgeError
 from .export import cmd_export
+from .precheck import cmd_precheck
 from .feedback_cmd import cmd_feedback
 from .id_allocate import cmd_id_allocate
 from .init_cmd import cmd_init
@@ -138,6 +139,31 @@ def main(argv: Optional[list[str]] = None) -> int:
     p_orient = sub.add_parser("orient", help="Print the workspace orientation packet (engine-v23+).")
     p_orient.add_argument("--json", dest="as_json", action="store_true", help="Emit JSON instead of markdown.")
     p_orient.set_defaults(fn=cmd_orient)
+
+    p_pre = sub.add_parser(
+        "precheck",
+        help="Render decision-record context pack and write a single-use precheck receipt (T-33, engine-v49, DV-S179-1).",
+    )
+    p_pre.add_argument(
+        "--target-kind",
+        dest="target_kind",
+        required=True,
+        choices=["decision_v2"],
+        help="Target kind (decision_v2 only at engine-v49).",
+    )
+    p_pre.add_argument(
+        "--target-key",
+        dest="target_key",
+        required=True,
+        help="Target key (typically the decision_v2 target_key the agent will submit).",
+    )
+    p_pre.add_argument(
+        "--print",
+        dest="print_stdout",
+        action="store_true",
+        help="Emit the rendered context body to stdout in addition to the receipt summary.",
+    )
+    p_pre.set_defaults(fn=cmd_precheck)
 
     p_schema = sub.add_parser("schema", help="Print substrate schema (live read from sqlite_master).")
     p_schema.add_argument("table", nargs="?", default=None, help="Optional table name to focus on.")

@@ -25,6 +25,11 @@ from ..aliases import _resolve_alias_to_object_id, _resolve_issue_alias
 from ..errors import SelvedgeError
 from ..export.anchor import WALKER_VERSION, _export_provenance_anchor
 from ..paths import ANCHOR_TRACE_DEFAULT_DEPTH
+from ..precheck import (
+    T33_KIND_ADMITTED_ZERO,
+    T33_KIND_REQUIRED,
+    verify_and_consume_precheck,
+)
 from ._helpers import (
     _atom_session_id,
     _check_role_capability,
@@ -50,6 +55,34 @@ def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     did = cur.lastrowid
     alias = f"DV-S{wno:03d}-{next_no}"
     oid = _link_object(conn, "decisions_v2", "decision_v2_id", did, "decision_v2", alias)
+
+    # T-33 substrate-gate (engine-v49, DV-S179-1, migration 035).
+    # Kind-aware admit predicate per EF-S179-1 CF-2: kinds in T33_KIND_REQUIRED
+    # require a fresh, target-matched, single-use precheck nonce; kinds in
+    # T33_KIND_ADMITTED_ZERO admit zero-precheck like T-32 admits zero-cite.
+    # Verification + consumption happens in same write_tx so concurrent
+    # decision-records cannot race the same precheck row.
+    kind = p["kind"]
+    nonce = p.get("precheck_nonce")
+    if kind in T33_KIND_REQUIRED:
+        if not nonce:
+            raise SelvedgeError(
+                "E_REFUSAL_T33",
+                f"decision-record kind={kind!r} requires precheck_nonce; "
+                f"run `bin/selvedge precheck --target-kind {p['target_kind']} "
+                f"--target-key '{p['target_key']}' --print` first, then include "
+                f"the returned nonce in the payload as precheck_nonce",
+            )
+        verify_and_consume_precheck(
+            conn, sess_id, "decision_v2", p["target_key"], nonce, did
+        )
+    elif kind in T33_KIND_ADMITTED_ZERO and nonce:
+        # Symmetry with T-32 zero-cite admit: kind-admitted-zero may still
+        # carry a nonce (e.g., agent-side defensive precheck). Consume it
+        # for hygiene if present.
+        verify_and_consume_precheck(
+            conn, sess_id, "decision_v2", p["target_key"], nonce, did
+        )
 
     _check_role_capability(conn, role, "decision_supports", "insert")
     for seq, s in enumerate(p.get("supports", []), start=1):

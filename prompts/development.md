@@ -1,4 +1,4 @@
-# Self-development application (engine-v48)
+# Self-development application (engine-v49)
 
 You are running the Selvedge engine on its own development. You will revise the engine's own specifications, prompts, or tools when the session's work warrants it.
 
@@ -127,10 +127,15 @@ bin/selvedge submit engine-feedback --payload '{
 
 ## 5. Record decisions
 
+**Pre-decision precheck (mandatory for kind=substantive | schema_migration; T-33, engine-v49, DV-S179-1, migration 035).** Before submitting a decision-record of kind `substantive` or `schema_migration`, run `bin/selvedge precheck --target-kind decision_v2 --target-key <target_key> --print`. The CLI renders a context pack (similar OIs, prior DVs targeting the same key, active spec clauses, recent supersedes) AND writes a single-use precheck receipt row (`decision_prechecks`); it emits a single-use `nonce` you include in the decision-record payload as `precheck_nonce`. The submit handler verifies the nonce inside the same write_tx (freshness window 30..3600s default 1800s, target-kind + target-key match, context_sha256 recomputation match, single-use consumption); refusal is `E_REFUSAL_T33` with a refusal text naming the exact failure mode. Kind-aware admit predicate: kinds `procedural | calibration | disposition` admit zero-precheck like T-32 admits zero-cite. Cites D-28 + DV-S179-1 + EF-S179-1.
+
+The substrate enforces SHOW-CONTEXT / LIMIT-ENTRY / FORCE-CHECKS through the receipt-pattern shape proven at T-32: row + sha256 + handler dispatch in-band. Cognition is not substrate-detectable; the gate enforces exposure path, not comprehension. Per D-28 C-5 cross-family convergence + DV-S176-1 read-write separation, the precheck CLI emits markdown to stdout AND writes the receipt; the receipt is the substrate proof, the print is presentation; the submit handler not the export tool does the gating.
+
 ```sh
 bin/selvedge submit decision-record --payload '{
   "title": "<one-sentence decision title, 8-240 chars>",
   "kind": "substantive | schema_migration | calibration | disposition | procedural",
+  "precheck_nonce": "<single-use hex from bin/selvedge precheck; required for substantive/schema_migration>",
   "outcome_type": "adopt | reject | defer | supersede | ratify",
   "target_kind": "process_rule | spec_version | migration | issue | review_rule | engine_version | open_question",
   "target_key": "<short key, 2-120 chars>",
@@ -158,7 +163,7 @@ bin/selvedge submit decision-record --payload '{
 
 T-18 refuses session-close while a substantive decision lacks support or alternative. T-19 refuses while an alternative lacks a rejection. T-01 refuses unresolved aliases at write time. The label format `R-N.N` (e.g. R-1.1, R-2.3) is enforced by GLOB.
 
-**Cite typing for `supports` and `alternatives.rejections` (cites DV-S158-1, EF-S157-1).** The optional `cite` slot resolves only against `objects.alias` (FK `cited_object_id`). Issues (`OI-...`) live in the `issues` table; forward-reference dispositions (`FR-...`) live in `forward_reference_dispositions`; neither registers in `objects` and so neither can populate `cited_object_id` directly. Migration 021 records the historical residual (24 OI-mentioning + 9 FR-mentioning supports left with NULL `cited_object_id`); OI-086-003 tracks the schema gap and remains open as the graduation-trigger if recurrence pressure rises. At engine-v45 the operator-facing rule is:
+**Cite typing for `supports` and `alternatives.rejections` (cites DV-S158-1, EF-S157-1, DV-S179-1).** The `cite` slot resolves only against `objects.alias` (FK `cited_object_id`). Issues (`OI-...`) live in the `issues` table; forward-reference dispositions (`FR-...`) live in `forward_reference_dispositions`; neither registers in `objects` and so neither can populate `cited_object_id` directly. Migration 021 records the historical residual (24 OI-mentioning + 9 FR-mentioning supports left with NULL `cited_object_id`). At engine-v49, **T-34 (migration 036) refuses NEW `decision_supports` rows with NULL `cited_object_id` when `basis IN (prior_decision, spec_clause, deliberation, review_finding, engine_feedback, constraint, operator_directive)`**; legacy NULL rows are preserved (trigger fires only on INSERT). OI-086-003 closed by-mechanism by DV-S179-1. **T-35 (migration 038) refuses NEW `spec_clauses` rows with NULL `source_decision_v2_id`**; legacy 747 NULL rows preserved. OI-086-001 closed by-mechanism by DV-S179-1. The operator-facing rule is:
 
 - For `basis=engine_feedback`: cite the `EF-S<wno>-<n>` alias (in `objects`), not the `OI-...` it surfaced. Fold the OI reference into claim text.
 - For `basis=prior_decision`: cite the `DV-S<wno>-<n>` alias (in `objects`), not the FR or OI it emitted. Fold those into claim text.

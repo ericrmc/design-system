@@ -21,10 +21,16 @@ from conftest import PRIMARY_DB, WORKSPACE
 
 
 def _minimal_decision_payload(**overrides) -> dict:
-    """Smallest admissible decision-record payload. Override fields per test."""
+    """Smallest admissible decision-record payload. Override fields per test.
+
+    Default kind is `procedural` (T-33 admitted-zero per DV-S179-1 / migration
+    035) so most tests do not need to obtain a precheck nonce. Tests that
+    specifically exercise kind=substantive must call `_run_precheck` first
+    and pass the returned nonce as `precheck_nonce` in overrides.
+    """
     base = {
         "title": "pytest decision-record happy path",
-        "kind": "substantive",
+        "kind": "procedural",
         "outcome_type": "adopt",
         "target_kind": "process_rule",
         "target_key": "pytest-target",
@@ -33,9 +39,30 @@ def _minimal_decision_payload(**overrides) -> dict:
     return base
 
 
+def _run_precheck(selvedge_cli, target_kind: str, target_key: str) -> str:
+    """Run `bin/selvedge precheck --target-kind ... --target-key ...` and
+    return the generated single-use nonce (T-33 enabling, engine-v49)."""
+    import subprocess
+    from conftest import BIN, WORKSPACE
+    proc = subprocess.run(
+        [str(BIN), "precheck", "--target-kind", target_kind, "--target-key", target_key],
+        capture_output=True, text=True,
+        env={"SELVEDGE_WORKSPACE": str(WORKSPACE), **__import__("os").environ},
+    )
+    assert proc.returncode == 0, f"precheck failed: rc={proc.returncode} stderr={proc.stderr}"
+    # Output line: "precheck_id=N nonce=<hex> target_kind=... ..."
+    for tok in proc.stdout.split():
+        if tok.startswith("nonce="):
+            return tok.split("=", 1)[1]
+    raise AssertionError(f"no nonce in precheck output: {proc.stdout!r}")
+
+
 def test_decision_record_minimal_creates_row_and_alias(clean_substrate, selvedge_cli, db):
+    # Substantive kind requires a single-use precheck nonce per T-33 (DV-S179-1).
+    nonce = _run_precheck(selvedge_cli, "decision_v2", "pytest-target")
+    payload = _minimal_decision_payload(kind="substantive", precheck_nonce=nonce)
     res = selvedge_cli(
-        ["submit", "decision-record", "--payload", json.dumps(_minimal_decision_payload())]
+        ["submit", "decision-record", "--payload", json.dumps(payload)]
     )
     assert res["out"]["ok"], res
     did = res["out"]["result"]["decision_v2_id"]
@@ -57,10 +84,18 @@ def test_decision_record_minimal_creates_row_and_alias(clean_substrate, selvedge
 
 
 def test_decision_record_supports_and_alternatives(clean_substrate, selvedge_cli, db):
+    # T-34 (engine-v49, migration 036) refuses NULL cited_object_id on
+    # cite-required bases; seed a prior procedural DV to cite.
+    seed = selvedge_cli(
+        ["submit", "decision-record", "--payload", json.dumps(
+            _minimal_decision_payload(title="seed prior DV for cite")
+        )]
+    )
+    seed_alias = seed["out"]["result"]["alias"]
     payload = _minimal_decision_payload(
         title="decision with supports + alternative",
         supports=[
-            {"basis": "operator_directive", "claim": "operator asked for this in S103"},
+            {"basis": "prior_decision", "claim": "cites seed DV via T-34", "cite": seed_alias},
         ],
         alternatives=[
             {
@@ -653,6 +688,14 @@ def test_spec_clause_inserts_with_normative_level(clean_substrate, selvedge_cli,
         ]
     )
     ssid = sec["out"]["result"]["spec_section_id"]
+    # T-35 (engine-v49, migration 038) refuses NULL source_decision_v2_id on
+    # spec_clause INSERT; seed a procedural DV and cite it.
+    src_dv = selvedge_cli(
+        ["submit", "decision-record", "--payload", json.dumps(
+            _minimal_decision_payload(title="seed source DV for spec_clause T-35")
+        )]
+    )
+    src_alias = src_dv["out"]["result"]["alias"]
     res = selvedge_cli(
         [
             "submit", "spec-clause", "--payload",
@@ -662,6 +705,7 @@ def test_spec_clause_inserts_with_normative_level(clean_substrate, selvedge_cli,
                 "clause": "clause text exercised by the pytest fixture",
                 "clause_type": "rule",
                 "normative_level": "must",
+                "source_decision_alias": src_alias,
             }),
         ]
     )
@@ -672,3 +716,175 @@ def test_spec_clause_inserts_with_normative_level(clean_substrate, selvedge_cli,
     ).fetchone()
     assert row["normative_level"] == "must"
     assert row["clause_type"] == "rule"
+
+
+# ---------------------------------------------------------------------------
+# T-33 / T-34 / T-35 / slug-UNIQUE / harness-alias registration tests
+# (engine-v49, DV-S179-1, migrations 033-039)
+# ---------------------------------------------------------------------------
+
+
+def test_t33_substantive_decision_without_precheck_refused(clean_substrate, selvedge_cli):
+    payload = _minimal_decision_payload(kind="substantive")
+    res = selvedge_cli(
+        ["submit", "decision-record", "--payload", json.dumps(payload)],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "E_REFUSAL_T33" in res["err"]
+    assert "precheck_nonce" in res["err"]
+
+
+def test_t33_schema_migration_decision_without_precheck_refused(clean_substrate, selvedge_cli):
+    payload = _minimal_decision_payload(kind="schema_migration")
+    res = selvedge_cli(
+        ["submit", "decision-record", "--payload", json.dumps(payload)],
+        expect_ok=False,
+    )
+    assert res["rc"] != 0
+    assert "E_REFUSAL_T33" in res["err"]
+
+
+def test_t33_precheck_nonce_consumed_single_use(clean_substrate, selvedge_cli):
+    nonce = _run_precheck(selvedge_cli, "decision_v2", "single-use-key")
+    payload = _minimal_decision_payload(
+        kind="substantive", target_key="single-use-key", precheck_nonce=nonce
+    )
+    res1 = selvedge_cli(["submit", "decision-record", "--payload", json.dumps(payload)])
+    assert res1["out"]["ok"]
+    # Re-submit with same nonce -> consumed-error.
+    payload2 = _minimal_decision_payload(
+        kind="substantive", target_key="single-use-key", precheck_nonce=nonce,
+        title="second decision attempting to reuse the same nonce",
+    )
+    res2 = selvedge_cli(
+        ["submit", "decision-record", "--payload", json.dumps(payload2)], expect_ok=False
+    )
+    assert "already consumed" in res2["err"]
+
+
+def test_t33_precheck_target_key_mismatch_refused(clean_substrate, selvedge_cli):
+    nonce = _run_precheck(selvedge_cli, "decision_v2", "key-A")
+    payload = _minimal_decision_payload(
+        kind="substantive", target_key="key-B-different", precheck_nonce=nonce
+    )
+    res = selvedge_cli(
+        ["submit", "decision-record", "--payload", json.dumps(payload)], expect_ok=False
+    )
+    assert "target_key" in res["err"]
+    assert "E_REFUSAL_T33" in res["err"]
+
+
+def test_t33_procedural_kind_admits_zero_precheck(clean_substrate, selvedge_cli):
+    """T-33 admit-zero predicate: kind in (procedural, calibration, disposition)
+    submits without precheck like T-32 admits zero-cite."""
+    for kind in ("procedural", "calibration", "disposition"):
+        payload = _minimal_decision_payload(
+            kind=kind, target_key=f"admit-zero-{kind}",
+            title=f"kind-admitted-zero {kind} decision-record",
+        )
+        res = selvedge_cli(["submit", "decision-record", "--payload", json.dumps(payload)])
+        assert res["out"]["ok"], f"kind={kind} failed: {res}"
+
+
+def test_t34_decision_supports_null_cite_on_required_basis_refused(clean_substrate, selvedge_cli, db):
+    nonce = _run_precheck(selvedge_cli, "decision_v2", "t34-test-key")
+    payload = _minimal_decision_payload(
+        kind="substantive", target_key="t34-test-key", precheck_nonce=nonce,
+        supports=[
+            {"basis": "operator_directive", "claim": "operator directive without cite"},
+        ],
+    )
+    res = selvedge_cli(
+        ["submit", "decision-record", "--payload", json.dumps(payload)], expect_ok=False
+    )
+    assert "E_REFUSAL_T34" in res["err"], res
+
+
+def test_t35_spec_clause_null_source_decision_refused(clean_substrate, selvedge_cli, db):
+    sv_id = _seed_spec_version(selvedge_cli)
+    sec = selvedge_cli(
+        ["submit", "spec-section", "--payload", json.dumps({
+            "session_no": 1, "spec_version_id": sv_id, "ord": 1,
+            "heading": "Section for T-35 refusal test",
+        })]
+    )
+    ssid = sec["out"]["result"]["spec_section_id"]
+    res = selvedge_cli(
+        ["submit", "spec-clause", "--payload", json.dumps({
+            "session_no": 1, "spec_section_id": ssid, "ord": 1,
+            "clause": "clause without source_decision_alias should refuse",
+            "clause_type": "rule", "normative_level": "must",
+        })], expect_ok=False
+    )
+    assert "E_REFUSAL_T35" in res["err"]
+
+
+def test_sessions_slug_unique_index_refuses_duplicate(clean_substrate, db):
+    """Migration 037 added UNIQUE index on sessions.slug."""
+    import sqlite3
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO sessions (session_no, slug, mode, workspace_id, "
+                "engine_version_at_open, status, kind) VALUES (?,?,?,?,?,?,?)",
+                (999, "pytest", "self-development", "selvedge-self-development",
+                 "engine-v17", "open", "spec_only"),
+            )
+            conn.commit()
+    finally:
+        conn.close()
+
+
+def test_atom_length_support_claim_widened_to_480(clean_substrate, selvedge_cli):
+    """Migration 039 widened text_atoms CHECK so atom_type IN (support_claim,finding)
+    admits length 8-480. Verify 250-char support_claim succeeds (would have refused
+    pre-039 as E_ATOM_LENGTH)."""
+    nonce = _run_precheck(selvedge_cli, "decision_v2", "atom-len-test")
+    long_claim = "x" * 260
+    payload = _minimal_decision_payload(
+        kind="substantive", target_key="atom-len-test", precheck_nonce=nonce,
+        supports=[
+            {"basis": "operator_directive", "claim": long_claim, "cite": None},
+        ],
+    )
+    # T-34 will block on missing cite, but the atom-length should not be the
+    # gate. Test the atom-length directly via close_summary.
+    # Use an alternative_rejection reason instead which uses rejection_reason
+    # (still 240 cap) — actually use direct support with cite to a seed DV.
+    seed = selvedge_cli(["submit", "decision-record", "--payload", json.dumps(
+        _minimal_decision_payload(title="seed for atom-length test")
+    )])
+    seed_alias = seed["out"]["result"]["alias"]
+    nonce2 = _run_precheck(selvedge_cli, "decision_v2", "atom-len-test-2")
+    payload = _minimal_decision_payload(
+        kind="substantive", target_key="atom-len-test-2", precheck_nonce=nonce2,
+        supports=[
+            {"basis": "prior_decision", "claim": long_claim, "cite": seed_alias},
+        ],
+    )
+    res = selvedge_cli(["submit", "decision-record", "--payload", json.dumps(payload)])
+    assert res["out"]["ok"], res
+
+
+def test_harness_alias_registered_in_objects_post_033(clean_substrate, db):
+    """Migration 033 widened objects.object_kind CHECK to admit reference_harness
+    and registered every existing reference_harnesses.alias. Verify that an
+    INSERT of a reference_harness object_kind row succeeds (proves CHECK
+    widening took effect)."""
+    import sqlite3
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        conn.execute("PRAGMA foreign_keys=ON")
+        conn.execute(
+            "INSERT INTO objects (object_kind, typed_row_id, alias) VALUES (?,?,?)",
+            ("reference_harness", 99999, "RH-PYTEST-1"),
+        )
+        conn.commit()
+        row = conn.execute(
+            "SELECT alias FROM objects WHERE object_kind='reference_harness' AND alias='RH-PYTEST-1'"
+        ).fetchone()
+        assert row is not None
+    finally:
+        conn.close()

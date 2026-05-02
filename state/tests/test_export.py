@@ -211,13 +211,25 @@ def test_export_session_with_deliberation_decision_finding(isolated_workspace):
                     ]}),
     ])
 
-    # decision-record (Path A).
+    # decision-record (Path A). T-33 (engine-v49) requires a precheck for
+    # kind=substantive; obtain a single-use nonce first.
+    pre = _run_cli_in(isolated_workspace, [
+        "precheck", "--target-kind", "decision_v2", "--target-key", "export-fixture",
+    ])
+    nonce = None
+    raw = (pre["out"].get("_raw") if isinstance(pre["out"], dict) else "") or ""
+    for tok in raw.split():
+        if tok.startswith("nonce="):
+            nonce = tok.split("=", 1)[1]
+            break
+    assert nonce, f"precheck did not return a nonce: {pre}"
     _run_cli_in(isolated_workspace, [
         "submit", "decision-record", "--payload",
         json.dumps({
             "session_no": 1,
             "title": "fixture decision for export coverage", "kind": "substantive",
             "outcome_type": "adopt", "target_kind": "process_rule", "target_key": "export-fixture",
+            "precheck_nonce": nonce,
             "alternatives": [{
                 "label": "R-1.1", "option": "alternative we considered then rejected",
                 "rejections": [{"basis": "inferior_tradeoff",

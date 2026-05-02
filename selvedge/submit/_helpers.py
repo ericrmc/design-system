@@ -118,6 +118,11 @@ _ATOM_LENGTH_TIERS: dict[str, tuple[int, int]] = {
     "spec_clause": (16, 480),
     "spec_section_intent": (16, 480),
     "legacy_import": (8, 4000),
+    # Migration 039 (engine-v49, DV-S179-1) widens the named cliffs surfaced
+    # at S172/S174/S177/S178 per OI-S177-1: support_claim and finding raise
+    # from 8-240 to 8-480. Other atom types stay at 8-240 (the default).
+    "support_claim": (8, 480),
+    "finding": (8, 480),
 }
 _ATOM_LENGTH_DEFAULT: tuple[int, int] = (8, 240)
 
