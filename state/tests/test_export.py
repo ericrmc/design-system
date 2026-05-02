@@ -273,6 +273,42 @@ def test_export_session_via_substrate_session_no(isolated_workspace):
 
 
 # ---------------------------------------------------------------------------
+# _export_provenance_anchor --print (FR-S173-1)
+# ---------------------------------------------------------------------------
+
+
+def test_export_anchor_print_emits_markdown_to_stdout(isolated_workspace):
+    """--print rooted on the fixture session alias must emit the anchor-trace
+    markdown body to stdout (frontmatter + headline) and create no
+    provenance/anchor-traces/ files on disk."""
+    res = _run_cli_in(isolated_workspace, [
+        "export", "--provenance", "--anchor", "S080", "--print",
+    ])
+    assert res["rc"] == 0, res
+    raw = res["out"]["_raw"] if isinstance(res["out"], dict) else res["out"]
+    assert "anchor: S080" in raw
+    assert "# Anchor trace: `S080`" in raw
+    # No JSON wrapper keys in stdout.
+    assert "nodes_visited" not in raw.split("---", 2)[-1]
+    # --print must not write to disk.
+    assert not (isolated_workspace / "provenance" / "anchor-traces").exists()
+
+
+def test_export_print_without_provenance_refused(isolated_workspace):
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "80", "--print"])
+    assert res["rc"] == 2
+    assert "only valid with --provenance --anchor" in res["err"]
+
+
+def test_export_print_with_write_refused(isolated_workspace):
+    res = _run_cli_in(isolated_workspace, [
+        "export", "--provenance", "--anchor", "S080", "--print", "--write",
+    ])
+    assert res["rc"] == 2
+    assert "mutually exclusive" in res["err"]
+
+
+# ---------------------------------------------------------------------------
 # _export_issues
 # ---------------------------------------------------------------------------
 

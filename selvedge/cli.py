@@ -127,6 +127,12 @@ def main(argv: Optional[list[str]] = None) -> int:
         help=f"Chain-walk depth for anchor-trace (default {ANCHOR_TRACE_DEFAULT_DEPTH}, hard cap {ANCHOR_TRACE_HARD_CAP_DEPTH}).",
     )
     p_exp.add_argument("--write", action="store_true", help="Write files to disk (default: dry-run, print plan).")
+    p_exp.add_argument(
+        "--print",
+        dest="print_stdout",
+        action="store_true",
+        help="Anchor-trace only: emit the markdown body to stdout (no JSON wrapper, no disk write). FR-S173-1.",
+    )
     p_exp.set_defaults(fn=cmd_export)
 
     p_orient = sub.add_parser("orient", help="Print the workspace orientation packet (engine-v23+).")

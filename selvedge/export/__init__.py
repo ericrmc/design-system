@@ -19,6 +19,13 @@ from .session import _export_session_provenance
 
 
 def cmd_export(args) -> int:
+    print_stdout = getattr(args, "print_stdout", False)
+    if print_stdout and not args.provenance:
+        print("export --print: only valid with --provenance --anchor (FR-S173-1)", file=sys.stderr)
+        return 2
+    if print_stdout and args.write:
+        print("export --print and --write are mutually exclusive", file=sys.stderr)
+        return 2
     conn = sqlite3.connect(str(db_path()))
     conn.row_factory = sqlite3.Row
     try:
@@ -28,10 +35,13 @@ def cmd_export(args) -> int:
                 return 2
             depth = args.max_depth if args.max_depth is not None else ANCHOR_TRACE_DEFAULT_DEPTH
             result = _export_provenance_anchor(conn, args.anchor, max_depth=depth, write=args.write)
-            print(json.dumps({k: v for k, v in result.items() if k != "preview"}, indent=2))
-            if result.get("dry_run") and result.get("preview"):
-                print("\n--- preview ---\n")
-                print(result["preview"])
+            if print_stdout:
+                sys.stdout.write(result["preview"])
+            else:
+                print(json.dumps({k: v for k, v in result.items() if k != "preview"}, indent=2))
+                if result.get("dry_run") and result.get("preview"):
+                    print("\n--- preview ---\n")
+                    print(result["preview"])
         elif args.issues:
             result = _export_issues(conn, write=args.write)
             print(json.dumps(result, indent=2))
