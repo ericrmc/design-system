@@ -64,6 +64,56 @@ sealed_at: 2026-05-02T07:22:50.029Z
 
 ### P-3 (anthropic)
 
+**Position.** Steelman maximal arc; ship NULL-tightening + precheck-receipt + slug-UNIQUE in S179; route SHOW-CONTEXT walker, LIMIT-ENTRY shaping, review-loop substrate to S180 on substrate-property grounds.
+
+**schema_sketch.**
+- Migration 033 backfills + tightens decision_supports.cited_object_id NOT NULL on cite-required bases (closes OI-086-003) using migration 021 backfill template; T-15 calibrated DROP+RECREATE.
+- Migration 034 adds spec_clauses.source_decision_v2_id NOT NULL with backfill (closes OI-086-001); pure substrate tightening, no handler edit needed since spec_clause writes pass FK.
+- Migration 035 creates decision_prechecks(precheck_id PK, session_id FK, target_kind, target_key, context_sha256, walker_version, ttl_seconds 30..900, UNIQUE) per chain-walks shape.
+- Migration 036 adds sessions.slug UNIQUE constraint (closes OI-S122-1) via T-15-calibrated DROP+RECREATE; pre-flight checks zero-duplicate before constraint applies.
+- Decline SHOW-CONTEXT context-walk extension of T-32 in S179: extending walker from cited-aliases to similar-OIs/active-clauses/recent-supersedes is a feature not a constraint; crosses read-write separation.
+- Decline LIMIT-ENTRY rate-shaping in S179: refuses-on-skipped-prerequisite-reads requires prose-predicates the substrate cannot detect deterministically per DV-S176-1 R-1.2 inferior_tradeoff.
+**cli_surface.**
+- Add bin/selvedge precheck --target decision_v2 --target-key <draft-alias> emitting context preview AND inserting decision_prechecks row with sha256; pure side-effect on a receipt table.
+- Decision-record submit handler reads decision_prechecks WHERE session_id=current AND target_kind=decision_v2 AND created_at > now-ttl; refuses E_REFUSAL_T33 if zero matching rows.
+- Do NOT add bin/selvedge limit-entry / force-checks subcommands in S179; LIMIT-ENTRY and FORCE-CHECKS collapse into precheck-receipt; further subcommands are S180 candidates.
+- Decline bin/selvedge precheck --strict mode in S179 since strict-vs-permissive cliff is exactly the false-positive surface S180 should triage post-bootstrap.
+**migration_path.**
+- Order: 033 NULL-tightening (OI-086-003), 034 spec_clause FK (OI-086-001), 036 slug UNIQUE (OI-S122-1), 035 decision_prechecks + handler T-33; engine v48 to v49.
+- 033 and 034 ship before 035 because precheck handler reads spec_clauses.source_decision_v2_id and decision_supports.cited_object_id; building precheck on NULL-admitting columns ships DV-S175-1 backfire.
+- Bootstrap test for T-33: DV-S179-1 (this session decision-record) must produce a precheck row before submit; failure to bootstrap == migration 035 rolls back per DV-S176-1 precedent.
+- spec edit prompt-development v21 to v22 amends §5 adding T-33 mandatory clause + decision_prechecks receipt shape; promotes recommended-clause language to substrate-enforced status per DV-S176-1.
+- Defer migrations for review-loop (OI-083-001), manifest-hash sealing (OI-S104-1), iter-cap (OI-S133-1), export auth (OI-S145-1), atom-length (OI-S177-1) to S180 on substrate-property grounds.
+**what_not.**
+- Not extending T-32 chain-walk into a context-walk in S179 — read-write separation DV-S176-1 C-2 forbids and predicate-leak surface DV-S176-1 R-1.2 named.
+- Not shipping LIMIT-ENTRY as substrate gate refusing on skipped prerequisite reads in S179 — requires prose-predicate of what counts as prerequisite which DV-S175-1 backfire teaches leaks.
+- Not shipping review-loop substrate enforcement OI-083-001 in S179 — closure shape spans coding/review/non-coding with subagent-lifecycle dependencies §7 cannot validate end-to-end in single session.
+- Not shipping atom-length 240-char ceiling lift OI-S177-1 in S179 — multiple atom_type ceilings + display-vs-storage tradeoff requires methodology deliberation per FR-S177-17.
+- Not bumping all 25 MEDIUM OIs to HIGH wholesale; substrate-detectable subset bumps; methodology-shaped or feature-shaped OIs stay MEDIUM until S180 triage.
+- Not invoking DV-S109-1 ceremony-subtraction as rejection basis per operator preclusion at S179-open; rejections grounded on substrate-property predicate-leak / read-write-separation / review-loop-bandwidth.
+**open_question.**
+- TTL value for decision_prechecks rows: 30s pressures agent into re-reading per attempt vs 900s allows context-staleness; field-validation needed which in-session bootstrap cannot provide.
+- Whether T-33 admits zero-cite decision-records like T-32 does or refuses universally — zero-cite + no-precheck looks like exactly the shape the gate is meant to catch.
+- How precheck context_sha256 binds to context body when context body is non-deterministic across same-second queries (recent-supersedes); read-write separation argument applies recursively.
+- Whether OI-086-004 legacy_imports.decomposition_status falls under NULL-tightening migration 033 batch or stays deferred per OI-085-001 dependency chain noted at S178.
+- Whether SHOW-CONTEXT walker extension belongs in S180 or further deferred until precheck-receipt usage data arrives per DV-S152-1 typed-observation pathway.
+**risk.**
+- T-33 false-positive: legitimate spec-typo-fix decision-records with no real context to read get refused; recovery — admit zero-cite + edit_kind=spec_typo_fix as bypass class with named exclusion.
+- T-33 refusal-debt sink: agent under timepressure runs precheck-then-submit ritual with no actual read; recovery — context_sha256 verification at submit-time forces handler to re-render and compare.
+- 033 NULL-tightening false-positive: legacy decision_supports rows with NULL cited_object_id where claim resolves to alias 021 parser missed; recovery — targeted UPDATE backfills before NOT NULL applies.
+- 035 precheck handler dependency on rendered-context determinism: same-target produces different sha256 if recent-supersedes mid-write by parallel session; recovery — wrap render in BEGIN IMMEDIATE.
+- LIMIT-ENTRY refusal-debt: OI-S145-1 SELVEDGE_EXPORT_CONTEXT bypass is the existing escape valve; aggressive LIMIT-ENTRY without auth-model fix channels every refusal into env-var bypass underground.
+- SHOW-CONTEXT walker predicate-leak: defining what counts as similar-OI or relevant-prior-decision is exactly the prose-predicate DV-S176-1 R-1.2 rejected; ships the same backfire shape DV-S175-1 produced.
+- Coupling error if S179 ships precheck without NULL-tightening: precheck context body renders NULL-cite supports as missing-citation noise, training agents to ignore the very signal precheck exists to surface.
+**what_lost.**
+- Lost: in-session closure of operator full SHOW-CONTEXT vision; partial delivery via precheck-receipt + S180 sealed deliberation on walker extension.
+- Lost: in-session closure of LIMIT-ENTRY as distinct mechanism; folded into precheck-receipt and re-evaluated at S180 when usage data exists.
+- Lost: 25-MEDIUM-to-HIGH wholesale priority bump aesthetic; substrate-detectable subset bumped, methodology-shaped subset triaged at S180.
+- Lost: review-loop substrate hardening OI-083-001 in this session — largest deferral most likely to draw operator pushback; structural defense is §7 cannot validate review-loop-itself in same session.
+- Lost: appearance of non-compliance with operator deliver-all-functionality directive — mitigated by naming the structural ceiling (review-loop bandwidth) rather than caution.
+- Lost: opportunity to bundle OI-S091-1 stale-version-snapshot fix into the arc; deferred since no determinism gate fires on stale workspace_metadata and fix is mechanical migration not substrate hardening.
+- Lost: T-32 context-walk extension momentum from DV-S176-1 freshness; S180 sealed deliberation pays a freshness-tax but gains the bootstrap-data S179 precheck deployment generates.
+
 ### P-2 (openai)
 
 **Position.** Ship S179 as one high-priority arc, not one giant gate: precheck receipt first, then NULL closure, review-loop receipts, and determinism gates under T-20 stop rules.
@@ -96,10 +146,137 @@ sealed_at: 2026-05-02T07:22:50.029Z
 - Backfill policy for old NULL cite rows needs synthesis, especially whether unresolved historical rows become sealed exceptions or blocking repair work.
 - OI-S177-1 needs a field-by-field width choice; globally raising atom length would weaken the existing substrate atom contract.
 - EF-S178-1 may require queue-depth thresholds to be tuned after the first HIGH arc run rather than guessed in the migration.
+**risk.**
+- Precheck false-positive: context changes after review but before submit; recovery is rerun precheck and bind the decision to the new hash.
+- NULL-gate false-positive: legacy cite-required rows lack resolvable objects; recovery is a backfill migration with explicit sealed exception rows.
+- Review-loop false-positive: static audit blocks runtime repair under OI-S133-1; recovery is a bounded runtime-fix receipt before close.
+- Falsification expiry false-positive: a valid open harness expires during active work; recovery is a renewal receipt citing the live typed-observation.
+- Session-drift false-positive: operator names an external session number differently; recovery is an alias mapping receipt before submit.
+- Context overreach: Anthropic-default reasoning may gate broad semantic similarity, so precheck sources must be deterministic SQL, not model judgment.
+**what_lost.**
+- We lose the ability to submit fast decision records without a fresh context receipt.
+- We lose some operator discretion to waive review-loop ceremony when a substrate predicate can enforce the obligation.
+- We lose monolithic S179 closure if T-20 findings appear, but the HIGH arc remains intact and resumes at the next sealed milestone.
+- We lose prompt-only simplicity, which DV-S176-1 shows is already inadequate for this failure mode.
 
 ### P-5 (anthropic)
 
+**Position.** S179 ships migrations 033/034/035 (T-41 precheck-receipt, T-42 cited_object_id NOT NULL, T-43 sessions.slug UNIQUE) plus a 4-session arc; one-session shipping is unsafe.
+
+**schema_sketch.**
+- Migration 033 creates decision_prechecks(precheck_id PK, session_id FK, target_kind, target_key, context_sha256, similar_oi_count, prior_dv_count, active_clause_count, walker_version, created_at).
+- Migration 033 adds UNIQUE(session_id,target_kind,target_key) idempotent under retry; receipt-pattern follows DV-S176-1 chain-walk precedent for substrate-side proof-objects.
+- Migration 033 adds T-41 BEFORE INSERT ON decisions_v2 refusing E_REFUSAL_T41 unless decision_prechecks row exists for matching (session_id,target_kind,target_key) created within last 1800 seconds.
+- Migration 033 handler-side pre-check at selvedge/submit/decision_v2.py inserts at line ~43 mirroring T-39/T-39b defence-in-depth layered with the SQL trigger.
+- Migration 034 backfills decision_supports.cited_object_id NOT NULL where basis IN (prior_decision, operator_directive, spec_clause) via T-15-CALIBRATED block; same predicate on alternative_rejections.
+- Migration 034 adds T-42 BEFORE INSERT enforcing the same predicate; closes OI-086-003 by-mechanism plus OI-086-001 by-piggyback for spec_clause source_decision_v2_id NULL.
+- Migration 035 adds UNIQUE constraint to sessions.slug via T-15-CALIBRATED rebuild path required by sqlite ALTER limitation; closes OI-S122-1.
+- Migration 035 includes one-row dedupe pre-flight if collisions exist; otherwise no-op so historical slugs survive intact since the constraint applies forward.
+- S180 migration 036 widens decision_supports.claim, decision_effects.target_descriptor, review_findings.finding atom-length ceilings to 480 chars per OI-S177-1 via T-15-CALIBRATED relaxation.
+- S181 migration 037 introduces atom_type splits (issue_disposition_reason, issue_link_reason distinct from rejection_reason) per OI-S088-1 via enum-widening.
+- S182 migration 038 ships objects-registration for reference_harnesses (OI-S125-1) plus harness expire CLI (OI-S125-2) plus manifest-hash seal forward direction (OI-S104-1).
+- S183 migration 039 ships review-loop substrate enforcement (OI-083-001 + OI-S133-1 iter cap with runtime-fix carve-out + OI-S145-1 SELVEDGE_EXPORT_CONTEXT auth-model) as one §7 bundle.
+**cli_surface.**
+- Add bin/selvedge precheck --target-kind --target-key writing one decision_prechecks row plus printing similar OIs + prior DVs targeting same key + active spec clauses + recent supersedes.
+- Precheck output is read-the-context-then-author shape not pre-flight-lint; substrate row is the proof-of-context-read invariant the handler verifies before admitting decision-record submit.
+- Defer to S183 a bin/selvedge review-pass --commit substrate-policed review-loop subcommand; in-session this remains operator-policed via FR-S179-4.
+- Defer to S182 a bin/selvedge harness expire CLI per OI-S125-2 falsification window closure; FR-S179-3 captures handoff.
+- No new flags on bin/selvedge query in S179; precheck rows are queryable via existing SQL surface so reviewer subagents can inspect timing-window adherence.
+**migration_path.**
+- S179 step 1 ship migration 033 + decision_prechecks table + T-41 + selvedge/submit/precheck.py new handler ~80 lines + handler pre-check in decision_v2.py at ~line 43.
+- S179 step 2 ship migration 034 + T-42 + backfill block; decision_v2.py lines 56-62 and 154-161 already resolve cited_oid so handler-side change is enforcement-only.
+- S179 step 3 ship migration 035 + UNIQUE on sessions.slug rebuild; selvedge/submit/session.py line 54-58 INSERT inherits the constraint with no handler change.
+- S179 step 4 add 8-12 pytest cases to state/tests/test_path_a_kinds.py mirroring T-32 idiom from existing tests at lines 1-120.
+- Test names: precheck_required_for_decision_record + precheck_window_30min_expiry + precheck_target_mismatch_refuses + cited_object_id_null_refused + slug_unique_collision_refused.
+- S179 step 5 prompts/development.md v21 to v22 §5 amend cite-typing block referencing T-42 substrate-enforcement; new §6 precheck-discipline clause; remove §1.5 prose around context-gathering.
+- S179 ships engine-v48 to engine-v49 across the three migrations as a single review cycle.
+- S180 picks up FR-S179-1 atom-length widening (OI-S177-1) under sealed deliberation since T-15-CALIBRATED relaxation requires deliberation per spec methodology.
+- S181 picks up FR-S179-2 atom_type splits (OI-S088-1) under sealed deliberation since enum-widening + per-call-site reroute is broad scope.
+- S182 picks up FR-S179-3 reference_harness substrate completeness (OI-S125-1 + OI-S125-2 + OI-S104-1) as one bundle.
+- S183 picks up FR-S179-4 review-loop substrate enforcement (OI-083-001 + OI-S133-1 + OI-S145-1) as one bundle since highest review-loop-cost item in the backlog.
+- S184+ FR-S179-5 picks up trigger-predicate substrate-detectability cluster (OI-S151-3 + OI-S151-4 + OI-S159-1 + OI-S163-1).
+- S185+ FR-S179-6 picks up determinism cluster (OI-S130-1 + OI-S152-2 + OI-S154-1 + OI-S154-4 + OI-S154-6 + OI-S091-1).
+- Tier-1 S179 closes 3 OIs by-mechanism: OI-086-003 via migration 034 T-42; OI-S122-1 via migration 035 T-43; OI-086-001 via migration 034 traceability piggyback.
+- Tier-2 S180 closes 1 OI: OI-S177-1 atom-length via migration 036.
+- Tier-3 S181 closes 3 OIs: OI-S088-1 atom_type splits + OI-086-004 legacy_imports.decomposition_status enum + OI-S126-5 typed-graph linkage folded into atom_type cluster.
+- Tier-4 S182 closes 3 OIs: OI-S125-1 harness alias objects-registration + OI-S125-2 expire CLI + OI-S104-1 manifest-hash seal forward.
+- Tier-5 S183 closes 3 OIs: OI-083-001 review-loop enforcement + OI-S133-1 review iter cap relaxation + OI-S145-1 SELVEDGE_EXPORT_CONTEXT auth-model.
+- Tier-6 S184+ trigger-predicate cluster: OI-S151-3 + OI-S151-4 + OI-S159-1 + OI-S163-1 substrate-detectability after gate-enforcement context-walk arc lands.
+- Tier-7 S185+ determinism cluster: OI-S130-1 + OI-S152-2 + OI-S154-1 + OI-S154-4 + OI-S154-6 + OI-S091-1 substrate-detectability finalised.
+- Procedural cluster: OI-002/005/009/014/015/018/019/S104-3 remain methodology-shaped, deferred to v22 §1.5 priority-2 cycle as application-mode items.
+- Total 13 of 25 OIs close by-mechanism across S179-S183; 12 remain methodology/procedural awaiting application-mode resolution.
+**what_not.**
+- Do not ship a context-walk extension to T-32 in S179; conflating cite-walks with context-walks loses the existence-vs-correctness distinction the chain-walk receipt cleanly captures.
+- Do not ship review-loop enforcement (OI-083-001 + OI-S133-1) in S179 because the iter cap blocks runtime-fix records and remedy requires deliberation on extend-cap-vs-add-runtime-channel.
+- Do not ship more than 3 migrations in S179; §7 review-loop iter1 budget burns at ~1 reviewer-pass per migration plus 5-perspective convening already loads the session envelope.
+- Do not invoke DV-S109-1 ceremony-subtraction as deferral basis per operator preclusion at brief; defer-shape here is review-loop discipline not ceremony-cost.
+- Do not author recommended-clauses in prompts/development.md for any gate that does not ship in S179; per DV-S176-1 prose-and-discipline reproduces failure modes substrate-gates defend against.
+**open_question.**
+- Does T-41 precheck-window default 1800 seconds or per-session-only with no expiry; session-only is simpler but allows cross-session staleness if session spans hours.
+- Does T-41 admit zero-cite decisions without precheck like T-32 admits zero-cite without walks, or does precheck become mandatory floor regardless; admit-shape is safer for first ship.
+- Does precheck similar-OI surface use embedding-similarity (none in workspace) or alias-prefix-match (deterministic but coarse); P-5 stance is alias-prefix plus same-target-kind exact-match.
+- Does the 30-minute window survive multi-perspective deliberations where synthesis-decision is authored hours after precheck; possibly extend to per-session-bounded with no time cap.
+- Does atom-length widening to 480 chars in S180 require coordinated review of T-15-CALIBRATED relaxation policy since CHECK relaxation is not strictly additive.
+- Does precheck on non-decision-record submits (issue, perspective-position, review-finding) belong in S179 scope or defer to FR-S179-8.
+**risk.**
+- T-41 false-positive: legitimate decision-record after long deliberation hits expired precheck; recovery is re-run precheck same args within window then resubmit, single-command aligned with T-32 retry.
+- T-42 false-positive: legacy decision-records have NULL cited_object_id on prior_decision basis; migration backfill must resolve all aliases before NOT NULL applies, recovery per-row resolve-or-promote.
+- T-43 false-positive: pre-existing duplicate slugs from old workspace history; recovery is one-shot dedupe pass before UNIQUE applies and historical slugs survive intact.
+- Multi-session arc risk: S180+ deliberations stale if S179 teaches new constraints; recovery is each session re-reads DVs and binds to operator-named-mandate at session-open per DV-S171-1.
+- Precheck context-surface noise: SHOW CONTEXT can become noise; recovery is similar-OI cap at 5 + prior-DV cap at 3 + active-clause cap at 5 with operator override flag.
+- Migration 034 backfill may fail if legacy NULL cited_object_id rows resist resolve; recovery is migration-time refusal halts S179 and forces resolve-then-rerun, aborting cleanly via BEGIN/COMMIT.
+**what_lost.**
+- Operator one-session shipping mandate is partially refused; structural defense is multi-session arc with operator ratification per spec methodology multi-session-deliberation precedent.
+- Precedent for multi-session arcs: S125 reference_harness S125-S128, S172-S176 chain-walk; S179-S183 substrate-hardening matches that pattern.
+- Maximally-aggressive single-shot context-walk extending T-32 is not authored; if calibration-EF in S180-S183 shows decision-records-without-context-reads recurring, escalate to context-walk extension.
+- DV-S109-1 ceremony-subtraction stance is set aside per operator preclusion; if S180+ surfaces precheck-as-ceremony-without-payoff calibration, operator may retract T-41.
+- Aggressive precheck enforcement on non-decision-record submits is forfeit in S179 scope; if calibration shows context-gaps on those kinds, FR-S179-8 captures handoff.
+- Procedural-cluster OIs (OI-002/005/009/014/015/018/019/S104-3) remain methodology-shaped indefinitely; not technical-substrate ships within this arc.
+- Tier-3-through-7 OIs remain priority-MEDIUM through S179 close; promotion to HIGH conditioned on each subsequent operator-ratified session-open.
+
 ### P-4 (openai)
+
+**Position.** Ship hard substrate gates, but stage them by dependency; cognition is not detectable, only fresh context coverage and submit continuity are.
+
+**schema_sketch.**
+- decision_prechecks stores target kind, key, context pack hash, gate version, issued_at, consumed_at, and nonce.
+- context_pack_items stores every surfaced alias with source table, object id, relation, and stale_after timestamp.
+- decision_record_submits must reference one unconsumed precheck nonce for the same target and gate version.
+- citation_requirements declares which basis kinds require typed object resolution for new rows.
+- legacy_unresolved_cites preserves old NULL cited_object_id rows until backfill proves a target.
+**cli_surface.**
+- bin/selvedge precheck --target decision --target-key <alias> prints context and writes the receipt.
+- bin/selvedge submit decision-record --precheck <nonce> consumes the receipt inside the submit write_tx.
+- Submit handler rejects stale, mismatched, previously consumed, or context-hash-invalid prechecks.
+- CLI cannot prove reading, so the enforceable predicate is freshness, target match, pack coverage, and single-use consumption.
+**migration_path.**
+- 033 adds context-pack and precheck tables without enforcement, so S179 can record receipts first.
+- 034 backfills object aliases for OI, FR, DV, EF, and harness aliases, addressing OI-S125-1 before cite triggers.
+- 035 backfills nullable cite rows where alias resolution is deterministic and moves failures to legacy_unresolved_cites.
+- 036 adds typed-cite submit path and triggers requiring cited_object_id only for new cite-required rows, addressing OI-086-003.
+- 037 extends T-32 into context-walk receipts over same-target decisions, supersedes, similar OIs, and active clauses.
+- 038 gates decision-record submit on fresh consumed precheck and writes refusal receipts for bypass attempts.
+**what_not.**
+- Do not ship blanket NOT NULL on decision_supports.cited_object_id in S179 because legacy NULL rows already violate OI-086-003.
+- Do not treat a timestamp-only precheck as enforcement because it rewards fire-and-forget behavior.
+- Do not replace substrate gates with prompt clauses; DV-S176-1 says that failure mode already reproduced.
+- Do not make SELVEDGE_EXPORT_CONTEXT the bypass path for precheck enforcement, or OI-S145-1 remains open in disguise.
+**open_question.**
+- Should session-open prechecks be advisory first while decision-submit prechecks are hard-gated in S179?
+- Which relation set defines similar OIs without creating unstable query drift across sessions?
+- What exact stale window is acceptable for prechecks before submit, given concurrent writes and OI-S122-1?
+- Should unresolved legacy cite rows block closure, or only block new decision support rows after migration 036?
+**risk.**
+- Typed-cite trigger false-positive: alias resolver misses a valid legacy alias; recovery is object-alias backfill plus replayed submit.
+- Precheck freshness false-positive: unrelated write changes the pack hash; recovery is rerun precheck and resubmit.
+- Context-pack coverage false-positive: similar-OI query over-includes noise; recovery is relation whitelist migration, not handler override.
+- Single-use nonce false-positive: interrupted submit consumes nothing if write_tx aborts; recovery is rerun precheck.
+- Session-open context false-positive: agenda work is blocked by broad targets; recovery is advisory receipt before hard gate.
+**what_lost.**
+- S179 loses all-in-one closure theater; staged migrations are the price of deterministic enforcement.
+- Legacy NULL cite rows get preserved longer, so OI-086-003 closes only for new writes until backfill proof completes.
+- Agents retain the ability to ignore displayed context cognitively; the substrate only proves exposure path and submit coupling.
+- Prompt discretion shrinks because DV-S176-1 makes handler refusal the controlling mechanism.
 
 ### Synthesis
 
