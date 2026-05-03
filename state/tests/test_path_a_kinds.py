@@ -59,7 +59,7 @@ def _run_precheck(selvedge_cli, target_kind: str, target_key: str) -> str:
 
 def test_decision_record_minimal_creates_row_and_alias(clean_substrate, selvedge_cli, db):
     # Substantive kind requires a single-use precheck nonce per T-33 (DV-S179-1).
-    nonce = _run_precheck(selvedge_cli, "decision_v2", "pytest-target")
+    nonce = _run_precheck(selvedge_cli, "process_rule", "pytest-target")
     payload = _minimal_decision_payload(kind="substantive", precheck_nonce=nonce)
     res = selvedge_cli(
         ["submit", "decision-record", "--payload", json.dumps(payload)]
@@ -746,7 +746,7 @@ def test_t33_schema_migration_decision_without_precheck_refused(clean_substrate,
 
 
 def test_t33_precheck_nonce_consumed_single_use(clean_substrate, selvedge_cli):
-    nonce = _run_precheck(selvedge_cli, "decision_v2", "single-use-key")
+    nonce = _run_precheck(selvedge_cli, "process_rule", "single-use-key")
     payload = _minimal_decision_payload(
         kind="substantive", target_key="single-use-key", precheck_nonce=nonce
     )
@@ -764,7 +764,7 @@ def test_t33_precheck_nonce_consumed_single_use(clean_substrate, selvedge_cli):
 
 
 def test_t33_precheck_target_key_mismatch_refused(clean_substrate, selvedge_cli):
-    nonce = _run_precheck(selvedge_cli, "decision_v2", "key-A")
+    nonce = _run_precheck(selvedge_cli, "process_rule", "key-A")
     payload = _minimal_decision_payload(
         kind="substantive", target_key="key-B-different", precheck_nonce=nonce
     )
@@ -788,7 +788,7 @@ def test_t33_procedural_kind_admits_zero_precheck(clean_substrate, selvedge_cli)
 
 
 def test_t34_decision_supports_null_cite_on_required_basis_refused(clean_substrate, selvedge_cli, db):
-    nonce = _run_precheck(selvedge_cli, "decision_v2", "t34-test-key")
+    nonce = _run_precheck(selvedge_cli, "process_rule", "t34-test-key")
     payload = _minimal_decision_payload(
         kind="substantive", target_key="t34-test-key", precheck_nonce=nonce,
         supports=[
@@ -841,7 +841,7 @@ def test_atom_length_support_claim_widened_to_480(clean_substrate, selvedge_cli)
     """Migration 039 widened text_atoms CHECK so atom_type IN (support_claim,finding)
     admits length 8-480. Verify 250-char support_claim succeeds (would have refused
     pre-039 as E_ATOM_LENGTH)."""
-    nonce = _run_precheck(selvedge_cli, "decision_v2", "atom-len-test")
+    nonce = _run_precheck(selvedge_cli, "process_rule", "atom-len-test")
     long_claim = "x" * 260
     payload = _minimal_decision_payload(
         kind="substantive", target_key="atom-len-test", precheck_nonce=nonce,
@@ -857,7 +857,7 @@ def test_atom_length_support_claim_widened_to_480(clean_substrate, selvedge_cli)
         _minimal_decision_payload(title="seed for atom-length test")
     )])
     seed_alias = seed["out"]["result"]["alias"]
-    nonce2 = _run_precheck(selvedge_cli, "decision_v2", "atom-len-test-2")
+    nonce2 = _run_precheck(selvedge_cli, "process_rule", "atom-len-test-2")
     payload = _minimal_decision_payload(
         kind="substantive", target_key="atom-len-test-2", precheck_nonce=nonce2,
         supports=[

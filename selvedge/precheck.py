@@ -26,7 +26,16 @@ from .paths import db_path
 
 PRECHECK_WALKER_VERSION = "v1"
 PRECHECK_DEFAULT_TTL = 1800
-PRECHECK_TARGET_KINDS = ("decision_v2",)
+PRECHECK_TARGET_KINDS = (
+    "decision_v2",
+    "process_rule",
+    "spec_version",
+    "migration",
+    "issue",
+    "review_rule",
+    "engine_version",
+    "open_question",
+)
 
 
 def _open_session_id(conn: sqlite3.Connection) -> int:

@@ -148,8 +148,17 @@ def main(argv: Optional[list[str]] = None) -> int:
         "--target-kind",
         dest="target_kind",
         required=True,
-        choices=["decision_v2"],
-        help="Target kind (decision_v2 only at engine-v49).",
+        choices=[
+            "decision_v2",
+            "process_rule",
+            "spec_version",
+            "migration",
+            "issue",
+            "review_rule",
+            "engine_version",
+            "open_question",
+        ],
+        help="Target kind; must match the eventual decision-record target_kind (engine-v51, migration 041).",
     )
     p_pre.add_argument(
         "--target-key",

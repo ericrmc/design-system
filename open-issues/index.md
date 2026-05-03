@@ -8,80 +8,12 @@ deterministic export from substrate rows; do not hand-edit. Use
 
 | Alias | Priority | Status | Title |
 |-------|----------|--------|-------|
-| [OI-002](OI-002.md) | MEDIUM | open | Threshold for substantive revision vs. minor correction |
-| [OI-005](OI-005.md) | MEDIUM | open | Sub-activities and work-type variants for the nine core kernel activities |
-| [OI-006](OI-006.md) | LOW | open | Cross-references between specifications |
-| [OI-007](OI-007.md) | LOW | open | Scaling the open issues format |
-| [OI-008](OI-008.md) | LOW | open | Persisting validation reports as session provenance |
-| [OI-009](OI-009.md) | MEDIUM | open | Monitor for drift-to-ritual in multi-agent deliberation |
-| [OI-011](OI-011.md) | LOW | open | Intra-family model mixing as a deliberation-quality lever |
-| [OI-012](OI-012.md) | LOW | open | validate.sh hard-coded 02-decisions.md path |
-| [OI-013](OI-013.md) | LOW | open | Non-file external artefacts |
-| [OI-014](OI-014.md) | MEDIUM | open | Domain-actor receipt shape variance |
-| [OI-015](OI-015.md) | MEDIUM | open | Laundering enforcement gap in domain reading |
-| [OI-018](OI-018.md) | MEDIUM | open | Revisit engine-manifest §5 bump-trigger criteria after §5.4 cadence minority activation |
-| [OI-019](OI-019.md) | MEDIUM | open | Path-selection work-channel and warrant-surface diversity |
-| [OI-081-001](OI-081-001.md) | LOW | open | Should the table-count budget (078 D-10) be replaced by a derived-only check? |
-| [OI-083-001](OI-083-001.md) | MEDIUM | open | Substrate enforcement of the coding review loop |
-| [OI-083-002](OI-083-002.md) | LOW | open | Worked rubric for the coding review loop's severity taxonomy |
-| [OI-086-001](OI-086-001.md) | MEDIUM | open | spec_clause source_decision_v2_id traceability is unenforced (and unused) |
-| [OI-086-003](OI-086-003.md) | MEDIUM | open | decision_supports / alternative_rejections allow NULL cited_object_id on cite-required bases |
-| [OI-086-004](OI-086-004.md) | MEDIUM | open | legacy_imports.decomposition_status does not track actual decomposition coverage |
-| [OI-S088-1](OI-S088-1.md) | LOW | open | Atom_type conflation: issue dispositions and links reuse rejection_reason atom_type. |
-| [OI-S090-1](OI-S090-1.md) | MEDIUM | open | Cross-reference linking pass for spec_clause_links (empty) |
-| [OI-S091-1](OI-S091-1.md) | LOW | open | Migration 011 encodes engine-v24 as a snapshot; future fresh workspaces start one or more versions stale |
-| [OI-S104-1](OI-S104-1.md) | LOW | open | Manifest-hash sealing as forward direction for coding review loop enforcement |
-| [OI-S104-3](OI-S104-3.md) | LOW | open | Promote halted to a sessions.status value via calibrated table-rebuild when warranted |
-| [OI-S122-1](OI-S122-1.md) | LOW | open | sessions.slug has no UNIQUE constraint; concurrent same-microsecond writes could create duplicates |
-| [OI-S123-1](OI-S123-1.md) | LOW | open | Defensive-branch coverage for monitor-external harvest-ef: peer schema variance, peer-error paths (E_PEER_BUSY/OPEN_FAILED/SCHEMA_UNSUPPORTED), and concurrent-harvest race (E_REFUSAL_UNIQUE recovery). |
-| [OI-S124-1](OI-S124-1.md) | MEDIUM | open | Evaluate reference_harness pilot at disaster-response arc close: promote to kernel third sense, retire, or scope-change. |
-| [OI-S125-1](OI-S125-1.md) | LOW | open | Harness alias not registered in objects; cross-citation via [RH-...] from decision-records would fail T-01. |
-| [OI-S125-2](OI-S125-2.md) | MEDIUM | open | Falsification trigger expiry-window enforcement deferred to harness expire CLI work. |
-| [OI-S125-3](OI-S125-3.md) | LOW | open | Auto-OI emission on broken load-bearing harness claim is application-layer; not implemented in S125. |
-| [OI-S125-4](OI-S125-4.md) | LOW | open | Replay-on-same-harness vs replay-creates-new-harness: revisit if pilot needs the former. |
-| [OI-S126-1](OI-S126-1.md) | LOW | open | prompts/application.md does not document deliberation-open payload shape; indirection to development.md is fragile. |
-| [OI-S126-2](OI-S126-2.md) | LOW | open | session.kind enum (coding/spec_only/meta) does not cleanly fit external-problem application sessions. |
-| [OI-S126-3](OI-S126-3.md) | LOW | open | close-record items are creation-only; no submit close-state-item amendment handler exists. |
-| [OI-S126-5](OI-S126-5.md) | MEDIUM | open | Typed-graph linkage thins in external-problem sessions: target_object_id, cited_object_id, alternative_rejections.basis underused. |
-| [OI-S130-1](OI-S130-1.md) | LOW | open | Conditional close-time temporal-claim lint if discipline-only proves insufficient. |
-| [OI-S133-1](OI-S133-1.md) | MEDIUM | open | Coding review loop static audit misses integration-test failures; iter BETWEEN 1 AND 4 cap blocks runtime-fix records |
-| [OI-S135-1](OI-S135-1.md) | LOW | open | cmd_recover reclaim-rowcount=1 branch untested due to T-16 refusal of past lease_expires_at; needs --clock-override or T-16 sentinel relaxation. |
-| [OI-S145-1](OI-S145-1.md) | MEDIUM | open | SELVEDGE_EXPORT_CONTEXT=1 bypass mechanism too permissive; env-var scope admits direct markdown authoring outside bin/selvedge export. |
-
-## Resolved
-
-| Alias | Resolved-in | Title |
-|-------|-------------|-------|
-| [OI-001](resolved/OI-001.md) | S088 | Naming the methodology |
-| [OI-003](resolved/OI-003.md) | S088 | Automated validation |
-| [OI-004](resolved/OI-004.md) | S088 | Incorporating genuinely independent perspectives across model families |
-| [OI-010](resolved/OI-010.md) | S088 | Cross-model or human participation mechanism |
-| [OI-016](resolved/OI-016.md) | S105 | Domain-validation pathway under user unavailability |
-| [OI-017](resolved/OI-017.md) | S088 | Engine-vs-methodology reframing |
-| [OI-079-001](resolved/OI-079-001.md) | S088 | D-10 table budget of 16 vs the actual 17 in migration 001 (objects + synthesis_points). |
-| [OI-080-001](resolved/OI-080-001.md) | S088 | T-06 missing trigger on deliberations UPDATE; T-13 admits non-NULL→other-non-NULL on sealed_at |
-| [OI-085-001](resolved/OI-085-001.md) | S088 | Re-decompose prompt-development v2 + prompt-application v2 + engine-manifest v20 into spec_clauses |
-| [OI-085-002](resolved/OI-085-002.md) | S090 | Structural restriction of markdown authoring (no more honest tool use) |
-| [OI-086-002](resolved/OI-086-002.md) | S091 | spec_versions has no constraint preventing two simultaneously-active versions per spec_id |
-| [OI-S089-1](resolved/OI-S089-1.md) | S092 | Implement submit issue-work-item CLI handler. |
-| [OI-S089-2](resolved/OI-S089-2.md) | S092 | T-25 explicit lease-renewal trigger on work_items. |
-| [OI-S089-3](resolved/OI-S089-3.md) | S092 | Consider decomposition_status column on issues if LEFT JOIN dispatch query proves awkward. |
-| [OI-S090-2](resolved/OI-S090-2.md) | S103 | pytest coverage for Path A handlers + export round-trip |
-| [OI-S090-3](resolved/OI-S090-3.md) | S092 | Migrate runner post-apply schema_migrations existence check |
-| [OI-S090-4](resolved/OI-S090-4.md) | S090 | _submit_spec_version handler order trips T-03 on update |
-| [OI-S090-5](resolved/OI-S090-5.md) | S099 | Substrate-driven spec content authoring path (markdown body editing remains the only option) |
-| [OI-S098-1](resolved/OI-S098-1.md) | S098 | Smoke-test closes_issue handler dispatch |
-| [OI-S098-2](resolved/OI-S098-2.md) | S098 | Smoke-test t28 trigger refusal path |
-| [OI-S101-1](resolved/OI-S101-1.md) | S102 | Rename objects.citable_alias to objects.alias for query ergonomics |
-| [OI-S104-2](resolved/OI-S104-2.md) | S129 | decision_effects.effect_kind enum lacks deletes despite methodology naming delete-executable as loop trigger |
-| [OI-S105-1](resolved/OI-S105-1.md) | S124 | Methodology kernel names three validation senses but enumerates only two |
-| [OI-S106-1](resolved/OI-S106-1.md) | S107 | Rebuild tools/bootstrap-external-workspace.sh for engine-v31 |
-| [OI-S106-2](resolved/OI-S106-2.md) | S108 | Implement bin/selvedge monitor-external subcommand group |
-| [OI-S106-3](resolved/OI-S106-3.md) | S107 | Archive the v7-era selvedge-disaster-response workspace |
-| [OI-S110-1](resolved/OI-S110-1.md) | S112 | Superseded specs are not surfaced in orient; rationale becomes invisible after archive |
-| [OI-S110-2](resolved/OI-S110-2.md) | S111 | Superseded constraints v1 spec_versions row carries stale body_path pointing at moved file |
-| [OI-S110-3](resolved/OI-S110-3.md) | S113 | Backfill decision_effects.target and decision_supports.cite where alias resolution is possible |
-| [OI-S114-1](resolved/OI-S114-1.md) | S117 | Implement bin/selvedge export --provenance --anchor <alias> cross-session anchor-trace export (markdown projection only) |
-| [OI-S121-1](resolved/OI-S121-1.md) | S123 | Rewrite test_monitor_external harvest-ef coverage for substrate-direct semantics (S110) |
-| [OI-S124-2](resolved/OI-S124-2.md) | S125 | Implement reference_harness substrate kind per S124 P-4 schema with P-2 epistemic guardrails for disaster-response stage 2 onward pilot. |
-| [OI-S126-4](resolved/OI-S126-4.md) | S128 | next_session_should close-state-items register as undisposed forward references even when content names no actionable item. |
+| [OI-S081-1](OI-S081-1.md) | HIGH | open | Implement L1a init --force live-substrate refusal in selvedge/init_cmd.py with --really-force escape (per S081 DV-1) |
+| [OI-S081-2](OI-S081-2.md) | HIGH | open | Implement L2b subagent tempdir-clone isolation via SQLite backup API; SELVEDGE_READONLY remains advisory-only (per S081 DV-1) |
+| [OI-S081-3](OI-S081-3.md) | HIGH | open | Implement L3 snapshot machinery (Connection.backup) at session-open + close + migrate + init triggers + retention prune (per S081 DV-1) |
+| [OI-S081-4](OI-S081-4.md) | HIGH | open | Implement bin/selvedge restore --from <snapshot> --to <path> --verify with exit-2 refusal pattern (per S081 DV-1 C-4) |
+| [OI-S081-5](OI-S081-5.md) | MEDIUM | open | Implement L4B one-shot legacy-substrate extractor against pre-S180 backup files; output provenance/legacy-substrate-summary.md (per S081 DV-1) |
+| [OI-S081-6](OI-S081-6.md) | HIGH | open | Implement L5 close-time export expansion: open-issues, spec_versions, EFs, counterfactuals, FR-disp, prechecks, chain-walks, harness state (per S081 DV-1) |
+| [OI-S081-7](OI-S081-7.md) | MEDIUM | open | Ship engine-v51 marker migration coupling L1a + snapshot_catalog schema + L5 export-manifest table per S081 DV-1 C-9 write-capability framing |
+| [OI-S081-8](OI-S081-8.md) | MEDIUM | open | Update prompts/development.md §4 subagent-discipline boilerplate to forbid init/migrate/sqlite-mutation against primary substrate per OI-S180-1 step 5 |
+| [OI-S180-1](OI-S180-1.md) | HIGH | open | Substrate wipe via subagent init --force; S001-S179 substrate state lost; manual rebuild from markdown exports + subagent destructive-op hardening required. |

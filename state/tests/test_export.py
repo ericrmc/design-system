@@ -225,7 +225,7 @@ def test_export_session_with_deliberation_decision_finding(isolated_workspace):
     # decision-record (Path A). T-33 (engine-v49) requires a precheck for
     # kind=substantive; obtain a single-use nonce first.
     pre = _run_cli_in(isolated_workspace, [
-        "precheck", "--target-kind", "decision_v2", "--target-key", "export-fixture",
+        "precheck", "--target-kind", "process_rule", "--target-key", "export-fixture",
     ])
     nonce = None
     raw = (pre["out"].get("_raw") if isinstance(pre["out"], dict) else "") or ""

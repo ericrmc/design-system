@@ -74,14 +74,14 @@ def _submit_decision_v2(conn: sqlite3.Connection, p: dict, role: str) -> dict:
                 f"the returned nonce in the payload as precheck_nonce",
             )
         verify_and_consume_precheck(
-            conn, sess_id, "decision_v2", p["target_key"], nonce, did
+            conn, sess_id, p["target_kind"], p["target_key"], nonce, did
         )
     elif kind in T33_KIND_ADMITTED_ZERO and nonce:
         # Symmetry with T-32 zero-cite admit: kind-admitted-zero may still
         # carry a nonce (e.g., agent-side defensive precheck). Consume it
         # for hygiene if present.
         verify_and_consume_precheck(
-            conn, sess_id, "decision_v2", p["target_key"], nonce, did
+            conn, sess_id, p["target_kind"], p["target_key"], nonce, did
         )
 
     _check_role_capability(conn, role, "decision_supports", "insert")
