@@ -34,14 +34,27 @@ from typing import Optional
 from .paths import db_path, workspace_root
 
 
-# Trigger enum mirrors the snapshot_catalog.trigger CHECK in migration 042.
+# Trigger enum mirrors the snapshot_catalog.trigger CHECK (migrations 042+044).
 VALID_TRIGGERS = frozenset({
     "session_open",
     "session_close",
     "migrate_apply",
     "init_refused",
     "init_forced",
+    "deliberation_seal",
     "manual",
+})
+
+# keep_reason values mirror the snapshot_catalog.keep_reason CHECK enum.
+# Callers pass `pre_destructive_anchor` for snapshots taken before a
+# deliberate destructive operation (init --force / --really-force unlink)
+# so retention pruning, when it lands, skips them as anchors. Default is
+# `count_window` matching the column DEFAULT.
+VALID_KEEP_REASONS = frozenset({
+    "newest_per_trigger",
+    "count_window",
+    "time_window",
+    "pre_destructive_anchor",
 })
 
 
@@ -88,9 +101,15 @@ def take_snapshot(
     source_path: Optional[Path] = None,
     source_session_no: Optional[int] = None,
     engine_version: Optional[str] = None,
+    keep_reason: Optional[str] = None,
 ) -> Optional[Path]:
     """Take a boundary snapshot of the source DB and record it in
     ``snapshot_catalog``.
+
+    ``keep_reason`` overrides the catalog row's retention band (defaults to
+    the column DEFAULT 'count_window' when omitted). Callers pass
+    ``pre_destructive_anchor`` for init_refused / init_forced snapshots so
+    retention pruning treats them as anchors that survive any window.
 
     Returns the snapshot file path on success, or ``None`` if the snapshot
     could not be taken (missing source, write failure, missing catalog
@@ -99,6 +118,9 @@ def take_snapshot(
     """
     if trigger not in VALID_TRIGGERS:
         print(f"snapshot: refusing unknown trigger {trigger!r}", file=sys.stderr)
+        return None
+    if keep_reason is not None and keep_reason not in VALID_KEEP_REASONS:
+        print(f"snapshot: refusing unknown keep_reason {keep_reason!r}", file=sys.stderr)
         return None
     src = source_path if source_path is not None else db_path()
     if not src.exists():
@@ -161,6 +183,7 @@ def take_snapshot(
         size_bytes=int(size_bytes),
         source_session_no=source_session_no,
         engine_version=engine_version,
+        keep_reason=keep_reason,
     ):
         return None
 
@@ -196,11 +219,16 @@ def _record_catalog_row(
     size_bytes: int,
     source_session_no: Optional[int],
     engine_version: str,
+    keep_reason: Optional[str] = None,
 ) -> bool:
     """Insert one snapshot_catalog row in the source DB. Returns False on
     catalog-table absence (substrate predates migration 042) or insert
     failure; in both cases the snapshot file remains on disk so a future
-    catalog-aware run can re-record it."""
+    catalog-aware run can re-record it.
+
+    When ``keep_reason`` is None, the column DEFAULT ('count_window') is
+    used; pass an explicit value to mark the row as a retention anchor
+    (e.g. 'pre_destructive_anchor' before init --force unlinks)."""
     try:
         conn = sqlite3.connect(str(src))
     except sqlite3.Error as e:
@@ -213,22 +241,41 @@ def _record_catalog_row(
         if has is None:
             return False
         try:
-            conn.execute(
-                "INSERT INTO snapshot_catalog "
-                "(trigger, path, sha256, source_db_sha256, sqlite_page_count, "
-                " size_bytes, source_session_no, engine_version) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                (
-                    trigger,
-                    str(path),
-                    sha256,
-                    source_db_sha256,
-                    sqlite_page_count,
-                    size_bytes,
-                    source_session_no,
-                    engine_version,
-                ),
-            )
+            if keep_reason is None:
+                conn.execute(
+                    "INSERT INTO snapshot_catalog "
+                    "(trigger, path, sha256, source_db_sha256, sqlite_page_count, "
+                    " size_bytes, source_session_no, engine_version) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        trigger,
+                        str(path),
+                        sha256,
+                        source_db_sha256,
+                        sqlite_page_count,
+                        size_bytes,
+                        source_session_no,
+                        engine_version,
+                    ),
+                )
+            else:
+                conn.execute(
+                    "INSERT INTO snapshot_catalog "
+                    "(trigger, path, sha256, source_db_sha256, sqlite_page_count, "
+                    " size_bytes, source_session_no, engine_version, keep_reason) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        trigger,
+                        str(path),
+                        sha256,
+                        source_db_sha256,
+                        sqlite_page_count,
+                        size_bytes,
+                        source_session_no,
+                        engine_version,
+                        keep_reason,
+                    ),
+                )
             conn.commit()
             return True
         except sqlite3.Error as e:

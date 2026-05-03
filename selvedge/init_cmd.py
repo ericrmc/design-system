@@ -65,8 +65,12 @@ def cmd_init(args) -> int:
         if sessions > 0:
             # L3 init_refused snapshot before refusal so the agent who hit
             # this guard can grab a fresh anchor copy of the substrate state
-            # they were about to wipe (DV-S081-1, OI-S081-3).
-            take_snapshot("init_refused", source_path=path)
+            # they were about to wipe (DV-S081-1, OI-S081-3). Tagged
+            # pre_destructive_anchor so retention pruning never reaps it
+            # (engine-v52, OI-S081-7 marker arc).
+            take_snapshot(
+                "init_refused", source_path=path, keep_reason="pre_destructive_anchor"
+            )
             print(
                 f"refused: E_LIVE_SUBSTRATE — {path} carries {sessions} session row(s); "
                 f"--force is refused on a substrate with active session rows. Recovery: "
@@ -80,7 +84,10 @@ def cmd_init(args) -> int:
         if really_force and _live_substrate_session_count(path) > 0:
             # L3 init_forced snapshot before unlink so even a deliberate
             # destructive override leaves a recoverable anchor on disk.
-            take_snapshot("init_forced", source_path=path)
+            # Tagged pre_destructive_anchor (engine-v52, OI-S081-7).
+            take_snapshot(
+                "init_forced", source_path=path, keep_reason="pre_destructive_anchor"
+            )
         path.unlink()
     for sidecar in [path.with_suffix(".sqlite-wal"), path.with_suffix(".sqlite-shm")]:
         if sidecar.exists():

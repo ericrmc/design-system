@@ -9,6 +9,7 @@ from typing import Optional
 from ..errors import SelvedgeError
 from .harnesses import _export_reference_harnesses_for_session
 from .l5_session_artefacts import L5_FILENAMES, export_l5_session_artefacts
+from .manifest import SESSION_FILE_KINDS, record_manifest_entry, workspace_relative
 
 
 def _atom_text(conn: sqlite3.Connection, atom_id: Optional[int]) -> str:
@@ -369,14 +370,43 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
 
     if write:
         out_dir.mkdir(parents=True, exist_ok=True)
+        manifest_entries: list[str] = []
         for name, content in files.items():
             (out_dir / name).write_text(content)
+            kind = SESSION_FILE_KINDS.get(name)
+            if kind and record_manifest_entry(
+                conn,
+                kind=kind,
+                path=out_dir / name,
+                session_no=workspace_no,
+                content=content,
+            ):
+                manifest_entries.append(str(out_dir / name))
         for path_str, content in harness_files.items():
             p = Path(path_str)
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(content)
+            if record_manifest_entry(
+                conn,
+                kind="harness",
+                path=p,
+                session_no=workspace_no,
+                content=content,
+            ):
+                manifest_entries.append(str(p))
         for s in stale_l5:
-            Path(s).unlink()
+            stale_path = Path(s)
+            # Reconcile manifest BEFORE unlink so a DELETE failure leaves
+            # both file and row intact (recoverable on next export).
+            # Reverse order would leave orphan rows pointing at nothing
+            # that the next export's substrate state would not regenerate.
+            try:
+                rel = workspace_relative(stale_path)
+                conn.execute("DELETE FROM export_manifest WHERE path=?", (rel,))
+                conn.commit()
+            except (sqlite3.Error, ValueError):
+                pass
+            stale_path.unlink()
         return {
             "dry_run": False,
             "session_no": session_no,
@@ -385,6 +415,7 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
             "files_written": list(files.keys()),
             "harness_files_written": sorted(harness_files.keys()),
             "l5_files_deleted": stale_l5,
+            "manifest_entries_written": len(manifest_entries),
         }
     return {
         "dry_run": True,

@@ -97,7 +97,20 @@ def _submit_deliberation_seal(conn: sqlite3.Connection, p: dict, role: str) -> d
         "SELECT sealed_at FROM deliberations WHERE deliberation_id=?",
         (p["deliberation_id"],),
     ).fetchone()
-    return {"deliberation_id": p["deliberation_id"], "sealed_at": sealed["sealed_at"]}
+    # Surface workspace_session_no so the post-commit deliberation_seal
+    # snapshot trigger (engine-v52, OI-S081-7) can tag the snapshot row
+    # with the session that owned the seal event.
+    sess = conn.execute(
+        "SELECT s.workspace_session_no "
+        "FROM deliberations d JOIN sessions s ON s.session_id = d.session_id "
+        "WHERE d.deliberation_id=?",
+        (p["deliberation_id"],),
+    ).fetchone()
+    return {
+        "deliberation_id": p["deliberation_id"],
+        "sealed_at": sealed["sealed_at"],
+        "workspace_session_no": sess["workspace_session_no"] if sess else None,
+    }
 
 
 def _submit_synthesis_point(conn: sqlite3.Connection, p: dict, role: str) -> dict:

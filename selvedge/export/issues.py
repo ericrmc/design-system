@@ -5,6 +5,8 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
+from .manifest import record_manifest_entry, workspace_relative
+
 
 def _export_issues(conn: sqlite3.Connection, write: bool = False) -> dict:
     """Materialise open-issues/<alias>.md from the issues substrate table.
@@ -124,8 +126,25 @@ def _export_issues(conn: sqlite3.Connection, write: bool = False) -> dict:
             p = Path(path_str)
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(content)
+            kind = "open_issues_index" if p.name == "index.md" else "open_issue"
+            record_manifest_entry(
+                conn,
+                kind=kind,
+                path=p,
+                session_no=None,
+                content=content,
+            )
         for s in stale:
-            Path(s).unlink()
+            stale_path = Path(s)
+            # DELETE manifest row BEFORE unlink so DELETE failure leaves
+            # both intact (recoverable) rather than orphan-row + missing-file.
+            try:
+                rel = workspace_relative(stale_path)
+                conn.execute("DELETE FROM export_manifest WHERE path=?", (rel,))
+                conn.commit()
+            except (sqlite3.Error, ValueError):
+                pass
+            stale_path.unlink()
         return {
             "dry_run": False,
             "issues_exported": len(rows),

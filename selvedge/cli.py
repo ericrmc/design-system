@@ -194,7 +194,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             "engine_version",
             "open_question",
         ],
-        help="Target kind; must match the eventual decision-record target_kind (engine-v51, migration 041).",
+        help="Target kind; must match the eventual decision-record target_kind (engine-v51 widening, migration 041).",
     )
     p_pre.add_argument(
         "--target-key",

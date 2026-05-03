@@ -16,6 +16,8 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
+from .manifest import record_manifest_entry
+
 INDEX_PATH = Path("specifications/_versions.md")
 
 
@@ -52,6 +54,14 @@ def _export_spec_versions(conn: sqlite3.Connection, write: bool = False) -> dict
     if write:
         INDEX_PATH.parent.mkdir(parents=True, exist_ok=True)
         INDEX_PATH.write_text(body)
+        record_manifest_entry(
+            conn,
+            kind="spec_versions_index",
+            path=INDEX_PATH,
+            session_no=None,
+            row_count=len(rows),
+            content=body,
+        )
         return {
             "dry_run": False,
             "spec_versions_exported": len(rows),

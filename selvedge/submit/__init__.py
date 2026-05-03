@@ -140,6 +140,10 @@ def cmd_submit(args) -> int:
     print(json.dumps(envelope))
     # L3 boundary snapshot (DV-S081-1, OI-S081-3): fire AFTER the write_tx has
     # committed. Skip on dry-run since no substrate change persists.
+    # deliberation-seal added as fifth trigger at engine-v52 (OI-S081-7)
+    # because seals are the substrate-evolution event most likely to be the
+    # last write before a long quiet stretch where loss would be hardest to
+    # reconstruct from the surrounding session boundaries.
     if not dry_run:
         if args.kind == "session-open":
             take_snapshot(
@@ -152,5 +156,10 @@ def cmd_submit(args) -> int:
                 "session_close",
                 source_session_no=result.get("workspace_session_no"),
                 engine_version=result.get("engine_version_at_close"),
+            )
+        elif args.kind == "deliberation-seal":
+            take_snapshot(
+                "deliberation_seal",
+                source_session_no=result.get("workspace_session_no"),
             )
     return 0
