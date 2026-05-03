@@ -12,6 +12,7 @@ from pathlib import Path
 
 from ..connection import Conn
 from ..errors import SelvedgeError
+from ..snapshots import take_snapshot
 from ._helpers import _dry_run_var
 from .assessment import _submit_assessment, _submit_legacy_import
 from .close import _submit_close_record
@@ -137,4 +138,19 @@ def cmd_submit(args) -> int:
     if dry_run:
         envelope["dry_run"] = True
     print(json.dumps(envelope))
+    # L3 boundary snapshot (DV-S081-1, OI-S081-3): fire AFTER the write_tx has
+    # committed. Skip on dry-run since no substrate change persists.
+    if not dry_run:
+        if args.kind == "session-open":
+            take_snapshot(
+                "session_open",
+                source_session_no=result.get("workspace_session_no"),
+                engine_version=result.get("engine_version_at_open"),
+            )
+        elif args.kind == "session-close":
+            take_snapshot(
+                "session_close",
+                source_session_no=result.get("workspace_session_no"),
+                engine_version=result.get("engine_version_at_close"),
+            )
     return 0

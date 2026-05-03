@@ -12,6 +12,13 @@ entities.json
 state/selvedge.sqlite
 state/selvedge.sqlite-*
 state/selvedge.sqlite.*backup
+state/selvedge.sqlite.*backup-*
+state/selvedge.db
+
+# L3 boundary snapshots (DV-S081-1, OI-S081-3, S084).
+# Inside workspace boundary, outside git boundary: runtime recoverability
+# beats clone portability (codex-shape-consult Q3, S084).
+state/snapshots/
 state/tests/round-trip-spec/
 state/tests/spec-bodies/
 __pycache__/

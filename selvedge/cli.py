@@ -41,6 +41,7 @@ from .orient import cmd_orient
 from .paths import ANCHOR_TRACE_DEFAULT_DEPTH, ANCHOR_TRACE_HARD_CAP_DEPTH
 from .query import cmd_query
 from .recover import cmd_recover
+from .restore_cmd import cmd_restore
 from .schema import cmd_schema
 from .submit import SUBMIT_HANDLERS, cmd_submit
 from .submit_help import cmd_submit_help
@@ -110,6 +111,21 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     p_rec = sub.add_parser("recover", help="Reclaim expired work_item leases.")
     p_rec.set_defaults(fn=cmd_recover)
+
+    p_restore = sub.add_parser(
+        "restore",
+        help="Restore a substrate from an L3 snapshot (DV-S081-1, OI-S081-3, OI-S081-4).",
+        description=(
+            "Copy snapshot bytes to a target path. Refuses to overwrite the live "
+            "primary substrate without --confirm. Optional --verify recomputes the "
+            "snapshot file sha256 and compares against snapshot_catalog."
+        ),
+    )
+    p_restore.add_argument("--from", dest="from_", required=True, help="Path to snapshot file under state/snapshots/.")
+    p_restore.add_argument("--to", required=True, help="Destination path; the live primary requires --confirm.")
+    p_restore.add_argument("--verify", action="store_true", help="Recompute sha256 and compare against snapshot_catalog row before copying.")
+    p_restore.add_argument("--confirm", action="store_true", help="Required when --to is the live primary substrate.")
+    p_restore.set_defaults(fn=cmd_restore)
 
     p_q = sub.add_parser("query", help="Read-only SQL query (debugging).")
     p_q.add_argument("sql")

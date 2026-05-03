@@ -12,6 +12,7 @@ from pathlib import Path
 
 from .errors import SelvedgeError
 from .paths import db_path, migrations_dir
+from .snapshots import take_snapshot
 
 
 # T-15 forbids destructive DDL in migrations. ADD-only schema discipline; trigger,
@@ -270,4 +271,9 @@ def cmd_migrate(args) -> int:
             indent=2,
         )
     )
+    # L3 boundary snapshot (DV-S081-1, OI-S081-3) — one row per migrate-apply
+    # run, taken after the migration commits so a failed migration produces
+    # only the pre-migrate-backup file (existing 078 D-8 tier-1 path).
+    if applied_now:
+        take_snapshot("migrate_apply", source_path=path)
     return 0

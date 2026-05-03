@@ -32,8 +32,15 @@ if str(WORKSPACE) not in sys.path:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def _snapshot_primary():
-    """Back up the primary substrate before tests, restore after."""
+def _snapshot_primary(tmp_path_factory):
+    """Back up the primary substrate before tests, restore after.
+
+    Also routes L3 boundary snapshots (DV-S081-1, S084) to a per-test-session
+    tmpdir so test-driven session-open/close/init/migrate triggers do not
+    pollute the production state/snapshots/ directory.
+    """
+    snap_dir = tmp_path_factory.mktemp("pytest-snapshots")
+    os.environ["SELVEDGE_SNAPSHOTS_DIR"] = str(snap_dir)
     if PRIMARY_DB.exists():
         shutil.copy(PRIMARY_DB, BACKUP_DB)
     try:

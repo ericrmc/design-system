@@ -104,4 +104,12 @@ def _submit_session_close(conn: sqlite3.Connection, p: dict, role: str) -> dict:
         "closed_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE session_id=?",
         (eng_ver, sid),
     )
-    return {"session_id": sid, "engine_version_at_close": eng_ver}
+    wno_row = conn.execute(
+        "SELECT workspace_session_no FROM sessions WHERE session_id=?", (sid,)
+    ).fetchone()
+    wno = wno_row["workspace_session_no"] if wno_row else None
+    return {
+        "session_id": sid,
+        "engine_version_at_close": eng_ver,
+        "workspace_session_no": wno,
+    }
