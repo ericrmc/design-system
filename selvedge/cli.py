@@ -53,7 +53,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     p_init = sub.add_parser("init", help="Initialise a fresh substrate (apply 001 + any later migrations).")
-    p_init.add_argument("--force", action="store_true", help="Overwrite existing substrate.")
+    p_init.add_argument("--force", action="store_true", help="Overwrite existing substrate (refused if live: sessions present).")
+    p_init.add_argument("--really-force", dest="really_force", action="store_true", help="Override the live-substrate guard (deliberate destructive intent).")
     p_init.set_defaults(fn=cmd_init)
 
     p_mig = sub.add_parser("migrate", help="Apply pending migrations against an existing substrate.")
