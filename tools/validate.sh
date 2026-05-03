@@ -55,6 +55,14 @@ else
 fi
 
 echo
+echo "Substrate-filesystem reconciliation (tools/manifest_reconcile.sh):"
+if bash tools/manifest_reconcile.sh; then
+  PASS=$((PASS+1))
+else
+  fail "manifest-reconcile divergence (see lines above)"
+fi
+
+echo
 echo "Pytest suite (state/tests):"
 if command -v uv >/dev/null 2>&1; then
   # pyproject.toml addopts already pins -q; passing --no-header lets the
