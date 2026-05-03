@@ -128,8 +128,8 @@ def test_export_session_dry_run_returns_planned_files(isolated_workspace):
             "items": [{"facet": "what_was_done", "text": "exported the substrate dryly"}],
         }),
     ])
-    # workspace_session_no = 1 + 79 = 80 in the fresh workspace.
-    res = _run_cli_in(isolated_workspace, ["export", "--session", "80"])
+    # workspace_session_no = 1 + 179 = 180 in the fresh workspace.
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180"])
     assert res["rc"] == 0, res
     assert res["out"]["dry_run"] is True
     planned = res["out"]["files_planned"]
@@ -159,7 +159,7 @@ def test_export_session_write_lands_files(isolated_workspace):
             ],
         }),
     ])
-    res = _run_cli_in(isolated_workspace, ["export", "--session", "80", "--write"])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180", "--write"])
     assert res["rc"] == 0, res
     assert res["out"]["dry_run"] is False
     out_dir = isolated_workspace / res["out"]["out_dir"]
@@ -284,7 +284,7 @@ def test_export_session_with_deliberation_decision_finding(isolated_workspace):
 
 
 def test_export_session_via_substrate_session_no(isolated_workspace):
-    """The exporter accepts EITHER workspace_session_no (e.g. 80) OR the
+    """The exporter accepts EITHER workspace_session_no (e.g. 180) OR the
     substrate session_no (1). Both should resolve to the same session."""
     _run_cli_in(isolated_workspace, [
         "submit", "assessment", "--payload",
@@ -305,12 +305,12 @@ def test_export_anchor_print_emits_markdown_to_stdout(isolated_workspace):
     markdown body to stdout (frontmatter + headline) and create no
     provenance/anchor-traces/ files on disk."""
     res = _run_cli_in(isolated_workspace, [
-        "export", "--provenance", "--anchor", "S080", "--print",
+        "export", "--provenance", "--anchor", "S180", "--print",
     ])
     assert res["rc"] == 0, res
     raw = res["out"]["_raw"] if isinstance(res["out"], dict) else res["out"]
-    assert "anchor: S080" in raw
-    assert "# Anchor trace: `S080`" in raw
+    assert "anchor: S180" in raw
+    assert "# Anchor trace: `S180`" in raw
     # No JSON wrapper keys in stdout.
     assert "nodes_visited" not in raw.split("---", 2)[-1]
     # --print must not write to disk.
@@ -318,14 +318,14 @@ def test_export_anchor_print_emits_markdown_to_stdout(isolated_workspace):
 
 
 def test_export_print_without_provenance_refused(isolated_workspace):
-    res = _run_cli_in(isolated_workspace, ["export", "--session", "80", "--print"])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180", "--print"])
     assert res["rc"] == 2
     assert "only valid with --provenance --anchor" in res["err"]
 
 
 def test_export_print_with_write_refused(isolated_workspace):
     res = _run_cli_in(isolated_workspace, [
-        "export", "--provenance", "--anchor", "S080", "--print", "--write",
+        "export", "--provenance", "--anchor", "S180", "--print", "--write",
     ])
     assert res["rc"] == 2
     assert "mutually exclusive" in res["err"]
@@ -341,16 +341,16 @@ def test_export_issues_dry_run_plans_index_and_open_files(isolated_workspace):
     routes them to the right paths and includes open-issues/index.md."""
     _run_cli_in(isolated_workspace, [
         "submit", "issue", "--payload",
-        json.dumps({"alias": "OI-S080-1", "title": "open pytest issue", "priority": "MEDIUM"}),
+        json.dumps({"alias": "OI-S180-1", "title": "open pytest issue", "priority": "MEDIUM"}),
     ])
     _run_cli_in(isolated_workspace, [
         "submit", "issue", "--payload",
-        json.dumps({"alias": "OI-S080-2", "title": "to-be-resolved pytest issue", "priority": "LOW"}),
+        json.dumps({"alias": "OI-S180-2", "title": "to-be-resolved pytest issue", "priority": "LOW"}),
     ])
     _run_cli_in(isolated_workspace, [
         "submit", "issue-disposition", "--payload",
         json.dumps({
-            "alias": "OI-S080-2",
+            "alias": "OI-S180-2",
             "to_status": "resolved",
             "reason": "resolved for export pytest fixture",
         }),
@@ -361,15 +361,15 @@ def test_export_issues_dry_run_plans_index_and_open_files(isolated_workspace):
     assert res["out"]["issues_exported"] == 2
     planned = res["out"]["files_planned"]
     assert "open-issues/index.md" in planned
-    assert "open-issues/OI-S080-1.md" in planned
-    assert "open-issues/resolved/OI-S080-2.md" in planned
+    assert "open-issues/OI-S180-1.md" in planned
+    assert "open-issues/resolved/OI-S180-2.md" in planned
 
 
 def test_export_issues_write_creates_files_and_index(isolated_workspace):
     _run_cli_in(isolated_workspace, [
         "submit", "issue", "--payload",
         json.dumps({
-            "alias": "OI-S080-3",
+            "alias": "OI-S180-3",
             "title": "issue with summary and body for export-write fixture",
             "summary": "summary text recorded under the issue's summary atom",
             "body": "body text recorded under the issue's body atom",
@@ -379,15 +379,15 @@ def test_export_issues_write_creates_files_and_index(isolated_workspace):
     res = _run_cli_in(isolated_workspace, ["export", "--issues", "--write"])
     assert res["rc"] == 0, res
     assert res["out"]["dry_run"] is False
-    issue_md = isolated_workspace / "open-issues" / "OI-S080-3.md"
+    issue_md = isolated_workspace / "open-issues" / "OI-S180-3.md"
     assert issue_md.exists()
     text = issue_md.read_text()
-    assert "OI-S080-3" in text
+    assert "OI-S180-3" in text
     assert "priority: HIGH" in text
     assert "summary text recorded" in text
     assert "body text recorded" in text
     index = (isolated_workspace / "open-issues" / "index.md").read_text()
-    assert "OI-S080-3" in index
+    assert "OI-S180-3" in index
 
 
 def test_export_issues_write_cleans_stale_files(isolated_workspace):
@@ -409,9 +409,9 @@ def test_export_issues_write_cleans_stale_files(isolated_workspace):
 # ---------------------------------------------------------------------------
 
 
-def _seed_sealed_harness(workspace: Path, alias: str = "RH-S080-1") -> dict:
+def _seed_sealed_harness(workspace: Path, alias: str = "RH-S180-1") -> dict:
     """Open + populate + seal a harness in the fresh test workspace's session 1
-    (workspace_session_no=80). Returns the seal CLI response payload."""
+    (workspace_session_no=180). Returns the seal CLI response payload."""
     open_res = _run_cli_in(workspace, [
         "submit", "harness-open", "--payload",
         json.dumps({
@@ -473,7 +473,7 @@ def test_export_session_skips_open_harness(isolated_workspace):
     _run_cli_in(isolated_workspace, [
         "submit", "harness-open", "--payload",
         json.dumps({
-            "alias": "RH-S080-1", "arc_slug": "pytest-arc", "stage_n": 1,
+            "alias": "RH-S180-1", "arc_slug": "pytest-arc", "stage_n": 1,
             "absence_declaration": "open-only harness for skip-open pytest",
             "expiry_sessions": 4,
         }),
@@ -483,7 +483,7 @@ def test_export_session_skips_open_harness(isolated_workspace):
         json.dumps({"summary": "fixture close-record so the export plan is non-empty",
                     "items": []}),
     ])
-    res = _run_cli_in(isolated_workspace, ["export", "--session", "80"])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180"])
     assert res["rc"] == 0, res
     assert res["out"]["harness_files_planned"] == []
 
@@ -495,7 +495,7 @@ def test_export_session_emits_sealed_harness_dry_run(isolated_workspace):
         json.dumps({"summary": "close-record for sealed-harness dry-run export",
                     "items": []}),
     ])
-    res = _run_cli_in(isolated_workspace, ["export", "--session", "80"])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180"])
     assert res["rc"] == 0, res
     planned = res["out"]["harness_files_planned"]
     assert len(planned) == 1
@@ -511,7 +511,7 @@ def test_export_session_writes_sealed_harness(isolated_workspace):
         json.dumps({"summary": "close-record for sealed-harness write export",
                     "items": []}),
     ])
-    res = _run_cli_in(isolated_workspace, ["export", "--session", "80", "--write"])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180", "--write"])
     assert res["rc"] == 0, res
     written = res["out"]["harness_files_written"]
     assert len(written) == 1

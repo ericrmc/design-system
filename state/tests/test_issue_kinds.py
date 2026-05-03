@@ -351,7 +351,7 @@ def test_forward_reference_disposition_resolves_state_item(clean_substrate, selv
         ]
     )
     assert cr["out"]["ok"], cr
-    # workspace_session_no for session 1 = 1 + init_session_offset (79) = 80.
+    # workspace_session_no for session 1 = 1 + init_session_offset (179) = 180.
     target_wno = db.execute(
         "SELECT workspace_session_no FROM sessions WHERE session_no=1"
     ).fetchone()["workspace_session_no"]
