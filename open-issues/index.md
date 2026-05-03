@@ -8,12 +8,18 @@ deterministic export from substrate rows; do not hand-edit. Use
 
 | Alias | Priority | Status | Title |
 |-------|----------|--------|-------|
-| [OI-S081-1](OI-S081-1.md) | HIGH | open | Implement L1a init --force live-substrate refusal in selvedge/init_cmd.py with --really-force escape (per S081 DV-1) |
-| [OI-S081-2](OI-S081-2.md) | HIGH | open | Implement L2b subagent tempdir-clone isolation via SQLite backup API; SELVEDGE_READONLY remains advisory-only (per S081 DV-1) |
-| [OI-S081-3](OI-S081-3.md) | HIGH | open | Implement L3 snapshot machinery (Connection.backup) at session-open + close + migrate + init triggers + retention prune (per S081 DV-1) |
-| [OI-S081-4](OI-S081-4.md) | HIGH | open | Implement bin/selvedge restore --from <snapshot> --to <path> --verify with exit-2 refusal pattern (per S081 DV-1 C-4) |
-| [OI-S081-5](OI-S081-5.md) | MEDIUM | open | Implement L4B one-shot legacy-substrate extractor against pre-S180 backup files; output provenance/legacy-substrate-summary.md (per S081 DV-1) |
-| [OI-S081-6](OI-S081-6.md) | HIGH | open | Implement L5 close-time export expansion: open-issues, spec_versions, EFs, counterfactuals, FR-disp, prechecks, chain-walks, harness state (per S081 DV-1) |
 | [OI-S081-7](OI-S081-7.md) | MEDIUM | open | Ship engine-v51 marker migration coupling L1a + snapshot_catalog schema + L5 export-manifest table per S081 DV-1 C-9 write-capability framing |
-| [OI-S081-8](OI-S081-8.md) | MEDIUM | open | Update prompts/development.md §4 subagent-discipline boilerplate to forbid init/migrate/sqlite-mutation against primary substrate per OI-S180-1 step 5 |
+| [OI-S083-1](OI-S083-1.md) | MEDIUM | open | Deliberate proactive substrate-canonical reminder pathway: PreToolUse non-blocking hint vs file-header marker vs CLAUDE.md pin to close the tool-selection gap surfaced at EF-S083-1. |
 | [OI-S180-1](OI-S180-1.md) | HIGH | open | Substrate wipe via subagent init --force; S001-S179 substrate state lost; manual rebuild from markdown exports + subagent destructive-op hardening required. |
+
+## Resolved
+
+| Alias | Resolved-in | Title |
+|-------|-------------|-------|
+| [OI-S081-1](resolved/OI-S081-1.md) | S082 | Implement L1a init --force live-substrate refusal in selvedge/init_cmd.py with --really-force escape (per S081 DV-1) |
+| [OI-S081-2](resolved/OI-S081-2.md) | S186 | Implement L2b subagent tempdir-clone isolation via SQLite backup API; SELVEDGE_READONLY remains advisory-only (per S081 DV-1) |
+| [OI-S081-3](resolved/OI-S081-3.md) | S084 | Implement L3 snapshot machinery (Connection.backup) at session-open + close + migrate + init triggers + retention prune (per S081 DV-1) |
+| [OI-S081-4](resolved/OI-S081-4.md) | S084 | Implement bin/selvedge restore --from <snapshot> --to <path> --verify with exit-2 refusal pattern (per S081 DV-1 C-4) |
+| [OI-S081-5](resolved/OI-S081-5.md) | S186 | Implement L4B one-shot legacy-substrate extractor against pre-S180 backup files; output provenance/legacy-substrate-summary.md (per S081 DV-1) |
+| [OI-S081-6](resolved/OI-S081-6.md) | S187 | Implement L5 close-time export expansion: open-issues, spec_versions, EFs, counterfactuals, FR-disp, prechecks, chain-walks, harness state (per S081 DV-1) |
+| [OI-S081-8](resolved/OI-S081-8.md) | S082 | Update prompts/development.md §4 subagent-discipline boilerplate to forbid init/migrate/sqlite-mutation against primary substrate per OI-S180-1 step 5 |

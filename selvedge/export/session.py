@@ -8,6 +8,7 @@ from typing import Optional
 
 from ..errors import SelvedgeError
 from .harnesses import _export_reference_harnesses_for_session
+from .l5_session_artefacts import L5_FILENAMES, export_l5_session_artefacts
 
 
 def _atom_text(conn: sqlite3.Connection, atom_id: Optional[int]) -> str:
@@ -342,10 +343,29 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
         lines.append("")
         files["03-close.md"] = "\n".join(lines)
 
+    # L5 close-time export expansion (OI-S081-6 / DV-S081-1): session-bounded
+    # receipts and ledger rows that the substrate-loss-defense package promised
+    # to emit at close so a substrate wipe leaves them recoverable on disk.
+    l5_files = export_l5_session_artefacts(conn, sid, workspace_no, sess["slug"])
+    files.update(l5_files)
+
     # Reference harnesses lifecycle-touched by this session land at
     # provenance/<open_wno>-<open_slug>/harnesses/<alias>.md (workspace-relative
     # paths, possibly outside this session's out_dir when sealed cross-session).
     harness_files = _export_reference_harnesses_for_session(conn, sid)
+
+    # L5 stale-file reconciliation: if a previous export wrote 05–09 files for
+    # this session and the current substrate state no longer produces them
+    # (rows deleted, decisions superseded), the on-disk file must be removed
+    # so the close-time evidence on disk matches the substrate. Mirrors the
+    # issues-export pattern (EF-S092-2). Only the L5 filenames are reconciled
+    # here; 00–04 are always emitted when their substrate predicates hold and
+    # do not have the "rows-vanished" failure mode.
+    stale_l5: list[str] = []
+    if out_dir.exists():
+        for name in L5_FILENAMES:
+            if name not in l5_files and (out_dir / name).exists():
+                stale_l5.append(str(out_dir / name))
 
     if write:
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -355,6 +375,8 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
             p = Path(path_str)
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(content)
+        for s in stale_l5:
+            Path(s).unlink()
         return {
             "dry_run": False,
             "session_no": session_no,
@@ -362,6 +384,7 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
             "out_dir": str(out_dir),
             "files_written": list(files.keys()),
             "harness_files_written": sorted(harness_files.keys()),
+            "l5_files_deleted": stale_l5,
         }
     return {
         "dry_run": True,
@@ -370,4 +393,5 @@ def _export_session_provenance(conn: sqlite3.Connection, session_ref: int, write
         "out_dir": str(out_dir),
         "files_planned": list(files.keys()),
         "harness_files_planned": sorted(harness_files.keys()),
+        "l5_files_to_delete": stale_l5,
     }

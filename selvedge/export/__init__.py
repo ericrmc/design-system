@@ -16,6 +16,7 @@ from ..paths import ANCHOR_TRACE_DEFAULT_DEPTH, db_path
 from .anchor import _export_provenance_anchor
 from .issues import _export_issues
 from .session import _export_session_provenance
+from .spec_versions import _export_spec_versions
 
 
 def cmd_export(args) -> int:
@@ -47,6 +48,16 @@ def cmd_export(args) -> int:
             print(json.dumps(result, indent=2))
         elif args.session is not None:
             result = _export_session_provenance(conn, args.session, write=args.write)
+            # L5 close-time export expansion (OI-S081-6 / DV-S081-1): the close-
+            # ceremony command (`selvedge export --session N --write`) is the
+            # single entry point at session-close, so trigger the workspace-
+            # wide regen of the open-issues index and the spec_versions index
+            # in the same invocation. Both are deterministic re-renders of
+            # current substrate state; no-op safe under --dry-run.
+            issues_result = _export_issues(conn, write=args.write)
+            spec_versions_result = _export_spec_versions(conn, write=args.write)
+            result["issues_export"] = issues_result
+            result["spec_versions_export"] = spec_versions_result
             print(json.dumps(result, indent=2))
         else:
             print("export: pass --session <N>, --issues, or --provenance --anchor <alias>", file=sys.stderr)

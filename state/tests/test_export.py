@@ -527,3 +527,288 @@ def test_export_session_writes_sealed_harness(isolated_workspace):
     assert "load-bearing" in text
     assert "fixture claim for harness export pytest" in text
     assert "→ **survived**" in text
+
+
+# ---------------------------------------------------------------------------
+# L5 close-time export expansion (OI-S081-6 / DV-S187-1)
+# ---------------------------------------------------------------------------
+
+
+def _seed_decision_with_alias_cite(workspace: Path) -> str:
+    """Seed a substantive decision_v2 row whose precheck nonce is captured and
+    whose supports.cite resolves against an existing alias (the EF row we
+    submit below). Return the EF alias so callers can assert chain-walk anchor
+    presence.
+
+    The fixture also exercises decision_chain_walks (T-32 receipt) and
+    decision_prechecks (T-33 receipt) population paths.
+    """
+    # Seed an EF first so we have a citable alias for supports.cite.
+    ef = _run_cli_in(workspace, [
+        "submit", "engine-feedback", "--payload",
+        json.dumps({"flag": "observation",
+                    "body_md": "**l5-fixture:** EF body for L5 export pytest fixture."}),
+    ])
+    ef_alias = ef["out"]["result"]["alias"]
+    # Precheck the substantive decision.
+    pre = _run_cli_in(workspace, [
+        "precheck", "--target-kind", "process_rule", "--target-key", "l5-fixture-target",
+    ])
+    nonce = None
+    raw = (pre["out"].get("_raw") if isinstance(pre["out"], dict) else "") or ""
+    for tok in raw.split():
+        if tok.startswith("nonce="):
+            nonce = tok.split("=", 1)[1]
+            break
+    assert nonce, f"precheck did not return a nonce: {pre}"
+    _run_cli_in(workspace, [
+        "submit", "decision-record", "--payload",
+        json.dumps({
+            "title": "L5 fixture decision exercising chain-walks plus precheck receipts.",
+            "kind": "substantive",
+            "outcome_type": "adopt",
+            "target_kind": "process_rule",
+            "target_key": "l5-fixture-target",
+            "precheck_nonce": nonce,
+            "supports": [{
+                "basis": "engine_feedback",
+                "claim": "L5 fixture support claim citing the seeded EF row.",
+                "cite": ef_alias,
+            }],
+            "alternatives": [{
+                "label": "R-1.1",
+                "option": "L5 fixture rejected alternative path",
+                "rejections": [{
+                    "basis": "inferior_tradeoff",
+                    "reason": "rejected for the L5 export fixture coverage path",
+                }],
+            }],
+        }),
+    ])
+    return ef_alias
+
+
+def test_l5_session_export_emits_engine_feedback_file(isolated_workspace):
+    """An engine_feedback row in the session must surface as 05-engine-feedback.md
+    with the EF alias, flag, and body content."""
+    _run_cli_in(isolated_workspace, [
+        "submit", "engine-feedback", "--payload",
+        json.dumps({"flag": "calibration",
+                    "body_md": "**l5-fixture-ef:** body content for L5 export fixture."}),
+    ])
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "fixture close-record so 05-engine-feedback emits",
+                    "items": []}),
+    ])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180", "--write"])
+    assert res["rc"] == 0, res
+    out_dir = isolated_workspace / res["out"]["out_dir"]
+    ef_md = out_dir / "05-engine-feedback.md"
+    assert ef_md.exists(), res
+    text = ef_md.read_text()
+    assert "EF-S180-1" in text
+    assert "**flag.** calibration" in text
+    assert "l5-fixture-ef" in text
+
+
+def test_l5_session_export_emits_chain_walks_and_prechecks(isolated_workspace):
+    """A substantive decision-record fires T-32 chain-walks per cited alias
+    and T-33 precheck receipt; both must surface as 09-chain-walks.md and
+    08-prechecks.md respectively under the per-session dir."""
+    _seed_decision_with_alias_cite(isolated_workspace)
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "fixture close-record for L5 chain-walk + precheck export",
+                    "items": []}),
+    ])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180", "--write"])
+    assert res["rc"] == 0, res
+    out_dir = isolated_workspace / res["out"]["out_dir"]
+    walks = out_dir / "09-chain-walks.md"
+    pre = out_dir / "08-prechecks.md"
+    assert walks.exists(), res
+    assert pre.exists(), res
+    walks_text = walks.read_text()
+    pre_text = pre.read_text()
+    assert "Decision chain-walks" in walks_text
+    assert "**walker_version.**" in walks_text
+    assert "**result_sha256.**" in walks_text
+    assert "Decision prechecks" in pre_text
+    assert "l5-fixture-target" in pre_text
+
+
+def test_l5_session_export_emits_counterfactuals_and_fr_dispositions(isolated_workspace):
+    """A sealed deliberation with a counterfactual row, plus a FR-disposition
+    that resolves a prior session's `next_session_should` atom, both surface
+    as their L5 files."""
+    # Seed an FR-bearing close-record (state-item with facet=next_session_should).
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "fixture close authoring an FR for L5 disposition test",
+                    "items": [{"facet": "next_session_should",
+                                "text": "fixture next-session-should atom for FR-disposition export"}]}),
+    ])
+    # Close + open a second session so we can dispose the prior FR from S181.
+    _run_cli_in(isolated_workspace, ["submit", "session-close", "--payload", "{}"])
+    _run_cli_in(isolated_workspace, [
+        "submit", "session-open", "--payload",
+        json.dumps({"slug": "l5-fr-disposer", "kind": "spec_only"}),
+    ])
+    # Now dispose FR-S180-1 (target_session=180, seq=1) from S181.
+    _run_cli_in(isolated_workspace, [
+        "submit", "forward-reference-disposition", "--payload",
+        json.dumps({"target_session": 180, "seq": 1,
+                    "note": "addressed by L5 fixture path for FR-disposition export"}),
+    ])
+    # Seed a deliberation with a counterfactual nil-attestation row.
+    # The second session opened above has substrate session_no=2.
+    delib = _run_cli_in(isolated_workspace, [
+        "submit", "deliberation-open", "--payload",
+        json.dumps({"session_no": 2,
+                    "topic": "L5 fixture deliberation for counterfactual export"}),
+    ])
+    did = delib["out"]["result"]["deliberation_id"]
+    _run_cli_in(isolated_workspace, [
+        "submit", "perspective", "--payload",
+        json.dumps({"session_no": 2, "deliberation_id": did, "label": "p1",
+                    "family": "anthropic",
+                    "body_md": "L5 fixture perspective body for counterfactual export"}),
+    ])
+    _run_cli_in(isolated_workspace, [
+        "submit", "deliberation-counterfactual", "--payload",
+        json.dumps({"deliberation_id": did,
+                    "position": "L5 fixture cheap-exit nil_attestation: stance-space exhausted.",
+                    "why": "tactical fixture seal for L5 counterfactual export coverage.",
+                    "disposition": "nilled-by-exclusion",
+                    "exclusion_kind": "out-of-scope",
+                    "nil_attestation": 1}),
+    ])
+    _run_cli_in(isolated_workspace, [
+        "submit", "deliberation-seal", "--payload",
+        json.dumps({"session_no": 2, "deliberation_id": did,
+                    "synthesis_md": "L5 fixture synthesis text"}),
+    ])
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "fixture close for L5 counterfactual + FR-disposition export",
+                    "items": []}),
+    ])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "181", "--write"])
+    assert res["rc"] == 0, res
+    out_dir = isolated_workspace / res["out"]["out_dir"]
+    cf = out_dir / "06-counterfactuals.md"
+    fr = out_dir / "07-fr-dispositions.md"
+    assert cf.exists(), res
+    assert fr.exists(), res
+    cf_text = cf.read_text()
+    fr_text = fr.read_text()
+    assert "Deliberation counterfactuals" in cf_text
+    assert "nil_attestation" in cf_text
+    assert "FR-S180-1" in fr_text
+    assert "addressed by L5 fixture path" in fr_text
+
+
+def test_l5_session_export_omits_files_when_no_rows(isolated_workspace):
+    """A session with only an assessment + close-record (no EF/precheck/walks/
+    deliberation/FR-disp) produces no L5 files at all."""
+    _run_cli_in(isolated_workspace, [
+        "submit", "assessment", "--payload",
+        json.dumps({"state": "L5 absence-fixture state", "agenda": ["L5 absence agenda"]}),
+    ])
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "L5 absence close-record", "items": []}),
+    ])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180", "--write"])
+    assert res["rc"] == 0, res
+    out_dir = isolated_workspace / res["out"]["out_dir"]
+    for name in ("05-engine-feedback.md", "06-counterfactuals.md",
+                 "07-fr-dispositions.md", "08-prechecks.md", "09-chain-walks.md"):
+        assert not (out_dir / name).exists(), f"unexpected L5 file {name} on absence-fixture"
+
+
+def test_l5_session_export_reconciles_stale_files(isolated_workspace):
+    """If a prior export wrote 05-engine-feedback.md and the substrate row was
+    deleted before the next export, the rerun must remove the stale file."""
+    out_dir = isolated_workspace / "provenance" / "180-export-fixture"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stale = out_dir / "05-engine-feedback.md"
+    stale.write_text("# stale L5 file from prior export — substrate row no longer exists\n")
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "L5 reconciliation fixture close-record", "items": []}),
+    ])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180", "--write"])
+    assert res["rc"] == 0, res
+    assert not stale.exists()
+    deleted = res["out"]["l5_files_deleted"]
+    assert any(d.endswith("05-engine-feedback.md") for d in deleted), res
+
+
+def test_l5_session_write_triggers_issues_and_spec_versions_regen(isolated_workspace):
+    """`selvedge export --session N --write` must regenerate workspace-wide
+    open-issues/index.md and specifications/_versions.md as part of the close-
+    ceremony command, so close commits everything in one shot."""
+    _run_cli_in(isolated_workspace, [
+        "submit", "issue", "--payload",
+        json.dumps({"alias": "OI-S180-9", "title": "L5 trigger fixture issue", "priority": "MEDIUM"}),
+    ])
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "L5 trigger fixture close", "items": []}),
+    ])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180", "--write"])
+    assert res["rc"] == 0, res
+    issues_index = isolated_workspace / "open-issues" / "index.md"
+    spec_index = isolated_workspace / "specifications" / "_versions.md"
+    assert issues_index.exists(), "issues regen did not run alongside --session N --write"
+    assert spec_index.exists(), "spec_versions regen did not run alongside --session N --write"
+    assert "OI-S180-9" in issues_index.read_text()
+    spec_text = spec_index.read_text()
+    assert "Spec versions" in spec_text
+    assert "| Spec |" in spec_text
+    assert res["out"]["issues_export"]["dry_run"] is False
+    assert res["out"]["spec_versions_export"]["dry_run"] is False
+
+
+def test_l5_session_dry_run_does_not_write_workspace_indexes(isolated_workspace):
+    """Dry-run --session must not land issues/index.md or specifications/_versions.md."""
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "L5 dry-run fixture close", "items": []}),
+    ])
+    res = _run_cli_in(isolated_workspace, ["export", "--session", "180"])
+    assert res["rc"] == 0, res
+    assert not (isolated_workspace / "open-issues").exists()
+    assert not (isolated_workspace / "specifications" / "_versions.md").exists()
+    assert res["out"]["issues_export"]["dry_run"] is True
+    assert res["out"]["spec_versions_export"]["dry_run"] is True
+
+
+def test_l5_session_export_idempotent(isolated_workspace):
+    """Running export --session N --write twice must produce identical files
+    on the second run (deterministic ordering, no live timestamps in body)."""
+    _run_cli_in(isolated_workspace, [
+        "submit", "engine-feedback", "--payload",
+        json.dumps({"flag": "observation",
+                    "body_md": "**l5-idempotence:** body content for idempotence test."}),
+    ])
+    _run_cli_in(isolated_workspace, [
+        "submit", "close-record", "--payload",
+        json.dumps({"summary": "L5 idempotence fixture close", "items": []}),
+    ])
+    r1 = _run_cli_in(isolated_workspace, ["export", "--session", "180", "--write"])
+    assert r1["rc"] == 0, r1
+    out_dir = isolated_workspace / r1["out"]["out_dir"]
+    snapshot = {p.name: p.read_text() for p in out_dir.glob("*.md")}
+    issues_index = isolated_workspace / "open-issues" / "index.md"
+    spec_index = isolated_workspace / "specifications" / "_versions.md"
+    snapshot["__issues_index"] = issues_index.read_text() if issues_index.exists() else ""
+    snapshot["__spec_index"] = spec_index.read_text() if spec_index.exists() else ""
+    r2 = _run_cli_in(isolated_workspace, ["export", "--session", "180", "--write"])
+    assert r2["rc"] == 0, r2
+    rerun = {p.name: p.read_text() for p in out_dir.glob("*.md")}
+    rerun["__issues_index"] = issues_index.read_text() if issues_index.exists() else ""
+    rerun["__spec_index"] = spec_index.read_text() if spec_index.exists() else ""
+    assert snapshot == rerun, "L5 export was not idempotent across reruns (per-session or workspace-wide indexes)"
