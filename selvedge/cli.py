@@ -29,6 +29,7 @@ import json
 import sys
 from typing import Optional
 
+from .clone_cmd import cmd_clone_substrate
 from .errors import SelvedgeError
 from .export import cmd_export
 from .precheck import cmd_precheck
@@ -111,6 +112,24 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     p_rec = sub.add_parser("recover", help="Reclaim expired work_item leases.")
     p_rec.set_defaults(fn=cmd_recover)
+
+    p_clone = sub.add_parser(
+        "clone-substrate",
+        help="Create a transient substrate clone for subagent dispatch (L2b, DV-S081-1, OI-S081-2).",
+        description=(
+            "Copy the primary substrate to a tempdir clone via "
+            "sqlite3.Connection.backup(). The orchestrator hands the printed "
+            "path to a subagent via SELVEDGE_DB_PATH=<path> so subagent writes "
+            "(including accidental destructive ops) hit the clone, not the "
+            "primary. Cleanup of the clone is the orchestrator's responsibility."
+        ),
+    )
+    p_clone.add_argument(
+        "--to",
+        default=None,
+        help="Destination path; default is a fresh tempfile via tempfile.mkstemp.",
+    )
+    p_clone.set_defaults(fn=cmd_clone_substrate)
 
     p_restore = sub.add_parser(
         "restore",

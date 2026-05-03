@@ -97,6 +97,18 @@ After deliberation, spawn a **capture subagent** to read each perspective's body
 
 The two parts share authority shape but defend distinct failure modes. Part one prevents mid-session commits that fragment provenance and bypass the export-then-commit handshake. Part two is the OI-S180-1 step-5 remediation: the S180 substrate wipe was a subagent running `bin/selvedge init --force` against the live primary substrate and unlinking S001–S179 of recorded session state. The L1a init-guard (selvedge/init_cmd.py, S082 DV-S081-1) refuses `--force` against a substrate carrying any `sessions` row and demands `--really-force` as the deliberate destructive override; this prompt-clause is the discipline-layer twin to the substrate-layer refusal and extends defense to migrate/sqlite-mutation/file-unlink paths the L1a guard does not cover. Both clauses are operator/agent-policed at prompt-authoring time; the harness does not gate subagent dispatch on boilerplate presence at engine-v51. If a future calibration-EF names a subagent commit, init/migrate/sqlite-mutation, or `state/selvedge.sqlite*` unlink that landed despite this clause, the next session opens a gate-promotion `OI` toward harness-side enforcement (subagent prompt linter or shell-shim refusal scoped to subagent shells).
 
+**L2b subagent tempdir-clone — substrate-dispatch upgrade to part two (cites DV-S081-1, OI-S081-2, S186).** When a subagent dispatch needs substrate access at all, the orchestrator should clone the primary first and hand the clone path to the subagent rather than pointing it at the live primary. The clone is a transient, transaction-consistent copy via `sqlite3.Connection.backup()`; subagent writes (including a part-two violation that lands despite the boilerplate) hit the clone and never reach the primary.
+
+```sh
+CLONE=$(bin/selvedge clone-substrate)
+# subagent prompt then includes:
+#   "Use SELVEDGE_DB_PATH=<clone> when running bin/selvedge ...; the orchestrator
+#    will re-execute warranted writes against the primary after you return."
+rm -f "$CLONE"  # cleanup after subagent returns
+```
+
+If the subagent's work warrants substrate writes, the orchestrator re-executes those writes against the primary in-band after the subagent returns — the clone is a scratch surface, not a write-back log. Reserve the clone-handoff for subagents that read substrate state (perspective subagents reading specs, capture subagent reading deliberation state, reviewer subagent inspecting decisions); pure file-edit subagents that never touch substrate need no clone. Substrate-side enforcement of the SELVEDGE_DB_PATH=<clone> handoff is impossible because the orchestrator dispatches by typing into the prompt; this is operator/agent-policed at prompt-authoring time, same authority shape as parts one and two. SELVEDGE_READONLY env-var guard remains advisory-only per DV-S081-1.
+
 ### Seal-time deliberation-grading via typed substrate (mandatory; T-36, DV-S180-1, supersedes DV-S159-1)
 
 Every sealed deliberation must carry at least one `deliberation_counterfactuals` row before `bin/selvedge submit deliberation-seal` admits the seal. T-36 (engine-v50, migration 040) refuses `deliberation-seal` when `COUNT(deliberation_counterfactuals WHERE deliberation_id=?)=0`; the receipt-pattern is the substrate proof per DV-S176-1 lesson (when discipline depends on the agent reaching for a tool the substrate could dispatch automatically, ship the substrate dispatch). The prior `seal-grade:` engine_feedback prefix-row clause shipped at DV-S159-1 is superseded; do not author new `seal-grade:` engine_feedback rows.
