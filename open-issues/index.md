@@ -4,12 +4,6 @@ Issues live in the `issues` substrate table. The files below are a
 deterministic export from substrate rows; do not hand-edit. Use
 `bin/selvedge submit issue` and `submit issue-disposition` to mutate.
 
-## Open
-
-| Alias | Priority | Status | Title |
-|-------|----------|--------|-------|
-| [OI-S192-1](OI-S192-1.md) | HIGH | open | One-shot historical-insight harvest from pre-S076 + pre-S180 markdown into current substrate as engine_feedback rows + fresh OIs. |
-
 ## Resolved
 
 | Alias | Resolved-in | Title |
@@ -24,3 +18,4 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S081-8](resolved/OI-S081-8.md) | S082 | Update prompts/development.md §4 subagent-discipline boilerplate to forbid init/migrate/sqlite-mutation against primary substrate per OI-S180-1 step 5 |
 | [OI-S083-1](resolved/OI-S083-1.md) | S190 | Deliberate proactive substrate-canonical reminder pathway: PreToolUse non-blocking hint vs file-header marker vs CLAUDE.md pin to close the tool-selection gap surfaced at EF-S083-1. |
 | [OI-S180-1](resolved/OI-S180-1.md) | S189 | Substrate wipe via subagent init --force; S001-S179 substrate state lost; manual rebuild from markdown exports + subagent destructive-op hardening required. |
+| [OI-S192-1](resolved/OI-S192-1.md) | S193 | One-shot historical-insight harvest from pre-S076 + pre-S180 markdown into current substrate as engine_feedback rows + fresh OIs. |
