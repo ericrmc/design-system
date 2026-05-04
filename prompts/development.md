@@ -1,4 +1,4 @@
-# Self-development application (engine-v54)
+# Self-development application (engine-v55)
 
 You are running the Selvedge engine on its own development. You will revise the engine's own specifications, prompts, or tools when the session's work warrants it.
 
@@ -403,6 +403,53 @@ If a choice is lifted, submit the `A-NNN` row first (`bin/selvedge submit assump
 **Promotion trigger to substrate gate.** If a future session-close lands without an audit row AND a downstream session opens a calibration-EF naming the prior session as having shipped on an unlifted load-bearing assumption, the next session opens a gate-promotion `OI` and the engine ships a T-NN refusing `session-close` on audit-row absence. This is the v2 graduation path; the typed-observation→gate progression follows DV-S152-1's typed-conflict-primitive precedent.
 
 **Scope limits (cites C-1 of D-21).** This audit covers session-close, not deliberation-seal. The deliberation-seal sibling — single-frame counterfactual grading — ships in §4 as `Seal-time deliberation-grading` per DV-S159-1 (closing OI-S154-5 by-mechanism); the two clauses are coordinated but mechanically distinct (different trigger, different actor, different evidence shape).
+
+### Prospective-scoping discipline (mandatory; T-41, DV-S199-1, OI-S196-5)
+
+The §8.5 audit-step is retrospective: it lifts choices made *during* the session into AR rows. Prospective-scoping is forward-looking: it surfaces assumptions *implied by the artefacts the session produced* that aren't already registered. Disaster-recovery arc retrospective §6.1 measured 11 of 25 assumptions (44%) as registered-vs-implicit gap-closures discovered under pressure — the dominant mode of new-assumption discovery in external-problem applications. Prospective-scoping is the kernel response.
+
+**Discipline.** When the session has produced a substantive artefact (decision_v2 with `kind` in `substantive | schema_migration`, OR ≥1 spec_version), review the produced artefacts before submitting `close-record` for *implications*: assumptions the artefact's existence implies that aren't already registered. Three engine-self implication patterns:
+
+- **schema-adjacency** — this primitive depends on existing tables; what behaviour-assumptions do those tables carry that aren't named?
+- **caller-implications** — future code that calls this primitive will use it in patterns implied by but not constrained by the API; what use-shape assumptions are implicit?
+- **migration-implications** — this migration changes a CHECK admit set / column NOT NULL / table shape; what queries depend on the prior state in ways not surfaced?
+
+For each implication that surfaces, lift it via `bin/selvedge submit assumption` with `origin_decision` set to the session DV (path A receipt). For sessions where the review surfaces no implications (legitimately empty stance-space or all-covered-by-existing-AR-rows), submit one cheap-exit `engine_feedback` row.
+
+**Receipt mechanism.** T-41 substrate-gate at `close-record` submit fires when the session produced a substantive artefact AND has neither (a) ≥1 `assumption_ledger` row whose `origin_decision_object_id` points to a DV from this session, NOR (b) ≥1 `engine_feedback` row whose `body_md` begins (case-insensitive) with `scoping-pass:`. Refusal is `E_REFUSAL_T41` carrying the recovery hint.
+
+**Cheap-exit nil_attestation shape (mirrors T-36).**
+
+```sh
+bin/selvedge submit engine-feedback --payload '{
+  "flag": "observation",
+  "body_md": "**scoping-pass: 0 — exclusions applied: <which artefact-classes reviewed>**. <patterns considered>; <why no AR rows lifted>."
+}'
+```
+
+Two formulaic-compliance guards on the EF body content:
+
+1. The body must contain the literal substring `exclusions applied:` — bare `scoping-pass: 0` is refused.
+2. When the session produced a `kind in (substantive, schema_migration)` DV, the nil body must mention ≥1 of `schema-adjacency | caller-implications | migration-implications` by name.
+
+Substantive lift shape (path A or path B with named patterns):
+
+```sh
+bin/selvedge submit engine-feedback --payload '{
+  "flag": "observation",
+  "body_md": "**scoping-pass: <count>** — patterns considered: <list>; lifts: <AR-S<wno>-<n> aliases>; <one-line rationale>."
+}'
+```
+
+**Authority.** Substrate-gated at submit-handler layer in `_submit_close_record` (selvedge/submit/close.py); the gate fires before INSERT and rolls back the close-record on refusal. Pure-meta sessions whose only writes are FR/EF dispositions admit close-record without scoping-pass receipt (artefact-gated applicability per D-7 C-3 convergence).
+
+**Bootstrap (S199 own ship).** S199 ships the gate; S199 close-record itself triggers the gate. Discipline applies to S199's own ship via a scoping-pass: EF body authored before close-record submit.
+
+**Watch-triggers per DV-S199-1 minorities preserved.** M-1 P-1 typed-substrate-from-day-one: v2 promotion to typed `scoping_passes` table if calibration-EFs surface prefix brittleness, queryable-count need, or review-distinguishing failure across 2+ sessions. M-2 P-2 no-gate prose-only-§6-Produce: watch-trigger if formulaic compliance surfaces in 2+ calibration EFs (M-1-of-D-23/D-29 receipt-presence-not-epistemic-adequacy concern).
+
+**Plan-time discipline (cites P-2 stance preserved, partial adoption).** The gate is end-of-session backstop, not the discipline. The primary discipline is to lift AR rows *while* authoring decisions / spec_versions / migrations — not at close. The close-time gate catches what plan-time discipline missed; it does not substitute for it. Mirrors §8.5 plan-time discipline language.
+
+**Promotion trigger to v2.** Same DV-S152-1 typed-observation→gate progression: a future session whose calibration-EF names prefix brittleness OR queryable-count need OR review-distinguishing failure opens a gate-promotion `OI` to ship migration NN adding typed `scoping_passes` table + `scoping_implications` child rows + closed `pattern_kind` CHECK enum (P-1 stance fully adopted at v2).
 
 ## 9. Close
 
