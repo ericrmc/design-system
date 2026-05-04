@@ -40,7 +40,7 @@ def _sha256(p: Path) -> str:
     return h.hexdigest()
 
 
-def _run(env: dict, args: list[str], cwd: Path | None = None) -> dict:
+def _run_raw(env: dict, args: list[str], cwd: Path | None = None) -> dict:
     proc = subprocess.run(
         [str(BIN), *args],
         capture_output=True,
@@ -57,6 +57,39 @@ def _run(env: dict, args: list[str], cwd: Path | None = None) -> dict:
         except json.JSONDecodeError:
             parsed = {"_raw": out}
     return {"rc": proc.returncode, "out": parsed, "err": err}
+
+
+def _run(env: dict, args: list[str], cwd: Path | None = None) -> dict:
+    """S195 DV-S195-1 T-38: auto-inject precheck_nonce when args look like
+    `submit assessment --payload <json>` and payload lacks the nonce."""
+    if (
+        len(args) >= 4 and args[0] == "submit" and args[1] == "assessment"
+        and args[2] == "--payload"
+    ):
+        try:
+            payload = json.loads(args[3])
+        except json.JSONDecodeError:
+            payload = None
+        if isinstance(payload, dict) and "precheck_nonce" not in payload:
+            ctx = _run_raw(env, ["context", "--print"], cwd=cwd)
+            # Review-finding S195 iter-1 high fix: loud-fail on context CLI
+            # failure (silent skip would mask real bugs in fixtures).
+            assert ctx["rc"] == 0, (
+                f"_run: context CLI required for assessment-submit injection "
+                f"but failed: rc={ctx['rc']} err={ctx['err']!r}"
+            )
+            raw_out = ""
+            if isinstance(ctx["out"], dict) and "_raw" in ctx["out"]:
+                raw_out = ctx["out"]["_raw"]
+            import re as _re
+            m = _re.search(r"nonce=(\S+)", raw_out)
+            assert m, (
+                f"_run: context CLI succeeded but no nonce parsed: "
+                f"raw_out={raw_out!r}"
+            )
+            payload["precheck_nonce"] = m.group(1)
+            args = ["submit", "assessment", "--payload", json.dumps(payload)]
+    return _run_raw(env, args, cwd=cwd)
 
 
 @pytest.fixture

@@ -30,6 +30,7 @@ import sys
 from typing import Optional
 
 from .clone_cmd import cmd_clone_substrate
+from .context_cmd import cmd_context
 from .errors import SelvedgeError
 from .export import cmd_export
 from .precheck import cmd_precheck
@@ -209,6 +210,25 @@ def main(argv: Optional[list[str]] = None) -> int:
         help="Emit the rendered context body to stdout in addition to the receipt summary.",
     )
     p_pre.set_defaults(fn=cmd_precheck)
+
+    p_ctx = sub.add_parser(
+        "context",
+        help="Render assessment-precheck context pack and write a single-use receipt (T-38, S195 DV-S195-1).",
+    )
+    p_ctx.add_argument(
+        "--target",
+        dest="target",
+        action="append",
+        default=[],
+        help="Target alias (repeatable; narrows or adds to the substrate-presented floor).",
+    )
+    p_ctx.add_argument(
+        "--print",
+        dest="print_stdout",
+        action="store_true",
+        help="Emit the rendered context-pack body to stdout in addition to the receipt summary.",
+    )
+    p_ctx.set_defaults(fn=cmd_context)
 
     p_schema = sub.add_parser("schema", help="Print substrate schema (live read from sqlite_master).")
     p_schema.add_argument("table", nargs="?", default=None, help="Optional table name to focus on.")

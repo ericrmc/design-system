@@ -56,7 +56,27 @@ def _bootstrap_peer(peer_root: Path) -> Path:
     return peer_root
 
 
+def _peer_context_nonce(peer_root: Path) -> str:
+    """Run `bin/selvedge context --print` on the peer to obtain a single-use
+    nonce; required for assessment-submit per S195 DV-S195-1 T-38."""
+    proc = _run_external_cli(
+        ["context", "--print"],
+        extra_env={
+            "SELVEDGE_WORKSPACE": str(peer_root),
+            "SELVEDGE_MIGRATIONS_DIR": str(WORKSPACE / "state" / "migrations"),
+        },
+    )
+    assert proc.returncode == 0, f"peer context failed: {proc.stderr}"
+    summary_line = next((ln for ln in reversed(proc.stdout.strip().splitlines()) if ln.strip()), "")
+    import re as _re
+    m = _re.search(r"nonce=(\S+)", summary_line)
+    assert m, f"could not parse nonce from peer context output: {summary_line!r}"
+    return m.group(1)
+
+
 def _peer_submit(peer_root: Path, kind: str, payload: dict) -> dict:
+    if kind == "assessment" and "precheck_nonce" not in payload:
+        payload = {**payload, "precheck_nonce": _peer_context_nonce(peer_root)}
     proc = _run_external_cli(
         ["submit", kind, "--payload", json.dumps(payload)],
         extra_env={

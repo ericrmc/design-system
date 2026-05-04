@@ -227,75 +227,14 @@ def _orient_sections(conn: sqlite3.Connection) -> dict:
     ]
     out["untriaged_feedback_truncated"] = len(feedback_rows) > 20
 
-    # Relevant historical context (anchored): surface engine_feedback rows
-    # whose typed-FK anchors (engine_feedback_anchors) land on entities
-    # the agent is actively considering — active spec_versions and recent
-    # decision_v2 rows from the last 5 sessions. Sealed at S194 DV-S194-1
-    # (option E half of the C+E concurrent ship). FK-join not substring-
-    # match per P-3 schema-correctness threshold + P-1 chain-walk-graph
-    # integrity. Cap at 10 rows per orient run to prevent surface re-bloat
-    # (P-4 ergonomic risk #3). v1 anchor-target set is intentionally
-    # narrow; widening to issues/FRs deferred per FR-S194-3 forward-
-    # direction (issues table lacks object_id; FR-aliases not registered
-    # in objects.alias at engine-v52). The cap matters: when the agent's
-    # current-session-decision-set is large the surface stays scannable.
-    # v1 anchor-target set: every sealed decision_v2 + every active
-    # spec_version. The cap-of-10 + ORDER BY feedback_id DESC keeps the
-    # surface scannable; no recency filter because operator-named
-    # purpose ("relevant knowledge in agent's context") includes older
-    # foundational decisions like DV-S081-1 substrate-loss-defense that
-    # would otherwise filter out under a last-N-sessions window. Tested
-    # empirically at S194: 40% of S193-backfill anchors targeted
-    # DV-S081-1 (S081, far older than last-5); excluding them forfeited
-    # the operator-stated metric.
-    _ANCHOR_TARGET_SUBQUERY = (
-        "  SELECT object_id FROM spec_versions WHERE status='active' "
-        "  UNION "
-        "  SELECT object_id FROM decisions_v2 "
-    )
-    relevant_history_rows = conn.execute(
-        "SELECT DISTINCT efa.feedback_id, efa.anchor_role, "
-        "       o_anchor.alias AS anchor_alias, "
-        "       o_ef.alias AS ef_alias, "
-        "       ef.flag AS ef_flag, "
-        "       ef.body_md AS ef_body_md, "
-        "       s.workspace_session_no AS surfaced_in "
-        "FROM engine_feedback_anchors efa "
-        "JOIN engine_feedback ef ON ef.feedback_id=efa.feedback_id "
-        "JOIN objects o_ef ON o_ef.object_id=ef.object_id "
-        "JOIN objects o_anchor ON o_anchor.object_id=efa.anchor_object_id "
-        "JOIN sessions s ON s.session_id=ef.session_id "
-        f"WHERE efa.anchor_object_id IN ({_ANCHOR_TARGET_SUBQUERY}) "
-        "  AND ef.disposition IS NULL "
-        "ORDER BY efa.feedback_id DESC LIMIT 10"
-    ).fetchall()
-
-    out["relevant_history_anchored"] = [
-        {
-            "ef_alias": r["ef_alias"],
-            "anchor_alias": r["anchor_alias"],
-            "anchor_role": r["anchor_role"],
-            "surfaced_in": r["surfaced_in"],
-            "head": _first_nonempty_line(r["ef_body_md"]),
-        }
-        for r in relevant_history_rows
-    ]
-    # Total count (no LIMIT) for the markdown renderer's elision hint.
-    # Counts (feedback_id, anchor_role, anchor_object_id) tuples to match
-    # what the LIMIT 10 query is capping — one EF with two anchors yields
-    # two surface rows, two count units. This keeps the elision math
-    # consistent with what the agent actually sees in the orient packet.
-    # Review-finding S194 iteration-1 high: prior version counted DISTINCT
-    # feedback_id which conflated EFs with anchor-edges, producing
-    # misleading "N more rows elided" hints.
-    rh_total_row = conn.execute(
-        "SELECT COUNT(*) AS n "
-        "FROM engine_feedback_anchors efa "
-        "JOIN engine_feedback ef ON ef.feedback_id=efa.feedback_id "
-        f"WHERE efa.anchor_object_id IN ({_ANCHOR_TARGET_SUBQUERY}) "
-        "  AND ef.disposition IS NULL"
-    ).fetchone()
-    out["relevant_history_total"] = rh_total_row["n"] if rh_total_row else 0
+    # S195 DV-S195-1: relocated context-surfacing from orient (where agents
+    # skim under context pressure) to assessment-time (substrate-enforced
+    # T-38 refusal via bin/selvedge context). The orient packet stays light:
+    # workspace state + recent closes + undisposed FRs + open issues + active
+    # specs + untriaged feedback. Substrate-presented context-pack queries
+    # engine_feedback_anchors at assessment-precheck time; the typed-FK graph
+    # built by S194 DV-S194-1 still flows through chain-walks, but is no
+    # longer surfaced here.
 
     out["unapplied_migrations"] = []
     return out
@@ -446,30 +385,6 @@ def _orient_markdown(packet: dict) -> str:
     else:
         lines.append("(none)")
     lines.append("")
-
-    rh = packet.get("relevant_history_anchored", []) or []
-    rh_total = packet.get("relevant_history_total", 0)
-    if rh:
-        lines.append(f"## Relevant historical context (anchored) ({len(rh)} of {rh_total})")
-        lines.append("")
-        lines.append("| EF | Anchor | Role | Surfaced | Head |")
-        lines.append("|----|--------|------|----------|------|")
-        for r in rh:
-            surfaced = f"S{r['surfaced_in']:03d}" if r.get("surfaced_in") is not None else ""
-            head = (r.get("head") or "").replace("|", "\\|")
-            lines.append(
-                f"| {r['ef_alias']} | {r['anchor_alias']} | {r['anchor_role']} | {surfaced} | {head} |"
-            )
-        if rh_total > len(rh):
-            lines.append("")
-            lines.append(
-                f"_{rh_total - len(rh)} more anchored harvest rows elided. "
-                "Run `bin/selvedge query \"SELECT o_ef.alias, o_anchor.alias, efa.anchor_role "
-                "FROM engine_feedback_anchors efa "
-                "JOIN objects o_ef ON o_ef.object_id=(SELECT object_id FROM engine_feedback WHERE feedback_id=efa.feedback_id) "
-                "JOIN objects o_anchor ON o_anchor.object_id=efa.anchor_object_id\"` for the full list._"
-            )
-        lines.append("")
 
     fb_total = packet.get("untriaged_feedback_total", len(packet.get("untriaged_feedback", [])))
     fb = packet.get("untriaged_feedback", [])

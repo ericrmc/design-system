@@ -32,7 +32,20 @@ def _run_cli_in(workspace: Path, args: list[str]) -> dict:
     """Variant of conftest._run_cli that points SELVEDGE_WORKSPACE at a
     custom tmp_path. Output parsing mirrors the original. We set
     COVERAGE_FILE absolutely so subprocess coverage data lands next to
-    pytest's, not in the tmp cwd where pytest-cov never sees it."""
+    pytest's, not in the tmp cwd where pytest-cov never sees it.
+
+    S195 DV-S195-1 T-38: assessment-submit requires precheck_nonce. To
+    keep test fixtures terse, this helper auto-injects a nonce by running
+    `bin/selvedge context --print` in the same workspace when the args
+    look like `submit assessment --payload <json>` and the payload does
+    not already carry `precheck_nonce`. Tests asserting T-38 refusal
+    behavior should call _run_cli_in_raw or pass payload with explicit
+    `precheck_nonce: null` to bypass injection."""
+    args = _maybe_inject_assessment_nonce(workspace, args)
+    return _run_cli_in_raw(workspace, args)
+
+
+def _run_cli_in_raw(workspace: Path, args: list[str]) -> dict:
     env = os.environ | {"SELVEDGE_WORKSPACE": str(workspace)} | _coverage_subprocess_env()
     if "COVERAGE_PROCESS_START" in env:
         env["COVERAGE_FILE"] = str(WORKSPACE / ".coverage")
@@ -50,6 +63,38 @@ def _run_cli_in(workspace: Path, args: list[str]) -> dict:
         except json.JSONDecodeError:
             payload = {"_raw": out}
     return {"rc": proc.returncode, "out": payload, "err": err}
+
+
+def _maybe_inject_assessment_nonce(workspace: Path, args: list[str]) -> list[str]:
+    if len(args) < 4 or args[0] != "submit" or args[1] != "assessment" or args[2] != "--payload":
+        return args
+    try:
+        payload = json.loads(args[3])
+    except (json.JSONDecodeError, IndexError):
+        return args
+    if "precheck_nonce" in payload:
+        return args
+    ctx = _run_cli_in_raw(workspace, ["context", "--print"])
+    # Review-finding S195 iter-1 high fix: loud-fail on context CLI failure.
+    # Prior version returned unmodified args silently which let tests pass
+    # for the wrong reason if context CLI broke. If a test wants to assert
+    # T-38 refusal behavior it should pass `precheck_nonce: null` (or use
+    # _run_cli_in_raw directly) to bypass injection.
+    assert ctx["rc"] == 0, (
+        f"_run_cli_in: context CLI required for assessment-submit injection but "
+        f"failed: rc={ctx['rc']} err={ctx['err']!r}"
+    )
+    import re as _re
+    raw_out = ""
+    if isinstance(ctx["out"], dict) and "_raw" in ctx["out"]:
+        raw_out = ctx["out"]["_raw"]
+    m = _re.search(r"nonce=(\S+)", raw_out)
+    assert m, (
+        f"_run_cli_in: context CLI succeeded but no nonce parsed from output: "
+        f"raw_out={raw_out!r}"
+    )
+    payload["precheck_nonce"] = m.group(1)
+    return ["submit", "assessment", "--payload", json.dumps(payload)]
 
 
 @pytest.fixture

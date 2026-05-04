@@ -115,74 +115,9 @@ def test_invalid_anchor_role_refused(clean_substrate):
     assert res["out"]["code"] == "E_VALIDATION"
 
 
-def test_orient_surfaces_anchored_history(clean_substrate):
-    # Anchor a harvest EF on the active spec_version, then verify orient
-    # surfaces it in relevant_history_anchored.
-    conn = sqlite3.connect(str(PRIMARY_DB))
-    try:
-        spec_alias_row = conn.execute(
-            "SELECT o.alias FROM spec_versions sv "
-            "JOIN objects o ON o.object_id=sv.object_id "
-            "WHERE sv.status='active' LIMIT 1"
-        ).fetchone()
-    finally:
-        conn.close()
-    if spec_alias_row is None:
-        # Seed substrate has no active spec yet — skip rather than fail.
-        return
-    spec_alias = spec_alias_row[0]
-
-    res = _submit_ef({
-        "flag": "observation",
-        "body_md": "historical-harvest: source=archive/test.md\n\nbody about active spec.",
-        "anchors": [{"alias": spec_alias, "role": "about"}],
-    })
-    assert res["rc"] == 0, res
-
-    orient = _run_cli(["orient", "--json"])
-    assert orient["rc"] == 0, orient
-    rh = orient["out"]["relevant_history_anchored"]
-    assert any(r["anchor_alias"] == spec_alias for r in rh), \
-        f"anchored harvest EF did not surface in orient relevant_history_anchored; got {rh!r}"
-
-
-def test_orient_total_counts_anchor_edges_not_distinct_efs(clean_substrate):
-    """Review-finding S194 iter-1 high: rh_total must count (feedback,
-    anchor_role) tuples to match the LIMIT-10 row semantics."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
-    try:
-        spec_row = conn.execute(
-            "SELECT o.alias FROM spec_versions sv "
-            "JOIN objects o ON o.object_id=sv.object_id "
-            "WHERE sv.status='active' LIMIT 1"
-        ).fetchone()
-        dv_row = conn.execute(
-            "SELECT o.alias FROM decisions_v2 dv "
-            "JOIN objects o ON o.object_id=dv.object_id LIMIT 1"
-        ).fetchone()
-    finally:
-        conn.close()
-    if spec_row is None or dv_row is None:
-        return
-    spec_alias = spec_row[0]
-    dv_alias = dv_row[0]
-
-    # One harvest EF with TWO anchors of different roles — should count as 2
-    # in relevant_history_total because the LIMIT 10 caps at 2 rows for this EF.
-    res = _submit_ef({
-        "flag": "observation",
-        "body_md": "historical-harvest: source=archive/dual.md\n\nbody.",
-        "anchors": [
-            {"alias": spec_alias, "role": "about"},
-            {"alias": dv_alias, "role": "descended_from"},
-        ],
-    })
-    assert res["rc"] == 0, res
-
-    orient = _run_cli(["orient", "--json"])
-    rh = orient["out"]["relevant_history_anchored"]
-    rh_total = orient["out"]["relevant_history_total"]
-    # The single EF contributed 2 anchor edges; both should surface and count.
-    matching = [r for r in rh if r["ef_alias"] == res["out"]["result"]["alias"]]
-    assert len(matching) == 2, f"expected 2 anchor edges for the dual-anchor EF, got {matching!r}"
-    assert rh_total >= 2, f"rh_total should count anchor edges; got {rh_total}"
+# Note: orient surfacing tests removed in S195 per DV-S195-1 — the
+# relevant_history_anchored section was relocated to assessment-time
+# (T-38 substrate-gate) per operator-named-mandate at S194-close. The
+# engine_feedback_anchors typed-FK graph is now consumed by the
+# bin/selvedge context CLI; tests for that flow live in
+# test_assessment_precheck.py.
