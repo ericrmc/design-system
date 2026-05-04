@@ -284,6 +284,19 @@ def test_multi_row_first_fails_second_passes(clean_substrate):
     assert res["rc"] == 0, res
 
 
+def test_prefix_with_markdown_bold(clean_substrate):
+    """S200 fix: body_md beginning with markdown-bold (**scoping-pass: ...**)
+    is admitted as the §8.6 spec example uses markdown-bold formatting and
+    the gate should tolerate the bold prefix."""
+    _seed_substantive_dv()
+    body = (
+        "**scoping-pass: 1** — patterns considered: schema-adjacency; "
+        "lift AR placeholder; markdown-bold prefix should be tolerated by gate."
+    )
+    res = _close_record_attempt(scoping_body=body)
+    assert res["rc"] == 0, res
+
+
 def test_unrelated_ef_does_not_satisfy_gate(clean_substrate):
     """An unrelated engine_feedback row (not starting 'scoping-pass:') does not
     satisfy the gate; refusal still fires."""

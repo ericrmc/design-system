@@ -81,7 +81,12 @@ def _scoping_pass_receipt_present(conn: sqlite3.Connection, sess_id: int) -> tup
     substantive_dv: bool | None = None
     saw_scoping_pass = False
     for ef in ef_rows:
-        body = (ef["body_md"] or "").lstrip()
+        # S200 surfaced: §8.6 spec example uses markdown-bold prefix
+        # ("**scoping-pass: ..."); strip leading whitespace + leading
+        # asterisks so the prefix check tolerates both **scoping-pass:
+        # and bare scoping-pass:. Trailing asterisks are not stripped
+        # (only the leading prefix region matters for detection).
+        body = (ef["body_md"] or "").lstrip().lstrip("*").lstrip()
         body_lower = body.lower()
         if not body_lower.startswith(_SCOPING_PASS_PREFIX):
             continue
