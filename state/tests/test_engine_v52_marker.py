@@ -138,7 +138,7 @@ def test_migration_044_bumps_engine_version_and_creates_export_manifest(isolated
         version = conn.execute(
             "SELECT value FROM workspace_metadata WHERE key='current_engine_version'"
         ).fetchone()[0]
-        assert version == "engine-v53", version
+        assert version == "engine-v54", version
 
         # export_manifest table exists with expected columns + UNIQUE(path).
         cols = {

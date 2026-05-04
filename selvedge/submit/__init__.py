@@ -59,6 +59,7 @@ from .review import (
 )
 from .session import _submit_session_close, _submit_session_open
 from .spec import _submit_spec_clause, _submit_spec_section, _submit_spec_version
+from .assumption import _submit_assumption, _submit_assumption_status_update
 from .supersession import _submit_supersession_ledger
 
 
@@ -108,6 +109,9 @@ SUBMIT_HANDLERS = {
     "harness-seal": _submit_harness_seal,
     # supersession-ledger v1 (engine-v53+, S197 closing OI-S196-2 per DV-S197-1):
     "supersession-ledger": _submit_supersession_ledger,
+    # assumption-ledger v1 (engine-v54+, S198 closing OI-S196-1 per DV-S198-1):
+    "assumption": _submit_assumption,
+    "assumption-status-update": _submit_assumption_status_update,
 }
 
 

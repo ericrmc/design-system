@@ -1,4 +1,4 @@
-# Self-development application (engine-v53)
+# Self-development application (engine-v54)
 
 You are running the Selvedge engine on its own development. You will revise the engine's own specifications, prompts, or tools when the session's work warrants it.
 
@@ -240,7 +240,57 @@ The handler resolves source/target/cite via `_resolve_alias_to_object_id` (objec
 
 **Soft-deprecation of `decision_effects.effect_kind='supersedes'` (D-S197-1 D-3).** The legacy channel remains admissible at v1 for historical replay, but **new supersession events should be recorded via `submit supersession-ledger`** rather than as `decision_effects` rows. The decision-record handler does not auto-route at v1; this is operator/agent-policed per DV-S109-1 ceremony-subtraction posture. Watch-trigger per M-1 minority (D-S197-1): if dual-channel writes persist or the ledger receives 0 inserts across N≥5 future sessions, the next session opens a gate-promotion `OI` for either hard-cutover migration (drop the `supersedes` value from `decision_effects.effect_kind` CHECK) or handler-side auto-routing.
 
-**Polymorphism via objects-FK (D-S197-1 C-1).** `source_object_id` and `target_object_id` are FKs into `objects.object_id`; no `source_kind`/`target_kind` discriminator columns. Any registered object alias (DV-/SPEC-/EF-/SL-/A-/P-N-N-/etc.) is admissible. C-4 stakeholder-event origin reference is omitted at v1; the C-4 primitive (when shipped) will add an `origin_event_id` FK column without re-shaping the existing schema.
+**assumption-ledger submit kinds (engine-v54, DV-S198-1, OI-S196-1).** The workspace-scope assumption-register that §8.5 close-time audit-step has been referencing as `A-NNN` since DV-S155-1 ships at S198 as the typed `assumption_ledger` primitive. Use the `assumption` submit kind to lift a load-bearing interpretive choice or arc-evidence assumption into the substrate; use `assumption-status-update` to transition status with a citing decision.
+
+```sh
+bin/selvedge submit assumption --payload '{
+  "statement": "<8-480 char statement of the assumption>",
+  "status": "unverified | assumed | active-with-conflict | closed | superseded | invalidated",
+  "sub_type": "plan-vs-resource | contested-authority | rolling-renewal",
+  "action_commitment": "<8-480 char>",
+  "both_source_citation": "<8-480 char>",
+  "resolution_path": "<8-480 char>",
+  "expiry_trigger": "<8-480 char>",
+  "basis": "<optional 8-480 char basis citation atom>",
+  "origin_decision": "<optional DV alias of the decision that lifted this>"
+}'
+```
+
+The handler defaults `status` to `unverified` when omitted; the four conflict atoms (`action_commitment` + `both_source_citation` + `resolution_path` + `expiry_trigger`) plus `sub_type` are required when `status='active-with-conflict'` per the DV-S008-1 four-field discipline (CHECK at SQL plus handler-side actionable refusal naming missing fields). `sub_type` is refused with non-conflict statuses. The handler resolves `origin_decision` via `_resolve_alias_to_object_id` and registers the row as a first-class object with alias `AR-S<wno>-<seq>` so it participates in chain-walks T-32. Refusals: `E_VALIDATION` (missing/bad enum, conflict-discipline incomplete), `E_REFUSAL_T01` (unresolved origin_decision), `E_ATOM_LENGTH` (atom outside 8-480).
+
+```sh
+bin/selvedge submit assumption-status-update --payload '{
+  "assumption": "AR-S<wno>-<seq>",
+  "new_status": "<closed enum value>",
+  "citing_decision": "DV-S<wno>-<n>",
+  "sub_type": "<required when transitioning TO active-with-conflict>",
+  "action_commitment": "<required when transitioning TO active-with-conflict>",
+  "both_source_citation": "...",
+  "resolution_path": "...",
+  "expiry_trigger": "..."
+}'
+```
+
+The transition handler refuses without `citing_decision` (the cited decision IS the audit trail per DV-S198-1 D-3 reject-history-table synthesis; replay walks `decisions_v2 + decision_supports + effects` against `assumption.object_id`). Transitions TO `active-with-conflict` carry the four-field discipline forward. The handler refuses if the alias resolves to a non-assumption object (`E_NOT_FOUND`).
+
+**Status enum semantics (closed CHECK; DV-S198-1 D-1 P-1 stance adopted; P-2/P-3 9-value sets preserved as M-2/M-3 minority).**
+- `unverified` — registered, pending verification action.
+- `assumed` — taken on faith; no active verification planned.
+- `active-with-conflict` — load-bearing; multi-source disagreement requires sub_type + four conflict atoms (DV-S008-1).
+- `closed` — verified/resolved; closure-by-convergence/completion/etc.
+- `superseded` — replaced by a newer assumption (chain via `supersession_ledger` SL alias).
+- `invalidated` — disproven by direct evidence.
+
+**Sub-type enum (closed CHECK; DV-S198-1 D-2 P-1+P-3 stance adopted; P-2 use-case-discriminator preserved as M-1 minority).**
+- `plan-vs-resource` — plan-side commitment vs resource-side capacity disagreement.
+- `contested-authority` — multi-actor authority claims contested.
+- `rolling-renewal` — rolling-snapshot status with explicit non-SR-emitting refresh discipline.
+
+**Watch-triggers (DV-S198-1 minorities preserved).** M-1 status-mutation drift (agents flipping status without citing decisions) opens gate-promotion OI for supersession-only transitions; M-3 replay-via-decisions insufficiency (calibration-EF naming "I cannot reconstruct prior status of AR-S... from substrate alone") opens gate-promotion OI for dedicated `assumption_status_changes` history table per P-3 named edit #4.
+
+**§8.5 audit-step alias migration.** When lifting load-bearing interpretive choices via the close-time audit, cite the new `AR-S<wno>-<seq>` alias rather than the legacy `A-NNN` shorthand. The §8.5 clause's pre-S198 `A-NNN` references are read as `AR-S<wno>-<seq>` going forward; legacy disaster-recovery markdown `A-NNN` rows are NOT auto-imported as typed rows per DV-S189-1 markdown-only-recovery binding.
+
+**Polymorphism via objects-FK (D-S197-1 C-1).** `source_object_id` and `target_object_id` are FKs into `objects.object_id`; no `source_kind`/`target_kind` discriminator columns. Any registered object alias (DV-/SPEC-/EF-/SL-/AR-/A-/P-N-N-/etc.) is admissible. C-4 stakeholder-event origin reference is omitted at v1; the C-4 primitive (when shipped) will add an `origin_event_id` FK column without re-shaping the existing schema.
 
 ## 7. Validate — and run the coding review loop on any code change
 
