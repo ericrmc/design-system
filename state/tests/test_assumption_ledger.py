@@ -214,12 +214,14 @@ def test_status_update_admit_basic(clean_substrate):
         "assumption": alias,
         "new_status": "closed",
         "citing_decision": dv_alias,
+        "closure_shape": "completion",
     })
     assert upd["rc"] == 0, upd
     r = upd["out"]["result"]
     assert r["from_status"] == "unverified"
     assert r["to_status"] == "closed"
     assert r["citing_decision_object_id"] is not None
+    assert r["closure_shape"] == "completion"
 
 
 def test_status_update_requires_citing_decision(clean_substrate):
@@ -300,13 +302,24 @@ def test_status_update_alias_not_assumption_refused(clean_substrate):
 
 
 def test_all_six_statuses_admit(clean_substrate):
-    """Every value in the closed 6-status enum should admit at insert."""
-    statuses = ["unverified", "assumed", "closed", "superseded", "invalidated"]
+    """Every value in the closed 6-status enum should admit at insert.
+
+    DV-S201-1 closure-shape coupling: status='closed' requires closure_shape;
+    status='superseded' admits NULL or 'supersession'; others forbid it.
+    """
+    payloads = [
+        {"status": "unverified"},
+        {"status": "assumed"},
+        {"status": "closed", "closure_shape": "completion"},
+        {"status": "superseded"},
+        {"status": "invalidated"},
+    ]
     # active-with-conflict tested separately because it requires four atoms
-    for st in statuses:
+    for extra in payloads:
+        st = extra["status"]
         res = _submit_assumption({
             "statement": f"Admit-test for status={st}: closed enum should admit this base value at insert per D-6 P-1.",
-            "status": st,
+            **extra,
         })
         assert res["rc"] == 0, (st, res)
         assert res["out"]["result"]["status"] == st
@@ -334,11 +347,13 @@ def test_status_update_out_of_conflict_clears_sub_type(clean_substrate):
         "assumption": alias,
         "new_status": "closed",
         "citing_decision": dv_alias,
+        "closure_shape": "convergence",
     })
     assert upd["rc"] == 0, upd
     r = upd["out"]["result"]
     assert r["from_status"] == "active-with-conflict"
     assert r["to_status"] == "closed"
+    assert r["closure_shape"] == "convergence"
 
     # Verify sub_type was cleared at the row level.
     conn = sqlite3.connect(str(PRIMARY_DB))
@@ -364,3 +379,384 @@ def test_alias_sequence_per_session(clean_substrate):
         aliases.append(res["out"]["result"]["alias"])
     seq_nums = [int(a.rsplit("-", 1)[1]) for a in aliases]
     assert seq_nums == [1, 2, 3], aliases
+
+
+# ============================================================================
+# DV-S201-1 closure-shape coupling tests (migration 051).
+# ============================================================================
+
+
+def test_init_closed_without_closure_shape_refused(clean_substrate):
+    res = _submit_assumption({
+        "statement": "Init with status=closed and no closure_shape should be refused per DV-S201-1.",
+        "status": "closed",
+    }, expect_ok=False)
+    assert res["rc"] != 0
+    assert res["out"]["code"] == "E_VALIDATION"
+    assert "closure_shape" in res["out"]["detail"]
+
+
+def test_init_closed_with_closure_shape_admits(clean_substrate):
+    for shape in ("convergence", "completion", "containment-resolved",
+                  "supersession", "stable-held"):
+        res = _submit_assumption({
+            "statement": f"Init closed-with-shape={shape}: 5 canonical shapes all admit at insert per DV-S201-1.",
+            "status": "closed",
+            "closure_shape": shape,
+        })
+        assert res["rc"] == 0, (shape, res)
+        assert res["out"]["result"]["closure_shape"] == shape
+
+
+def test_closure_shape_enum_rejection(clean_substrate):
+    res = _submit_assumption({
+        "statement": "Bogus closure_shape value should be refused with E_VALIDATION naming the closed enum.",
+        "status": "closed",
+        "closure_shape": "rolling-cycle-fudge",
+    }, expect_ok=False)
+    assert res["rc"] != 0
+    assert res["out"]["code"] == "E_VALIDATION"
+    assert "closure_shape" in res["out"]["detail"]
+
+
+def test_unverified_with_closure_shape_refused(clean_substrate):
+    res = _submit_assumption({
+        "statement": "Unverified status with closure_shape should be refused (premature labelling).",
+        "status": "unverified",
+        "closure_shape": "convergence",
+    }, expect_ok=False)
+    assert res["rc"] != 0
+    assert res["out"]["code"] == "E_VALIDATION"
+    assert "closure_shape" in res["out"]["detail"]
+
+
+def test_assumed_with_closure_shape_refused(clean_substrate):
+    res = _submit_assumption({
+        "statement": "Assumed status with closure_shape should be refused (premature labelling per DV-S201-1).",
+        "status": "assumed",
+        "closure_shape": "completion",
+    }, expect_ok=False)
+    assert res["rc"] != 0
+    assert res["out"]["code"] == "E_VALIDATION"
+
+
+def test_active_with_conflict_with_closure_shape_refused(clean_substrate):
+    res = _submit_assumption({
+        "statement": "active-with-conflict with closure_shape should be refused per DV-S201-1 status-shape coupling.",
+        "status": "active-with-conflict",
+        "sub_type": "plan-vs-resource",
+        "action_commitment": "Plan §X adopts envelope Y; under-budgeting is the asymmetric error this round.",
+        "both_source_citation": "Source A reports value U via method P; Source B reports value V via method Q.",
+        "resolution_path": "Day-N reconciliation pass W cross-matches; closure requires deduplicated count Z.",
+        "expiry_trigger": "Day-N checkpoint W; on no resolution, escalate to central authority per response-plan.",
+        "closure_shape": "convergence",
+    }, expect_ok=False)
+    assert res["rc"] != 0
+    assert res["out"]["code"] == "E_VALIDATION"
+
+
+def test_invalidated_with_closure_shape_refused(clean_substrate):
+    res = _submit_assumption({
+        "statement": "Invalidated status with closure_shape should be refused (ontologically distinct exit).",
+        "status": "invalidated",
+        "closure_shape": "completion",
+    }, expect_ok=False)
+    assert res["rc"] != 0
+    assert res["out"]["code"] == "E_VALIDATION"
+    assert "invalidat" in res["out"]["detail"].lower()
+
+
+def test_superseded_with_supersession_admits(clean_substrate):
+    res = _submit_assumption({
+        "statement": "Superseded status with closure_shape='supersession' should admit per DV-S201-1 narrowing.",
+        "status": "superseded",
+        "closure_shape": "supersession",
+    })
+    assert res["rc"] == 0, res
+    assert res["out"]["result"]["closure_shape"] == "supersession"
+
+
+def test_superseded_with_other_shape_refused(clean_substrate):
+    res = _submit_assumption({
+        "statement": "Superseded with non-supersession shape should be refused per DV-S201-1 superseded-narrowing.",
+        "status": "superseded",
+        "closure_shape": "convergence",
+    }, expect_ok=False)
+    assert res["rc"] != 0
+    assert res["out"]["code"] == "E_VALIDATION"
+
+
+def test_superseded_without_shape_admits(clean_substrate):
+    res = _submit_assumption({
+        "statement": "Superseded without closure_shape should admit (NULL is the legacy compatibility path).",
+        "status": "superseded",
+    })
+    assert res["rc"] == 0, res
+    assert res["out"]["result"]["closure_shape"] is None
+
+
+def test_status_update_to_closed_requires_shape(clean_substrate):
+    dv_alias = _seed_decision()
+    res = _submit_assumption({
+        "statement": "Transition target: register, transition to closed without closure_shape should refuse.",
+    })
+    alias = res["out"]["result"]["alias"]
+    upd = _submit_status_update({
+        "assumption": alias,
+        "new_status": "closed",
+        "citing_decision": dv_alias,
+    }, expect_ok=False)
+    assert upd["rc"] != 0
+    assert upd["out"]["code"] == "E_VALIDATION"
+    assert "closure_shape" in upd["out"]["detail"]
+
+
+def test_status_update_to_closed_with_shape_admits(clean_substrate):
+    dv_alias = _seed_decision()
+    res = _submit_assumption({
+        "statement": "Transition target: register, transition to closed with closure_shape=stable-held admits.",
+    })
+    alias = res["out"]["result"]["alias"]
+    upd = _submit_status_update({
+        "assumption": alias,
+        "new_status": "closed",
+        "citing_decision": dv_alias,
+        "closure_shape": "stable-held",
+    })
+    assert upd["rc"] == 0, upd
+    assert upd["out"]["result"]["closure_shape"] == "stable-held"
+
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        row = conn.execute(
+            "SELECT status, closure_shape FROM assumption_ledger "
+            "WHERE assumption_id=?",
+            (res["out"]["result"]["assumption_id"],),
+        ).fetchone()
+    finally:
+        conn.close()
+    assert row[0] == "closed"
+    assert row[1] == "stable-held"
+
+
+def test_status_update_out_of_closed_clears_shape(clean_substrate):
+    """Transitioning OUT of closed back to a pre-closure status auto-clears
+    closure_shape to satisfy the coupling CHECK."""
+    dv_alias = _seed_decision()
+    res = _submit_assumption({
+        "statement": "Transition-out-of-closed target: insert closed-with-shape, transition to invalidated.",
+        "status": "closed",
+        "closure_shape": "completion",
+    })
+    alias = res["out"]["result"]["alias"]
+    assumption_id = res["out"]["result"]["assumption_id"]
+
+    upd = _submit_status_update({
+        "assumption": alias,
+        "new_status": "invalidated",
+        "citing_decision": dv_alias,
+    })
+    assert upd["rc"] == 0, upd
+    assert upd["out"]["result"]["closure_shape"] is None
+
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        row = conn.execute(
+            "SELECT status, closure_shape FROM assumption_ledger "
+            "WHERE assumption_id=?",
+            (assumption_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    assert row[0] == "invalidated"
+    assert row[1] is None
+
+
+def test_status_update_to_superseded_with_other_shape_refused(clean_substrate):
+    dv_alias = _seed_decision()
+    res = _submit_assumption({
+        "statement": "Transition target for superseded with bad shape: should refuse non-supersession value.",
+    })
+    alias = res["out"]["result"]["alias"]
+    upd = _submit_status_update({
+        "assumption": alias,
+        "new_status": "superseded",
+        "citing_decision": dv_alias,
+        "closure_shape": "completion",
+    }, expect_ok=False)
+    assert upd["rc"] != 0
+    assert upd["out"]["code"] == "E_VALIDATION"
+
+
+def test_status_update_to_invalidated_with_shape_refused(clean_substrate):
+    dv_alias = _seed_decision()
+    res = _submit_assumption({
+        "statement": "Transition target for invalidated with shape: should refuse closure_shape.",
+    })
+    alias = res["out"]["result"]["alias"]
+    upd = _submit_status_update({
+        "assumption": alias,
+        "new_status": "invalidated",
+        "citing_decision": dv_alias,
+        "closure_shape": "completion",
+    }, expect_ok=False)
+    assert upd["rc"] != 0
+    assert upd["out"]["code"] == "E_VALIDATION"
+
+
+def test_closed_to_superseded_with_carry_forward_refused(clean_substrate):
+    """RF-86/RF-89: closed(convergence) to superseded without explicit closure_shape
+    refuses because the carried-forward 'convergence' violates superseded narrowing
+    (superseded admits NULL or 'supersession' only)."""
+    dv_alias = _seed_decision()
+    res = _submit_assumption({
+        "statement": "Transition target: insert closed-with-convergence then transition to superseded without override.",
+        "status": "closed",
+        "closure_shape": "convergence",
+    })
+    alias = res["out"]["result"]["alias"]
+    upd = _submit_status_update({
+        "assumption": alias,
+        "new_status": "superseded",
+        "citing_decision": dv_alias,
+    }, expect_ok=False)
+    assert upd["rc"] != 0
+    assert upd["out"]["code"] == "E_VALIDATION"
+    assert "superseded" in upd["out"]["detail"].lower()
+
+
+def test_closed_to_superseded_with_explicit_supersession_admits(clean_substrate):
+    """RF-86/RF-89: closed(convergence) to superseded with explicit closure_shape=
+    'supersession' admits (caller deliberately narrows)."""
+    dv_alias = _seed_decision()
+    res = _submit_assumption({
+        "statement": "Transition target: closed-with-convergence then transition to superseded with explicit supersession.",
+        "status": "closed",
+        "closure_shape": "convergence",
+    })
+    alias = res["out"]["result"]["alias"]
+    assumption_id = res["out"]["result"]["assumption_id"]
+
+    upd = _submit_status_update({
+        "assumption": alias,
+        "new_status": "superseded",
+        "citing_decision": dv_alias,
+        "closure_shape": "supersession",
+    })
+    assert upd["rc"] == 0, upd
+    assert upd["out"]["result"]["closure_shape"] == "supersession"
+
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        row = conn.execute(
+            "SELECT status, closure_shape FROM assumption_ledger "
+            "WHERE assumption_id=?",
+            (assumption_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    assert row[0] == "superseded"
+    assert row[1] == "supersession"
+
+
+def test_closed_to_superseded_with_explicit_null_admits(clean_substrate):
+    """RF-86/RF-89: closed(convergence) to superseded with explicit closure_shape=
+    null admits (legacy compat path; caller deliberately drops shape)."""
+    dv_alias = _seed_decision()
+    res = _submit_assumption({
+        "statement": "Transition target: closed-with-convergence then transition to superseded with explicit null shape.",
+        "status": "closed",
+        "closure_shape": "convergence",
+    })
+    alias = res["out"]["result"]["alias"]
+    assumption_id = res["out"]["result"]["assumption_id"]
+
+    upd = _submit_status_update({
+        "assumption": alias,
+        "new_status": "superseded",
+        "citing_decision": dv_alias,
+        "closure_shape": None,
+    })
+    assert upd["rc"] == 0, upd
+    assert upd["out"]["result"]["closure_shape"] is None
+
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        row = conn.execute(
+            "SELECT status, closure_shape FROM assumption_ledger "
+            "WHERE assumption_id=?",
+            (assumption_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    assert row[0] == "superseded"
+    assert row[1] is None
+
+
+def test_superseded_to_closed_carry_forward_supersession(clean_substrate):
+    """RF-86: superseded(supersession) to closed without explicit closure_shape
+    carries forward 'supersession' as the closed shape (admitted because
+    'supersession' is in the closed-CHECK enum). Documents intentional
+    carry-forward semantic; reviewer RF-87 mistakenly flagged this as a bug."""
+    dv_alias = _seed_decision()
+    res = _submit_assumption({
+        "statement": "Transition target: superseded-with-supersession then transition to closed without override.",
+        "status": "superseded",
+        "closure_shape": "supersession",
+    })
+    alias = res["out"]["result"]["alias"]
+    assumption_id = res["out"]["result"]["assumption_id"]
+
+    upd = _submit_status_update({
+        "assumption": alias,
+        "new_status": "closed",
+        "citing_decision": dv_alias,
+    })
+    assert upd["rc"] == 0, upd
+    assert upd["out"]["result"]["closure_shape"] == "supersession"
+
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        row = conn.execute(
+            "SELECT status, closure_shape FROM assumption_ledger "
+            "WHERE assumption_id=?",
+            (assumption_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    assert row[0] == "closed"
+    assert row[1] == "supersession"
+
+
+def test_superseded_to_closed_with_override_shape_admits(clean_substrate):
+    """RF-86: superseded(supersession) to closed with explicit closure_shape='completion'
+    overrides the carry-forward."""
+    dv_alias = _seed_decision()
+    res = _submit_assumption({
+        "statement": "Transition target: superseded-with-supersession then transition to closed-with-completion.",
+        "status": "superseded",
+        "closure_shape": "supersession",
+    })
+    alias = res["out"]["result"]["alias"]
+    assumption_id = res["out"]["result"]["assumption_id"]
+
+    upd = _submit_status_update({
+        "assumption": alias,
+        "new_status": "closed",
+        "citing_decision": dv_alias,
+        "closure_shape": "completion",
+    })
+    assert upd["rc"] == 0, upd
+    assert upd["out"]["result"]["closure_shape"] == "completion"
+
+    conn = sqlite3.connect(str(PRIMARY_DB))
+    try:
+        row = conn.execute(
+            "SELECT status, closure_shape FROM assumption_ledger "
+            "WHERE assumption_id=?",
+            (assumption_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    assert row[0] == "closed"
+    assert row[1] == "completion"

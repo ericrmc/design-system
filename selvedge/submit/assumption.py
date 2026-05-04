@@ -78,6 +78,65 @@ _SUB_TYPE_ENUM = (
     "rolling-renewal",
 )
 
+_CLOSURE_SHAPE_ENUM = (
+    "convergence",
+    "completion",
+    "containment-resolved",
+    "supersession",
+    "stable-held",
+)
+
+
+def _validate_closure_shape_for_status(status: str, closure_shape: str | None) -> None:
+    """Enforce DV-S201-1 status-shape coupling at handler layer.
+
+    The SQL CHECKs are the canonical refusal; this handler-side check fires
+    earlier with an actionable error message naming the status-shape mismatch.
+    Mirrors _validate_conflict_discipline shape.
+    """
+    if closure_shape is not None and closure_shape not in _CLOSURE_SHAPE_ENUM:
+        raise SelvedgeError(
+            "E_VALIDATION",
+            f"closure_shape={closure_shape!r} not in {_CLOSURE_SHAPE_ENUM}; "
+            f"closed enum per DV-S201-1 (5 canonical shapes from disaster-recovery arc).",
+        )
+
+    if status == "closed":
+        if closure_shape is None:
+            raise SelvedgeError(
+                "E_VALIDATION",
+                "status='closed' requires closure_shape (one of "
+                f"{_CLOSURE_SHAPE_ENUM}); no anonymous closure per DV-S201-1.",
+            )
+        return
+
+    if status in ("unverified", "assumed", "active-with-conflict"):
+        if closure_shape is not None:
+            raise SelvedgeError(
+                "E_VALIDATION",
+                f"closure_shape={closure_shape!r} forbidden for status={status!r} "
+                f"(pre-closure status); set closure_shape=null per DV-S201-1 status-shape coupling.",
+            )
+        return
+
+    if status == "superseded":
+        if closure_shape is not None and closure_shape != "supersession":
+            raise SelvedgeError(
+                "E_VALIDATION",
+                f"closure_shape={closure_shape!r} forbidden for status='superseded'; "
+                f"only NULL or 'supersession' admissible per DV-S201-1 superseded-narrowing.",
+            )
+        return
+
+    if status == "invalidated":
+        if closure_shape is not None:
+            raise SelvedgeError(
+                "E_VALIDATION",
+                f"closure_shape={closure_shape!r} forbidden for status='invalidated' "
+                f"(invalidation is ontologically distinct from closure per DV-S201-1).",
+            )
+        return
+
 
 def _alias_for_assumption(session_no: int, idx: int) -> str:
     return f"AR-S{session_no:03d}-{idx}"
@@ -153,12 +212,18 @@ def _submit_assumption(conn: sqlite3.Connection, p: dict, role: str) -> dict:
         expiry_trigger         (atom) — required when status='active-with-conflict'.
         basis          (atom)  — optional basis citation.
         origin_decision (alias) — optional DV alias that lifted this assumption.
+        closure_shape  (enum)  — DV-S201-1 closure-shape coupling: required
+                                 when status='closed'; admitted as NULL or
+                                 'supersession' when status='superseded';
+                                 refused for unverified/assumed/active-with-
+                                 conflict/invalidated. Closed 5-value enum.
         session_no     (int)   — defaults to currently-open session.
 
     Refusals:
-        E_VALIDATION         — missing 'statement', bad status/sub_type enum,
-                               four-field discipline incomplete when status=
-                               'active-with-conflict'.
+        E_VALIDATION         — missing 'statement', bad status/sub_type/
+                               closure_shape enum, four-field discipline
+                               incomplete when status='active-with-conflict',
+                               status-shape coupling violated (DV-S201-1).
         E_REFUSAL_T01        — origin_decision alias unresolvable.
         E_ATOM_LENGTH        — atom outside 8-480 chars (support_claim bound).
     """
@@ -192,10 +257,12 @@ def _submit_assumption(conn: sqlite3.Connection, p: dict, role: str) -> dict:
     expiry_trigger = p.get("expiry_trigger")
     basis = p.get("basis")
     origin_decision_alias = p.get("origin_decision")
+    closure_shape = p.get("closure_shape")
 
     _validate_conflict_discipline(
         status, sub_type, action_commitment, both_source_citation, resolution_path, expiry_trigger
     )
+    _validate_closure_shape_for_status(status, closure_shape)
 
     statement_atom_id = _insert_atom(conn, role, sess_id, "support_claim", statement)
     action_aid = _maybe_atom(conn, role, sess_id, action_commitment)
@@ -210,12 +277,12 @@ def _submit_assumption(conn: sqlite3.Connection, p: dict, role: str) -> dict:
         "(session_id, statement_atom_id, status, sub_type, "
         " action_commitment_atom_id, both_source_citation_atom_id, "
         " resolution_path_atom_id, expiry_trigger_atom_id, "
-        " basis_atom_id, origin_decision_object_id) "
-        "VALUES (?,?,?,?,?,?,?,?,?,?)",
+        " basis_atom_id, origin_decision_object_id, closure_shape) "
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         (
             sess_id, statement_atom_id, status, sub_type,
             action_aid, bsc_aid, rp_aid, et_aid,
-            basis_aid, origin_decision_oid,
+            basis_aid, origin_decision_oid, closure_shape,
         ),
     )
     assumption_id = cur.lastrowid
@@ -234,6 +301,7 @@ def _submit_assumption(conn: sqlite3.Connection, p: dict, role: str) -> dict:
         "alias": alias,
         "status": status,
         "sub_type": sub_type,
+        "closure_shape": closure_shape,
         "origin_decision_object_id": origin_decision_oid,
     }
 
@@ -254,10 +322,16 @@ def _submit_assumption_status_update(conn: sqlite3.Connection, p: dict, role: st
         sub_type, action_commitment, both_source_citation,
         resolution_path, expiry_trigger.
 
+    Optional (DV-S201-1 closure-shape coupling):
+        closure_shape (enum) — required when new_status='closed'; admitted
+            as NULL or 'supersession' when new_status='superseded'; refused
+            for unverified/assumed/active-with-conflict/invalidated.
+
     Refusals:
-        E_VALIDATION         — bad new_status enum, four-field discipline
-                               incomplete when transitioning TO
-                               active-with-conflict, missing required field.
+        E_VALIDATION         — bad new_status / closure_shape enum, four-
+                               field discipline incomplete when transitioning
+                               TO active-with-conflict, missing required
+                               field, status-shape coupling violated.
         E_REFUSAL_T01        — assumption / citing_decision alias unresolvable
                                (or alias does not resolve to an assumption row).
         E_NOT_FOUND          — assumption alias resolves to non-assumption object.
@@ -272,6 +346,28 @@ def _submit_assumption_status_update(conn: sqlite3.Connection, p: dict, role: st
         The four conflict atoms are NOT auto-cleared on transition-out
         (they remain as historical artefacts; the conflict-discipline
         CHECK is vacuous when status != 'active-with-conflict').
+
+    Transition-into-closure semantics (DV-S201-1):
+        Transitioning to status='closed' requires closure_shape NOT NULL
+        on the resulting row. The validator carries the existing row's
+        closure_shape forward when the payload omits closure_shape; if
+        the carried value is NULL the handler refuses with a missing-field
+        message. Carry-forward of 'supersession' from status='superseded'
+        to status='closed' is admitted because 'supersession' is in the
+        closed CHECK enum (closure_shape names HOW the assumption left
+        active state; supersession-as-closure is the meaning when status
+        moves from superseded to closed without override).
+
+    Transition-out-of-closure auto-clear (DV-S201-1):
+        Transitioning from any status carrying closure_shape to
+        'unverified' / 'assumed' / 'active-with-conflict' / 'invalidated'
+        auto-clears closure_shape because those statuses forbid the column.
+        Transitions to 'superseded' do NOT auto-clear: superseded narrows
+        to NULL or 'supersession' only, so a carried-forward value other
+        than those refuses with an actionable error naming the offending
+        shape. Caller passes closure_shape explicitly (NULL or
+        'supersession') to transition into 'superseded' from a row whose
+        prior shape was something else (e.g., closed→superseded).
     """
     _check_role_capability(conn, role, "assumption_ledger", "update")
     sess_id = _atom_session_id(conn, p.get("session_no"))
@@ -302,7 +398,8 @@ def _submit_assumption_status_update(conn: sqlite3.Connection, p: dict, role: st
     row = conn.execute(
         "SELECT a.assumption_id, a.status, a.sub_type, "
         "       a.action_commitment_atom_id, a.both_source_citation_atom_id, "
-        "       a.resolution_path_atom_id, a.expiry_trigger_atom_id "
+        "       a.resolution_path_atom_id, a.expiry_trigger_atom_id, "
+        "       a.closure_shape "
         "FROM assumption_ledger a JOIN objects o ON o.object_id=a.object_id "
         "WHERE o.object_id=? AND o.object_kind='assumption'",
         (assumption_oid,),
@@ -320,6 +417,22 @@ def _submit_assumption_status_update(conn: sqlite3.Connection, p: dict, role: st
     both_source_citation = p.get("both_source_citation")
     resolution_path = p.get("resolution_path")
     expiry_trigger = p.get("expiry_trigger")
+    closure_shape_explicit = "closure_shape" in p
+    closure_shape_payload = p.get("closure_shape")
+
+    # DV-S201-1 closure-shape coupling: compute the post-transition value
+    # (what will land in the row after UPDATE) and validate that against
+    # new_status. Auto-clear fires when transitioning to a status that
+    # forbids closure_shape and the payload does not override.
+    if closure_shape_explicit:
+        effective_closure_shape = closure_shape_payload
+    elif row["closure_shape"] is not None and new_status in (
+        "unverified", "assumed", "active-with-conflict", "invalidated"
+    ):
+        effective_closure_shape = None
+    else:
+        effective_closure_shape = row["closure_shape"]
+    _validate_closure_shape_for_status(new_status, effective_closure_shape)
 
     if new_status == "active-with-conflict":
         existing_action = row["action_commitment_atom_id"]
@@ -357,6 +470,19 @@ def _submit_assumption_status_update(conn: sqlite3.Connection, p: dict, role: st
     elif new_status != "active-with-conflict" and row["sub_type"] is not None:
         update_fragments.append("sub_type=NULL")
 
+    # DV-S201-1 closure-shape coupling: write payload value when explicit;
+    # auto-clear when transitioning to a status that forbids closure_shape
+    # and the existing row carries one. Auto-narrow when transitioning to
+    # 'superseded' with an existing non-supersession shape is NOT done — the
+    # validator above refuses that case so we never reach here.
+    if closure_shape_explicit:
+        update_fragments.append("closure_shape=?")
+        params.append(closure_shape_payload)
+    elif row["closure_shape"] is not None and new_status in (
+        "unverified", "assumed", "active-with-conflict", "invalidated"
+    ):
+        update_fragments.append("closure_shape=NULL")
+
     if action_commitment is not None:
         aid = _insert_atom(conn, role, sess_id, "support_claim", action_commitment)
         update_fragments.append("action_commitment_atom_id=?")
@@ -380,6 +506,15 @@ def _submit_assumption_status_update(conn: sqlite3.Connection, p: dict, role: st
         params,
     )
 
+    if closure_shape_explicit:
+        result_closure_shape = closure_shape_payload
+    elif row["closure_shape"] is not None and new_status in (
+        "unverified", "assumed", "active-with-conflict", "invalidated"
+    ):
+        result_closure_shape = None
+    else:
+        result_closure_shape = row["closure_shape"]
+
     return {
         "assumption_id": row["assumption_id"],
         "alias": assumption_alias,
@@ -387,4 +522,5 @@ def _submit_assumption_status_update(conn: sqlite3.Connection, p: dict, role: st
         "from_status": row["status"],
         "to_status": new_status,
         "citing_decision_object_id": citing_decision_oid,
+        "closure_shape": result_closure_shape,
     }

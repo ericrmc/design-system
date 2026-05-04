@@ -280,9 +280,20 @@ The transition handler refuses without `citing_decision` (the cited decision IS 
 - `unverified` — registered, pending verification action.
 - `assumed` — taken on faith; no active verification planned.
 - `active-with-conflict` — load-bearing; multi-source disagreement requires sub_type + four conflict atoms (DV-S008-1).
-- `closed` — verified/resolved; closure-by-convergence/completion/etc.
-- `superseded` — replaced by a newer assumption (chain via `supersession_ledger` SL alias).
-- `invalidated` — disproven by direct evidence.
+- `closed` — verified/resolved; closure_shape NOT NULL required per DV-S201-1.
+- `superseded` — replaced by a newer assumption (chain via `supersession_ledger` SL alias); closure_shape admits NULL or `'supersession'` only.
+- `invalidated` — disproven by direct evidence; closure_shape forbidden (ontologically distinct exit).
+
+**Closure-shape enum (closed CHECK; engine-v56, migration 051, DV-S201-1, OI-S196-3).** When `status='closed'` the row carries one of 5 canonical closure shapes from the disaster-recovery arc retrospective. The shape names *how* the assumption left active-state, not *whether* it left. Status-shape coupling is enforced by 4 SQL CHECKs plus handler-side actionable refusal naming the offending field (DV-S008-1 four-field-discipline parity).
+- `convergence` — independent sources agreed; the conflict resolved itself.
+- `completion` — the action the assumption hinged on completed.
+- `containment-resolved` — the situation the assumption bounded was contained or resolved out of relevance.
+- `supersession` — replaced by a newer assumption; this is the only value admitted under `status='superseded'` (NULL also admits as legacy compat).
+- `stable-held` — accepted as stable without further verification action; the engine will not re-open absent calibration evidence.
+
+The C-3 closure-shape primitive lands on `assumption_ledger` only at v1 per D-S201-1 P-1+P-2 convergence (P-3 spec-only stance preserved as M-2 minority). Cross-artefact extension to issues / close_records / future C-4 stakeholder-event / C-6 rolling-renewal primitives is a forward-direction once those primitives ship; no premature unification at v1. Initial `submit assumption` accepts `closure_shape` only when payload `status='closed'`; otherwise refused. `assumption-status-update` accepts `closure_shape`, requires it when transitioning TO closed, narrows for superseded, refuses for unverified/assumed/active-with-conflict/invalidated; transitions to a status that forbids closure_shape auto-clear an existing value.
+
+**Closure-shape watch-triggers (DV-S201-1 minorities preserved).** M-1 P-3 5-shape overbreadth: if calibration-EFs across N>=3 future sessions surface containment-resolved-vs-convergence collapse OR supersession-double-encoding (status='superseded' AND closure_shape='supersession' redundantly named), the next session opens a gate-promotion OI for shape-merge migration. M-2 P-3 spec-only-as-substrate-canonical: if zero query-by-shape read pattern surfaces across N>=5 sessions, retrospective calibration-EF candidate to remove the column and revert to spec-only vocabulary.
 
 **Sub-type enum (closed CHECK; DV-S198-1 D-2 P-1+P-3 stance adopted; P-2 use-case-discriminator preserved as M-1 minority).**
 - `plan-vs-resource` — plan-side commitment vs resource-side capacity disagreement.
