@@ -28,6 +28,7 @@ from .deliberation import (
 )
 from .feedback import (
     _submit_engine_feedback,
+    _submit_engine_feedback_anchor,
     _submit_engine_feedback_disposition,
     _submit_forward_reference_disposition,
 )
@@ -90,6 +91,7 @@ SUBMIT_HANDLERS = {
     "issue-note": _submit_issue_note,
     "issue-work-item": _submit_issue_work_item,
     "engine-feedback": _submit_engine_feedback,
+    "engine-feedback-anchor": _submit_engine_feedback_anchor,
     "engine-feedback-disposition": _submit_engine_feedback_disposition,
     "forward-reference-disposition": _submit_forward_reference_disposition,
     # reference_harness (engine-v35+, S125 closing OI-S124-2):

@@ -455,8 +455,31 @@ SUBMIT_SCHEMAS: dict[str, dict] = {
         "optional": [
             _SESSION_NO_OPTIONAL,
             ("disposition", "optional disposition text (usually NULL at insert)"),
+            (
+                "anchors",
+                "list of {alias, role} declaring typed-FK anchors to objects.alias for chain-walk reachability "
+                "(DV-S194-1); role in (about, descended_from, calibrates, supersedes_context); "
+                "REQUIRED when body_md starts with 'historical-harvest:' (T-37 refusal)",
+            ),
         ],
-        "example": '{"flag": "observation", "body_md": "**S166 friction:** placeholder examples did not parse as JSON."}',
+        "example": '{"flag": "observation", "body_md": "historical-harvest: source=archive/X.md\\n\\nbody...", "anchors": [{"alias": "DV-S081-1", "role": "about"}]}',
+        "spec_ref": "prompts/development.md §8.5",
+    },
+    "engine-feedback-anchor": {
+        "summary": "Add typed-FK anchors to an existing engine_feedback row (DV-S194-1 backfill path).",
+        "required": [
+            ("anchors", "list of {alias, role}; role in (about, descended_from, calibrates, supersedes_context)"),
+        ],
+        "any_of": [
+            {
+                "fields": ["feedback_id", "alias"],
+                "description": "identify the EF by integer `feedback_id` OR alias `alias` (e.g. EF-S193-18)",
+            }
+        ],
+        "optional": [
+            _SESSION_NO_OPTIONAL,
+        ],
+        "example": '{"alias": "EF-S193-18", "anchors": [{"alias": "DV-S081-1", "role": "about"}]}',
         "spec_ref": "prompts/development.md §8.5",
     },
     "engine-feedback-disposition": {
