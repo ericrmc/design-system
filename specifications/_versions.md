@@ -12,4 +12,5 @@ substrate wipe leaves the chain recoverable from markdown alone.
 | prompt-development | 4 | superseded | `prompts/development.md` | `98f2733c7601787e…` | no | S198 |
 | prompt-development | 5 | superseded | `prompts/development.md` | `e5461dcb58164834…` | no | S199 |
 | prompt-development | 6 | superseded | `prompts/development.md` | `41d145f8599eb7a5…` | no | S200 |
-| prompt-development | 7 | active | `prompts/development.md` | `f828ce025ad8e37d…` | no | S201 |
+| prompt-development | 7 | superseded | `prompts/development.md` | `f828ce025ad8e37d…` | no | S201 |
+| prompt-development | 8 | active | `prompts/development.md` | `c161b85ccdcd9d32…` | no | S203 |

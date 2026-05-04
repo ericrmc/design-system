@@ -1,4 +1,4 @@
-# Self-development application (engine-v56)
+# Self-development application (engine-v58)
 
 You are running the Selvedge engine on its own development. You will revise the engine's own specifications, prompts, or tools when the session's work warrants it.
 
@@ -303,6 +303,38 @@ The C-3 closure-shape primitive lands on `assumption_ledger` only at v1 per D-S2
 **Watch-triggers (DV-S198-1 minorities preserved).** M-1 status-mutation drift (agents flipping status without citing decisions) opens gate-promotion OI for supersession-only transitions; M-3 replay-via-decisions insufficiency (calibration-EF naming "I cannot reconstruct prior status of AR-S... from substrate alone") opens gate-promotion OI for dedicated `assumption_status_changes` history table per P-3 named edit #4.
 
 **§8.5 audit-step alias migration.** When lifting load-bearing interpretive choices via the close-time audit, cite the new `AR-S<wno>-<seq>` alias rather than the legacy `A-NNN` shorthand. The §8.5 clause's pre-S198 `A-NNN` references are read as `AR-S<wno>-<seq>` going forward; legacy disaster-recovery markdown `A-NNN` rows are NOT auto-imported as typed rows per DV-S189-1 markdown-only-recovery binding.
+
+
+**cycle-ledger submit kind (engine-v57+v58, DV-S203-1, OI-S196-6).** The C-6 rolling-renewal cycle primitive ships at S203 closing OI-S196-6 by-mechanism. The substrate that the disaster-recovery arc surfaced as a missing seam (A-018 satellite uplink + A-020 medevac, plus DV-S011-5 24h-rolling-renewal design pattern) lands as the typed `cycle_ledger` table polymorphic via objects-FK with assumption-only allowlist at v1. Use the `cycle` submit kind to record one observation of a tracked obligation across an iteration of its renewal cycle. The primitive's value is auto-SR suppression: cycle row IS the substrate proof of observation; non-substantial cycles emit zero supersession_ledger rows; substantial cycles MAY optionally cite an SL via FK when a real supersession relation exists.
+
+```sh
+bin/selvedge submit cycle --payload '{
+  "subject": "AR-S<wno>-<seq>",
+  "snapshot": "<8-480 char observed-state snapshot>",
+  "classification": "substantial | non-substantial",
+  "classification_reason": "<8-480 char; required when classification=substantial>",
+  "citing_supersession": "<optional SL alias; forbidden when classification=non-substantial>",
+  "cycle_no": <optional integer override; defaults to max+1 per subject>
+}'
+```
+
+The handler resolves `subject` via `_resolve_alias_to_object_id`, refuses subjects whose `object_kind` is not in the v1 allowlist (handler-side actionable refusal naming the allowlist + recovery, plus T-42 SQL trigger backstop). `cycle_no` defaults to max+1 per subject (UNIQUE(subject_object_id, cycle_no) enforces no duplicates; strict +1 monotonic NOT enforced — agents may pass explicit override e.g. for legacy data migration). Refusals: `E_VALIDATION` (missing required field, bad classification enum, substantial-without-reason, non-substantial-with-citing_supersession, subject not in v1 allowlist), `E_REFUSAL_T01` (subject/citing_supersession alias unresolvable), `E_REFUSAL_T42` (SQL trigger backstop refusing non-allowlist subject), `E_REFUSAL_CHECK` (UNIQUE collision, or substantial-without-reason / non-substantial-with-SL via SQL CHECK), `E_ATOM_LENGTH` (atom outside 8-480).
+
+**Classification enum (closed CHECK; DV-S203-1 D-2 P-1+P-3-simpler stance adopted; P-2+P-3-hybrid preserved as forward-direction).**
+- `substantial` — cycle moves closure-path eligibility, trigger-counter advance, or underlying conflict shape; `classification_reason` atom required (8-480 chars per support_claim bound). MAY cite a supersession_ledger row via `citing_supersession` when a real supersession relation exists.
+- `non-substantial` — rolling-renewal continues with no material change; reason atom admits NULL. NEVER cites SL (auto-SR suppression mechanism per D-9 C-1; SQL CHECK + handler validation enforced).
+
+**Subject allowlist v1 (closed CHECK via T-42 trigger; DV-S203-1 D-1 P-3 stance adopted; P-1 AR-only as M-1 watch-trigger; P-2 broader [issue, decision_v2] as M-2 watch-trigger).** Allowlist at v1 = `{'assumption'}` only. T-42 SQL trigger refuses non-allowlist subject_kind on insert; handler-side validation fires earlier with actionable error message. v2 extends allowlist via gate-promotion OI when calibration-EFs surface cross-app cycle attempts.
+
+**Closure-path reuse (DV-S203-1 C-2).** cycle_ledger does NOT carry own `closure_shape` column at v1; closure semantics flow via parent assumption_ledger.closure_shape per DV-S201-1 no-premature-unification binding. CF-3 (cycle-specific closure_path enum disjoint from closure_shape) nilled-by-exclusion barred-by-constraint.
+
+**Auto-SR suppression mechanism (DV-S203-1 C-1).** Cycle row IS the substrate proof of cycle observation. Non-substantial cycles emit zero supersession_ledger rows (avoid noise in 20+ cycle assumptions per disaster-recovery A-018 5-cycle pattern). Substantial cycles MAY optionally cite an SL row via `citing_supersession`; handler does NOT auto-emit SL (operator/agent decides). Migration 053 enforces non-substantial-cannot-cite-SL via SQL CHECK plus handler validation; reviewer F-03 within-session strengthening of the deliberation synthesis.
+
+**Object-registration.** Every cycle_ledger row registers as a first-class object with alias `CYC-S<wno>-<seq>` per DV-S203-1 C-5; object_kind=`cycle` (drops `_ledger` suffix per DV-S198-1 P-1 stance precedent). Workspace-scoped sequence per session matches DV/EF/OI/FR/SL/AR convention.
+
+**Watch-triggers (DV-S203-1 minorities preserved).** M-1 P-1 AR-child-only stance: zero non-assumption subjects across N>=5 sessions OR allowlist-extension blocked by subject_kind-specific semantics opens gate-promotion OI for AR-FK direct table refactor (drop polymorphism, replace `subject_object_id` FK with direct `assumption_id` FK). M-2 P-2 broader-allowlist [issue, decision_v2] stance: cross-app cycles attempting registration under non-allowlist subject_kind across N>=2 sessions opens gate-promotion OI for allowlist extension migration. M-3 hard-cutover (CF-1 surfaced): dual-channel writes persisting OR cycle_ledger 0 inserts across N>=5 sessions opens gate-promotion OI for hard-cutover migration deprecating `assumption_ledger.sub_type='rolling-renewal'` channel per S197 dual-channel-watch precedent.
+
+**Cross-application generalization (AR-S202-1).** Future external applications will not all be disaster-recovery focused (operator-named at S202 turn). Plausible non-DR domains: subscription/contract renewal cycles (most renewals non-substantial); ML model calibration windows (drift snapshots, occasional retraining); compliance review cycles (quarterly attestations); sprint review cycles in engineering; periodic risk reassessment. The v1 allowlist=assumption-only ships polymorphism *shape* without speculating on subject_kind-specific semantics; M-2 watch-trigger surfaces the path to allowlist extension when cross-app evidence accumulates. Codex blind-spots: disaster-recovery overemphasizes improvement/worsening trajectories (many renewal cycles are stability-confirmed loops); snapshots may bias toward operational allocations vs. attestation/threshold/policy-version contexts; closure may feel like incident-resolution (subscriptions/compliance/calibration close by rollover/expiry/replacement/stable continuation).
 
 **Polymorphism via objects-FK (D-S197-1 C-1).** `source_object_id` and `target_object_id` are FKs into `objects.object_id`; no `source_kind`/`target_kind` discriminator columns. Any registered object alias (DV-/SPEC-/EF-/SL-/AR-/A-/P-N-N-/etc.) is admissible. C-4 stakeholder-event origin reference is omitted at v1; the C-4 primitive (when shipped) will add an `origin_event_id` FK column without re-shaping the existing schema.
 

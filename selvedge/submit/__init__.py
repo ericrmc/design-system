@@ -60,6 +60,7 @@ from .review import (
 from .session import _submit_session_close, _submit_session_open
 from .spec import _submit_spec_clause, _submit_spec_section, _submit_spec_version
 from .assumption import _submit_assumption, _submit_assumption_status_update
+from .cycle import _submit_cycle
 from .supersession import _submit_supersession_ledger
 
 
@@ -112,6 +113,8 @@ SUBMIT_HANDLERS = {
     # assumption-ledger v1 (engine-v54+, S198 closing OI-S196-1 per DV-S198-1):
     "assumption": _submit_assumption,
     "assumption-status-update": _submit_assumption_status_update,
+    # cycle-ledger v1 (engine-v57+, S203 closing OI-S196-6 per DV-S203-1):
+    "cycle": _submit_cycle,
 }
 
 
