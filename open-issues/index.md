@@ -4,6 +4,18 @@ Issues live in the `issues` substrate table. The files below are a
 deterministic export from substrate rows; do not hand-edit. Use
 `bin/selvedge submit issue` and `submit issue-disposition` to mutate.
 
+## Open
+
+| Alias | Priority | Status | Title |
+|-------|----------|--------|-------|
+| [OI-S196-1](OI-S196-1.md) | HIGH | open | C-1 typed-assumption-ledger primitive: closed status enum + ACTIVE-WITH-CONFLICT four-field discipline + sub-types from disaster-recovery arc. |
+| [OI-S196-2](OI-S196-2.md) | HIGH | open | C-2 typed-supersession-ledger cross-artefact primitive: polymorphic FK graph; biggest schema gap; ship-first per codex EF-S196-1 sequencing. |
+| [OI-S196-3](OI-S196-3.md) | MEDIUM | open | C-3 closure-shape enum (5 canonical: convergence/completion/containment-resolved/supersession/stable-held); methodology-spec couples to C-1. |
+| [OI-S196-4](OI-S196-4.md) | MEDIUM | open | C-4 stakeholder-event F-N row primitive: typed input-event with polymorphic effect targets; sequence near C-2 per codex. |
+| [OI-S196-5](OI-S196-5.md) | HIGH | open | C-5 prospective-scoping discipline: methodology-spec + session-close substrate-gate refusing close without assumptions-implied-by-artefacts review. |
+| [OI-S196-6](OI-S196-6.md) | MEDIUM | open | C-6 rolling-renewal cycle primitive: built-in cycle tracking + auto-SR suppression for non-substantial cycles + closure-path logic. |
+| [OI-S196-7](OI-S196-7.md) | MEDIUM | open | Prompt-development spec-clause amendment per EF-S196-2 bounded-scope principle for graduation-discipline; spec-only-session candidate. |
+
 ## Resolved
 
 | Alias | Resolved-in | Title |
