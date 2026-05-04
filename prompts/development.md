@@ -1,4 +1,4 @@
-# Self-development application (engine-v50)
+# Self-development application (engine-v53)
 
 You are running the Selvedge engine on its own development. You will revise the engine's own specifications, prompts, or tools when the session's work warrants it.
 
@@ -216,6 +216,31 @@ bin/selvedge submit spec-version --payload '{
 ```
 
 `session_no` (the open-session number) and `supersedes` (the prior `SPEC-<spec-id>-v<prior-version>` alias) are required for any non-initial version; the handler refuses with `E_NOT_FOUND` if `session_no` does not name an open session, and `E_REFUSAL_T01` if `supersedes` does not resolve. `supersedes_reason_md` is optional but recorded on the resulting `refs` row carrying relation `supersedes`. For an initial version (`version: 1`), omit `supersedes` and `supersedes_reason_md`. T-03 (one active per spec_id) is satisfied by the handler flipping the prior active row to `superseded` BEFORE inserting the new active row, inside the same write_tx (cites OI-S090-4).
+
+**supersession-ledger submit kind (engine-v53, DV-S197-1, OI-S196-2).** Cross-artefact supersession events that span decisions / specs / issues / EFs / OIs are recorded in the typed `supersession_ledger` primitive. Use this kind when a new substrate object supersedes, replaces, narrows, bounds, or retracts a prior one — at any object_kind, not only spec-version supersession (which `refs.relation='supersedes'` continues to carry as a compatibility channel for spec-version-handler internals).
+
+```sh
+bin/selvedge submit supersession-ledger --payload '{
+  "source": "<alias of the new/superseding entity>",
+  "target": "<alias of the old/superseded entity>",
+  "relation_kind": "supersedes-fully | supersedes-partial | bounded-by | replaces-mechanism | retracted-by",
+  "reason": "<8-480 char reason atom>",
+  "cite": "<optional alias of authoring decision_v2 or other authority>"
+}'
+```
+
+The handler resolves source/target/cite via `_resolve_alias_to_object_id` (objects.alias graph), refuses self-supersession (CHECK source!=target), refuses duplicate (source,target,relation_kind) edges (UNIQUE), pins the reason as a `support_claim` text_atom (8-480), and registers the ledger row as a first-class object with alias `SL-S<wno>-<seq>` so it participates in chain-walks T-32. Refusals: `E_VALIDATION` (missing/bad enum, self-supersession), `E_REFUSAL_T01` (unresolved alias), `E_ATOM_LENGTH` (reason outside 8-480), `E_REFUSAL_CHECK` (duplicate edge or source==target).
+
+**Relation enum semantics (closed CHECK; D-S197-1 D-1 P-1 stance adopted; P-3 4-value tighter set preserved as M-1 minority + watch-trigger).**
+- `supersedes-fully` — new fully replaces old; old's authority is migrated.
+- `supersedes-partial` — new replaces some scope of old; old retains other scope.
+- `bounded-by` — new bounds the old's interpretation; the old still applies in its now-bounded shape (e.g. EF-S196-2 bounds DV-S190-2 graduation-discipline scope).
+- `replaces-mechanism` — new replaces a specific mechanism of the old while preserving the old's broader frame.
+- `retracted-by` — old is withdrawn entirely; new is the retraction record (no replacement substantive content).
+
+**Soft-deprecation of `decision_effects.effect_kind='supersedes'` (D-S197-1 D-3).** The legacy channel remains admissible at v1 for historical replay, but **new supersession events should be recorded via `submit supersession-ledger`** rather than as `decision_effects` rows. The decision-record handler does not auto-route at v1; this is operator/agent-policed per DV-S109-1 ceremony-subtraction posture. Watch-trigger per M-1 minority (D-S197-1): if dual-channel writes persist or the ledger receives 0 inserts across N≥5 future sessions, the next session opens a gate-promotion `OI` for either hard-cutover migration (drop the `supersedes` value from `decision_effects.effect_kind` CHECK) or handler-side auto-routing.
+
+**Polymorphism via objects-FK (D-S197-1 C-1).** `source_object_id` and `target_object_id` are FKs into `objects.object_id`; no `source_kind`/`target_kind` discriminator columns. Any registered object alias (DV-/SPEC-/EF-/SL-/A-/P-N-N-/etc.) is admissible. C-4 stakeholder-event origin reference is omitted at v1; the C-4 primitive (when shipped) will add an `origin_event_id` FK column without re-shaping the existing schema.
 
 ## 7. Validate — and run the coding review loop on any code change
 

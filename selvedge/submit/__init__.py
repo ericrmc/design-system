@@ -59,6 +59,7 @@ from .review import (
 )
 from .session import _submit_session_close, _submit_session_open
 from .spec import _submit_spec_clause, _submit_spec_section, _submit_spec_version
+from .supersession import _submit_supersession_ledger
 
 
 SUBMIT_HANDLERS = {
@@ -105,6 +106,8 @@ SUBMIT_HANDLERS = {
     "harness-trigger": _submit_harness_trigger,
     "harness-trigger-fire": _submit_harness_trigger_fire,
     "harness-seal": _submit_harness_seal,
+    # supersession-ledger v1 (engine-v53+, S197 closing OI-S196-2 per DV-S197-1):
+    "supersession-ledger": _submit_supersession_ledger,
 }
 
 

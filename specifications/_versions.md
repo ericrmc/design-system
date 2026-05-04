@@ -7,4 +7,5 @@ substrate wipe leaves the chain recoverable from markdown alone.
 | Spec | Version | Status | Body path | Body sha256 | Canonical-in-substrate | Created in |
 |------|---------|--------|-----------|-------------|------------------------|------------|
 | prompt-development | 1 | superseded | `prompts/development.md` | `284e4c5e14fd2809…` | no | S082 |
-| prompt-development | 2 | active | `prompts/development.md` | `032cd7e911afd915…` | no | S186 |
+| prompt-development | 2 | superseded | `prompts/development.md` | `032cd7e911afd915…` | no | S186 |
+| prompt-development | 3 | active | `prompts/development.md` | `763477ee3b6117a9…` | no | S197 |

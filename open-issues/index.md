@@ -9,7 +9,6 @@ deterministic export from substrate rows; do not hand-edit. Use
 | Alias | Priority | Status | Title |
 |-------|----------|--------|-------|
 | [OI-S196-1](OI-S196-1.md) | HIGH | open | C-1 typed-assumption-ledger primitive: closed status enum + ACTIVE-WITH-CONFLICT four-field discipline + sub-types from disaster-recovery arc. |
-| [OI-S196-2](OI-S196-2.md) | HIGH | open | C-2 typed-supersession-ledger cross-artefact primitive: polymorphic FK graph; biggest schema gap; ship-first per codex EF-S196-1 sequencing. |
 | [OI-S196-3](OI-S196-3.md) | MEDIUM | open | C-3 closure-shape enum (5 canonical: convergence/completion/containment-resolved/supersession/stable-held); methodology-spec couples to C-1. |
 | [OI-S196-4](OI-S196-4.md) | MEDIUM | open | C-4 stakeholder-event F-N row primitive: typed input-event with polymorphic effect targets; sequence near C-2 per codex. |
 | [OI-S196-5](OI-S196-5.md) | HIGH | open | C-5 prospective-scoping discipline: methodology-spec + session-close substrate-gate refusing close without assumptions-implied-by-artefacts review. |
@@ -31,3 +30,4 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S083-1](resolved/OI-S083-1.md) | S190 | Deliberate proactive substrate-canonical reminder pathway: PreToolUse non-blocking hint vs file-header marker vs CLAUDE.md pin to close the tool-selection gap surfaced at EF-S083-1. |
 | [OI-S180-1](resolved/OI-S180-1.md) | S189 | Substrate wipe via subagent init --force; S001-S179 substrate state lost; manual rebuild from markdown exports + subagent destructive-op hardening required. |
 | [OI-S192-1](resolved/OI-S192-1.md) | S193 | One-shot historical-insight harvest from pre-S076 + pre-S180 markdown into current substrate as engine_feedback rows + fresh OIs. |
+| [OI-S196-2](resolved/OI-S196-2.md) | S197 | C-2 typed-supersession-ledger cross-artefact primitive: polymorphic FK graph; biggest schema gap; ship-first per codex EF-S196-1 sequencing. |
