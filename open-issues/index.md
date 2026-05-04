@@ -4,6 +4,12 @@ Issues live in the `issues` substrate table. The files below are a
 deterministic export from substrate rows; do not hand-edit. Use
 `bin/selvedge submit issue` and `submit issue-disposition` to mutate.
 
+## Open
+
+| Alias | Priority | Status | Title |
+|-------|----------|--------|-------|
+| [OI-S192-1](OI-S192-1.md) | HIGH | open | One-shot historical-insight harvest from pre-S076 + pre-S180 markdown into current substrate as engine_feedback rows + fresh OIs. |
+
 ## Resolved
 
 | Alias | Resolved-in | Title |
