@@ -4,12 +4,6 @@ Issues live in the `issues` substrate table. The files below are a
 deterministic export from substrate rows; do not hand-edit. Use
 `bin/selvedge submit issue` and `submit issue-disposition` to mutate.
 
-## Open
-
-| Alias | Priority | Status | Title |
-|-------|----------|--------|-------|
-| [OI-S196-4](OI-S196-4.md) | MEDIUM | open | C-4 stakeholder-event F-N row primitive: typed input-event with polymorphic effect targets; sequence near C-2 per codex. |
-
 ## Resolved
 
 | Alias | Resolved-in | Title |
@@ -28,6 +22,7 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S196-1](resolved/OI-S196-1.md) | S198 | C-1 typed-assumption-ledger primitive: closed status enum + ACTIVE-WITH-CONFLICT four-field discipline + sub-types from disaster-recovery arc. |
 | [OI-S196-2](resolved/OI-S196-2.md) | S197 | C-2 typed-supersession-ledger cross-artefact primitive: polymorphic FK graph; biggest schema gap; ship-first per codex EF-S196-1 sequencing. |
 | [OI-S196-3](resolved/OI-S196-3.md) | S201 | C-3 closure-shape enum (5 canonical: convergence/completion/containment-resolved/supersession/stable-held); methodology-spec couples to C-1. |
+| [OI-S196-4](resolved/OI-S196-4.md) | S204 | C-4 stakeholder-event F-N row primitive: typed input-event with polymorphic effect targets; sequence near C-2 per codex. |
 | [OI-S196-5](resolved/OI-S196-5.md) | S199 | C-5 prospective-scoping discipline: methodology-spec + session-close substrate-gate refusing close without assumptions-implied-by-artefacts review. |
 | [OI-S196-6](resolved/OI-S196-6.md) | S203 | C-6 rolling-renewal cycle primitive: built-in cycle tracking + auto-SR suppression for non-substantial cycles + closure-path logic. |
 | [OI-S196-7](resolved/OI-S196-7.md) | S200 | Prompt-development spec-clause amendment per EF-S196-2 bounded-scope principle for graduation-discipline; spec-only-session candidate. |

@@ -1,4 +1,4 @@
-# Self-development application (engine-v58)
+# Self-development application (engine-v59)
 
 You are running the Selvedge engine on its own development. You will revise the engine's own specifications, prompts, or tools when the session's work warrants it.
 
@@ -336,7 +336,43 @@ The handler resolves `subject` via `_resolve_alias_to_object_id`, refuses subjec
 
 **Cross-application generalization (AR-S202-1).** Future external applications will not all be disaster-recovery focused (operator-named at S202 turn). Plausible non-DR domains: subscription/contract renewal cycles (most renewals non-substantial); ML model calibration windows (drift snapshots, occasional retraining); compliance review cycles (quarterly attestations); sprint review cycles in engineering; periodic risk reassessment. The v1 allowlist=assumption-only ships polymorphism *shape* without speculating on subject_kind-specific semantics; M-2 watch-trigger surfaces the path to allowlist extension when cross-app evidence accumulates. Codex blind-spots: disaster-recovery overemphasizes improvement/worsening trajectories (many renewal cycles are stability-confirmed loops); snapshots may bias toward operational allocations vs. attestation/threshold/policy-version contexts; closure may feel like incident-resolution (subscriptions/compliance/calibration close by rollover/expiry/replacement/stable continuation).
 
-**Polymorphism via objects-FK (D-S197-1 C-1).** `source_object_id` and `target_object_id` are FKs into `objects.object_id`; no `source_kind`/`target_kind` discriminator columns. Any registered object alias (DV-/SPEC-/EF-/SL-/AR-/A-/P-N-N-/etc.) is admissible. C-4 stakeholder-event origin reference is omitted at v1; the C-4 primitive (when shipped) will add an `origin_event_id` FK column without re-shaping the existing schema.
+**Polymorphism via objects-FK (D-S197-1 C-1).** `source_object_id` and `target_object_id` are FKs into `objects.object_id`; no `source_kind`/`target_kind` discriminator columns. Any registered object alias (DV-/SPEC-/EF-/SL-/AR-/A-/P-N-N-/etc.) is admissible. C-4 stakeholder-event origin reference is omitted at v1 in `supersession_ledger`; future v2 of the C-4 primitive will add an `origin_event_id` FK column without re-shaping the existing SL schema (DV-S204-1 C-4 + codex named edit #5; v1 of `event_ledger` itself ships in S204 per the clause below).
+
+
+**event-ledger submit kind (engine-v59, DV-S204-1, OI-S196-4).** The C-4 stakeholder-event F-N row primitive ships at S204 closing OI-S196-4 by-mechanism. The substrate that the disaster-recovery 21-session arc surfaced as the missing typed input-event seam (system-model 33-43; T+Nh timestamp + named source + N effects per OI-S196-4 summary) lands as the typed `event_ledger` header + `event_effects` 1:N child polymorphic via objects-FK with assumption-only allowlist at v1. Use the `event` submit kind to record one stakeholder event with N effects. Events are inert at v1: invalidates-assumption does NOT auto-flip `assumption_ledger.status`; agent/operator decides if the AR.status transitions per D-S204-1 C-3 + S203 cycle no-auto-SR precedent.
+
+```sh
+bin/selvedge submit event --payload '{
+  "source": "<8-480 char source identifier (who reported)>",
+  "event_time": "<8-480 char observed-time atom; admits T+Nh, ISO, domain-specific>",
+  "claim": "<8-480 char event-claim text>",
+  "effects": [
+    {"kind": "invalidates-assumption | confirms-assumption",
+     "target": "<assumption alias e.g. AR-S<wno>-<seq>>",
+     "reason": "<optional 8-480 char rationale atom>",
+     "ord": <optional integer; default per-effect index>}
+  ]
+}'
+```
+
+The handler resolves `target` aliases via `_resolve_alias_to_object_id`, refuses target objects whose `object_kind` is not admitted by the per-effect-kind v1 allowlist (handler-side actionable refusal naming the effect_kind + resolved target_kind + allowed target_kinds, plus T-43 SQL trigger backstop). Effects array must be non-empty (handler-only check; events without effects have no semantic content per D-S204-1 P-1 stance). Refusals: `E_VALIDATION` (missing required field, bad effect_kind enum, empty effects list, non-allowlist target object_kind, malformed effect dict), `E_NOT_FOUND` (target_object_id from alias not found in objects), `E_REFUSAL_T01` (target alias unresolvable), `E_REFUSAL_T43` (SQL trigger backstop refusing per-effect-kind target object_kind coupling violation), `E_REFUSAL_CHECK` (UNIQUE(event_id, ord) violation), `E_ATOM_LENGTH` (atom outside 8-480 chars).
+
+**Effect-kind enum at v1 (closed CHECK; DV-S204-1 D-1 P-1+P-2 over P-3 codex; 2-value tight per AR-S203-1 polymorphism-shape-without-substance lesson; codex 6-value preserved as M-2 forward-direction).**
+- `invalidates-assumption` — event-claim contradicts a registered assumption; target.object_kind=assumption.
+- `confirms-assumption` — event-claim corroborates a registered assumption; counters DR-bias toward negative-only effect-kinds per AR-S202-1 cross-app generalization.
+
+**Per-effect-kind target object_kind allowlist (closed CHECK via T-43 trigger; DV-S204-1 D-2 P-1+P-3 stance; P-2 broader allowlist as M-1 watch-trigger).** At v1 both effect kinds bind target to `assumption`. T-43 SQL trigger refuses non-assumption target on insert; handler-side validation fires earlier with actionable error message naming the effect_kind + resolved target_kind + allowed target_kinds. v2 widens per-effect-kind allowlist via T-15-CALIBRATED rebuild + T-43 amendment when (a) Selvedge ships node/risk/resolution_path primitives or (b) external-app substrates register these object_kinds.
+
+**Inert at v1 (DV-S204-1 C-3 universal + codex named edit #4).** invalidates-assumption does NOT auto-set `assumption_ledger.status='invalidated'`. Events record sourced external claims and intended effects; agent/operator decides if AR.status transitions via subsequent `assumption-status-update` submit. Mirrors S203 cycle no-auto-SR precedent (cycle row IS proof of observation; non-substantial cycles emit zero SL rows). Codex blind-spot acknowledged in EF-S204-1: external applications may demand handler-side cascade semantics; M-3 watch-trigger preserved.
+
+**Object-registration.** Every event_ledger row registers as a first-class object with alias `EV-S<wno>-<seq>` per DV-S204-1 C-5; object_kind=`event` (drops `_ledger` suffix per DV-S198-1 P-1 stance precedent). Workspace-scoped sequence per session matches DV/EF/OI/FR/SL/AR/CYC convention. event_effects child rows do NOT register as objects (mirrors decision_supports + decision_effects + cycle_trigger precedent: child rows are sub-records of the parent typed object).
+
+**SL forward-FK deferred to v2 (DV-S204-1 C-4 + codex named edit #5).** `supersession_ledger.origin_event_id` is NOT shipped at v1 per universal P-1+P-2+P-3 convergence + S197 deferral preserved. v1 ships event primitive first; v2 wires SL provenance when an immediate producer + invariant exists. R-1.3 alternative rejected as too_large_for_session.
+
+**Watch-triggers (DV-S204-1 minorities preserved).** M-1 P-2 4-value enum + wider allowlist {assumption, decision_v2}: if calibration-EFs across N>=3 future sessions surface attempted-but-refused supersedes-claim or raises-concern shapes mapping to existing-decision_v2-or-supersession_ledger targets, gate-promotion OI for enum widening + per-effect-kind coupling extension. M-2 P-3 codex 6-value enum + node/risk/resolution-path target kinds: if Selvedge ships typed node/risk/resolution-path primitives in future sessions OR an external-application substrate registers these object_kinds, gate-promotion OI for full 6-value codex enum widening. M-3 codex blind-spot auto-cascade alternative: if calibration-EFs surface external-application demand for handler-side cascade semantics, gate-promotion OI for cascade-handler shape.
+
+**Cross-application generalization (AR-S202-1 carry-forward).** Future external applications will not all be disaster-recovery focused. Plausible non-DR event domains: subscription/contract events (signup, payment-received, churn, renewal-confirmed); compliance audit events (finding-issued, control-failed, attestation-received); ML deployment events (drift-detected, retrain-completed, threshold-breached); engineering events (deploy-completed, incident-opened, SLO-violated); risk-reassessment events (scenario-update, exposure-changed). The v1 enum=2-value + allowlist=assumption-only ships polymorphism *shape* without speculating on subject_kind-specific semantics; M-1 + M-2 watch-triggers surface the paths to enum + allowlist extension when cross-app evidence accumulates. Codex blind-spot: DR overweights "new bad news invalidates" framing; many domains have positive events ("renewal confirmed", "compliance attested") — counter-balanced by `confirms-assumption` admit at v1.
+
 
 ## 7. Validate — and run the coding review loop on any code change
 
