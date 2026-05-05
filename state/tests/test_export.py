@@ -25,7 +25,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import PRIMARY_DB, WORKSPACE, _coverage_subprocess_env
+from conftest import WORKSPACE, _coverage_subprocess_env
 
 
 def _run_cli_in(workspace: Path, args: list[str]) -> dict:

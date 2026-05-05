@@ -8,7 +8,7 @@ import sqlite3
 
 import pytest
 
-from conftest import PRIMARY_DB
+
 
 
 # ---------------------------------------------------------------------------

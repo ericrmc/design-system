@@ -19,7 +19,7 @@ from __future__ import annotations
 import json
 import sqlite3
 
-from conftest import PRIMARY_DB, _run_cli
+from conftest import _run_cli
 
 
 def _seed_two_efs() -> tuple[str, str]:
@@ -64,7 +64,7 @@ def test_admit_minimal_payload_returns_alias(clean_substrate):
     assert r["cite_object_id"] is None
 
 
-def test_object_registration_lands_in_objects(clean_substrate):
+def test_object_registration_lands_in_objects(clean_substrate, db_path):
     a, b = _seed_two_efs()
     res = _submit_sl({
         "source": a, "target": b,
@@ -72,7 +72,7 @@ def test_object_registration_lands_in_objects(clean_substrate):
         "reason": "Object-registration test: row should appear in objects with kind=supersession_ledger.",
     })
     alias = res["out"]["result"]["alias"]
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT object_kind, typed_row_id FROM objects WHERE alias=?", (alias,)
@@ -159,10 +159,10 @@ def test_unique_constraint_refused(clean_substrate):
     assert r2["out"]["code"] in ("E_REFUSAL_CHECK", "E_REFUSAL_UNIQUE"), r2
 
 
-def test_optional_cite_resolves(clean_substrate):
+def test_optional_cite_resolves(clean_substrate, db_path):
     a, b = _seed_two_efs()
     # Use the session alias (S<wno>) as the cite — any resolvable alias works.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         sess_alias = conn.execute(
             "SELECT alias FROM objects WHERE object_kind='session' LIMIT 1"
@@ -256,7 +256,7 @@ def test_all_five_relation_kinds_admit(clean_substrate):
         assert res["out"]["result"]["relation_kind"] == rk
 
 
-def test_alias_resolves_post_insert(clean_substrate):
+def test_alias_resolves_post_insert(clean_substrate, db_path):
     """The ledger row's alias must resolve via objects.alias for chain-walk
     reachability (D-S197-1 D-2 P-2-stance: object-registration is load-bearing)."""
     a, b = _seed_two_efs()
@@ -266,7 +266,7 @@ def test_alias_resolves_post_insert(clean_substrate):
         "reason": "Test that the ledger alias resolves via objects.alias post-insert.",
     })
     sl_alias = res["out"]["result"]["alias"]
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         oid = conn.execute("SELECT object_id FROM objects WHERE alias=?", (sl_alias,)).fetchone()[0]
         # And the back-pointer on the ledger row matches.
@@ -279,13 +279,13 @@ def test_alias_resolves_post_insert(clean_substrate):
     assert oid == ledger_oid
 
 
-def test_legacy_backfill_conditional_in_clean_init(clean_substrate):
+def test_legacy_backfill_conditional_in_clean_init(clean_substrate, db_path):
     """Migration 048's legacy backfill is conditional via WHERE EXISTS: on a
     fresh init with no SPEC-prompt-development-v2 / DV-S186-1 / S186 session
     objects seeded, the backfill is a no-op so test substrates carry zero
     supersession_ledger rows post-init. The production substrate carries the
     historical row at SL-S186-1 (verified in the production tree, not here)."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         n = conn.execute("SELECT COUNT(*) FROM supersession_ledger").fetchone()[0]
     finally:

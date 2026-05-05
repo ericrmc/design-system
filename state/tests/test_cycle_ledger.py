@@ -31,7 +31,7 @@ import json
 import re
 import sqlite3
 
-from conftest import PRIMARY_DB, _run_cli
+from conftest import _run_cli
 
 
 def _seed_assumption(statement: str = "Seed assumption for cycle_ledger tests subject path.") -> str:
@@ -154,9 +154,9 @@ def test_subject_allowlist_v1_refuses_decision_subject(clean_substrate):
     assert "allowlist" in detail or "assumption" in detail, body
 
 
-def test_t42_sql_trigger_refuses_non_allowlist_subject_via_direct_insert():
+def test_t42_sql_trigger_refuses_non_allowlist_subject_via_direct_insert(clean_substrate, db_path):
     """T-42 SQL trigger backstop fires when handler-side check is bypassed."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
     try:
@@ -168,18 +168,27 @@ def test_t42_sql_trigger_refuses_non_allowlist_subject_via_direct_insert():
         assert row is not None, "no non-assumption object available for T-42 test"
         non_assumption_oid = row["object_id"]
 
-        # Atomize a snapshot so we have a valid FK target.
-        atom_row = conn.execute(
-            "SELECT atom_id FROM text_atoms LIMIT 1"
-        ).fetchone()
-        assert atom_row is not None
-        atom_id = atom_row["atom_id"]
-
         # Find the current open session for the FK.
         sess_row = conn.execute(
             "SELECT session_id FROM sessions ORDER BY session_id DESC LIMIT 1"
         ).fetchone()
         sess_id = sess_row["session_id"]
+
+        # Atomize a snapshot so we have a valid FK target. The fresh tmp DB
+        # may not yet carry text_atoms (S206 OI-S205-1 isolation: per-test
+        # tmp DB starts empty apart from session-open inserts); seed one.
+        atom_row = conn.execute(
+            "SELECT atom_id FROM text_atoms LIMIT 1"
+        ).fetchone()
+        if atom_row is None:
+            cur = conn.execute(
+                "INSERT INTO text_atoms (atom_type, text, created_session_id) "
+                "VALUES (?,?,?)",
+                ("claim", "seed atom for T-42 trigger backstop test fixture body.", sess_id),
+            )
+            atom_id = cur.lastrowid
+        else:
+            atom_id = atom_row["atom_id"]
 
         try:
             conn.execute(
@@ -260,7 +269,7 @@ def test_snapshot_atom_length_refused(clean_substrate):
     assert body.get("code") == "E_ATOM_LENGTH", body
 
 
-def test_object_registration_lands_in_objects_with_kind_cycle(clean_substrate):
+def test_object_registration_lands_in_objects_with_kind_cycle(clean_substrate, db_path):
     ar = _seed_assumption()
     res = _submit_cycle({
         "subject": ar,
@@ -268,7 +277,7 @@ def test_object_registration_lands_in_objects_with_kind_cycle(clean_substrate):
         "classification": "non-substantial",
     })
     alias = res["out"]["result"]["alias"]
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     try:
         row = conn.execute(

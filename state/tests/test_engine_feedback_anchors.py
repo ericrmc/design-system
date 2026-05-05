@@ -15,7 +15,7 @@ from __future__ import annotations
 import json
 import sqlite3
 
-from conftest import PRIMARY_DB, _run_cli
+from conftest import _run_cli
 
 
 def _submit_ef(payload: dict, expect_ok: bool = True) -> dict:
@@ -43,9 +43,9 @@ def test_t37_refuses_harvest_without_anchors(clean_substrate):
     assert "harvest-prefixed" in res["out"]["detail"]
 
 
-def test_t37_admits_harvest_with_anchors(clean_substrate):
+def test_t37_admits_harvest_with_anchors(clean_substrate, db_path):
     # Find a resolvable alias — the seed session's session row should have one.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT alias FROM objects WHERE alias IS NOT NULL LIMIT 1"
@@ -65,7 +65,7 @@ def test_t37_admits_harvest_with_anchors(clean_substrate):
     assert res["out"]["result"]["anchors"][0]["anchor_role"] == "about"
 
     fid = res["out"]["result"]["feedback_id"]
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         n_anchors = conn.execute(
             "SELECT COUNT(*) FROM engine_feedback_anchors WHERE feedback_id=?", (fid,)
@@ -97,8 +97,8 @@ def test_unresolvable_anchor_alias_refused(clean_substrate):
     assert "DV-NEVER-EXISTED-9999" in res["out"]["detail"]
 
 
-def test_invalid_anchor_role_refused(clean_substrate):
-    conn = sqlite3.connect(str(PRIMARY_DB))
+def test_invalid_anchor_role_refused(clean_substrate, db_path):
+    conn = sqlite3.connect(str(db_path))
     try:
         seed_alias = conn.execute(
             "SELECT alias FROM objects WHERE alias IS NOT NULL LIMIT 1"

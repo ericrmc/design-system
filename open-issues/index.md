@@ -4,12 +4,6 @@ Issues live in the `issues` substrate table. The files below are a
 deterministic export from substrate rows; do not hand-edit. Use
 `bin/selvedge submit issue` and `submit issue-disposition` to mutate.
 
-## Open
-
-| Alias | Priority | Status | Title |
-|-------|----------|--------|-------|
-| [OI-S205-1](OI-S205-1.md) | MEDIUM | open | Refactor pytest fixtures + 19 test files to use ephemeral tmp DB via SELVEDGE_DB_PATH; stop mutating primary substrate during test runs. |
-
 ## Resolved
 
 | Alias | Resolved-in | Title |
@@ -32,3 +26,4 @@ deterministic export from substrate rows; do not hand-edit. Use
 | [OI-S196-5](resolved/OI-S196-5.md) | S199 | C-5 prospective-scoping discipline: methodology-spec + session-close substrate-gate refusing close without assumptions-implied-by-artefacts review. |
 | [OI-S196-6](resolved/OI-S196-6.md) | S203 | C-6 rolling-renewal cycle primitive: built-in cycle tracking + auto-SR suppression for non-substantial cycles + closure-path logic. |
 | [OI-S196-7](resolved/OI-S196-7.md) | S200 | Prompt-development spec-clause amendment per EF-S196-2 bounded-scope principle for graduation-discipline; spec-only-session candidate. |
+| [OI-S205-1](resolved/OI-S205-1.md) | S206 | Refactor pytest fixtures + 19 test files to use ephemeral tmp DB via SELVEDGE_DB_PATH; stop mutating primary substrate during test runs. |

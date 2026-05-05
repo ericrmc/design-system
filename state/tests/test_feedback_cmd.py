@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 import sqlite3
 
-from conftest import PRIMARY_DB, _run_cli
+from conftest import _run_cli
 
 
 def _close_open_session() -> None:
@@ -42,7 +42,7 @@ def _close_open_session() -> None:
     assert sc["rc"] == 0, sc
 
 
-def test_feedback_passthrough_uses_open_session(clean_substrate):
+def test_feedback_passthrough_uses_open_session(clean_substrate, db_path):
     res = _run_cli([
         "feedback",
         "passthrough body for the engine-feedback wrapper test fixture.",
@@ -53,7 +53,7 @@ def test_feedback_passthrough_uses_open_session(clean_substrate):
     assert res["out"]["result"]["intake_session"] is False
     assert res["out"]["result"]["engine_feedback"]["flag"] == "observation"
     # No new session opened — only one open session in the substrate (the fixture).
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         n_open = conn.execute(
             "SELECT COUNT(*) FROM sessions WHERE status='open'"
@@ -65,7 +65,7 @@ def test_feedback_passthrough_uses_open_session(clean_substrate):
     assert n_ef == 1
 
 
-def test_feedback_intake_wraps_meta_session(clean_substrate):
+def test_feedback_intake_wraps_meta_session(clean_substrate, db_path):
     _close_open_session()
     res = _run_cli([
         "feedback",
@@ -79,7 +79,7 @@ def test_feedback_intake_wraps_meta_session(clean_substrate):
     assert sess_info["slug"].startswith("feedback-intake-")
     ef_alias = res["out"]["result"]["engine_feedback"]["alias"]
     # All four substrate rows landed atomically in one write_tx.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         n_open = conn.execute(
             "SELECT COUNT(*) FROM sessions WHERE status='open'"
@@ -105,7 +105,7 @@ def test_feedback_intake_wraps_meta_session(clean_substrate):
     assert ef_alias.startswith("EF-S")
 
 
-def test_feedback_dry_run_persists_nothing(clean_substrate):
+def test_feedback_dry_run_persists_nothing(clean_substrate, db_path):
     _close_open_session()
     res = _run_cli([
         "feedback",
@@ -117,7 +117,7 @@ def test_feedback_dry_run_persists_nothing(clean_substrate):
     assert res["out"]["ok"] is True
     assert res["out"].get("dry_run") is True
     # Nothing should have persisted: no engine_feedback row, no new session.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         n_ef = conn.execute("SELECT COUNT(*) FROM engine_feedback").fetchone()[0]
         n_open = conn.execute(

@@ -12,7 +12,7 @@ import json
 
 import pytest
 
-from conftest import PRIMARY_DB, WORKSPACE
+from conftest import WORKSPACE
 
 
 # ---------------------------------------------------------------------------
@@ -624,7 +624,7 @@ def test_legacy_import_inserts_row_and_atom(clean_substrate, selvedge_cli, db):
 # ---------------------------------------------------------------------------
 
 
-def _seed_spec_version(selvedge_cli) -> int:
+def _seed_spec_version(selvedge_cli, db_path) -> int:
     body_dir = WORKSPACE / "state" / "tests" / "spec-bodies"
     body_dir.mkdir(parents=True, exist_ok=True)
     body = body_dir / "spec-section-fixture.md"
@@ -643,7 +643,7 @@ def _seed_spec_version(selvedge_cli) -> int:
     assert res["out"]["ok"], res
     # The result returns alias; we want the spec_version_id.
     import sqlite3
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT spec_version_id FROM spec_versions WHERE spec_id='section-fixture' AND version=1"
@@ -653,8 +653,8 @@ def _seed_spec_version(selvedge_cli) -> int:
     return row[0]
 
 
-def test_spec_section_inserts_with_intent(clean_substrate, selvedge_cli, db):
-    sv_id = _seed_spec_version(selvedge_cli)
+def test_spec_section_inserts_with_intent(clean_substrate, selvedge_cli, db, db_path):
+    sv_id = _seed_spec_version(selvedge_cli, db_path)
     res = selvedge_cli(
         [
             "submit", "spec-section", "--payload",
@@ -676,8 +676,8 @@ def test_spec_section_inserts_with_intent(clean_substrate, selvedge_cli, db):
     assert row["intent_atom_id"] is not None
 
 
-def test_spec_clause_inserts_with_normative_level(clean_substrate, selvedge_cli, db):
-    sv_id = _seed_spec_version(selvedge_cli)
+def test_spec_clause_inserts_with_normative_level(clean_substrate, selvedge_cli, db, db_path):
+    sv_id = _seed_spec_version(selvedge_cli, db_path)
     sec = selvedge_cli(
         [
             "submit", "spec-section", "--payload",
@@ -801,8 +801,8 @@ def test_t34_decision_supports_null_cite_on_required_basis_refused(clean_substra
     assert "E_REFUSAL_T34" in res["err"], res
 
 
-def test_t35_spec_clause_null_source_decision_refused(clean_substrate, selvedge_cli, db):
-    sv_id = _seed_spec_version(selvedge_cli)
+def test_t35_spec_clause_null_source_decision_refused(clean_substrate, selvedge_cli, db, db_path):
+    sv_id = _seed_spec_version(selvedge_cli, db_path)
     sec = selvedge_cli(
         ["submit", "spec-section", "--payload", json.dumps({
             "session_no": 1, "spec_version_id": sv_id, "ord": 1,
@@ -820,10 +820,10 @@ def test_t35_spec_clause_null_source_decision_refused(clean_substrate, selvedge_
     assert "E_REFUSAL_T35" in res["err"]
 
 
-def test_sessions_slug_unique_index_refuses_duplicate(clean_substrate, db):
+def test_sessions_slug_unique_index_refuses_duplicate(clean_substrate, db, db_path):
     """Migration 037 added UNIQUE index on sessions.slug."""
     import sqlite3
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
@@ -868,13 +868,13 @@ def test_atom_length_support_claim_widened_to_480(clean_substrate, selvedge_cli)
     assert res["out"]["ok"], res
 
 
-def test_harness_alias_registered_in_objects_post_033(clean_substrate, db):
+def test_harness_alias_registered_in_objects_post_033(clean_substrate, db, db_path):
     """Migration 033 widened objects.object_kind CHECK to admit reference_harness
     and registered every existing reference_harnesses.alias. Verify that an
     INSERT of a reference_harness object_kind row succeeds (proves CHECK
     widening took effect)."""
     import sqlite3
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         conn.execute("PRAGMA foreign_keys=ON")
         conn.execute(

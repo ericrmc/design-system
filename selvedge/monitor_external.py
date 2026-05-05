@@ -21,7 +21,7 @@ from pathlib import Path
 
 from .connection import Conn
 from .errors import SelvedgeError
-from .paths import WORKSPACE_ROOT_ENV, workspace_root
+from .paths import WORKSPACE_ROOT_ENV, db_path, workspace_root
 from .submit import SUBMIT_HANDLERS
 from .submit._helpers import _atom_session_id, _check_role_capability
 
@@ -408,7 +408,11 @@ def _me_harvest_ef(args) -> int:
             "ambiguous for write operations across peer workspaces",
         )
     self_root = workspace_root()
-    self_db = self_root / "state" / "selvedge.sqlite"
+    # Respect SELVEDGE_DB_PATH override (S206 DV-S206-1, OI-S205-1) so test
+    # harnesses pointing at an ephemeral substrate do not write to the live
+    # workspace primary. Falls back to the workspace-relative default when
+    # the env var is unset.
+    self_db = db_path()
     if not self_db.exists():
         raise SelvedgeError("E_NO_WORKSPACE", f"missing self-dev substrate: {self_db}")
     root, peer_db = _me_validate_external(args.workspace)

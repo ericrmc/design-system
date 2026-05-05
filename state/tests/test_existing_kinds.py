@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import PRIMARY_DB, WORKSPACE
+from conftest import WORKSPACE
 
 
 def test_session_open_creates_session_and_object(clean_substrate, db):
@@ -33,11 +33,11 @@ def test_session_open_creates_session_and_object(clean_substrate, db):
     assert obj["alias"] == f"S{row['workspace_session_no']:03d}"
 
 
-def test_t10_session_must_be_contiguous(clean_substrate, db):
+def test_t10_session_must_be_contiguous(clean_substrate, db, db_path):
     """T-10 trigger refuses non-contiguous session_no. Engine-v20+ session-open
     handler ignores caller-supplied session_no (uses MAX+1), so T-10 is only
     reachable via direct SQL — exercised here to keep the trigger covered."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -519,7 +519,7 @@ def test_spec_version_inline_body_md_no_orphan_file_on_constraint_refusal(clean_
         body_path.unlink(missing_ok=True)
 
 
-def test_spec_version_two_active_refused_by_t03(clean_substrate, selvedge_cli, db):
+def test_spec_version_two_active_refused_by_t03(clean_substrate, selvedge_cli, db, db_path):
     """T-03 must refuse a direct INSERT of a second active row for the same spec_id.
     Confirms the unique partial index is the structural guarantee that the handler
     reorder relies on."""
@@ -541,7 +541,7 @@ def test_spec_version_two_active_refused_by_t03(clean_substrate, selvedge_cli, d
         )
         assert r1["out"]["ok"], r1
 
-        conn = sqlite3.connect(str(PRIMARY_DB))
+        conn = sqlite3.connect(str(db_path))
         try:
             with pytest.raises(sqlite3.IntegrityError):
                 conn.execute(
@@ -556,11 +556,11 @@ def test_spec_version_two_active_refused_by_t03(clean_substrate, selvedge_cli, d
         body.unlink(missing_ok=True)
 
 
-def test_session_close_after_unresolved_workitems_refused(clean_substrate, selvedge_cli, submit_minimal_close_record, db):
+def test_session_close_after_unresolved_workitems_refused(clean_substrate, selvedge_cli, submit_minimal_close_record, db, db_path):
     """T-11 demonstrator. We can't insert a work_item via the CLI yet (no
     submit kind), so we go via direct sqlite3 with the __cli__ capability
     that's already seeded for work_items.insert."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         # Pre-create a work_item with status='queued' so it blocks close.
         # This is an out-of-band write that mirrors what a future submit
@@ -603,7 +603,7 @@ def test_session_close_admitted_when_workitems_clear(clean_substrate, selvedge_c
     assert row["status"] == "closed"
 
 
-def test_t06_closed_decision_immutable_via_sql(clean_substrate, selvedge_cli, submit_minimal_close_record):
+def test_t06_closed_decision_immutable_via_sql(clean_substrate, selvedge_cli, submit_minimal_close_record, db_path):
     selvedge_cli(
         [
             "submit",
@@ -635,7 +635,7 @@ def test_t06_closed_decision_immutable_via_sql(clean_substrate, selvedge_cli, su
             json.dumps({"session_no": 1, "engine_version_at_close": "engine-v17"}),
         ]
     )
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute("UPDATE decisions SET title='mutated' WHERE decision_no=1")
@@ -644,7 +644,7 @@ def test_t06_closed_decision_immutable_via_sql(clean_substrate, selvedge_cli, su
         conn.close()
 
 
-def _seed_issue_and_work_item(selvedge_cli, *, alias="OI-S001-1", priority="MEDIUM"):
+def _seed_issue_and_work_item(selvedge_cli, db_path, *, alias="OI-S001-1", priority="MEDIUM"):
     """Helper: create one issue (via submit issue) and one work_item (via direct
     SQL since work_items.insert is __cli__-permitted but lacks a submit kind)
     and return (issue_id, work_item_id)."""
@@ -665,7 +665,7 @@ def _seed_issue_and_work_item(selvedge_cli, *, alias="OI-S001-1", priority="MEDI
     )
     assert res["out"]["ok"], res
     iid = res["out"]["result"]["issue_id"]
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         cur = conn.execute(
             "INSERT INTO work_items (session_id, kind, payload_json, status) "
@@ -678,8 +678,8 @@ def _seed_issue_and_work_item(selvedge_cli, *, alias="OI-S001-1", priority="MEDI
     return iid, wid
 
 
-def test_issue_work_item_happy_path_inserts_link(clean_substrate, selvedge_cli, db):
-    iid, wid = _seed_issue_and_work_item(selvedge_cli)
+def test_issue_work_item_happy_path_inserts_link(clean_substrate, selvedge_cli, db, db_path):
+    iid, wid = _seed_issue_and_work_item(selvedge_cli, db_path)
     res = selvedge_cli(
         [
             "submit",
@@ -698,8 +698,8 @@ def test_issue_work_item_happy_path_inserts_link(clean_substrate, selvedge_cli, 
     assert row["relation"] == "resolves"
 
 
-def test_issue_work_item_resolves_alias(clean_substrate, selvedge_cli):
-    iid, wid = _seed_issue_and_work_item(selvedge_cli, alias="OI-S001-2")
+def test_issue_work_item_resolves_alias(clean_substrate, selvedge_cli, db_path):
+    iid, wid = _seed_issue_and_work_item(selvedge_cli, db_path, alias="OI-S001-2")
     res = selvedge_cli(
         [
             "submit",
@@ -720,8 +720,8 @@ def test_issue_work_item_resolves_alias(clean_substrate, selvedge_cli):
     assert res["out"]["result"]["relation"] == "informs"
 
 
-def test_issue_work_item_t24_refuses_resolve_with_queued_link(clean_substrate, selvedge_cli):
-    iid, wid = _seed_issue_and_work_item(selvedge_cli, alias="OI-S001-3")
+def test_issue_work_item_t24_refuses_resolve_with_queued_link(clean_substrate, selvedge_cli, db_path):
+    iid, wid = _seed_issue_and_work_item(selvedge_cli, db_path, alias="OI-S001-3")
     selvedge_cli(
         [
             "submit",
@@ -731,7 +731,7 @@ def test_issue_work_item_t24_refuses_resolve_with_queued_link(clean_substrate, s
         ]
     )
     # T-24 refuses moving issue to resolved while linked work_item is queued.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute("UPDATE issues SET status='resolved' WHERE issue_id=?", (iid,))
@@ -740,8 +740,8 @@ def test_issue_work_item_t24_refuses_resolve_with_queued_link(clean_substrate, s
         conn.close()
 
 
-def test_issue_work_item_unknown_work_item_refused(clean_substrate, selvedge_cli):
-    iid, _wid = _seed_issue_and_work_item(selvedge_cli, alias="OI-S001-4")
+def test_issue_work_item_unknown_work_item_refused(clean_substrate, selvedge_cli, db_path):
+    iid, _wid = _seed_issue_and_work_item(selvedge_cli, db_path, alias="OI-S001-4")
     res = selvedge_cli(
         [
             "submit",
@@ -755,8 +755,8 @@ def test_issue_work_item_unknown_work_item_refused(clean_substrate, selvedge_cli
     assert "E_NOT_FOUND" in res["err"]
 
 
-def test_t25_lease_renewal_monotonic_refuses_backwards(clean_substrate):
-    conn = sqlite3.connect(str(PRIMARY_DB))
+def test_t25_lease_renewal_monotonic_refuses_backwards(clean_substrate, db_path):
+    conn = sqlite3.connect(str(db_path))
     try:
         conn.execute(
             "INSERT INTO work_items (session_id, kind, payload_json, status, leased_by, leased_at, lease_expires_at) "
@@ -795,8 +795,8 @@ def test_t25_lease_renewal_monotonic_refuses_backwards(clean_substrate):
         conn.close()
 
 
-def test_issue_work_item_unknown_issue_id_refused(clean_substrate, selvedge_cli):
-    _iid, wid = _seed_issue_and_work_item(selvedge_cli, alias="OI-S001-5")
+def test_issue_work_item_unknown_issue_id_refused(clean_substrate, selvedge_cli, db_path):
+    _iid, wid = _seed_issue_and_work_item(selvedge_cli, db_path, alias="OI-S001-5")
     res = selvedge_cli(
         [
             "submit",
@@ -810,11 +810,11 @@ def test_issue_work_item_unknown_issue_id_refused(clean_substrate, selvedge_cli)
     assert "E_NOT_FOUND" in res["err"]
 
 
-def _seed_engine_feedback(*, flag="observation", body="x"*40, disposition=None):
+def _seed_engine_feedback(db_path, *, flag="observation", body="x"*40, disposition=None):
     """Helper: insert one engine_feedback row tied to S001 with matching objects
     row (mirrors the raw-SQL pattern used in S092 since there is no submit
     handler for engine_feedback yet — see EF-S092-4 follow-up note)."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         cur = conn.execute(
             "INSERT INTO engine_feedback (session_id, flag, body_md, disposition) VALUES (1, ?, ?, ?)",
@@ -849,8 +849,9 @@ def test_orient_includes_untriaged_feedback_section_when_empty(clean_substrate, 
     assert packet["untriaged_feedback_truncated"] is False
 
 
-def test_orient_surfaces_undisposed_feedback(clean_substrate, selvedge_cli):
+def test_orient_surfaces_undisposed_feedback(clean_substrate, selvedge_cli, db_path):
     fid, alias = _seed_engine_feedback(
+        db_path,
         flag="observation",
         body="**bug heading**\n\nLong body that spans paragraphs and should not appear in the orient head.",
     )
@@ -864,15 +865,15 @@ def test_orient_surfaces_undisposed_feedback(clean_substrate, selvedge_cli):
     assert "\n" not in row["head"]
 
 
-def test_orient_filters_disposed_feedback(clean_substrate, selvedge_cli):
-    _seed_engine_feedback(disposition="triaged-into-OI-001")
+def test_orient_filters_disposed_feedback(clean_substrate, selvedge_cli, db_path):
+    _seed_engine_feedback(db_path, disposition="triaged-into-OI-001")
     packet = _orient_json(selvedge_cli)
     assert packet["untriaged_feedback_total"] == 0
     assert packet["untriaged_feedback"] == []
 
 
-def test_orient_markdown_renders_feedback_table(clean_substrate, selvedge_cli):
-    _seed_engine_feedback(body="head with a | pipe inside should be escaped")
+def test_orient_markdown_renders_feedback_table(clean_substrate, selvedge_cli, db_path):
+    _seed_engine_feedback(db_path, body="head with a | pipe inside should be escaped")
     res = selvedge_cli(["orient"])
     assert res["rc"] == 0, res
     # The non-JSON form returns markdown; conftest's parser falls back to
@@ -883,16 +884,16 @@ def test_orient_markdown_renders_feedback_table(clean_substrate, selvedge_cli):
     assert "head with a \\| pipe inside should be escaped" in out
 
 
-def test_orient_head_skips_leading_blank_lines(clean_substrate, selvedge_cli):
-    _seed_engine_feedback(body="\n\n\nactual content after blank lines")
+def test_orient_head_skips_leading_blank_lines(clean_substrate, selvedge_cli, db_path):
+    _seed_engine_feedback(db_path, body="\n\n\nactual content after blank lines")
     packet = _orient_json(selvedge_cli)
     assert packet["untriaged_feedback"][0]["head"] == "actual content after blank lines"
 
 
-def test_orient_falls_back_when_feedback_object_missing(clean_substrate, selvedge_cli):
+def test_orient_falls_back_when_feedback_object_missing(clean_substrate, selvedge_cli, db_path):
     """A feedback row without a paired objects row (legacy / out-of-band write)
     must still appear in orient with a synthetic alias rather than NULL."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         cur = conn.execute(
             "INSERT INTO engine_feedback (session_id, flag, body_md) VALUES (1, 'observation', 'orphan row')"

@@ -24,7 +24,7 @@ import sqlite3
 
 import pytest
 
-from conftest import PRIMARY_DB
+
 
 
 # ---------------------------------------------------------------------------
@@ -253,10 +253,10 @@ def test_t32_no_result_after_seal(clean_substrate, selvedge_cli):
 # ---------------------------------------------------------------------------
 
 
-def test_t33_invalid_transition_open_to_expired(clean_substrate, selvedge_cli, db):
+def test_t33_invalid_transition_open_to_expired(clean_substrate, selvedge_cli, db, db_path):
     h = _open_harness(selvedge_cli)
     # Direct UPDATE bypasses the seal handler. Triggers still apply.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -320,7 +320,7 @@ def test_assumption_basis_records_origin_and_status(clean_substrate, selvedge_cl
     assert row["origin_session_id"] is not None
 
 
-def test_t32_no_update_after_seal(clean_substrate, selvedge_cli, db):
+def test_t32_no_update_after_seal(clean_substrate, selvedge_cli, db, db_path):
     h = _open_harness(selvedge_cli)
     claim = selvedge_cli([
         "submit", "harness-claim", "--payload", json.dumps({
@@ -332,7 +332,7 @@ def test_t32_no_update_after_seal(clean_substrate, selvedge_cli, db):
         "session_no": 1, "harness_id": h["harness_id"],
     })])
     # Direct UPDATE on a sealed claim is refused by T-32 BEFORE UPDATE.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -345,7 +345,7 @@ def test_t32_no_update_after_seal(clean_substrate, selvedge_cli, db):
         conn.close()
 
 
-def test_t32_no_delete_after_seal(clean_substrate, selvedge_cli, db):
+def test_t32_no_delete_after_seal(clean_substrate, selvedge_cli, db, db_path):
     h = _open_harness(selvedge_cli)
     claim = selvedge_cli([
         "submit", "harness-claim", "--payload", json.dumps({
@@ -356,7 +356,7 @@ def test_t32_no_delete_after_seal(clean_substrate, selvedge_cli, db):
     selvedge_cli(["submit", "harness-seal", "--payload", json.dumps({
         "session_no": 1, "harness_id": h["harness_id"],
     })])
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -369,12 +369,12 @@ def test_t32_no_delete_after_seal(clean_substrate, selvedge_cli, db):
         conn.close()
 
 
-def test_t36_sealed_harness_immutable_non_status_columns(clean_substrate, selvedge_cli, db):
+def test_t36_sealed_harness_immutable_non_status_columns(clean_substrate, selvedge_cli, db, db_path):
     h = _open_harness(selvedge_cli)
     selvedge_cli(["submit", "harness-seal", "--payload", json.dumps({
         "session_no": 1, "harness_id": h["harness_id"],
     })])
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -414,14 +414,14 @@ def test_t37_trigger_fire_cascades_to_reopened(clean_substrate, selvedge_cli, db
     assert row["reopened_session_id"] == fixture_session_id
 
 
-def test_t36_lifecycle_columns_immutable_outside_transition(clean_substrate, selvedge_cli, db):
+def test_t36_lifecycle_columns_immutable_outside_transition(clean_substrate, selvedge_cli, db, db_path):
     """T-36 (post-iter-2): rewriting sealed_at on a sealed harness without
     changing status is timeline falsification and refused."""
     h = _open_harness(selvedge_cli)
     selvedge_cli(["submit", "harness-seal", "--payload", json.dumps({
         "session_no": 1, "harness_id": h["harness_id"],
     })])
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -435,12 +435,12 @@ def test_t36_lifecycle_columns_immutable_outside_transition(clean_substrate, sel
         conn.close()
 
 
-def test_t38_no_delete_after_open(clean_substrate, selvedge_cli, db):
+def test_t38_no_delete_after_open(clean_substrate, selvedge_cli, db, db_path):
     h = _open_harness(selvedge_cli)
     selvedge_cli(["submit", "harness-seal", "--payload", json.dumps({
         "session_no": 1, "harness_id": h["harness_id"],
     })])
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -453,7 +453,7 @@ def test_t38_no_delete_after_open(clean_substrate, selvedge_cli, db):
         conn.close()
 
 
-def test_t32_assumptions_no_update_after_seal(clean_substrate, selvedge_cli, db):
+def test_t32_assumptions_no_update_after_seal(clean_substrate, selvedge_cli, db, db_path):
     h = _open_harness(selvedge_cli)
     res = selvedge_cli([
         "submit", "harness-assumption", "--payload", json.dumps({
@@ -465,7 +465,7 @@ def test_t32_assumptions_no_update_after_seal(clean_substrate, selvedge_cli, db)
     selvedge_cli(["submit", "harness-seal", "--payload", json.dumps({
         "session_no": 1, "harness_id": h["harness_id"],
     })])
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -478,7 +478,7 @@ def test_t32_assumptions_no_update_after_seal(clean_substrate, selvedge_cli, db)
         conn.close()
 
 
-def test_t32_assumptions_no_delete_after_seal(clean_substrate, selvedge_cli, db):
+def test_t32_assumptions_no_delete_after_seal(clean_substrate, selvedge_cli, db, db_path):
     h = _open_harness(selvedge_cli)
     res = selvedge_cli([
         "submit", "harness-assumption", "--payload", json.dumps({
@@ -490,7 +490,7 @@ def test_t32_assumptions_no_delete_after_seal(clean_substrate, selvedge_cli, db)
     selvedge_cli(["submit", "harness-seal", "--payload", json.dumps({
         "session_no": 1, "harness_id": h["harness_id"],
     })])
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -503,7 +503,7 @@ def test_t32_assumptions_no_delete_after_seal(clean_substrate, selvedge_cli, db)
         conn.close()
 
 
-def test_trigger_pair_check_constraint(clean_substrate, selvedge_cli, db):
+def test_trigger_pair_check_constraint(clean_substrate, selvedge_cli, db, db_path):
     """fired_at and reopened_session_id must be both NULL or both NOT NULL."""
     h = _open_harness(selvedge_cli)
     trig = selvedge_cli([
@@ -515,7 +515,7 @@ def test_trigger_pair_check_constraint(clean_substrate, selvedge_cli, db):
     selvedge_cli(["submit", "harness-seal", "--payload", json.dumps({
         "session_no": 1, "harness_id": h["harness_id"],
     })])
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError):
             # Set fired_at without reopened_session_id — CHECK constraint refuses.

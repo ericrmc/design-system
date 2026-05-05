@@ -14,7 +14,7 @@ import json
 
 import pytest
 
-from conftest import PRIMARY_DB
+
 
 
 def _open_session(selvedge_cli, *, slug: str, kind: str | None = None) -> dict:
@@ -102,7 +102,7 @@ def test_session_open_requires_kind(clean_substrate, selvedge_cli):
     assert _err_payload(res).get("code") == "E_VALIDATION"
 
 
-def test_session_open_accepts_spec_only(clean_substrate, selvedge_cli, db):
+def test_session_open_accepts_spec_only(clean_substrate, selvedge_cli, db, db_path):
     _close_clean(selvedge_cli)
     res = _open_session(selvedge_cli, slug="spec-only-session", kind="spec_only")
     assert res["kind"] == "spec_only"
@@ -216,15 +216,15 @@ def test_review_pass_nonconverged_without_halt_issue_refused(clean_substrate, se
 # ---------------------------------------------------------------------------
 
 
-def _open_coding_session(selvedge_cli, slug: str):
+def _open_coding_session(selvedge_cli, slug: str, db_path):
     """Drain the spec_only fixture session and open a fresh kind=coding session
     so t30 fires on its close attempt."""
     _close_clean_specony(selvedge_cli)
     return _open_session(selvedge_cli, slug=slug, kind="coding")
 
 
-def test_t30_refuses_coding_close_without_review_pass(clean_substrate, selvedge_cli):
-    _open_coding_session(selvedge_cli, "t30-no-pass")
+def test_t30_refuses_coding_close_without_review_pass(clean_substrate, selvedge_cli, db_path):
+    _open_coding_session(selvedge_cli, "t30-no-pass", db_path)
     cr = _submit(
         selvedge_cli,
         "close-record",
@@ -236,8 +236,8 @@ def test_t30_refuses_coding_close_without_review_pass(clean_substrate, selvedge_
     assert "T30" in (res["err"] or "")
 
 
-def test_t30_admits_coding_close_after_clean_pass(clean_substrate, selvedge_cli, db):
-    coding_open = _open_coding_session(selvedge_cli, "t30-happy")
+def test_t30_admits_coding_close_after_clean_pass(clean_substrate, selvedge_cli, db, db_path):
+    coding_open = _open_coding_session(selvedge_cli, "t30-happy", db_path)
     sid = coding_open["session_id"]
     rp = _submit(selvedge_cli, "review-pass", _minimal_review_pass())
     assert rp["out"]["ok"]
@@ -253,8 +253,8 @@ def test_t30_admits_coding_close_after_clean_pass(clean_substrate, selvedge_cli,
     assert row["status"] == "closed"
 
 
-def test_t30_findings_only_does_not_admit_close(clean_substrate, selvedge_cli):
-    _open_coding_session(selvedge_cli, "t30-findings-only")
+def test_t30_findings_only_does_not_admit_close(clean_substrate, selvedge_cli, db_path):
+    _open_coding_session(selvedge_cli, "t30-findings-only", db_path)
     rp = _submit(selvedge_cli, "review-pass", _minimal_review_pass(outcome="findings"))
     assert rp["out"]["ok"]
     cr = _submit(
@@ -288,8 +288,8 @@ def test_t30_admits_spec_only_close_without_review_pass(clean_substrate, selvedg
 # ---------------------------------------------------------------------------
 
 
-def test_halt_path_admits_close_with_open_findings(clean_substrate, selvedge_cli, db):
-    coding_open = _open_coding_session(selvedge_cli, "halt-path-test")
+def test_halt_path_admits_close_with_open_findings(clean_substrate, selvedge_cli, db, db_path):
+    coding_open = _open_coding_session(selvedge_cli, "halt-path-test", db_path)
     sid = coding_open["session_id"]
     # Record an open medium finding (would normally block via T-20).
     rf = _submit(

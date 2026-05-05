@@ -32,7 +32,7 @@ import json
 import re
 import sqlite3
 
-from conftest import PRIMARY_DB, _run_cli
+from conftest import _run_cli
 
 
 def _seed_assumption(statement: str = "Seed assumption for event-ledger tests target path coverage.") -> str:
@@ -196,9 +196,9 @@ def test_refuse_non_assumption_target_object_kind_handler(clean_substrate):
     assert ("assumption" in detail) and ("decision" in detail or "object_kind" in detail), body
 
 
-def test_t43_sql_trigger_refuses_non_assumption_target_via_direct_insert():
+def test_t43_sql_trigger_refuses_non_assumption_target_via_direct_insert(clean_substrate, db_path):
     """T-43 SQL trigger backstop fires when handler-side check is bypassed."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
     try:
@@ -213,8 +213,16 @@ def test_t43_sql_trigger_refuses_non_assumption_target_via_direct_insert():
         atom_row = conn.execute(
             "SELECT atom_id FROM text_atoms LIMIT 1"
         ).fetchone()
-        assert atom_row is not None
-        atom_id = atom_row["atom_id"]
+        if atom_row is None:
+            sess_for_seed = conn.execute("SELECT session_id FROM sessions LIMIT 1").fetchone()[0]
+            cur = conn.execute(
+                "INSERT INTO text_atoms (atom_type, text, created_session_id) "
+                "VALUES (?,?,?)",
+                ("claim", "seed atom for T-43 trigger backstop test fixture body.", sess_for_seed),
+            )
+            atom_id = cur.lastrowid
+        else:
+            atom_id = atom_row["atom_id"]
 
         sess_row = conn.execute(
             "SELECT session_id FROM sessions ORDER BY session_id DESC LIMIT 1"
@@ -246,7 +254,7 @@ def test_t43_sql_trigger_refuses_non_assumption_target_via_direct_insert():
         conn.close()
 
 
-def test_object_registration_lands_in_objects_with_kind_event(clean_substrate):
+def test_object_registration_lands_in_objects_with_kind_event(clean_substrate, db_path):
     ar = _seed_assumption()
     res = _submit_event({
         "source": "Source atom for object-registration test path with sufficient atom length for support_claim.",
@@ -255,7 +263,7 @@ def test_object_registration_lands_in_objects_with_kind_event(clean_substrate):
         "effects": [{"kind": "invalidates-assumption", "target": ar}],
     })
     alias = res["out"]["result"]["alias"]
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     try:
         row = conn.execute(
@@ -325,7 +333,7 @@ def test_per_session_seq_increments_across_events(clean_substrate):
     assert seq2 == seq1 + 1, (r1, r2)
 
 
-def test_inert_does_not_auto_flip_assumption_status(clean_substrate):
+def test_inert_does_not_auto_flip_assumption_status(clean_substrate, db_path):
     """D-S204-1 C-3 + codex named edit #4: invalidates-assumption does NOT
     auto-set assumption_ledger.status='invalidated'."""
     ar = _seed_assumption()
@@ -335,7 +343,7 @@ def test_inert_does_not_auto_flip_assumption_status(clean_substrate):
         "claim": "Event claim invalidating an assumption; handler does not auto-flip AR.status='invalidated'.",
         "effects": [{"kind": "invalidates-assumption", "target": ar}],
     })
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     try:
         row = conn.execute(
@@ -408,7 +416,7 @@ def test_refuse_empty_string_reason_atom(clean_substrate):
     assert "reason" in (body.get("detail") or ""), body
 
 
-def test_optional_reason_atom_pinned(clean_substrate):
+def test_optional_reason_atom_pinned(clean_substrate, db_path):
     ar = _seed_assumption()
     res = _submit_event({
         "source": "Source atom for optional-reason-pinned coverage path; sufficient atom length for support_claim.",
@@ -423,7 +431,7 @@ def test_optional_reason_atom_pinned(clean_substrate):
         ],
     })
     effect_id = res["out"]["result"]["effects"][0]["effect_id"]
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     try:
         row = conn.execute(

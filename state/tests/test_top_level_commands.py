@@ -19,7 +19,7 @@ import sqlite3
 
 import pytest
 
-from conftest import PRIMARY_DB, WORKSPACE
+from conftest import WORKSPACE
 
 
 def test_validate_precommit_ok_on_clean_substrate(clean_substrate, selvedge_cli):
@@ -28,10 +28,10 @@ def test_validate_precommit_ok_on_clean_substrate(clean_substrate, selvedge_cli)
     assert res["out"]["_raw"].startswith("validate --precommit")
 
 
-def test_validate_precommit_flags_more_than_one_open_session(clean_substrate, selvedge_cli):
+def test_validate_precommit_flags_more_than_one_open_session(clean_substrate, selvedge_cli, db_path):
     """Insert a second open session via raw SQL (T-10 still admits session_no=2),
     then expect validate to report >1 open session."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         # The trigger T-10 enforces session_no=MAX+1; session 1 is open from the
         # fixture so we insert session_no=2 (still 'open' to break the invariant).
@@ -100,10 +100,10 @@ def test_subtract_eligibility_honours_custom_thresholds(clean_substrate, selvedg
     assert res["out"]["thresholds"] == {"uncited": 1, "stale": 1, "untriaged": 1}
 
 
-def test_subtract_eligibility_lists_untriaged_feedback_above_threshold(clean_substrate, selvedge_cli):
+def test_subtract_eligibility_lists_untriaged_feedback_above_threshold(clean_substrate, selvedge_cli, db_path):
     """Seed a feedback row directly with no disposition; with threshold=0 the
     gap (last_session_no - opened_in = 0) is >= 0, so it appears."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         conn.execute(
             "INSERT INTO engine_feedback (session_id, flag, body_md) VALUES (1, 'observation', 'pytest seed')"

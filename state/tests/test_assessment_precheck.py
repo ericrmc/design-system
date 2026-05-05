@@ -16,7 +16,7 @@ import re
 import sqlite3
 import subprocess
 
-from conftest import PRIMARY_DB, _run_cli, BIN, WORKSPACE
+from conftest import _run_cli, BIN, WORKSPACE
 
 
 def _close_open_session() -> None:
@@ -111,7 +111,7 @@ def test_assessment_submit_admits_with_valid_nonce(clean_substrate):
     assert res["out"]["result"]["alias"].startswith("A-S")
 
 
-def test_nonce_single_use_consumption(clean_substrate):
+def test_nonce_single_use_consumption(clean_substrate, db_path):
     """Once consumed, the same nonce must not admit a second submit."""
     _close_open_session()
     _open_fresh_session("test-single-use", "coding")
@@ -130,7 +130,7 @@ def test_nonce_single_use_consumption(clean_substrate):
     # session would be refused by T-29 (one assessment per session). So we
     # need to verify single-use semantics differently: query the precheck
     # row and ensure consumed_at is set.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         consumed = conn.execute(
             "SELECT consumed_at, consumed_by_assessment_id FROM assessment_prechecks "
@@ -156,7 +156,7 @@ def test_substrate_presented_floor_with_no_targets(clean_substrate):
     assert "floor=" in ctx["summary"]
 
 
-def test_context_cli_with_target_surfaces_anchored_efs(clean_substrate):
+def test_context_cli_with_target_surfaces_anchored_efs(clean_substrate, db_path):
     """When --target points at an alias with anchored harvest EFs, the
     pack must surface them under the target's section."""
     _close_open_session()
@@ -164,7 +164,7 @@ def test_context_cli_with_target_surfaces_anchored_efs(clean_substrate):
 
     # Find an alias with at least one anchored EF; the seed substrate may
     # not have any, so we create a harvest EF + anchor first.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         spec_row = conn.execute(
             "SELECT o.alias FROM spec_versions sv "
@@ -254,7 +254,7 @@ def test_nonce_cross_session_rejected(clean_substrate):
     assert "does not match" in payload["detail"]
 
 
-def test_nonce_expired_after_ttl(clean_substrate):
+def test_nonce_expired_after_ttl(clean_substrate, db_path):
     """Review-finding S195 iter-1 critical: TTL expiry must refuse stale
     nonces. We force-update the precheck row's created_at to simulate an
     aged nonce, then verify T-38 refuses with `expired` in the detail."""
@@ -263,7 +263,7 @@ def test_nonce_expired_after_ttl(clean_substrate):
 
     ctx = _run_context_cli([])
     # Backdate the precheck row by 7200s (well past the 1800s default TTL).
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         conn.execute(
             "UPDATE assessment_prechecks SET created_at = "

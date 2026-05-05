@@ -6,8 +6,8 @@ workspace built in tmp_path. The peer's substrate is initialised by running
 directory and SELVEDGE_MIGRATIONS_DIR pointing at the live migrations.
 
 The harvest-ef path writes engine_feedback rows to *this* workspace's
-substrate — `clean_substrate` from conftest provides isolation by snapshotting
-PRIMARY_DB at session-start and restoring it at teardown.
+substrate — `clean_substrate` from conftest provides isolation via per-test
+ephemeral SELVEDGE_DB_PATH (S206 DV-S206-1, OI-S205-1).
 """
 from __future__ import annotations
 
@@ -19,12 +19,26 @@ from pathlib import Path
 
 import pytest
 
-from conftest import BIN, PRIMARY_DB, WORKSPACE, _coverage_subprocess_env
+from conftest import BIN, WORKSPACE, _coverage_subprocess_env
 
 
 def _run_external_cli(args: list[str], *, cwd: Path | None = None,
                        extra_env: dict | None = None) -> subprocess.CompletedProcess:
     env = os.environ | _coverage_subprocess_env()
+    # When extra_env names a SELVEDGE_WORKSPACE that is NOT the self-dev
+    # workspace root (i.e. a peer workspace under tmp_path), the conftest's
+    # per-test SELVEDGE_DB_PATH env (pointing at the self-test tmp DB) must
+    # not leak into the peer CLI invocation; otherwise the peer CLI would
+    # write to the self-test DB. Drop SELVEDGE_DB_PATH so the peer's
+    # workspace-relative default (peer_root/state/selvedge.sqlite) applies.
+    # When SELVEDGE_WORKSPACE is pinned to WORKSPACE (harvest-ef writing
+    # back to self-dev), keep the per-test SELVEDGE_DB_PATH so writes land
+    # in the test's tmp DB rather than the live primary.
+    if extra_env:
+        ws = extra_env.get("SELVEDGE_WORKSPACE")
+        if ws and Path(ws).resolve() != WORKSPACE.resolve() \
+                and "SELVEDGE_DB_PATH" not in extra_env:
+            env.pop("SELVEDGE_DB_PATH", None)
     if extra_env:
         env.update(extra_env)
     return subprocess.run(
@@ -352,8 +366,7 @@ def test_harvest_ef_refuses_without_explicit_self_workspace_env(
 
 
 def test_harvest_ef_refuses_when_cwd_inside_peer(
-    clean_substrate, peer_workspace,
-):
+    clean_substrate, peer_workspace, db_path):
     """Iter-2 F-90 guard: refuse harvest-ef when the operator runs it from
     inside the peer workspace (the simpler footgun behind the cwd-confusion
     risk). SELVEDGE_WORKSPACE points at self-dev so the substrate validation
@@ -372,7 +385,7 @@ def test_harvest_ef_refuses_when_cwd_inside_peer(
     assert err["code"] == "E_REFUSAL_SELF"
     assert "inside the peer" in err["detail"]
     # Confirm no row landed anywhere.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         n = conn.execute(
             "SELECT COUNT(*) FROM engine_feedback WHERE body_md LIKE '%cwd-guard body%'"
@@ -425,8 +438,7 @@ def test_harvest_ef_dry_run_empty_peer(clean_substrate, peer_workspace):
 
 
 def test_harvest_ef_dry_run_lists_unharvested_rows(
-    clean_substrate, peer_workspace,
-):
+    clean_substrate, peer_workspace, db_path):
     """Each unharvested peer row appears in the plan with action=harvest, the
     peer alias, and the peer workspace_session_no. No self rows are written."""
     seed = _seed_peer_ef(
@@ -448,7 +460,7 @@ def test_harvest_ef_dry_run_lists_unharvested_rows(
     assert [e["flag"] for e in plan] == ["observation", "calibration"]
     assert out["peer_workspace_id"]
 
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         n_ef = conn.execute(
             "SELECT COUNT(*) FROM engine_feedback WHERE body_md LIKE '%peer-ef-%'"
@@ -463,8 +475,7 @@ def test_harvest_ef_dry_run_lists_unharvested_rows(
 
 
 def test_harvest_ef_imports_with_provenance_preface_and_ledger(
-    clean_substrate, peer_workspace,
-):
+    clean_substrate, peer_workspace, db_path):
     """Live harvest writes engine_feedback rows with the provenance preface,
     populates harvested_engine_feedback, and returns success per row."""
     seed = _seed_peer_ef(
@@ -484,7 +495,7 @@ def test_harvest_ef_imports_with_provenance_preface_and_ledger(
     assert all(a.startswith("EF-S") for a in self_aliases)
 
     peer_ws_id = out["peer_workspace_id"]
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         rows = conn.execute(
             "SELECT body_md, flag FROM engine_feedback "
@@ -505,7 +516,7 @@ def test_harvest_ef_imports_with_provenance_preface_and_ledger(
     assert [r[2] for r in ledger] == expected_aliases
 
 
-def test_harvest_ef_idempotent_on_second_run(clean_substrate, peer_workspace):
+def test_harvest_ef_idempotent_on_second_run(clean_substrate, peer_workspace, db_path):
     """Re-running harvest-ef against an unchanged peer skips already-harvested
     rows by ledger lookup; no duplicate self-substrate rows are written."""
     _seed_peer_ef(
@@ -524,7 +535,7 @@ def test_harvest_ef_idempotent_on_second_run(clean_substrate, peer_workspace):
     third = _harvest_ef(peer_workspace)
     assert [r["status"] for r in third["results"]] == ["skipped", "skipped"]
 
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         n_ef = conn.execute(
             "SELECT COUNT(*) FROM engine_feedback WHERE body_md LIKE '%peer-idem-%'"
@@ -538,7 +549,7 @@ def test_harvest_ef_idempotent_on_second_run(clean_substrate, peer_workspace):
     assert n_ledger == 2
 
 
-def test_harvest_ef_since_session_filter(clean_substrate, peer_workspace):
+def test_harvest_ef_since_session_filter(clean_substrate, peer_workspace, db_path):
     """--since-session N skips peer rows whose peer_wno <= N."""
     early = _seed_peer_ef(
         peer_workspace, "ef-seed-early",
@@ -561,7 +572,7 @@ def test_harvest_ef_since_session_filter(clean_substrate, peer_workspace):
     statuses = {r["peer_wno"]: r["status"] for r in live["results"]}
     assert statuses == {early_wno: "skipped", later_wno: "success"}
 
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         n_early = conn.execute(
             "SELECT COUNT(*) FROM engine_feedback WHERE body_md LIKE '%peer-since-early%'"

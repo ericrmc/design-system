@@ -25,7 +25,7 @@ import json
 import re
 import sqlite3
 
-from conftest import PRIMARY_DB, _run_cli
+from conftest import _run_cli
 
 
 def _seed_decision() -> str:
@@ -82,12 +82,12 @@ def test_admit_minimal_payload_returns_alias_and_default_status(clean_substrate)
     assert r["origin_decision_object_id"] is None
 
 
-def test_object_registration_lands_in_objects(clean_substrate):
+def test_object_registration_lands_in_objects(clean_substrate, db_path):
     res = _submit_assumption({
         "statement": "Object-registration test: row should appear in objects with kind=assumption (not _ledger suffix).",
     })
     alias = res["out"]["result"]["alias"]
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT object_kind, typed_row_id FROM objects WHERE alias=?", (alias,)
@@ -325,7 +325,7 @@ def test_all_six_statuses_admit(clean_substrate):
         assert res["out"]["result"]["status"] == st
 
 
-def test_status_update_out_of_conflict_clears_sub_type(clean_substrate):
+def test_status_update_out_of_conflict_clears_sub_type(clean_substrate, db_path):
     """Reviewer RF-75 fix: transition OUT of active-with-conflict must clear sub_type
     (per CHECK sub_type IS NULL OR status='active-with-conflict'). The handler
     auto-clears sub_type when transitioning out and existing row had sub_type set."""
@@ -356,7 +356,7 @@ def test_status_update_out_of_conflict_clears_sub_type(clean_substrate):
     assert r["closure_shape"] == "convergence"
 
     # Verify sub_type was cleared at the row level.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT status, sub_type FROM assumption_ledger WHERE assumption_id=?",
@@ -511,7 +511,7 @@ def test_status_update_to_closed_requires_shape(clean_substrate):
     assert "closure_shape" in upd["out"]["detail"]
 
 
-def test_status_update_to_closed_with_shape_admits(clean_substrate):
+def test_status_update_to_closed_with_shape_admits(clean_substrate, db_path):
     dv_alias = _seed_decision()
     res = _submit_assumption({
         "statement": "Transition target: register, transition to closed with closure_shape=stable-held admits.",
@@ -526,7 +526,7 @@ def test_status_update_to_closed_with_shape_admits(clean_substrate):
     assert upd["rc"] == 0, upd
     assert upd["out"]["result"]["closure_shape"] == "stable-held"
 
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT status, closure_shape FROM assumption_ledger "
@@ -539,7 +539,7 @@ def test_status_update_to_closed_with_shape_admits(clean_substrate):
     assert row[1] == "stable-held"
 
 
-def test_status_update_out_of_closed_clears_shape(clean_substrate):
+def test_status_update_out_of_closed_clears_shape(clean_substrate, db_path):
     """Transitioning OUT of closed back to a pre-closure status auto-clears
     closure_shape to satisfy the coupling CHECK."""
     dv_alias = _seed_decision()
@@ -559,7 +559,7 @@ def test_status_update_out_of_closed_clears_shape(clean_substrate):
     assert upd["rc"] == 0, upd
     assert upd["out"]["result"]["closure_shape"] is None
 
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT status, closure_shape FROM assumption_ledger "
@@ -625,7 +625,7 @@ def test_closed_to_superseded_with_carry_forward_refused(clean_substrate):
     assert "superseded" in upd["out"]["detail"].lower()
 
 
-def test_closed_to_superseded_with_explicit_supersession_admits(clean_substrate):
+def test_closed_to_superseded_with_explicit_supersession_admits(clean_substrate, db_path):
     """RF-86/RF-89: closed(convergence) to superseded with explicit closure_shape=
     'supersession' admits (caller deliberately narrows)."""
     dv_alias = _seed_decision()
@@ -646,7 +646,7 @@ def test_closed_to_superseded_with_explicit_supersession_admits(clean_substrate)
     assert upd["rc"] == 0, upd
     assert upd["out"]["result"]["closure_shape"] == "supersession"
 
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT status, closure_shape FROM assumption_ledger "
@@ -659,7 +659,7 @@ def test_closed_to_superseded_with_explicit_supersession_admits(clean_substrate)
     assert row[1] == "supersession"
 
 
-def test_closed_to_superseded_with_explicit_null_admits(clean_substrate):
+def test_closed_to_superseded_with_explicit_null_admits(clean_substrate, db_path):
     """RF-86/RF-89: closed(convergence) to superseded with explicit closure_shape=
     null admits (legacy compat path; caller deliberately drops shape)."""
     dv_alias = _seed_decision()
@@ -680,7 +680,7 @@ def test_closed_to_superseded_with_explicit_null_admits(clean_substrate):
     assert upd["rc"] == 0, upd
     assert upd["out"]["result"]["closure_shape"] is None
 
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT status, closure_shape FROM assumption_ledger "
@@ -693,7 +693,7 @@ def test_closed_to_superseded_with_explicit_null_admits(clean_substrate):
     assert row[1] is None
 
 
-def test_superseded_to_closed_carry_forward_supersession(clean_substrate):
+def test_superseded_to_closed_carry_forward_supersession(clean_substrate, db_path):
     """RF-86: superseded(supersession) to closed without explicit closure_shape
     carries forward 'supersession' as the closed shape (admitted because
     'supersession' is in the closed-CHECK enum). Documents intentional
@@ -715,7 +715,7 @@ def test_superseded_to_closed_carry_forward_supersession(clean_substrate):
     assert upd["rc"] == 0, upd
     assert upd["out"]["result"]["closure_shape"] == "supersession"
 
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT status, closure_shape FROM assumption_ledger "
@@ -728,7 +728,7 @@ def test_superseded_to_closed_carry_forward_supersession(clean_substrate):
     assert row[1] == "supersession"
 
 
-def test_superseded_to_closed_with_override_shape_admits(clean_substrate):
+def test_superseded_to_closed_with_override_shape_admits(clean_substrate, db_path):
     """RF-86: superseded(supersession) to closed with explicit closure_shape='completion'
     overrides the carry-forward."""
     dv_alias = _seed_decision()
@@ -749,7 +749,7 @@ def test_superseded_to_closed_with_override_shape_admits(clean_substrate):
     assert upd["rc"] == 0, upd
     assert upd["out"]["result"]["closure_shape"] == "completion"
 
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         row = conn.execute(
             "SELECT status, closure_shape FROM assumption_ledger "

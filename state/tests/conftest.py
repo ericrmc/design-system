@@ -1,18 +1,27 @@
 """Pytest fixtures for Selvedge substrate tests.
 
-Each test runs against a clean substrate. We snapshot the workspace's primary
-substrate at test-session start and restore on teardown, so production state is
-not polluted. Inside the test session, tests get a `clean_substrate` fixture that
-re-inits the substrate via `selvedge init --force` and then opens a session-1
-row so deliberation/perspective/synthesis tests have a parent session to attach
-to. The `selvedge_cli` fixture returns a callable that runs the CLI in a
-subprocess and parses the JSON result.
+Per-test fixtures point `SELVEDGE_DB_PATH` and `SELVEDGE_SNAPSHOTS_DIR` at an
+ephemeral tmp directory so the workspace's primary substrate
+(`state/selvedge.sqlite`) is never touched during pytest runs. The legacy
+`_snapshot_primary` save/restore is removed; a session-scoped sha256 guard
+catches any leakage that lands despite the per-test isolation.
+
+Public fixture surface:
+- `db_path` — Path to the per-test ephemeral substrate file.
+- `clean_substrate` — Returns session_id of a freshly-init'd S001 in the
+  ephemeral substrate. Backward-compatible signature with the pre-S206
+  fixture; internals point at tmp DB.
+- `db` — sqlite3.Connection on the ephemeral substrate.
+- `selvedge_cli` — callable for CLI subprocess invocations.
+- `submit_minimal_close_record`, `open_deliberation` — helpers.
+
+S206 / DV-S206-1 / OI-S205-1 closure.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
-import shutil
 import sqlite3
 import subprocess
 import sys
@@ -22,35 +31,10 @@ import pytest
 
 WORKSPACE = Path(__file__).resolve().parents[2]
 PRIMARY_DB = WORKSPACE / "state" / "selvedge.sqlite"
-BACKUP_DB = WORKSPACE / "state" / "selvedge.sqlite.pytest-backup"
 BIN = WORKSPACE / "bin" / "selvedge"
 
-# Make the in-tree `selvedge` package importable so unit tests can call helpers
-# (e.g., the T-15 parser) directly without going through the CLI subprocess.
 if str(WORKSPACE) not in sys.path:
     sys.path.insert(0, str(WORKSPACE))
-
-
-@pytest.fixture(scope="session", autouse=True)
-def _snapshot_primary(tmp_path_factory):
-    """Back up the primary substrate before tests, restore after.
-
-    Also routes L3 boundary snapshots (DV-S081-1, S084) to a per-test-session
-    tmpdir so test-driven session-open/close/init/migrate triggers do not
-    pollute the production state/snapshots/ directory.
-    """
-    snap_dir = tmp_path_factory.mktemp("pytest-snapshots")
-    os.environ["SELVEDGE_SNAPSHOTS_DIR"] = str(snap_dir)
-    if PRIMARY_DB.exists():
-        shutil.copy(PRIMARY_DB, BACKUP_DB)
-    try:
-        yield
-    finally:
-        for sidecar in [PRIMARY_DB, PRIMARY_DB.with_suffix(".sqlite-wal"), PRIMARY_DB.with_suffix(".sqlite-shm")]:
-            if sidecar.exists():
-                sidecar.unlink()
-        if BACKUP_DB.exists():
-            shutil.move(BACKUP_DB, PRIMARY_DB)
 
 
 _TESTS_DIR = Path(__file__).resolve().parent
@@ -80,6 +64,65 @@ def _coverage_subprocess_env() -> dict:
         parts.append(existing)
     extra["PYTHONPATH"] = os.pathsep.join(parts)
     return extra
+
+
+def _sha256(p: Path) -> str:
+    h = hashlib.sha256()
+    with p.open("rb") as f:
+        for chunk in iter(lambda: f.read(1 << 16), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _primary_substrate_leakage_guard():
+    """Session-scoped sha256 guard on the workspace primary substrate.
+
+    Replaces the pre-S206 `_snapshot_primary` copy/restore (DV-S206-1,
+    OI-S205-1). Per-test fixtures point SELVEDGE_DB_PATH at a tmp file, so
+    the primary should be untouched across the full test session. If the
+    sha changes, the session fails with a diagnostic.
+    """
+    pre = _sha256(PRIMARY_DB) if PRIMARY_DB.exists() else None
+    yield
+    post = _sha256(PRIMARY_DB) if PRIMARY_DB.exists() else None
+    if pre != post:
+        raise AssertionError(
+            "primary substrate sha256 changed during pytest run: "
+            f"pre={pre} post={post} at {PRIMARY_DB} — a test wrote to "
+            "the primary substrate; check db_path / clean_substrate fixture "
+            "usage in any test that connects via sqlite3 directly."
+        )
+
+
+@pytest.fixture(autouse=True)
+def db_path(tmp_path, monkeypatch):
+    """Per-test ephemeral substrate path.
+
+    Sets SELVEDGE_DB_PATH and SELVEDGE_SNAPSHOTS_DIR in os.environ for the
+    duration of the test so subprocess CLI invocations route ALL writes
+    away from the workspace primary. Returns the Path to the tmp DB so
+    tests doing direct `sqlite3.connect(...)` use the same file.
+
+    Autouse so even tests that don't request db_path explicitly get the
+    env override — defence-in-depth against the S204 leakage class.
+    Tests that build their own isolated workspace (test_clone_substrate,
+    test_engine_v52_marker, test_init_guard, test_manifest_reconcile,
+    test_migrate, test_snapshots_and_restore) override SELVEDGE_DB_PATH
+    in their own subprocess `extra_env`, so autouse here does not
+    interfere with those flows.
+    """
+    db = tmp_path / "selvedge.sqlite"
+    snaps = tmp_path / "snapshots"
+    snaps.mkdir()
+    monkeypatch.setenv("SELVEDGE_DB_PATH", str(db))
+    monkeypatch.setenv("SELVEDGE_SNAPSHOTS_DIR", str(snaps))
+    # Hard refusal if a fixture mistake routed db_path back to primary.
+    if db.resolve() == PRIMARY_DB.resolve():
+        raise AssertionError(
+            f"db_path fixture resolved to primary substrate: {db} == {PRIMARY_DB}"
+        )
+    return db
 
 
 def _run_cli(args: list[str], *, expect_ok: bool = True, input_payload: dict | None = None) -> dict:
@@ -114,11 +157,17 @@ def selvedge_cli():
 
 
 @pytest.fixture
-def clean_substrate():
-    """Reset substrate to post-init + S001-open. Returns the session_id."""
-    for sidecar in [PRIMARY_DB, PRIMARY_DB.with_suffix(".sqlite-wal"), PRIMARY_DB.with_suffix(".sqlite-shm")]:
-        if sidecar.exists():
-            sidecar.unlink()
+def clean_substrate(db_path):
+    """Reset substrate to post-init + S001-open. Returns the session_id.
+
+    Backed by a per-test tmp DB via SELVEDGE_DB_PATH (S206 DV-S206-1,
+    OI-S205-1 closure). The previous PRIMARY_DB sidecar-unlink + init dance
+    is removed because the tmp DB starts empty and is discarded with
+    `tmp_path` cleanup. The L1a init-guard refusal of `init --force`
+    against carrying-sessions substrate (DV-S081-1) is preserved at the
+    primary scope by the session-level sha256 guard above; the per-test
+    init runs against an empty tmp file where the L1a guard admits.
+    """
     init = _run_cli(["init", "--force"])
     assert init["rc"] == 0, init
     # `selvedge init` chains the migrate runner since engine-v18 (S082); this
@@ -206,11 +255,11 @@ def open_deliberation(clean_substrate):
 
 
 @pytest.fixture
-def db():
-    """Read-only sqlite3.Connection on the primary substrate (used by tests
-    that need to inspect or directly attempt mutations to verify trigger
-    refusals from the SQL layer)."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+def db(db_path, clean_substrate):
+    """Read-only sqlite3.Connection on the per-test ephemeral substrate.
+    Used by tests that need to inspect rows or attempt direct mutations to
+    verify trigger refusals from the SQL layer."""
+    conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     try:
         yield conn

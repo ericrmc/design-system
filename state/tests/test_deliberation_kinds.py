@@ -18,7 +18,7 @@ import sqlite3
 
 import pytest
 
-from conftest import PRIMARY_DB
+
 
 
 def _attest_nil(selvedge_cli, did):
@@ -211,7 +211,7 @@ def test_t05_perspective_after_seal_refused(open_deliberation, selvedge_cli):
     assert "E_REFUSAL_T05" in res["err"]
 
 
-def test_t13_resealing_to_null_refused(open_deliberation, selvedge_cli):
+def test_t13_resealing_to_null_refused(open_deliberation, selvedge_cli, db_path):
     did = open_deliberation
     selvedge_cli(
         [
@@ -231,7 +231,7 @@ def test_t13_resealing_to_null_refused(open_deliberation, selvedge_cli):
         ]
     )
     # CLI has no path to revert sealed_at; verify the trigger refuses a direct UPDATE.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute("UPDATE deliberations SET sealed_at=NULL WHERE deliberation_id=?", (did,))
@@ -410,7 +410,7 @@ def test_t14_minority_with_one_source_admitted(open_deliberation, selvedge_cli, 
     assert row["kind"] == "minority"
 
 
-def test_t06_closed_deliberation_topic_immutable(open_deliberation, selvedge_cli, submit_minimal_close_record):
+def test_t06_closed_deliberation_topic_immutable(open_deliberation, selvedge_cli, submit_minimal_close_record, db_path):
     """Migration 002 (S082) added T-06 triggers on `deliberations` UPDATE/DELETE.
     A closed-session deliberation's `topic` and `synthesis_md` are now refused
     by direct SQL writers. This test was the strict xfail pinning OI-080-001
@@ -450,7 +450,7 @@ def test_t06_closed_deliberation_topic_immutable(open_deliberation, selvedge_cli
             json.dumps({"session_no": 1, "engine_version_at_close": "engine-v18"}),
         ]
     )
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute("UPDATE deliberations SET topic='mutated' WHERE deliberation_id=?", (did,))
@@ -459,7 +459,7 @@ def test_t06_closed_deliberation_topic_immutable(open_deliberation, selvedge_cli
         conn.close()
 
 
-def test_t13_refuses_resealing_to_other_timestamp(open_deliberation, selvedge_cli):
+def test_t13_refuses_resealing_to_other_timestamp(open_deliberation, selvedge_cli, db_path):
     """Migration 002 (S082) tightened T-13 from `NEW.sealed_at IS NULL` to
     `NEW.sealed_at IS NOT OLD.sealed_at`. Any change to a non-NULL sealed_at
     is now refused, including a re-seal at a different timestamp. This test
@@ -488,7 +488,7 @@ def test_t13_refuses_resealing_to_other_timestamp(open_deliberation, selvedge_cl
             json.dumps({"deliberation_id": did}),
         ]
     )
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -505,7 +505,7 @@ def test_t13_refuses_resealing_to_other_timestamp(open_deliberation, selvedge_cl
         conn.close()
 
 
-def test_t13_admits_idempotent_same_value_sealed_at_write(open_deliberation, selvedge_cli, db):
+def test_t13_admits_idempotent_same_value_sealed_at_write(open_deliberation, selvedge_cli, db, db_path):
     """Migration 002's tightened T-13 condition is `NEW.sealed_at IS NOT
     OLD.sealed_at`. For OLD='X' NEW='X', `'X' IS NOT 'X'` is false, so the
     trigger does not fire. A no-op update must be admitted (this is the
@@ -537,7 +537,7 @@ def test_t13_admits_idempotent_same_value_sealed_at_write(open_deliberation, sel
     ).fetchone()["sealed_at"]
     assert sealed_at is not None
 
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         # Same-value write: OLD.sealed_at == NEW.sealed_at; trigger must not fire.
         conn.execute(
@@ -553,7 +553,7 @@ def test_t13_admits_idempotent_same_value_sealed_at_write(open_deliberation, sel
     assert after == sealed_at
 
 
-def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cli, submit_minimal_close_record):
+def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cli, submit_minimal_close_record, db_path):
     did = open_deliberation
     r1 = selvedge_cli(
         [
@@ -590,7 +590,7 @@ def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cl
             json.dumps({"session_no": 1, "engine_version_at_close": "engine-v17"}),
         ]
     )
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute("UPDATE perspectives SET body_md='mutated' WHERE perspective_id=?", (pid,))
@@ -599,7 +599,7 @@ def test_t06_closed_session_perspective_immutable(open_deliberation, selvedge_cl
         conn.close()
 
 
-def test_t06_closed_session_synthesis_point_immutable(open_deliberation, selvedge_cli, submit_minimal_close_record):
+def test_t06_closed_session_synthesis_point_immutable(open_deliberation, selvedge_cli, submit_minimal_close_record, db_path):
     did = open_deliberation
     pids = []
     for label in ["p1", "p2"]:
@@ -647,7 +647,7 @@ def test_t06_closed_session_synthesis_point_immutable(open_deliberation, selvedg
             json.dumps({"session_no": 1, "engine_version_at_close": "engine-v17"}),
         ]
     )
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute("UPDATE synthesis_points SET summary='mutated' WHERE synthesis_point_id=?", (spid,))
@@ -1123,7 +1123,7 @@ def test_invalid_exclusion_kind_refused(open_deliberation, selvedge_cli):
     assert "exclusion_kind" in res["err"]
 
 
-def test_t06_counterfactual_immutable_after_close(open_deliberation, selvedge_cli, db, submit_minimal_close_record):
+def test_t06_counterfactual_immutable_after_close(open_deliberation, selvedge_cli, db, submit_minimal_close_record, db_path):
     """T-06: closed-session deliberation_counterfactuals row is immutable."""
     did = open_deliberation
     selvedge_cli(
@@ -1164,7 +1164,7 @@ def test_t06_counterfactual_immutable_after_close(open_deliberation, selvedge_cl
     submit_minimal_close_record()
     selvedge_cli(["submit", "session-close", "--payload", json.dumps({})])
     # Now any direct UPDATE / DELETE should fire T-06.
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(

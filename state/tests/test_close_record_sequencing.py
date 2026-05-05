@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import PRIMARY_DB
+
 from selvedge.errors import SelvedgeError
 from selvedge.submit._helpers import _validate_atom
 
@@ -50,11 +50,11 @@ def test_t39_admits_session_close_with_close_record(clean_substrate, selvedge_cl
     assert row["status"] == "closed"
 
 
-def test_t39b_refuses_direct_insert_of_closed_session(clean_substrate):
+def test_t39b_refuses_direct_insert_of_closed_session(clean_substrate, db_path):
     """T-39b (migration 028, defence-in-depth) refuses INSERT INTO sessions
     with status='closed' bypassing the close_records gate. Direct sqlite3
     write to mirror the attack surface the CLI no longer exposes."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         with pytest.raises(sqlite3.IntegrityError) as exc:
             conn.execute(
@@ -110,12 +110,12 @@ def test_t40_handler_refuses_missing_items_field(clean_substrate, selvedge_cli):
     assert "non-empty items[]" in err["detail"]
 
 
-def test_t40_trigger_refuses_session_close_with_zero_items(clean_substrate, db):
+def test_t40_trigger_refuses_session_close_with_zero_items(clean_substrate, db, db_path):
     """T-40 fires at session-close when a close_records row exists for the
     session but no close_state_items row references it. Bypasses the handler
     pre-check via direct SQL to mirror the attack surface — same shape as
     test_t39b_refuses_direct_insert_of_closed_session."""
-    conn = sqlite3.connect(str(PRIMARY_DB))
+    conn = sqlite3.connect(str(db_path))
     try:
         atom_row = conn.execute(
             "INSERT INTO text_atoms (atom_type, text, created_session_id) "
