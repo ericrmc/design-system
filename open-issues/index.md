@@ -4,6 +4,12 @@ Issues live in the `issues` substrate table. The files below are a
 deterministic export from substrate rows; do not hand-edit. Use
 `bin/selvedge submit issue` and `submit issue-disposition` to mutate.
 
+## Open
+
+| Alias | Priority | Status | Title |
+|-------|----------|--------|-------|
+| [OI-S205-1](OI-S205-1.md) | MEDIUM | open | Refactor pytest fixtures + 19 test files to use ephemeral tmp DB via SELVEDGE_DB_PATH; stop mutating primary substrate during test runs. |
+
 ## Resolved
 
 | Alias | Resolved-in | Title |
